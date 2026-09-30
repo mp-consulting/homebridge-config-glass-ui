@@ -5,7 +5,7 @@ import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { PluginsService } from '../plugins/plugins.service.js'
-import { StatusService } from './status.service.js'
+import { StatusService, withoutPairingCodes } from './status.service.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -171,18 +171,18 @@ export class StatusGateway {
   }
 
   @SubscribeMessage('get-homebridge-pairing-pin')
-  async getHomebridgePairingPin() {
+  async getHomebridgePairingPin(client) {
     try {
-      return await this.statusService.getHomebridgePairingPin()
+      return withoutPairingCodes(await this.statusService.getHomebridgePairingPin(), client.data?.user?.admin === true)
     } catch (e) {
       return new WsException(e.message)
     }
   }
 
   @SubscribeMessage('get-homebridge-status')
-  async getHomebridgeStatus() {
+  async getHomebridgeStatus(client) {
     try {
-      return await this.statusService.getHomebridgeStatus()
+      return withoutPairingCodes(await this.statusService.getHomebridgeStatus(), client.data?.user?.admin === true)
     } catch (e) {
       return new WsException(e.message)
     }

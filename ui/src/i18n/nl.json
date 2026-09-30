@@ -907,6 +907,7 @@
   "status.widget.network.none_selected": "Standaard Gebruiken",
   "status.widget.network.refresh_interval": "Ververs Interval",
   "status.widget.network.seconds": "seconden",
+  "status.widget.pairing_admin_only": "Only administrators can see the pairing code.",
   "status.widget.pairing_copy_code": "Copy setup code",
   "status.widget.pairing_waiting": "Waiting for Homebridge to share its setup code.",
   "status.widget.qr_paired": "Gekoppeld",

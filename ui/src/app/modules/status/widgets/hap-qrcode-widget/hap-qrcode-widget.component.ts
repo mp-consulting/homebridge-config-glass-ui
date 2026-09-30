@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
+import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
@@ -23,6 +24,11 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
+  private $auth = inject(AuthService)
+
+  // Pairing codes are admin-only: the server leaves the pin and setup code out for
+  // everyone else, so those users get a notice instead of an empty code area
+  public readonly isAdmin = this.$auth.user.admin
 
   // Inputs (set by the dashboard's dynamic widget loader via setInput)
   public readonly widget = input.required<Widget>()

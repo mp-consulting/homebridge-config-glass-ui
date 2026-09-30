@@ -45,6 +45,36 @@ import {
 
 const execAsync = promisify(exec)
 
+/**
+ * Drop the pairing codes (HomeKit PIN and setup URI, and their Matter
+ * equivalents) from a status payload for anyone but an administrator. Whoever
+ * holds them can add an unpaired bridge to their own Home, which is why the
+ * REST equivalent (/server/pairing) is admin-only too.
+ */
+export function withoutPairingCodes<T extends { pin?: unknown, setupUri?: unknown, matter?: { pin?: unknown, setupUri?: unknown } | null }>(
+  status: T,
+  admin: boolean,
+): T {
+  if (admin) {
+    return status
+  }
+  // Copies, so the cached status the next caller gets is left intact
+  const redacted = { ...status }
+  delete redacted.pin
+  delete redacted.setupUri
+  if (status.matter) {
+    redacted.matter = { ...status.matter }
+    delete redacted.matter.pin
+    delete redacted.matter.setupUri
+  }
+  return redacted
+}
+
+/** The verified user on a socket (set by the WS guards) is an administrator */
+function isAdminClient(client: any): boolean {
+  return client?.data?.user?.admin === true
+}
+
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 })
@@ -393,7 +423,7 @@ export class StatusService {
     // again would stack a second subscription, and a second pair of
     // disconnect handlers, on top of the first.
     if (this.statsClients.has(client)) {
-      client.emit('homebridge-status', await this.getHomebridgeStats())
+      client.emit('homebridge-status', withoutPairingCodes(await this.getHomebridgeStats(), isAdminClient(client)))
       return
     }
     this.statsClients.add(client)
@@ -406,7 +436,7 @@ export class StatusService {
     let disposed = false
 
     const homebridgeStatusChangeSub: Subscription = this.homebridgeStatusChange.subscribe(async () => {
-      const stats = await this.getHomebridgeStats()
+      const stats = withoutPairingCodes(await this.getHomebridgeStats(), isAdminClient(client))
       if (disposed) {
         return
       }
@@ -431,7 +461,7 @@ export class StatusService {
     client.on('end', onEnd.bind(this))
     client.on('disconnect', onEnd.bind(this))
 
-    const stats = await this.getHomebridgeStats()
+    const stats = withoutPairingCodes(await this.getHomebridgeStats(), isAdminClient(client))
     if (!disposed) {
       client.emit('homebridge-status', stats)
     }

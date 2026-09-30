@@ -907,6 +907,7 @@
   "status.widget.network.none_selected": "משתמש בברירת מחדל",
   "status.widget.network.refresh_interval": "מרווח רענון",
   "status.widget.network.seconds": "שניות",
+  "status.widget.pairing_admin_only": "Only administrators can see the pairing code.",
   "status.widget.pairing_copy_code": "Copy setup code",
   "status.widget.pairing_waiting": "Waiting for Homebridge to share its setup code.",
   "status.widget.qr_paired": "מְחוּבָּר",

@@ -22,6 +22,7 @@ import { StatusGateway } from '../../src/modules/status/status.gateway.js'
 import { StatusModule } from '../../src/modules/status/status.module.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
 import { testStoragePath } from '../storage-path.js'
+import { authorizeWsClient } from '../ws-client.js'
 
 describe('StatusGateway (e2e)', () => {
   let app: NestFastifyApplication
@@ -84,7 +85,8 @@ describe('StatusGateway (e2e)', () => {
 
     vi.resetAllMocks()
 
-    client = new EventEmitter()
+    // Every status socket has passed WsGuard, which leaves the verified user on it
+    client = authorizeWsClient(new EventEmitter())
     vi.spyOn(client, 'emit')
     vi.spyOn(client, 'on')
   })
@@ -443,22 +445,78 @@ describe('StatusGateway (e2e)', () => {
 
   describe('Homebridge Status', () => {
     it('should return homebridge pairing pin', async () => {
-      const result = await statusGateway.getHomebridgePairingPin()
+      const result = await statusGateway.getHomebridgePairingPin(authorizeWsClient({}))
       expect(result).toHaveProperty('pin')
       expect(result).toHaveProperty('paired')
       expect(result).toHaveProperty('matter')
       expect((result as any).pin).toBe(configService.homebridgeConfig.bridge.pin)
     })
 
+    describe('pairing codes for non-admin users', () => {
+      const nonAdmin = () => authorizeWsClient({}, { username: 'viewer', admin: false })
+      const withMatterCodes = () => ({ enabled: true, pin: '12345678', setupUri: 'MT:ABC', commissioned: false })
+
+      it('leaves the HomeKit and Matter codes out of the pairing reply', async () => {
+        vi.spyOn(statusService, 'getHomebridgePairingPin').mockResolvedValue({
+          pin: '031-45-154',
+          setupUri: 'X-HM://0024SETUP',
+          paired: false,
+          hap: { enabled: true, externalsOnly: false },
+          matter: withMatterCodes(),
+        } as any)
+
+        const result = await statusGateway.getHomebridgePairingPin(nonAdmin()) as any
+
+        expect(result).not.toHaveProperty('pin')
+        expect(result).not.toHaveProperty('setupUri')
+        expect(result.matter).toEqual({ enabled: true, commissioned: false })
+        expect(result.paired).toBe(false)
+      })
+
+      it('still gives an admin the codes', async () => {
+        vi.spyOn(statusService, 'getHomebridgePairingPin').mockResolvedValue({
+          pin: '031-45-154',
+          setupUri: 'X-HM://0024SETUP',
+          matter: withMatterCodes(),
+        } as any)
+
+        const result = await statusGateway.getHomebridgePairingPin(authorizeWsClient({})) as any
+
+        expect(result.pin).toBe('031-45-154')
+        expect(result.matter.setupUri).toBe('MT:ABC')
+      })
+
+      it('leaves the codes out of the status reply', async () => {
+        const result = await statusGateway.getHomebridgeStatus(nonAdmin()) as any
+
+        expect(result).toHaveProperty('status')
+        expect(result).not.toHaveProperty('pin')
+        expect(result).not.toHaveProperty('setupUri')
+      })
+
+      it('leaves the codes out of the pushed status updates', async () => {
+        const viewer = authorizeWsClient(new EventEmitter(), { username: 'viewer', admin: false })
+        const emit = vi.spyOn(viewer, 'emit')
+
+        await statusService.watchStats(viewer)
+
+        const pushed = emit.mock.calls.find(([event]) => event === 'homebridge-status')?.[1] as any
+        expect(pushed).toHaveProperty('status')
+        expect(pushed).not.toHaveProperty('pin')
+        expect(pushed).not.toHaveProperty('setupUri')
+        viewer.emit('disconnect')
+      })
+    })
+
     it('should return WsException when pairing pin fails', async () => {
       vi.spyOn(statusService, 'getHomebridgePairingPin').mockRejectedValue(new Error('pin error'))
 
-      const result = await statusGateway.getHomebridgePairingPin()
+      const result = await statusGateway.getHomebridgePairingPin(authorizeWsClient({}))
       expect((result as any).message).toBe('pin error')
     })
 
     it('should return homebridge status', async () => {
-      const result = await statusGateway.getHomebridgeStatus()
+      const result = await statusGateway.getHomebridgeStatus(authorizeWsClient({}))
       expect(result).toHaveProperty('status')
       expect(result).toHaveProperty('consolePort')
       expect(result).toHaveProperty('name')
@@ -470,7 +528,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return WsException when homebridge status fails', async () => {
       vi.spyOn(statusService, 'getHomebridgeStatus').mockRejectedValue(new Error('status error'))
 
-      const result = await statusGateway.getHomebridgeStatus()
+      const result = await statusGateway.getHomebridgeStatus(authorizeWsClient({}))
       expect((result as any).message).toBe('status error')
     })
   })

@@ -18,6 +18,7 @@ import { HapQrcodeWidgetComponent } from '@/app/modules/status/widgets/hap-qrcod
 import { MatterQrcodeWidgetComponent } from '@/app/modules/status/widgets/matter-qrcode-widget/matter-qrcode-widget.component'
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
 import { fakeWs, makeSettings, toastrStub } from '@/testing'
+import { makeAuth } from '@/testing/fakes/auth.fake'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -58,6 +59,7 @@ describe('the pairing and content widgets', () => {
    * @param options.rooms - the accessory rooms the service reports
    * @param options.env - settings env overrides
    * @param options.awaitStable - whether to wait for stability before returning
+   * @param options.admin - whether the signed-in user is an admin (default true)
    */
   async function open<T>(type: new (...args: any[]) => T, widget: any, options: {
     connected?: boolean
@@ -65,6 +67,7 @@ describe('the pairing and content widgets', () => {
     rooms?: any[]
     env?: Record<string, any>
     awaitStable?: boolean
+    admin?: boolean
   } = {}) {
     TestBed.resetTestingModule()
     settings = makeSettings({ env: options.env })
@@ -97,7 +100,7 @@ describe('the pairing and content widgets', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTestTranslate(),
-        provideFakes({ settings, ws, toastr: toastrStub() }),
+        provideFakes({ settings, ws, toastr: toastrStub(), auth: makeAuth({ user: { admin: options.admin ?? true } }) }),
         { provide: AccessoriesService, useValue: accessories },
         { provide: DragulaService, useValue: dragula },
         { provide: MobileDetectService, useValue: { detect: { mobile: () => isMobile } } },
@@ -237,6 +240,23 @@ describe('the pairing and content widgets', () => {
       // must stop listening
       expect(io.socket.handlers('homebridge-status')).toHaveLength(0)
     })
+
+    it('tells a non-admin the code is admin-only and keeps the pairing status', async () => {
+      // The server leaves the pin and setup code out for anyone who is not an admin
+      const { fixture, widget } = await open(HapQrcodeWidgetComponent, { component: 'HapQrcodeWidgetComponent' }, {
+        admin: false,
+        pairing: { paired: true, hap: { enabled: true } },
+      })
+      await flushFrames()
+      fixture.detectChanges()
+
+      expect(widget.pin()).toBeFalsy()
+      expect(widget.setupUri()).toBeNull()
+      const text = (fixture.nativeElement as HTMLElement).textContent
+      expect(text).toContain('status.widget.pairing_admin_only')
+      expect(text).toContain('status.widget.qr_paired')
+      expect(text).not.toContain('status.widget.pairing_waiting')
+    })
   })
 
   describe('the matter pairing code', () => {
@@ -299,6 +319,21 @@ describe('the pairing and content widgets', () => {
       TestBed.resetTestingModule()
 
       expect(io.socket.handlers('homebridge-status')).toHaveLength(0)
+    })
+
+    it('tells a non-admin the code is admin-only and keeps the commissioning status', async () => {
+      const { fixture, widget } = await open(MatterQrcodeWidgetComponent, { component: 'MatterQrcodeWidgetComponent' }, {
+        admin: false,
+        pairing: { paired: false, matter: { enabled: true, commissioned: true } },
+      })
+      await flushFrames()
+      fixture.detectChanges()
+
+      expect(widget.pin()).toBeFalsy()
+      expect(widget.setupUri()).toBeNull()
+      const text = (fixture.nativeElement as HTMLElement).textContent
+      expect(text).toContain('status.widget.pairing_admin_only')
+      expect(text).toContain('status.widget.qr_paired')
     })
   })
 

@@ -4,7 +4,7 @@
       <i class="fas fa-matter" aria-hidden="true"></i>
       Matter
     </span>
-    @if (enabled() && pin()) {
+    @if (enabled() && (pin() || !isAdmin)) {
       <span class="pairing-status-pill" [class.is-paired]="commissioned()">
         <span class="pairing-status-dot" aria-hidden="true"></span>
         {{ (commissioned() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
@@ -29,6 +29,9 @@
           } @else if (!enabled()) {
             <i class="fas fa-matter fa-2xl" aria-hidden="true"></i>
             <p class="mt-3 mb-0 small">{{ 'status.services.matter_not_enabled' | translate }}</p>
+          } @else if (!isAdmin) {
+            <i class="fas fa-lock fa-2xl" aria-hidden="true"></i>
+            <p class="mt-3 mb-0 small">{{ 'status.widget.pairing_admin_only' | translate }}</p>
           } @else {
             <i class="fas fa-qrcode fa-2xl" aria-hidden="true"></i>
             <p class="mt-3 mb-0 small">{{ 'status.widget.pairing_waiting' | translate }}</p>
