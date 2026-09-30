@@ -1,0 +1,125 @@
+<div
+  #widgetcontainer
+  class="flex-column d-flex align-items-stretch h-100 w-100"
+  [class.widget-container-dark]="theme() === 'dark'"
+>
+  <div
+    #terminaltitle
+    class="drag-handler logs-card-header d-flex align-items-center justify-content-between"
+    [class.terminal-title-dark]="theme() === 'dark'"
+  >
+    <span class="logs-card-title" aria-hidden="true">
+      <i class="fas fa-wave-square" aria-hidden="true"></i>
+      {{ 'status.widget.homebridge_logs' | translate }}
+    </span>
+    <button
+      type="button"
+      class="visually-hidden-focusable"
+      [attr.aria-expanded]="srExpanded()"
+      [attr.aria-controls]="contentId"
+      [attr.aria-label]="'status.widget.homebridge_logs' | translate"
+      (click)="toggleSrExpanded($event)"
+    >
+      {{ 'status.widget.homebridge_logs' | translate }}
+    </button>
+    @if (isAdmin && widget().showToolbar) {
+      <div class="d-flex gap-1 widget-toolbar logs-toolbar" [class.with-gear]="widget().draggable">
+        <a
+          class="widget-toolbar-button"
+          routerLink="/logs"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'status.widget.logs_open_page' | translate"
+          [attr.aria-label]="'status.widget.logs_open_page' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+        >
+          <i class="fas fa-up-right-and-down-left-from-center" aria-hidden="true"></i>
+        </a>
+        <button
+          type="button"
+          class="widget-toolbar-button"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'form.search' | translate"
+          [attr.aria-label]="'form.search' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+          (click)="showSearch()"
+        >
+          <i aria-hidden="true" [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
+        </button>
+        <button
+          type="button"
+          class="widget-toolbar-button"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'form.button_download' | translate"
+          [attr.aria-label]="'form.button_download' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+          (click)="downloadLogFile()"
+        >
+          <i class="fas fa-download" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="widget-toolbar-button"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'form.button_delete' | translate"
+          [attr.aria-label]="'form.button_delete' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+          (click)="truncateLogFile()"
+        >
+          <i class="fas fa-trash-alt" aria-hidden="true"></i>
+        </button>
+      </div>
+    }
+  </div>
+  @if (showSearchBar()) {
+    <div #searchcontainer class="position-relative px-2 pt-1">
+      <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+        <input
+          #searchInput
+          type="text"
+          class="search-bar"
+          formControlName="query"
+          [class.search-bar-light]="theme() === 'light'"
+          [placeholder]="'logs.placeholder_search_logs' | translate"
+          [class.is-invalid]="searchInputInvalid"
+        />
+        @if (form.get('query')?.value) {
+          <button
+            type="button"
+            class="search-bar-clear"
+            [attr.aria-label]="'form.button_clear' | translate"
+            (click)="onClearSearch()"
+          >
+            <i class="fas fa-square-xmark" aria-hidden="true"></i>
+          </button>
+        }
+      </form>
+    </div>
+  }
+  <div
+    class="logs-body"
+    [attr.id]="contentId"
+    [style.height.px]="terminalHeight()"
+    [attr.aria-hidden]="srExpanded() ? null : 'true'"
+  >
+    <!-- Inset pane for the log text; its top edge fades so older lines slide out under the header -->
+    <div class="logs-well h-100">
+      <div #logoutput class="terminal gridster-item-content w-100 h-100 terminal-max-height"></div>
+    </div>
+  </div>
+</div>

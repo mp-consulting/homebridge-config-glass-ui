@@ -1,0 +1,60 @@
+.app-spinner-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 60px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  @media (max-width: 767px) {
+    left: 0;
+    top: 65px;
+  }
+}
+
+.animate_loader svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 200px;
+  overflow: visible;
+}
+
+.spinner-svg {
+  margin: auto;
+  display: block;
+}
+
+@keyframes spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-rotate-reverse {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.spinner_outer {
+  animation: spinner-rotate 2.5s linear infinite;
+  transform-origin: 50px 50px;
+}
+
+.spinner_inner {
+  animation: spinner-rotate-reverse 2.5s linear infinite;
+  transform-origin: 50px 50px;
+}

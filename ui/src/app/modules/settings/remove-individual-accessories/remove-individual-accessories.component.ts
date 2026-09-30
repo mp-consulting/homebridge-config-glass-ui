@@ -1,0 +1,236 @@
+import type { CachedAccessory, Pairing } from '@/app/modules/settings/settings.interfaces'
+
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { Router } from '@angular/router'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
+
+import { AccessoryOverviewCacheService } from '@/app/core/caching/accessory-overview-cache.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { RE_CHAR_PAIRS } from '@/app/core/regex.constants'
+import { SettingsService } from '@/app/core/ui/settings.service'
+
+@Component({
+  selector: 'app-remove-individual-accessories',
+  imports: [
+    TranslatePipe,
+    FormsModule,
+  ],
+  standalone: true,
+  templateUrl: './remove-individual-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class RemoveIndividualAccessoriesComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private $activeModal = inject(NgbActiveModal)
+  private $accessoryOverview = inject(AccessoryOverviewCacheService)
+  private $api = inject(ApiService)
+  private $router = inject(Router)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private modalData = inject(REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA)
+  private scrollTimeout?: ReturnType<typeof setTimeout>
+  private destroyed = false
+
+  // Public properties for component use
+  public selectedBridge = this.modalData.selectedBridge
+  public highlightUuid = this.modalData.highlightUuid
+  public highlightCacheFile = this.modalData.highlightCacheFile
+
+  // Signals
+  public readonly pairings = signal<Pairing[]>([])
+  public readonly clicked = signal(false)
+  public readonly currentSelectedBridge = signal('')
+  public readonly selectedBridgeAccessories = signal<CachedAccessory[]>([])
+  public readonly accessoriesExist = signal(false)
+  public readonly toDelete = signal<{ cacheFile?: string, uuid: string, protocol: 'hap' | 'matter', deviceId?: string }[]>([])
+
+  // Other properties
+  private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+
+  public ngOnInit(): void {
+    this.currentSelectedBridge.set(this.selectedBridge)
+    void this.loadCachedAccessories()
+  }
+
+  public onBridgeChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value
+    this.currentSelectedBridge.set(value)
+    this.selectedBridgeAccessories.set(this.pairings().find((pairing: Pairing) => pairing._id === this.currentSelectedBridge())?.accessories || [])
+  }
+
+  public getCurrentlySelectedBridge(): string {
+    const pairing = this.pairings().find((pairing: Pairing) => pairing._id === this.currentSelectedBridge())
+    if (!pairing) {
+      return ''
+    }
+    return `${pairing.name} - ${pairing._username}`
+  }
+
+  public toggleList(uuid: string, cacheFile: string, protocol: 'hap' | 'matter', deviceId?: string): void {
+    if (this.toDelete().some(item => item.uuid === uuid && item.cacheFile === cacheFile && item.protocol === protocol)) {
+      this.toDelete.set(this.toDelete().filter(item => item.uuid !== uuid || item.cacheFile !== cacheFile || item.protocol !== protocol))
+    } else {
+      this.toDelete.update(list => [...list, { cacheFile, uuid, protocol, deviceId }])
+    }
+  }
+
+  public isInList(id: string, cacheFile: string, protocol: 'hap' | 'matter'): boolean {
+    return this.toDelete().some(item => item.uuid === id && item.cacheFile === cacheFile && item.protocol === protocol)
+  }
+
+  public shouldHighlight(uuid: string, cacheFile: string): boolean {
+    // Only highlight when there's more than one item to disambiguate from.
+    return !!this.highlightUuid
+      && this.selectedBridgeAccessories().length > 1
+      && uuid === this.highlightUuid
+      && cacheFile === this.highlightCacheFile
+  }
+
+  public async removeAccessories(): Promise<void> {
+    this.clicked.set(true)
+
+    // Separate HAP and Matter accessories
+    const hapAccessories = this.toDelete()
+      .filter(item => item.protocol === 'hap')
+      .map(item => ({ uuid: item.uuid, cacheFile: item.cacheFile }))
+
+    const matterAccessories = this.toDelete()
+      .filter(item => item.protocol === 'matter')
+      .map(item => ({ uuid: item.uuid, deviceId: item.deviceId }))
+
+    // Build requests array
+    const requests = []
+    if (hapAccessories.length > 0) {
+      requests.push(this.$api.delete('/server/cached-accessories', { body: hapAccessories }))
+    }
+    if (this.isMatterSupported && matterAccessories.length > 0) {
+      requests.push(this.$api.delete('/server/matter-accessories', { body: matterAccessories }))
+    }
+
+    // Execute all deletion requests
+    if (requests.length === 0) {
+      this.clicked.set(false)
+      return
+    }
+
+    // Use Promise.all to wait for all requests to complete
+    try {
+      await Promise.all(requests)
+      this.$accessoryOverview.invalidate()
+      this.$toastr.success(this.$translate.instant('reset.accessory_ind.done'), this.$translate.instant('toast.title_success'))
+      this.$activeModal.close()
+      void this.$router.navigate(['/restart'], {
+        queryParams: { restarting: true },
+      })
+    } catch (error) {
+      this.clicked.set(false)
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('reset.accessory_ind.fail'), this.$translate.instant('toast.title_error'))
+    }
+  }
+
+  public dismissModal(): void {
+    this.$activeModal.dismiss('Dismiss')
+  }
+
+  private async loadCachedAccessories(): Promise<void> {
+    try {
+      const { hapAccessories: cachedAccessories, matterAccessories: rawMatterAccessories, pairings }
+        = await this.$accessoryOverview.get<CachedAccessory, CachedAccessory, Pairing>()
+
+      const matterAccessories = this.isMatterSupported ? rawMatterAccessories : []
+
+      const pairingMap = new Map<string, Pairing>(pairings.map((pairing: Pairing) => [pairing._id, { ...pairing, accessories: [] as CachedAccessory[] }]))
+
+      // Process HAP accessories
+      cachedAccessories
+        .sort((a: CachedAccessory, b: CachedAccessory) => a.displayName.localeCompare(b.displayName))
+        .forEach((accessory: CachedAccessory) => {
+          const mainPairing = pairings.find((pairing: Pairing) => pairing._main)
+          const bridge = accessory.$cacheFile?.split('.')?.[1] || mainPairing!._id
+          if (!this.selectedBridge || this.selectedBridge === bridge) {
+            if (!pairingMap.has(bridge)) {
+              pairingMap.set(bridge, {
+                _id: bridge,
+                _username: bridge.match(RE_CHAR_PAIRS)!.join(':'),
+                name: this.$translate.instant('reset.accessory_ind.unknown'),
+                accessories: [],
+              })
+            }
+            accessory.$protocol = 'hap'
+            pairingMap.get(bridge)!.accessories.push(accessory)
+          }
+        })
+
+      // Process Matter accessories (only if feature is enabled)
+      if (this.isMatterSupported) {
+        matterAccessories
+          .sort((a: CachedAccessory, b: CachedAccessory) => a.displayName.localeCompare(b.displayName))
+          .forEach((accessory: CachedAccessory) => {
+            const bridge = accessory.$deviceId!
+            if (!this.selectedBridge || this.selectedBridge === bridge) {
+              if (!pairingMap.has(bridge)) {
+                pairingMap.set(bridge, {
+                  _id: bridge,
+                  _username: bridge.match(RE_CHAR_PAIRS)!.join(':'),
+                  name: this.$translate.instant('reset.accessory_ind.unknown'),
+                  accessories: [],
+                })
+              }
+              accessory.$protocol = 'matter'
+              accessory.$cacheFile = bridge // Set cacheFile for compatibility with template
+              pairingMap.get(bridge)!.accessories.push(accessory)
+            }
+          })
+      }
+
+      const pairingsList = [...pairingMap.values()]
+        .filter((pairing: Pairing) => pairing.accessories.length > 0)
+        .sort((a, b) => {
+          if (a._main && !b._main) {
+            return -1
+          }
+          if (!a._main && b._main) {
+            return 1
+          }
+          return a.name.localeCompare(b.name)
+        })
+
+      this.pairings.set(pairingsList)
+      const selectedBridgeId = this.selectedBridge || this.pairings()[0]?._id
+      if (selectedBridgeId) {
+        this.selectedBridge = selectedBridgeId
+        this.currentSelectedBridge.set(selectedBridgeId)
+        this.accessoriesExist.set(true)
+        this.selectedBridgeAccessories.set(this.pairings().find((pairing: Pairing) => pairing._id === selectedBridgeId)?.accessories || [])
+
+        // Wait for both Angular's @for render and the NgBootstrap modal fade-in (~150ms) before scrolling.
+        // ⚠️ Held so it can be cancelled. Left running, it fires 250ms after a
+        // modal that may already be gone, and scrolls whichever highlighted row
+        // it finds by then - in tests, after the DOM itself has been torn down,
+        // where it throws "document is not defined" and fails an otherwise
+        // green run on its exit code.
+        // The destroyed check matters as much as the cancel: this runs after an
+        // await, so the modal can already be gone by the time we get here and a
+        // plain clearTimeout in ngOnDestroy would have nothing to cancel yet.
+        if (!this.destroyed && this.highlightUuid && this.selectedBridgeAccessories().length > 1) {
+          this.scrollTimeout = setTimeout(() => document.querySelector('.list-group-item-highlight')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 250)
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))
+      this.$activeModal.close()
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true
+    clearTimeout(this.scrollTimeout)
+  }
+}

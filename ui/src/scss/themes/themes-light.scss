@@ -1,0 +1,386 @@
+@use 'sass:color';
+
+@mixin make-theme($name, $primary, $primary-dark) {
+  .glass-ui-#{$name} {
+    // Read by the glass layer (glass.scss) so it can tint surfaces per theme
+    --glass-primary: #{$primary};
+    --glass-primary-rgb:
+      #{color.channel($primary, 'red', $space: rgb)}, #{color.channel($primary, 'green', $space: rgb)},
+      #{color.channel($primary, 'blue', $space: rgb)};
+    --glass-primary-dark: #{$primary-dark};
+
+    pre {
+      background-color: #eaeaea;
+      color: #333333;
+      text-align: left;
+      padding: 15px !important;
+      border-radius: 10px;
+    }
+
+    .form-control::placeholder {
+      color: #cdcdcd !important;
+      opacity: 1 !important;
+    }
+
+    input[readonly] {
+      background-color: #eeeeee;
+      cursor: not-allowed;
+    }
+
+    // The plugin custom UI iframe body carries this theme class and modal-content together on one element; this paints its canvas (see the
+    // dark theme mixin for the full rationale).
+    &.modal-content {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    .sidebar {
+      background: $primary-dark;
+      color: #eeeeee;
+
+      .header {
+        background: $primary-dark;
+      }
+
+      .link-wrapper {
+        scrollbar-color: $primary transparent;
+
+        .link {
+          .link-row {
+            &:hover {
+              background: $primary;
+
+              .title {
+                color: #ffffff;
+              }
+            }
+
+            &.active {
+              i {
+                color: $primary;
+              }
+            }
+
+            &.active:hover {
+              i {
+                color: #ffffff;
+                transition: 0.3s;
+              }
+            }
+
+            .title {
+              color: #ffffff;
+              font-weight: 300;
+            }
+          }
+        }
+      }
+    }
+
+    .m-header {
+      background: $primary-dark;
+    }
+
+    .search-bar {
+      border: 0 !important;
+      background-color: #eeeeee !important;
+    }
+
+    .primary-text {
+      color: $primary;
+    }
+
+    // Brand colours, not theme accents: hap = Homebridge purple, matter = the
+    // official Matter dark navy (the brandmark has no accent colour).
+    .transport-icon.enabled {
+      .fa-hap {
+        color: #491f59;
+      }
+
+      .fa-matter {
+        color: #131926;
+      }
+    }
+
+    .grey-text,
+    .grey-text a {
+      color: #666666 !important;
+    }
+
+    .btn-primary,
+    .btn-default {
+      background-color: $primary !important;
+      border-color: $primary !important;
+
+      &:hover,
+      &:focus {
+        background-color: color.adjust($primary, $lightness: -5%) !important;
+        border-color: color.adjust($primary, $lightness: -5%) !important;
+        transition: background-color 0.25s;
+      }
+    }
+
+    .badge-primary {
+      background-color: $primary-dark !important;
+    }
+
+    .badge-beta {
+      background-color: $primary-dark !important;
+    }
+
+    a {
+      &.card-link {
+        color: #000000;
+
+        @media (hover: hover) {
+          &:hover {
+            color: $primary !important;
+          }
+        }
+      }
+    }
+
+    // Update-info widget links: keep <button class="btn btn-link card-link-title">
+    // matching the <a class="card-link card-link-title"> sibling. Bootstrap's
+    // .btn-link colour would otherwise tint the buttons (e.g. orange) while the
+    // anchor stays #000000. Mirrors the dark-mode rule in page-overrides.scss
+    // that already covers both element types via .card-link-title.
+    .card-link-title {
+      color: #000000;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .icon-button {
+      cursor: pointer;
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .icon-button-reset {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .widget-control-button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      z-index: 100;
+      padding: 5px;
+      border-radius: 3px;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+
+    .widget-toolbar-button {
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+
+    .manage-accessory-button {
+      @media (hover: hover) {
+        &:hover i {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .search-bar-clear {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .hb-uix-switch {
+      .hb-uix-slider {
+        border-color: $primary !important;
+      }
+
+      input:checked ~ .hb-uix-slider {
+        background-color: $primary !important;
+      }
+    }
+
+    .rendux-input:checked + label {
+      background: $primary-dark !important;
+    }
+
+    .qr-code-container {
+      svg {
+        fill: $primary-dark;
+      }
+    }
+
+    .qr-code-theme-color {
+      stroke: $primary-dark !important;
+    }
+
+    .hb-widget-chart-background {
+      background-color: rgba($primary-dark, 0.2);
+      display: none;
+    }
+
+    .animate_loader {
+      .spinner_outer {
+        stroke: $primary-dark;
+      }
+      .spinner_inner {
+        stroke: $primary;
+      }
+    }
+
+    .login-container {
+      background-color: $primary-dark !important;
+    }
+
+    .alert {
+      color: #000000;
+      background-color: #eeeeee;
+      border-color: #cccccc;
+
+      a {
+        color: $primary;
+      }
+    }
+
+    .alert-info {
+      border-color: $primary;
+    }
+
+    .alert-warning {
+      border-color: #ffa000;
+    }
+
+    .alert-error {
+      border-color: #d32f2f;
+    }
+
+    .plugin-icon-card {
+      width: 70px;
+      height: 70px;
+      border-radius: 15px;
+      border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .plugin-icon-small {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.125);
+      object-fit: contain;
+    }
+
+    @media (max-width: 991px) {
+      .plugin-icon-card {
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    .accordion {
+      border: 1px solid rgba(0, 0, 0, 0.125);
+      border-radius: 0.5rem;
+
+      .card-header {
+        background: #ffffff;
+      }
+    }
+
+    .accordion-header {
+      border-radius: 0.5rem;
+      --bs-card-border-radius: 0 !important;
+    }
+
+    .accordion-body {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .gradient {
+      background: linear-gradient(130deg, $primary, #4a266c, $primary-dark);
+    }
+
+    .grey-outline {
+      border: 1px solid #cccccc;
+      border-top: 0;
+      border-bottom-left-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    .plugin-modal-body {
+      .tab-content {
+        background: #efefef;
+        margin-top: 0 !important;
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #efefef;
+      }
+    }
+
+    .release-tab {
+      color: #333333 !important;
+    }
+
+    .list-group-item-highlight {
+      background-color: rgba($primary, 0.12);
+      box-shadow: inset 3px 0 0 0 $primary;
+    }
+  }
+}
+
+@include make-theme('orange', #ff9800, #ef6c00);
+@include make-theme('red', #f44336, #d32f2f);
+@include make-theme('pink', #e91e63, #c2185b);
+@include make-theme('purple', #9c27b0, #421367);
+@include make-theme('deep-purple', #673ab7, #4527a0);
+@include make-theme('indigo', #3f51b5, #303f9f);
+@include make-theme('blue', #4949af, #000070);
+@include make-theme('blue-grey', #607d8b, #455a64);
+@include make-theme('cyan', #00bcd4, #00838f);
+@include make-theme('green', #4caf50, #388e3c);
+@include make-theme('teal', #009688, #00695c);
+@include make-theme('grey', #9e9e9e, #616161);
+@include make-theme('brown', #795548, #4e342e);

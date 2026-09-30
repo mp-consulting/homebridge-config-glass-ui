@@ -1,0 +1,846 @@
+import { execSync } from 'node:child_process'
+import { constants, existsSync, readFileSync, statSync, unlinkSync } from 'node:fs'
+import { chmod, readdir, rm, writeFile } from 'node:fs/promises'
+import { userInfo } from 'node:os'
+import { dirname, join, resolve } from 'node:path'
+import process from 'node:process'
+
+import { mkdirp, pathExists, readJson, remove } from 'fs-extra/esm'
+import { gte, parse } from 'semver'
+import { osInfo } from 'systeminformation'
+
+import { getUiNodeModulesPath } from '../../core/install-paths.js'
+import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { RE_OS_USERNAME } from '../../core/regex.constants.js'
+import { BasePlatform } from '../base-platform.js'
+
+export class LinuxInstaller extends BasePlatform {
+  private get systemdServiceName() {
+    return this.hbService.serviceName.toLowerCase()
+  }
+
+  private get systemdServicePath() {
+    return resolve('/etc/systemd/system', `${this.systemdServiceName}.service`)
+  }
+
+  private get systemdEnvPath() {
+    return resolve('/etc/default', this.systemdServiceName)
+  }
+
+  private get runPartsPath() {
+    return resolve('/etc/hb-service', this.hbService.serviceName.toLowerCase(), 'prestart.d')
+  }
+
+  /**
+   * Installs the systemd service
+   */
+  public async install() {
+    this.checkForRoot()
+    await this.checkUser()
+    this.setupSudo()
+
+    await this.hbService.portCheck()
+    await this.hbService.storagePathCheck()
+    await this.hbService.configCheck()
+
+    try {
+      await this.createSystemdEnvFile()
+      await this.createSystemdService()
+      await this.createRunPartsPath()
+      await this.reloadSystemd()
+      await this.enableService()
+      await this.createFirewallRules()
+      await this.start()
+      await this.hbService.printPostInstallInstructions()
+    } catch (e) {
+      console.error(e.toString())
+      this.hbService.logger.error('ERROR: Failed Operation')
+    }
+  }
+
+  public async uninstall() {
+    this.checkForRoot()
+    await this.stop()
+
+    // Try and disable the service
+    await this.disableService()
+
+    try {
+      if (existsSync(this.systemdServicePath)) {
+        unlinkSync(this.systemdServicePath)
+      }
+      if (existsSync(this.systemdEnvPath)) {
+        unlinkSync(this.systemdEnvPath)
+      }
+
+      // Reload services
+      await this.reloadSystemd()
+
+      this.hbService.logger.success(`Removed ${this.hbService.serviceName} Service`)
+    } catch (e) {
+      console.error(e.toString())
+      this.hbService.logger.error('ERROR: Failed Operation')
+    }
+  }
+
+  /**
+   * viewLogs the systemd service
+   */
+  public async viewLogs() {
+    try {
+      const ret = execSync(`journalctl -n 50 -u ${this.systemdServiceName} --no-pager`).toString()
+
+      // eslint-disable-next-line no-console
+      console.log(ret)
+    } catch (e) {
+      this.hbService.logger.error(`Failed to start ${this.hbService.serviceName} - ${e}`)
+    }
+  }
+
+  /**
+   * Starts the systemd service
+   */
+  public async start() {
+    this.checkForRoot()
+    this.fixPermissions()
+    try {
+      this.hbService.logger.log(`Starting ${this.hbService.serviceName} Service...`)
+      execSync(`systemctl start ${this.systemdServiceName}`)
+      execSync(`systemctl status ${this.systemdServiceName} --no-pager`)
+    } catch (e) {
+      this.hbService.logger.error(`Failed to start ${this.hbService.serviceName} - ${e}`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * Stops the systemd service
+   */
+  public async stop() {
+    this.checkForRoot()
+    try {
+      this.hbService.logger.log(`Stopping ${this.hbService.serviceName} Service...`)
+      execSync(`systemctl stop ${this.systemdServiceName}`)
+      this.hbService.logger.success(`${this.hbService.serviceName} Stopped`)
+    } catch (e) {
+      this.hbService.logger.error(`Failed to stop ${this.systemdServiceName} - ${e}`)
+    }
+  }
+
+  /**
+   * Restarts the systemd service
+   */
+  public async restart() {
+    this.checkForRoot()
+    this.fixPermissions()
+    try {
+      this.hbService.logger.log(`Restarting ${this.hbService.serviceName} Service...`)
+      execSync(`systemctl restart ${this.systemdServiceName}`)
+      execSync(`systemctl status ${this.systemdServiceName} --no-pager`)
+      this.hbService.logger.success(`${this.hbService.serviceName} Restarted`)
+    } catch (e) {
+      this.hbService.logger.error(`Failed to restart ${this.hbService.serviceName} - ${e}`)
+    }
+  }
+
+  /**
+   * Code to execute before the service is started - as root
+   * Find failed npm install temporary directories and attempt to remove them
+   */
+  public async beforeStart() {
+    if (['/usr/local/lib/node_modules', '/usr/lib/node_modules'].includes(getUiNodeModulesPath())) {
+      // systemd has a 90-second default timeout in the pre-start jobs
+      // Terminate this task after 60 seconds to be safe
+      setTimeout(() => {
+        process.exit(0)
+      }, 60000)
+
+      const modulesPath = getUiNodeModulesPath()
+      const temporaryDirectoriesToClean = (await readdir(modulesPath)).filter((x) => {
+        return x.startsWith('.homebridge-')
+      })
+
+      for (const directory of temporaryDirectoriesToClean) {
+        const pathToRemove = join(modulesPath, directory)
+        try {
+          // eslint-disable-next-line no-console
+          console.log('Removing stale temporary directory:', pathToRemove)
+          await rm(pathToRemove, { recursive: true, force: true })
+        } catch (e) {
+          console.error('Failed to remove:', pathToRemove, e)
+        }
+      }
+    }
+
+    process.exit(0)
+  }
+
+  /**
+   * Rebuilds the Node.js modules for Homebridge Glass UI
+   */
+  public async rebuild(all = false) {
+    try {
+      if (this.isPackage()) {
+        // Must not run as root in package mode
+        this.checkIsNotRoot()
+      } else {
+        this.checkForRoot()
+      }
+
+      const targetNodeVersion = execSync('node -v').toString('utf8').trim()
+
+      const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
+        env: {
+          npm_config_loglevel: 'silent',
+          npm_update_notifier: 'false',
+          ...process.env,
+        },
+      }).toString('utf8')
+
+      execSync('npm rebuild', {
+        cwd: process.env.UIX_BASE_PATH,
+        stdio: 'inherit',
+      })
+      this.hbService.logger.success(`Rebuilt @mp-consulting/homebridge-config-glass-ui for Node.js ${targetNodeVersion}.`)
+
+      if (all === true) {
+        // Rebuild all global node_modules
+        try {
+          execSync('npm rebuild', {
+            cwd: npmGlobalPath,
+            stdio: 'inherit',
+          })
+          this.hbService.logger.success(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`)
+        } catch (e) {
+          this.hbService.logger.warn('Could not rebuild all plugins - check logs.')
+        }
+      }
+    } catch (e) {
+      console.error(e.toString())
+      this.hbService.logger.error('ERROR: Failed Operation')
+    }
+  }
+
+  /**
+   * Returns the users uid and gid.
+   */
+  public async getId(): Promise<{ uid: number, gid: number }> {
+    if (process.getuid() === 0 && this.hbService.asUser) {
+      const uid = execSync(`id -u ${this.hbService.asUser}`).toString('utf8')
+      const gid = execSync(`id -g ${this.hbService.asUser}`).toString('utf8')
+      return {
+        uid: Number.parseInt(uid, 10),
+        gid: Number.parseInt(gid, 10),
+      }
+    } else {
+      return {
+        uid: userInfo().uid,
+        gid: userInfo().gid,
+      }
+    }
+  }
+
+  /**
+   * Returns the pid of the process running on the defined port
+   */
+  public getPidOfPort(port: number) {
+    try {
+      if (this.hbService.docker) {
+        return execSync('pidof homebridge').toString('utf8').trim()
+      } else {
+        return execSync(`fuser ${port}/tcp 2>/dev/null`).toString('utf8').trim()
+      }
+    } catch (e) {
+      return null
+    }
+  }
+
+  /**
+   * Update Node.js
+   */
+  public async updateNodejs(job: { target: string, rebuild: boolean }) {
+    if (this.isPackage()) {
+      // Must not run as root in package mode
+      this.checkIsNotRoot()
+    } else {
+      this.checkForRoot()
+    }
+
+    // Check if trying to install Node.js 24 or greater on unsupported architecture
+    if (gte(job.target, '24.0.0')) {
+      if (!isNodeV24SupportedArchitecture()) {
+        this.hbService.logger.error(`Node.js ${job.target} is not supported on ${process.arch} architecture.`)
+        this.hbService.logger.error('Node.js v24 or greater requires a 64-bit architecture. Please use Node.js v22 instead.')
+        process.exit(1)
+      }
+    }
+
+    // Check target path
+    const targetPath = dirname(dirname(process.execPath))
+
+    if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/opt/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
+      this.hbService.logger.error(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`)
+      process.exit(1)
+    }
+
+    if (targetPath === '/usr' && await pathExists('/etc/apt/sources.list.d/nodesource.list') && !this.is32BitArm()) {
+      // Update from nodesource (not supported on 32-bit ARM architectures)
+      await this.updateNodeFromNodesource(job)
+    } else {
+      // Update from tarball
+      await this.updateNodeFromTarball(job, targetPath)
+    }
+
+    // Rebuild node modules if required
+    if (job.rebuild) {
+      this.hbService.logger.log(`Rebuilding for Node.js ${job.target}...`)
+      await this.rebuild(true)
+    }
+
+    // Restart
+    if (await pathExists(this.systemdServicePath)) {
+      await this.restart()
+    } else {
+      this.hbService.logger.warn('Please restart Homebridge for the changes to take effect.')
+    }
+  }
+
+  /**
+   * Update Homebridge via apt package manager
+   */
+  public async updateHomebridgePackage() {
+    if (process.env.HOMEBRIDGE_APT_PACKAGE !== '1') {
+      this.hbService.logger.error('ERROR: This command is only available for apt package installs.')
+      process.exit(1)
+    }
+
+    this.checkIsNotRoot()
+
+    try {
+      execSync('sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get update', {
+        stdio: 'inherit',
+      })
+
+      execSync('sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get install --only-upgrade -y homebridge', {
+        stdio: 'inherit',
+      })
+
+      this.hbService.logger.success('Homebridge apt package update complete.')
+    } catch (e) {
+      this.hbService.logger.error(`Failed to update Homebridge apt package: ${e.message}`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * NodeJS Version - Minimum GLIBC Version
+   *
+   *      18            2.28    // Official floor set here: builds moved to RHEL 8.
+   *                            // https://nodejs.org/en/blog/announcements/v18-release-announce
+   *      20            2.28    // Unchanged from 18; no dedicated migration doc, but bracketed
+   *                            // https://github.com/nodejs/node/blob/v20.x/BUILDING.md
+   *      22            2.28    // Unchanged from 20.
+   *                            // https://github.com/nodejs/node/blob/v22.x/BUILDING.md
+   *      24            2.28    // Explicitly confirmed "no change from Node.js 22."
+   *                            // Also adds a new libatomic/libatomic1 runtime dependency
+   *                            // (separate from glibc) starting at v25.
+   *                            // https://nodejs.org/en/blog/migrations/v22-to-v24
+   *      26            2.28    // Unchanged from 24.
+   *                            // https://github.com/nodejs/node/blob/v26.x/BUILDING.md
+   *
+   * Summary: the official glibc floor has been 2.28 since Node 18 and has not
+   * increased since, for any subsequent version through the current 26 dev
+   * branch. There is no 2.31 requirement documented anywhere by Node.js itself.
+   * ( I think when they launched 20 it originally had a 2.31 requirement, but that was later rolled back to 2.28. )
+   */
+
+  private async glibcVersionCheck(target: string) {
+    const glibcVersion = Number.parseFloat(execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim())
+    if (glibcVersion < 2.23) {
+      this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
+        + `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
+      process.exit(1)
+    }
+    if (gte(target, '18.0.0') && glibcVersion < 2.28) {
+      this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
+        + `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
+      process.exit(1)
+    }
+    if (gte(target, '20.0.0') && glibcVersion < 2.28) {
+      this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
+        + `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * Returns true when running on a 32-bit ARM system.
+   * NodeSource does not carry packages for 32-bit ARM architectures, so the tarball
+   * method must be used instead.
+   */
+  private is32BitArm(): boolean {
+    try {
+      const uname = execSync('uname -m').toString().trim()
+      if (uname === 'armv7l' || uname === 'armv6l') {
+        return true
+      }
+      // aarch64 kernel can run a 32-bit userspace (e.g. Raspberry Pi 4B with 32-bit OS)
+      if (uname === 'aarch64' && execSync('getconf LONG_BIT').toString().trim() === '32') {
+        return true
+      }
+    } catch (e) {
+      // If we can't determine, assume it's not 32-bit ARM
+    }
+    return false
+  }
+
+  /**
+   * Update Node.js from the tarball archives
+   */
+  private async updateNodeFromTarball(job: { target: string, rebuild: boolean }, targetPath: string) {
+    try {
+      if (process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1') {
+        // Skip glibc version check on Synology DSM
+        // We know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
+        if (gte(job.target, '18.0.0')) {
+          this.hbService.logger.error('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.')
+          process.exit(1)
+        }
+      } else {
+        await this.glibcVersionCheck(job.target)
+      }
+    } catch (e) {
+      const os = await osInfo()
+      if (os.distro === 'Alpine Linux') {
+        this.hbService.logger.error('Updating Node.js on Alpine Linux / Docker is not supported by this command.')
+        this.hbService.logger.error('To update Node.js you should pull down the latest version of the homebridge/homebridge Docker image.')
+      } else {
+        this.hbService.logger.log('Updating Node.js using this tool is not supported on your version of Linux.')
+      }
+      process.exit(1)
+    }
+
+    const uname = execSync('uname -m').toString().trim()
+
+    let downloadUrl: string
+    switch (uname) {
+      case 'x86_64':
+        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-x64.tar.gz`
+        break
+      case 'aarch64':
+        // With the latest Raspberry Pi OS upgrades, the Raspberry Pi 4B now runs the 64-bit kernel, even on the 32-bit OS
+        // https://github.com/homebridge/homebridge/issues/3349#issuecomment-1523832510
+        if (execSync('getconf LONG_BIT')?.toString()?.trim() === '32') {
+          downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`
+        } else { // + case '64':
+          downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-arm64.tar.gz`
+        }
+        break
+      case 'armv7l':
+        downloadUrl = `https://nodejs.org/dist/${job.target}/node-${job.target}-linux-armv7l.tar.gz`
+        break
+      case 'armv6l':
+        downloadUrl = `https://unofficial-builds.nodejs.org/download/release/${job.target}/node-${job.target}-linux-armv6l.tar.gz`
+        break
+      default:
+        this.hbService.logger.error(`Architecture not supported: ${process.arch}.`)
+        process.exit(1)
+    }
+
+    this.hbService.logger.log(`Target: ${targetPath}`)
+
+    try {
+      const archivePath = await this.hbService.downloadNodejs(downloadUrl)
+
+      const extractConfig = {
+        file: archivePath,
+        cwd: targetPath,
+        strip: 1,
+        preserveOwner: false,
+        unlink: true,
+      }
+
+      // Remove npm package as this can cause issues when overwritten by the node tarball
+      await this.hbService.removeNpmPackage(resolve(targetPath, 'lib', 'node_modules', 'npm'))
+
+      // Extract
+      await this.hbService.extractNodejs(job.target, extractConfig)
+
+      // Clean up
+      await remove(archivePath)
+    } catch (e) {
+      this.hbService.logger.error(`Failed to update Node.js: ${e.message}`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * Update the NodeSource repo and use it to update Node.js
+   */
+  private async updateNodeFromNodesource(job: { target: string, rebuild: boolean }) {
+    this.hbService.logger.log('Updating from NodeSource...')
+
+    try {
+      await this.glibcVersionCheck(job.target)
+      const majorVersion = parse(job.target).major
+      // Update apt (and accept release info changes)
+      execSync('apt-get update --allow-releaseinfo-change && sudo apt-get install -y ca-certificates curl gnupg', {
+        stdio: 'inherit',
+      })
+
+      // Update certificates
+      execSync('mkdir -p /etc/apt/keyrings', {
+        stdio: 'inherit',
+      })
+
+      execSync('curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor --yes -o /etc/apt/keyrings/nodes', {
+        stdio: 'inherit',
+      })
+
+      // Clean up old nodesource keyring
+      if (await pathExists('/usr/share/keyrings/nodesource.gpg')) {
+        execSync('rm -f /usr/share/keyrings/nodesource.gpg', {
+          stdio: 'inherit',
+        })
+      }
+
+      // Update repo
+      execSync(`echo "deb [signed-by=/etc/apt/keyrings/nodes] https://deb.nodesource.com/node_${majorVersion}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list`, {
+        stdio: 'inherit',
+      })
+
+      // Remove current node.js if downgrading
+      if (majorVersion < parse(process.version).major) {
+        execSync('apt-get remove -y nodejs', {
+          stdio: 'inherit',
+        })
+      }
+
+      // Update node.js
+      execSync('apt-get update && apt-get install -y nodejs', {
+        stdio: 'inherit',
+      })
+    } catch (e) {
+      this.hbService.logger.error(`Failed to update Node.js: ${e.message}`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * Reloads systemd
+   */
+  private async reloadSystemd() {
+    try {
+      execSync('systemctl daemon-reload')
+    } catch (e) {
+      this.hbService.logger.warn('WARNING: failed to run "systemctl daemon-reload"')
+    }
+  }
+
+  /**
+   * Enables systemd service for autostart
+   */
+  private async enableService() {
+    try {
+      execSync(`systemctl enable ${this.systemdServiceName} 2> /dev/null`)
+    } catch (e) {
+      this.hbService.logger.warn(`WARNING: failed to run "systemctl enable ${this.systemdServiceName}"`)
+    }
+  }
+
+  /**
+   * Enables systemd service for autostart
+   */
+  private async disableService() {
+    try {
+      execSync(`systemctl disable ${this.systemdServiceName} 2> /dev/null`)
+    } catch (e) {
+      this.hbService.logger.warn(`WARNING: failed to run "systemctl disable ${this.systemdServiceName}"`)
+    }
+  }
+
+  /**
+   * Check the command is being run as root and we can detect the user
+   */
+  private checkForRoot() {
+    if (this.isPackage()) {
+      this.hbService.logger.error('ERROR: This command is not available.')
+      process.exit(1)
+    }
+    if (process.getuid() !== 0) {
+      this.hbService.logger.error('ERROR: This command must be executed using sudo on Linux')
+      this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action}`)
+      process.exit(1)
+    }
+    if (this.hbService.action === 'install' && !this.hbService.asUser) {
+      this.hbService.logger.error('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.')
+      this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`)
+      process.exit(1)
+    }
+  }
+
+  /**
+   * Check the current user is NOT root
+   */
+  private checkIsNotRoot() {
+    if (process.getuid() === 0 && !this.hbService.allowRunRoot && process.env.HOMEBRIDGE_CONFIG_UI !== '1') {
+      this.hbService.logger.error('ERROR: This command must not be executed as root or with sudo')
+      this.hbService.logger.error('ERROR: If you know what you are doing; you can override this by adding --allow-root')
+      process.exit(1)
+    }
+  }
+
+  /**
+   * Checks the user exists
+   */
+  private async checkUser() {
+    try {
+      // Check if user exists
+      execSync(`id ${this.hbService.asUser} 2> /dev/null`)
+    } catch (e) {
+      // If not create the user
+      execSync(`useradd -m --system ${this.hbService.asUser}`)
+      this.hbService.logger.log(`Created service user: ${this.hbService.asUser}`)
+      if (this.hbService.addGroup) {
+        execSync(`usermod -a -G ${this.hbService.addGroup} ${this.hbService.asUser}`, { timeout: 10000 })
+        this.hbService.logger.log(`Added ${this.hbService.asUser} to group ${this.hbService.addGroup}`)
+      }
+    }
+
+    try {
+      // Try and add the user to commonly required groups if on Raspbian
+      const os = await osInfo()
+      if (os.distro === 'Raspbian GNU/Linux') {
+        execSync(`usermod -a -G audio,bluetooth,dialout,gpio,video ${this.hbService.asUser} 2> /dev/null`)
+        execSync(`usermod -a -G input,i2c,spi ${this.hbService.asUser} 2> /dev/null`)
+      }
+    } catch (e) {
+      // Do nothing
+    }
+  }
+
+  /**
+   * Allows the homebridge user to shut down and restart the server from the UI
+   * There is no need for full sudo access when running using hb-service
+   */
+  private setupSudo() {
+    try {
+      // Refuse to interpolate an unvalidated username into the sudoers line.
+      // A crafted `--user` value could otherwise inject a trailing entry
+      // (e.g. `foo, /bin/sh`) and grant NOPASSWD to arbitrary binaries.
+      if (!RE_OS_USERNAME.test(this.hbService.asUser)) {
+        this.hbService.logger.warn(
+          `WARNING: Refusing to write /etc/sudoers entry — invalid username "${this.hbService.asUser}".`,
+        )
+        return
+      }
+
+      const npmPath = execSync('which npm').toString('utf8').trim()
+      const shutdownPath = execSync('which shutdown').toString('utf8').trim()
+      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/bin/npm, /usr/local/bin/npm, /usr/bin/apt-get update, /usr/bin/apt-get install --only-upgrade -y homebridge`
+
+      // Check if the sudoers file already contains the entry
+      const sudoers = readFileSync('/etc/sudoers', 'utf-8')
+      if (sudoers.includes(sudoersEntry)) {
+        return
+      }
+
+      // Grant the user restricted sudo privileges to /sbin/shutdown
+      execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`)
+    } catch (e) {
+      this.hbService.logger.warn('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge Glass UI.')
+    }
+  }
+
+  /**
+   * Determines if the command is being run inside the Synology DSM SPK Package / Debian Package
+   */
+  private isPackage(): boolean {
+    return (
+      Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')
+      || Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
+    )
+  }
+
+  /**
+   * Fixes the permission on the storage path
+   */
+  private fixPermissions() {
+    if (existsSync(this.systemdServicePath) && existsSync(this.systemdEnvPath)) {
+      try {
+        // Extract the user this process is running as
+        const serviceUser = execSync(`cat "${this.systemdServicePath}" | grep "User=" | awk -F'=' '{print $2}'`)
+          .toString('utf8')
+          .trim()
+
+        // Get the storage path (we may not know it when running the start command)
+        const storagePath = execSync(`cat "${this.systemdEnvPath}" | grep "UIX_STORAGE_PATH" | awk -F'=' '{print $2}' | sed -e 's/^"//' -e 's/"$//'`)
+          .toString('utf8')
+          .trim()
+
+        if (storagePath.length > 5 && existsSync(storagePath)) {
+          // Chown the storage directory to the service user
+          execSync(`chown -R ${serviceUser}: "${storagePath}"`)
+        }
+        const mode = statSync(this.hbService.selfPath).mode
+        const execBits = constants.S_IXUSR | constants.S_IXGRP | constants.S_IXOTH
+        if ((mode & execBits) !== execBits) {
+          execSync(`chmod a+x ${this.hbService.selfPath}`)
+        }
+      } catch (e) {
+        this.hbService.logger.warn('WARNING: Failed to set permissions')
+      }
+    }
+  }
+
+  /**
+   * Opens the port in the firewall if required
+   */
+  private async createFirewallRules() {
+    // Check ufw is present on the system (debian based linux)
+    if (await pathExists('/usr/sbin/ufw')) {
+      return await this.createUfwRules()
+    }
+
+    // Check firewall-cmd is present on the system (enterprise linux)
+    if (await pathExists('/usr/bin/firewall-cmd')) {
+      return await this.createFirewallCmdRules()
+    }
+  }
+
+  /**
+   * Use ufw to create firewall rules
+   * ufw is used on ubuntu based systems
+   */
+  private async createUfwRules() {
+    try {
+      // Check the firewall is active before doing anything
+      const status = execSync('/bin/echo -n "$(ufw status)" 2> /dev/null').toString('utf8')
+      if (!status.includes('Status: active')) {
+        return
+      }
+
+      // Load the current config to get the Homebridge port
+      const currentConfig = await readJson(process.env.UIX_CONFIG_PATH)
+      const bridgePort = currentConfig.bridge?.port
+
+      // Add ui rule
+      execSync(`ufw allow ${this.hbService.uiPort}/tcp 2> /dev/null`)
+      this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`)
+
+      // Add bridge rule
+      if (bridgePort) {
+        execSync(`ufw allow ${bridgePort}/tcp 2> /dev/null`)
+        this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`)
+      }
+    } catch (e) {
+      this.hbService.logger.warn('WARNING: failed to allow ports through firewall.')
+    }
+  }
+
+  /**
+   * User firewall-cmd to create firewall rules
+   * firewall-cmd is used on enterprise / centos / fedora linux
+   */
+  private async createFirewallCmdRules() {
+    try {
+      // Check the firewall is running before doing anything
+      const status = execSync('/bin/echo -n "$(firewall-cmd --state)" 2> /dev/null').toString('utf8')
+      if (status !== 'running') {
+        return
+      }
+      // Load the current config to get the Homebridge port
+      const currentConfig = await readJson(process.env.UIX_CONFIG_PATH)
+      const bridgePort = currentConfig.bridge?.port
+
+      // Add ui rule
+      execSync(`firewall-cmd --permanent --add-port=${this.hbService.uiPort}/tcp 2> /dev/null`)
+      this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`)
+
+      // Add bridge rule
+      if (bridgePort) {
+        execSync(`firewall-cmd --permanent --add-port=${bridgePort}/tcp 2> /dev/null`)
+        this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`)
+      }
+
+      // Reload the firewall
+      execSync('firewall-cmd --reload 2> /dev/null')
+      this.hbService.logger.log('Firewall reloaded')
+    } catch (e) {
+      this.hbService.logger.warn('WARNING: failed to allow ports through firewall.')
+    }
+  }
+
+  /**
+   * Set up the run-parts path and scripts
+   * This allows users to define their own scripts to run before Homebridge starts/restarts
+   * The default script will ensure the homebridge storage path has the correct permissions each time Homebridge starts
+   */
+  private async createRunPartsPath() {
+    await mkdirp(this.runPartsPath)
+
+    const permissionScriptPath = resolve(this.runPartsPath, '10-fix-permissions')
+    const permissionScript = [
+      '#!/bin/sh',
+      '',
+      '# Ensure the storage path permissions are correct',
+      'if [ -n "$UIX_STORAGE_PATH" ] && [ -n "$USER" ]; then',
+      '  echo "Ensuring $UIX_STORAGE_PATH is owned by $USER"',
+      '  [ -d $UIX_STORAGE_PATH ] || mkdir -p $UIX_STORAGE_PATH',
+      '  chown -R $USER: $UIX_STORAGE_PATH',
+      'fi',
+    ].filter(x => x !== null).join('\n')
+
+    await writeFile(permissionScriptPath, permissionScript)
+    await chmod(permissionScriptPath, '755')
+  }
+
+  /**
+   * Create the systemd environment file
+   */
+  private async createSystemdEnvFile() {
+    const envFile = [
+      `HOMEBRIDGE_OPTS=-I -U "${this.hbService.storagePath}"`,
+      `UIX_STORAGE_PATH="${this.hbService.storagePath}"`,
+      '',
+      '# To enable web terminals via @mp-consulting/homebridge-config-glass-ui uncomment the following line',
+      'HOMEBRIDGE_CONFIG_UI_TERMINAL=1',
+      '',
+      'DISABLE_OPENCOLLECTIVE=true',
+    ].filter(x => x !== null).join('\n')
+
+    await writeFile(this.systemdEnvPath, envFile)
+  }
+
+  /**
+   * Create the systemd service file
+   */
+  private async createSystemdService() {
+    const serviceFile = [
+      '[Unit]',
+      `Description=${this.hbService.serviceName}`,
+      'Wants=network-online.target',
+      'After=syslog.target network-online.target',
+      '',
+      '[Service]',
+      'Type=simple',
+      `User=${this.hbService.asUser}`,
+      'PermissionsStartOnly=true',
+      `WorkingDirectory=${this.hbService.storagePath}`,
+      `EnvironmentFile=/etc/default/${this.systemdServiceName}`,
+      `ExecStartPre=-/bin/run-parts ${this.runPartsPath}`,
+      `ExecStartPre=-${this.hbService.selfPath} before-start $HOMEBRIDGE_OPTS`,
+      `ExecStart=${this.hbService.selfPath} run $HOMEBRIDGE_OPTS`,
+      'Restart=always',
+      'RestartSec=3',
+      'KillMode=process',
+      'CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_AUDIT_WRITE CAP_SYS_ADMIN',
+      'AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE',
+      '',
+      '[Install]',
+      'WantedBy=multi-user.target',
+    ].filter(x => x !== null).join('\n')
+
+    await writeFile(this.systemdServicePath, serviceFile)
+  }
+}

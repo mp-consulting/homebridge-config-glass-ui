@@ -1,0 +1,245 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import { resolve } from 'node:path'
+import process from 'node:process'
+
+import { ValidationPipe } from '@nestjs/common'
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, readFile, readJson, remove, writeFile } from 'fs-extra'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { HbServiceModule } from '../../src/modules/platform-tools/hb-service/hb-service.module.js'
+import { testStoragePath } from '../storage-path.js'
+
+describe('PlatformToolsHbService (e2e)', () => {
+  let app: NestFastifyApplication
+
+  let authFilePath: string
+  let secretsFilePath: string
+  let envFilePath: string
+  let logFilePath: string
+  let authorization: string
+  let configService: ConfigService
+
+  beforeAll(async () => {
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
+    process.env.UIX_STORAGE_PATH = testStoragePath
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
+
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')
+    envFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-hb-service-homebridge-startup.json')
+    logFilePath = resolve(process.env.UIX_STORAGE_PATH, 'homebridge.log')
+
+    // Setup test config
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // Setup test auth file
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath)
+
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [HbServiceModule, AuthModule],
+    }).compile()
+
+    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
+
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true,
+      skipMissingProperties: true,
+    }))
+
+    await app.init()
+    await app.getHttpAdapter().getInstance().ready()
+
+    configService = app.get(ConfigService)
+  })
+
+  beforeEach(async () => {
+    // Restore hb-service env file
+    await copy(resolve(__dirname, '../mocks', '.uix-hb-service-homebridge-startup.json'), envFilePath)
+
+    // Ensure restart required flag is cleared
+    configService.hbServiceUiRestartRequired = false
+
+    configService.ui.log = {
+      method: 'file',
+      path: logFilePath,
+    }
+    // Log in once per file - every login runs a 210,000-iteration PBKDF2 hash
+    authorization ??= `bearer ${(await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })).json().access_token}`
+  })
+
+  it('GET /platform-tools/hb-service/homebridge-startup-settings (env file exists)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('GET /platform-tools/hb-service/homebridge-startup-settings (env file does not exist)', async () => {
+    await remove(envFilePath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('PUT /platform-tools/hb-service/homebridge-startup-settings', async () => {
+    const payload = {
+      HOMEBRIDGE_DEBUG: true,
+      HOMEBRIDGE_KEEP_ORPHANS: true,
+      HOMEBRIDGE_INSECURE: false,
+      ENV_DEBUG: '*',
+      ENV_NODE_OPTIONS: '--inspect',
+    }
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/homebridge-startup-settings',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const envFile = await readJson(envFilePath)
+    expect(envFile.debugMode).toBe(true)
+    expect(envFile.keepOrphans).toBe(true)
+    expect(envFile.insecureMode).toBe(false)
+    expect(envFile.env.DEBUG).toBe('*')
+    expect(envFile.env.NODE_OPTIONS).toBe('--inspect')
+
+    // The restart flag should be set
+    expect(configService.hbServiceUiRestartRequired).toBe(true)
+  })
+
+  it('PUT /platform-tools/hb-service/set-full-service-restart-flag', async () => {
+    // Sanity check
+    expect(configService.hbServiceUiRestartRequired).toBe(false)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/set-full-service-restart-flag',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(configService.hbServiceUiRestartRequired).toBe(true)
+  })
+
+  it('GET /platform-tools/hb-service/log/download', async () => {
+    // Write some data to the log file
+    const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n')
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=no',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toEqual(sampleLogData)
+  })
+
+  it('GET /platform-tools/hb-service/log/download (colour=no strips ANSI codes)', async () => {
+    const sampleLogData = '\u001B[0;32mgreen text\u001B[0m and \u001B[0;31mred text\u001B[0m'
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=no',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).not.toContain('\u001B[')
+    expect(res.body).toContain('green text')
+    expect(res.body).toContain('red text')
+  })
+
+  it('GET /platform-tools/hb-service/log/download (colour=yes preserves ANSI codes)', async () => {
+    const sampleLogData = '\u001B[0;32mgreen text\u001B[0m'
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=yes',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toContain('\u001B[0;32m')
+  })
+
+  it('GET /platform-tools/hb-service/log/download (with colour)', async () => {
+    // Write some data to the log file
+    const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n')
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=yes',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toEqual(sampleLogData)
+  })
+
+  it('PUT /platform-tools/hb-service/log/truncate', async () => {
+    // Write some data to the log file
+    const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n')
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/log/truncate',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(await readFile(logFilePath, 'utf8')).toBe('')
+  })
+
+  afterAll(async () => {
+    await app.close()
+  })
+})

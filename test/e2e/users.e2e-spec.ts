@@ -1,0 +1,513 @@
+import type { NestFastifyApplication } from '@nestjs/platform-fastify'
+import type { TestingModule } from '@nestjs/testing'
+
+import type { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from '../../src/modules/users/users.dto.js'
+
+import { resolve } from 'node:path'
+import process from 'node:process'
+
+import { ValidationPipe } from '@nestjs/common'
+import { FastifyAdapter } from '@nestjs/platform-fastify'
+import { Test } from '@nestjs/testing'
+import { copy, readJson, writeJson } from 'fs-extra'
+import { generate } from 'otplib'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+
+import { UsersModule } from '../../src/modules/users/users.module.js'
+import { testStoragePath } from '../storage-path.js'
+
+describe('UsersController (e2e)', () => {
+  let app: NestFastifyApplication
+
+  let authFilePath: string
+  let secretsFilePath: string
+  let authorization: string
+
+  beforeAll(async () => {
+    process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
+    process.env.UIX_STORAGE_PATH = testStoragePath
+    process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
+
+    authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
+    secretsFilePath = resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')
+
+    // Setup test config
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // Setup test auth file
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
+    await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath)
+
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [UsersModule],
+    }).compile()
+
+    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
+
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true,
+      skipMissingProperties: true,
+    }))
+
+    await app.init()
+    await app.getHttpAdapter().getInstance().ready()
+  })
+
+  beforeEach(async () => {
+    // Get auth token before each test
+    authorization = `bearer ${(await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })).json().access_token}`
+  })
+
+  afterEach(async () => {
+    // Restore auth.json after each test
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
+  })
+
+  it('GET /users (with auth token)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/users',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveLength(1)
+  })
+
+  it('GET /users (without auth token)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/users',
+    })
+
+    expect(res.statusCode).toBe(401)
+  })
+
+  it('POST /users', async () => {
+    const payload: UserDto = {
+      name: 'Tester',
+      username: 'test',
+      password: 'test',
+      admin: false,
+    }
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+
+    expect(res.json()).toEqual({
+      id: 2,
+      name: 'Tester',
+      username: 'test',
+      admin: false,
+      otpActive: false,
+      otpLegacySecret: false,
+    })
+
+    // check the user was saved to the auth.json file
+    expect(await readJson(authFilePath)).toHaveLength(2)
+  })
+
+  it('PATCH /users/:userId', async () => {
+    const payload: UserDto = {
+      name: 'New Name',
+      username: 'admin',
+      admin: true,
+    }
+
+    const res = await app.inject({
+      method: 'PATCH',
+      path: '/users/1',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    expect(res.json()).toEqual({
+      id: 1,
+      name: 'New Name',
+      username: 'admin',
+      admin: true,
+      otpActive: false,
+      otpLegacySecret: false,
+    })
+
+    expect((await readJson(authFilePath))[0].name).toBe('New Name')
+  })
+
+  it('PATCH /users/:userId (change username)', async () => {
+    const payload: UserDto = {
+      name: 'New Name',
+      username: 'newUsername',
+      admin: true,
+    }
+
+    const res = await app.inject({
+      method: 'PATCH',
+      path: '/users/1',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    expect(res.json()).toEqual({
+      id: 1,
+      name: 'New Name',
+      username: 'newUsername',
+      admin: true,
+      otpActive: false,
+      otpLegacySecret: false,
+    })
+
+    expect((await readJson(authFilePath))[0].name).toBe('New Name')
+    expect((await readJson(authFilePath))[0].username).toBe('newUsername')
+  })
+
+  it('PATCH /users/:userId (change username - conflict)', async () => {
+    const payload: UserDto = {
+      name: 'Tester',
+      username: 'test',
+      password: 'test',
+      admin: false,
+    }
+
+    // create a new user
+    const newUser: UserDto = (await app.inject({
+      method: 'POST',
+      path: '/users',
+      headers: {
+        authorization,
+      },
+      payload,
+    })).json()
+
+    const res = await app.inject({
+      method: 'PATCH',
+      path: `/users/${newUser.id}`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'admin',
+        username: 'admin', // try change to the existing username
+      },
+    })
+
+    expect(res.statusCode).toBe(409)
+    expect(res.json().message).toContain('already exists')
+  })
+
+  it('DELETE /users/:userId', async () => {
+    const payload: UserDto = {
+      name: 'Tester',
+      username: 'test',
+      password: 'test',
+      admin: false,
+    }
+
+    // create a new user
+    const newUser: UserDto = (await app.inject({
+      method: 'POST',
+      path: '/users',
+      headers: {
+        authorization,
+      },
+      payload,
+    })).json()
+
+    // check the user was saved to the auth.json file as a sanity check
+    expect(await readJson(authFilePath)).toHaveLength(2)
+
+    // Delete the user
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/users/${newUser.id}`,
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // check the user was deleted from the auth.json file
+    expect(await readJson(authFilePath)).toHaveLength(1)
+  })
+
+  it('DELETE /users/:userId (do not allow deletion of only admin)', async () => {
+    // create a new non-admin user
+    const payload: UserDto = {
+      name: 'Tester',
+      username: 'test',
+      password: 'test',
+      admin: false,
+    }
+
+    await app.inject({
+      method: 'POST',
+      path: '/users',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    // check the user was saved to the auth.json file as a sanity check
+    expect(await readJson(authFilePath)).toHaveLength(2)
+
+    // Delete user #1 (admin)
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/users/1',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json().message).toContain('Cannot delete only admin user')
+  })
+
+  it('PATCH /users/:userId (do not allow demotion of only admin)', async () => {
+    // Regression: deleteUser refused to remove the only admin, but updateUser
+    // would happily demote them - leaving nobody able to manage users, and
+    // with auth 'none' no admin to mint tokens for at all.
+    const res = await app.inject({
+      method: 'PATCH',
+      path: '/users/1',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'Administrator',
+        username: 'admin',
+        admin: false,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json().message).toContain('Cannot remove admin from only admin user')
+
+    // the stored record must still be an admin
+    const authfile = await readJson(authFilePath)
+    expect(authfile.find(x => x.id === 1).admin).toBe(true)
+  })
+
+  it('POST /users/change-password', async () => {
+    const payload: UserUpdatePasswordDto = {
+      currentPassword: 'admin',
+      newPassword: 'newpassword',
+    }
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users/change-password',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+
+    // check the new password works
+    const testLoginWithNewPassword = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'newpassword',
+      },
+    })
+
+    expect(testLoginWithNewPassword.statusCode).toBe(201)
+
+    // check the old password is rejected
+    const testLoginWithOldPassword = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })
+
+    expect(testLoginWithOldPassword.statusCode).toBe(403)
+  })
+
+  it('POST /users/otp/setup', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users/otp/setup',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json()).toHaveProperty('otpauth')
+
+    const authFile: UserDto[] = await readJson(authFilePath)
+    expect(authFile[0].otpSecret).toBeTruthy()
+    expect(authFile[0].otpActive).toBeFalsy()
+  })
+
+  it('POST /users/otp/activate', async () => {
+    // Prepare the user for activation
+    await app.inject({
+      method: 'POST',
+      path: '/users/otp/setup',
+      headers: {
+        authorization,
+      },
+    })
+
+    let authFile: UserDto[] = await readJson(authFilePath)
+    const otpSecret = authFile[0].otpSecret
+    const code = await generate({ secret: otpSecret })
+    const payload: UserActivateOtpDto = {
+      code,
+    }
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users/otp/activate',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+
+    // check otp was activated
+    authFile = await readJson(authFilePath)
+    expect(authFile[0].otpActive).toBe(true)
+
+    // check logins now prompt for otp
+    const testLoginWithoutOtp = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })
+
+    expect(testLoginWithoutOtp.statusCode).toBe(412)
+    expect(testLoginWithoutOtp.json().message).toBe('2FA Code Required')
+
+    // Generate an otp to test a login with
+    const otp = await generate({ secret: otpSecret })
+
+    // check logins pass with valid otp
+    const testLoginWithOtp = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+        otp,
+      },
+    })
+
+    expect(testLoginWithOtp.statusCode).toBe(201)
+
+    // check subsequent logins with the same otp token are rejected
+    const testLoginWithOtpReplay = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+        otp,
+      },
+    })
+
+    expect(testLoginWithOtpReplay.statusCode).toBe(412)
+    expect(testLoginWithoutOtp.json().message).toBe('2FA Code Required')
+  })
+
+  it('POST /users/otp/deactivate (valid password)', async () => {
+    let authFile: UserDto[] = await readJson(authFilePath)
+
+    authFile[0].otpActive = true
+    authFile[0].otpSecret = 'blah'
+
+    await writeJson(authFilePath, authFile)
+
+    const payload: UserDeactivateOtpDto = {
+      password: 'admin',
+    }
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users/otp/deactivate',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+
+    authFile = await readJson(authFilePath)
+    expect(authFile[0].otpActive).toBeFalsy()
+    expect(authFile[0]).not.toHaveProperty('otpSecret')
+  })
+
+  it('POST /users/otp/deactivate (invalid password)', async () => {
+    let authFile: UserDto[] = await readJson(authFilePath)
+
+    authFile[0].otpActive = true
+    authFile[0].otpSecret = 'blah'
+
+    await writeJson(authFilePath, authFile)
+
+    const payload: UserDeactivateOtpDto = {
+      password: 'not-the-password',
+    }
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users/otp/deactivate',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(403)
+
+    authFile = await readJson(authFilePath)
+    expect(authFile[0].otpActive).toBe(true)
+    expect(authFile[0].otpSecret).toBeTruthy()
+  })
+
+  afterAll(async () => {
+    await app.close()
+  })
+})

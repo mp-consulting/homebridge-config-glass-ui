@@ -1,0 +1,152 @@
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
+import { TranslateService } from '@ngx-translate/core'
+import { EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
+import { ToastrService } from 'ngx-toastr'
+
+import { ApiService } from '@/app/core/communication/api.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
+import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
+
+@Component({
+  selector: 'app-startup-script',
+  imports: [
+    EditorComponent,
+    FormsModule,
+  ],
+  standalone: true,
+  templateUrl: './startup-script.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class StartupScriptComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
+  private $md = inject(MobileDetectService)
+  private $route = inject(ActivatedRoute)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
+  // Other properties
+  private lastHeight!: number
+  private visualViewPortEventCallback!: () => void
+  public options: any = { printMargin: false }
+  public monacoEditor: any
+  public editorOptions: any
+  public monacoEditorModel!: NgxEditorModel
+
+  // Signals
+  public readonly startupScript = signal<string>('')
+  public readonly saveInProgress = signal(false)
+  public readonly isMobile = signal(false)
+
+  constructor() {
+    this.isMobile.set(!!this.$md.detect.mobile())
+  }
+
+  public ngOnInit() {
+    this.editorOptions = {
+      language: 'shell',
+      theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
+    }
+
+    // Capture viewport events
+    this.visualViewPortEventCallback = () => this.visualViewPortChanged()
+    this.lastHeight = window.innerHeight
+
+    if (window.visualViewport && !this.isMobile()) {
+      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true)
+      this.$md.disableTouchMove()
+    }
+
+    this.$route.data.subscribe((data) => {
+      this.startupScript.set(data.startupScript.script)
+    })
+
+    // Set up the base monaco editor model
+    this.monacoEditorModel = {
+      value: '',
+      language: 'shell',
+    }
+  }
+
+  /**
+   * Called when the monaco editor is ready
+   */
+  public onEditorInit(editor: any): void {
+    this.monacoEditor = editor
+    this.monacoEditor.getModel().setValue(this.startupScript())
+  }
+
+  public async onSave(): Promise<void> {
+    if (this.saveInProgress()) {
+      return
+    }
+
+    this.saveInProgress.set(true)
+
+    // Get the value from the editor
+    if (!this.isMobile()) {
+      await this.monacoEditor.getAction('editor.action.formatDocument').run()
+      this.startupScript.set(this.monacoEditor.getModel().getValue())
+    }
+
+    const script = this.startupScript()
+
+    // Check startup script is using the correct hashbang
+    if (!['#!/bin/sh', '#!/bin/bash'].includes(script.split('\n')[0].trim())) {
+      this.$toastr.error(this.$translate.instant('platform.docker.must_use_hashbang'), this.$translate.instant('toast.title_error'))
+      const updatedScript = `#!/bin/sh\n\n${script}`
+      this.startupScript.set(updatedScript)
+
+      if (!this.isMobile()) {
+        this.monacoEditor.getModel().setValue(updatedScript)
+      }
+      this.saveInProgress.set(false)
+      return
+    }
+
+    try {
+      await this.$api.put('/platform-tools/docker/startup-script', { script })
+      this.$toastr.success(
+        this.$translate.instant('platform.docker.restart_required'),
+        this.$translate.instant('platform.docker.script_saved'),
+      )
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+    }
+
+    this.saveInProgress.set(false)
+  }
+
+  public ngOnDestroy() {
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true)
+      this.$md.enableTouchMove()
+    }
+
+    if (this.monacoEditor) {
+      this.monacoEditor.dispose()
+    }
+  }
+
+  private visualViewPortChanged() {
+    if (this.lastHeight < window.visualViewport!.height) {
+      (document.activeElement as HTMLElement).blur()
+    }
+
+    if (window.visualViewport!.height < window.innerHeight) {
+      // Keyboard may have opened
+      this.$md.enableTouchMove()
+      this.lastHeight = window.visualViewport!.height
+    } else if (window.visualViewport!.height === window.innerHeight) {
+      // Keyboard is closed
+      this.$md.disableTouchMove()
+      this.lastHeight = window.visualViewport!.height
+    }
+  }
+}

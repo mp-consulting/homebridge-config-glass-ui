@@ -1,0 +1,66 @@
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'information-modal-title'">
+  <div class="modal-header">
+    <h5 class="modal-title" id="information-modal-title">{{ title }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body text-center">
+    @if (faIconClass) {
+      <i aria-hidden="true" [class]="`fas ${faIconClass} mb-3 icon-xl`"></i>
+    }
+    @if (subtitle) {
+      <h5 class="mb-3" [innerHTML]="subtitle"></h5>
+    }
+    <p class="mb-0" [innerHTML]="message"></p>
+    @if (markdownMessage2) {
+      <div class="alert p-3 mt-3">
+        <markdown class="plugin-md" [data]="markdownMessage2" />
+      </div>
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      @if (ctaButtonLink) {
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-center">
+      @if (!ctaButtonLink) {
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-end">
+      @if (ctaButtonLink) {
+        <a
+          class="btn btn-primary text-decoration-none"
+          target="_blank"
+          rel="noopener noreferrer"
+          [href]="ctaButtonLink"
+        >
+          {{ ctaButtonLabel }} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+        </a>
+      }
+    </div>
+  </div>
+</div>

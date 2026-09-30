@@ -1,0 +1,16 @@
+{
+  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Nom",
+        "type": "string",
+        "required": true,
+        "default": "Exemple de plateforme dynamique"
+      }
+    }
+  }
+}

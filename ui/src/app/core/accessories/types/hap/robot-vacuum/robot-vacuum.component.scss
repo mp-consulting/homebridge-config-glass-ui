@@ -1,0 +1,11 @@
+.motion-lines {
+  display: none;
+}
+
+.accessory-on {
+  svg {
+    .motion-lines {
+      display: inline !important;
+    }
+  }
+}

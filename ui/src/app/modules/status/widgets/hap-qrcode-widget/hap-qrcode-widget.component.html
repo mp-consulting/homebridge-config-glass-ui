@@ -1,0 +1,64 @@
+<div class="pairing-card d-flex flex-column w-100 h-100">
+  <div class="pairing-card-header drag-handler d-flex align-items-center justify-content-between">
+    <span class="pairing-card-title">
+      <i class="fas fa-hap" aria-hidden="true"></i>
+      {{ 'status.widget.hap_title' | translate }}
+    </span>
+    @if (enabled() && !externalsOnly() && pin()) {
+      <span class="pairing-status-pill" [class.is-paired]="paired()">
+        <span class="pairing-status-dot" aria-hidden="true"></span>
+        {{ (paired() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
+      </span>
+    }
+  </div>
+
+  <div #qrcodecontainer class="d-flex flex-column flex-grow-1 w-100 min-h-0">
+    <div
+      class="pairing-qr-area d-flex align-items-center justify-content-center w-100"
+      [class.flex-grow-1]="!setupUri()"
+      [style.height.px]="setupUri() ? qrCodeHeight() : null"
+    >
+      @if (setupUri()) {
+        <div class="pairing-qr-tile" [style.width.px]="qrCodeWidth()" [style.height.px]="qrCodeWidth()">
+          <app-qrcode [data]="setupUri()!" />
+        </div>
+      } @else {
+        <div class="pairing-qr-placeholder text-center">
+          @if (loading()) {
+            <i class="fas fa-circle-notch fa-spin fa-2xl" aria-hidden="true"></i>
+          } @else if (externalsOnly()) {
+            <!-- HAP externalsOnly: the bridge itself isn't published, only external accessories -->
+            <i class="fas fa-hap fa-2xl text-info" aria-hidden="true"></i>
+            <p class="mt-3 mb-0 small">{{ 'status.services.hap_externals_only' | translate }}</p>
+          } @else if (!enabled()) {
+            <i class="fas fa-hap fa-2xl" aria-hidden="true"></i>
+            <p class="mt-3 mb-0 small">{{ 'status.services.hap_not_enabled' | translate }}</p>
+          } @else {
+            <i class="fas fa-qrcode fa-2xl" aria-hidden="true"></i>
+            <p class="mt-3 mb-0 small">{{ 'status.widget.pairing_waiting' | translate }}</p>
+          }
+        </div>
+      }
+    </div>
+
+    <div #pincode class="pairing-pin-area text-center w-100 mt-auto gridster-item-content">
+      @if (pin()) {
+        <div class="pairing-pin-row d-flex align-items-center justify-content-center">
+          <span class="pairing-pin font-monospace">{{ pin() }}</span>
+          <button
+            type="button"
+            class="pairing-pin-copy"
+            [attr.aria-label]="(pinCopied() ? 'common.a11y.copied' : 'status.widget.pairing_copy_code') | translate"
+            [title]="(pinCopied() ? 'common.a11y.copied' : 'status.widget.pairing_copy_code') | translate"
+            (click)="copyPin()"
+          >
+            <i aria-hidden="true" [class]="pinCopied() ? 'fas fa-check' : 'far fa-copy'"></i>
+          </button>
+        </div>
+        @if (!paired()) {
+          <p class="pairing-hint mb-0">{{ 'status.code_scan' | translate }}</p>
+        }
+      }
+    </div>
+  </div>
+</div>

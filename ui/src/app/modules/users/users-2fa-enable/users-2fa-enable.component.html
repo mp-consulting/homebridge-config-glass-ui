@@ -1,0 +1,120 @@
+<div class="modal-content setup2fa">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'users.setup_2fa' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center mb-3">
+      <i class="fas fa-key primary-text icon-xl" aria-hidden="true"></i>
+    </div>
+    <ul class="mb-3">
+      <li>{{ 'users.setup_2fa_warning' | translate }}</li>
+      @if (!timeDiffError()) {
+        <li>{{ 'users.setup_2fa_scan_qr_code' | translate }}</li>
+      }
+    </ul>
+    @if (timeDiffError()) {
+      <ngb-alert type="error" class="mb-0" [dismissible]="false">
+        <p class="fw-bold mb-1">{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</p>
+        <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: { timeDiffError: timeDiffError() } }}</p>
+      </ngb-alert>
+    } @else {
+      <ul class="list-group list-group-box mb-0">
+        <li class="list-group-item text-center">
+          <div class="text-center w-100 d-flex justify-content-center my-2">
+            <app-qrcode class="mx-auto qrcode-size" [data]="otpString()!" />
+          </div>
+          @if (otpSecret()) {
+            <div class="grey-text small mt-0 mb-1">
+              {{ 'users.setup_2fa_scan_qr_manual' | translate }}<br />
+              {{ otpSecret() }}
+              <button
+                type="button"
+                class="btn btn-link p-0 ms-1 text-primary align-baseline"
+                [attr.aria-label]="'common.a11y.copy_to_clipboard' | translate"
+                (click)="copySecretToClipboard()"
+              >
+                @if (secretCopied()) {
+                  <i class="fas fa-check green-text" aria-hidden="true"></i>
+                } @else {
+                  <i class="fas fa-copy" aria-hidden="true"></i>
+                }
+              </button>
+              @if (secretCopied()) {
+                <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+                  {{ 'common.a11y.copied' | translate }}
+                </span>
+              }
+            </div>
+          }
+        </li>
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label for="enable-2fa-code" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'users.setup_2fa_enter_code' | translate }}<app-required-indicator />
+          </label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <input
+              id="enable-2fa-code"
+              type="text"
+              class="form-control custom-input"
+              placeholder="eg. 123456"
+              autocomplete="one-time-code"
+              autocapitalize="none"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              [class.is-invalid]="formGroup.controls.code.touched && formGroup.controls.code.invalid"
+              [formControl]="formGroup.controls.code"
+            />
+          </div>
+        </li>
+      </ul>
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      @if (!timeDiffError()) {
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-center">
+      @if (timeDiffError()) {
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-end">
+      @if (!timeDiffError()) {
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          [disabled]="formGroup.invalid"
+          (click)="enable2fa()"
+        >
+          {{ 'form.button_continue' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

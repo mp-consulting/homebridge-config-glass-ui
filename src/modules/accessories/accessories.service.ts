@@ -1,0 +1,1027 @@
+import type { ServiceType } from '@homebridge/hap-client'
+import type { Socket } from 'socket.io'
+
+import type { AccessoryControlMessage } from './accessories.interfaces.js'
+
+import { join } from 'node:path'
+
+import { HapClient } from '@homebridge/hap-client'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { mkdirp, pathExists, readJson } from 'fs-extra/esm'
+import NodeCache from 'node-cache'
+
+import { isWsClientAuthorized } from '../../core/auth/guards/ws-auth.js'
+import { ConfigService } from '../../core/config/config.service.js'
+import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import {
+  MatterAccessoriesResponse,
+  MatterAccessory,
+  MatterAccessoryInfo,
+  MatterAccessoryPart,
+  MatterControlResponse,
+  MatterEvent,
+  MatterService,
+  MatterStateUpdate,
+} from '../../core/matter/matter.interfaces.js'
+
+@Injectable()
+export class AccessoriesService {
+  public hapClient: HapClient
+  public accessoriesCache = new NodeCache({ stdTTL: 0 })
+
+  // Matter monitoring state
+  private matterMonitoringActive = false
+  private matterUpdateListener: ((event: MatterEvent) => void) | null = null
+  // Cached promise for the one-shot Matter monitoring start. Concurrent
+  // first-client connects all await the same promise so we only ever send
+  // one startMatterMonitoring IPC per UI process lifetime. Cleared on
+  // failure so a subsequent client can retry.
+  private matterMonitoringStartPromise: Promise<void> | null = null
+  // Cached promise for the single shared HAP characteristic monitor. Each call
+  // to hapClient.monitorCharacteristics() FINISHES the previous monitor before
+  // creating a new one, so the pre-fix per-client monitor meant a second
+  // browser tab silently froze live updates in the first. Cleared on failure
+  // so a later client can retry.
+  private hapMonitorPromise: Promise<Awaited<ReturnType<HapClient['monitorCharacteristics']>>> | null = null
+  private activeClients = new Set<Socket>()
+  // Per-socket reload entry point. Lets a repeat `get-accessories` for an
+  // already-connected socket re-fetch data instead of stacking a second set
+  // of listeners/timers on top of the live session.
+  private clientSessions = new Map<Socket, { reload: () => Promise<void> }>()
+  private matterAccessories: MatterService[] = []
+  // Single shared dispatcher for `matterEvent` IPC replies. Each in-flight
+  // request stores `{ eventType, resolve, reject, timer }` keyed by its
+  // correlation id; the dispatcher routes incoming events to the right
+  // waiter instead of every request registering its own listener.
+  private matterRequests = new Map<string, { eventType: string, resolve: (v: any) => void, reject: (e: Error) => void, timer: ReturnType<typeof setTimeout> }>()
+  private matterDispatcherInstalled = false
+
+  constructor(
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
+  ) {
+    if (this.configService.homebridgeInsecureMode) {
+      this.hapClient = new HapClient({
+        pin: this.configService.homebridgeConfig.bridge.pin,
+        pins: this.getChildBridgePins(),
+        logger: this.logger,
+        config: this.configService.ui.accessoryControl || {},
+      })
+    }
+
+    // Core loses its Matter monitoring switch whenever the Homebridge process
+    // restarts, while this process's one-shot (see
+    // ensureMatterMonitoringStarted) still believes monitoring is armed — so
+    // external (e.g. Matter controller) changes silently stop reaching the
+    // accessories page until the UI itself restarts (#3993). Track the
+    // process lifecycle instead: reset the one-shot when Homebridge goes
+    // down, and re-arm as soon as it is back up while viewers are still
+    // connected.
+    this.homebridgeIpcService.on('serverStatusUpdate', this.onServerStatusUpdate)
+  }
+
+  /**
+   * The pin for each child bridge that sets its own, keyed by username.
+   *
+   * ⚠️ Even in insecure mode a bridge checks the `Authorization` header against
+   * ITS OWN pincode, so sending the main bridge's pin to every instance only
+   * works while every child bridge inherits it. A child bridge with a `pin` in
+   * its `_bridge` block answered 470, was dropped during discovery, and its
+   * accessories silently never appeared on the Accessories page (#2936).
+   *
+   * Bridges without their own pin are left out, so hap-client falls back to the
+   * main bridge pin for them.
+   */
+  private getChildBridgePins(): Record<string, string> {
+    const config = this.configService.homebridgeConfig
+    const blocks = [
+      ...(Array.isArray(config?.platforms) ? config.platforms : []),
+      ...(Array.isArray(config?.accessories) ? config.accessories : []),
+    ]
+
+    const pins: Record<string, string> = {}
+    for (const block of blocks) {
+      const bridge = block?._bridge
+      if (bridge?.username && bridge?.pin) {
+        pins[bridge.username] = bridge.pin
+      }
+    }
+    return pins
+  }
+
+  /**
+   * Connects the client to the homebridge service
+   * @param client
+   */
+  public async connect(client: Socket) {
+    if (!this.configService.homebridgeInsecureMode) {
+      this.logger.error('Homebridge must be running in insecure mode to control accessories.')
+      return
+    }
+
+    // If this socket already has a live session, reload its data instead of
+    // wiring up a second set of listeners/timers. A client that re-emits
+    // `get-accessories` (e.g. a reconnect the server didn't observe as a
+    // disconnect) would otherwise stack handlers on the shared hapClient and
+    // characteristic monitor, multiplying the work done per update.
+    // `activeClients` membership is the synchronous guard: it is set below
+    // before the first `await`, so a racing repeat `get-accessories` still
+    // short-circuits here.
+    if (this.activeClients.has(client)) {
+      await this.clientSessions.get(client)?.reload()
+      return
+    }
+
+    // Track this client (synchronous — closes the race in the guard above)
+    this.activeClients.add(client)
+
+    let services: (ServiceType | MatterService)[] = []
+    // Closure-scoped abort flag. `onEnd` flips this when the client
+    // disconnects so any in-flight `loadAllAccessories` / control
+    // requests can short-circuit at the next `await` boundary instead of
+    // burning IPC + HAP work whose result has nowhere to go.
+    let disconnected = false
+    // Assigned once setup gets past its awaits - null until then, so `onEnd`
+    // only tears down what was actually wired up.
+    let monitor: Awaited<ReturnType<HapClient['monitorCharacteristics']>> | null = null
+    let secondaryLoadTimeout: ReturnType<typeof setTimeout> | null = null
+
+    const updateHandler = (data: ServiceType | MatterService) => {
+      client.emit('accessories-data', data)
+    }
+
+    const instanceUpdateHandler = async () => {
+      client.emit('accessories-reload-required', services)
+    }
+
+    // Clean up on disconnect. Registered before the first `await` below: a
+    // client that disconnects (or a setup step that rejects) mid-setup would
+    // otherwise never run it, leaking the socket in `activeClients`, its
+    // session, and the listeners/timer attached once setup completes.
+    const onEnd = () => {
+      disconnected = true
+      if (secondaryLoadTimeout) {
+        clearTimeout(secondaryLoadTimeout)
+        secondaryLoadTimeout = null
+      }
+      this.clientSessions.delete(client)
+      client.removeAllListeners('end')
+      client.removeAllListeners('disconnect')
+      client.removeAllListeners('accessory-control')
+      // Only detach THIS client's listener. The monitor is shared by every
+      // connected client, so removing all listeners or finishing it here
+      // would silence live updates for everyone else (the same reasoning as
+      // the Matter monitoring note below - it stays up for the lifetime of
+      // the UI process, and hap-client refreshes its connections itself as
+      // instances come and go).
+      monitor?.removeListener('service-update', updateHandler)
+      this.hapClient.removeListener('instance-discovered', instanceUpdateHandler)
+
+      // Remove client from active clients
+      this.activeClients.delete(client)
+
+      // Intentionally do NOT stop Matter monitoring on the last client
+      // disconnect. The pre-fix behaviour started monitoring on first connect
+      // and stopped on last disconnect, so every page reload cycled core's
+      // Matter state and re-raced its init on the next start — producing
+      // 'Matter monitoring not active' spam. Keep monitoring active for the
+      // lifetime of the UI process; core's matterMonitoringClients counter
+      // stays at >0 and the start-up race only ever happens once.
+    }
+
+    client.on('disconnect', onEnd)
+    client.on('end', onEnd)
+
+    const loadAllAccessories = async (refresh: boolean) => {
+      if (disconnected) {
+        return
+      }
+      if (!refresh) {
+        const cached = this.accessoriesCache.get<(ServiceType | MatterService)[]>('services')
+        if (cached && cached.length) {
+          client.emit('accessories-data', cached)
+        }
+      }
+
+      // Load HAP accessories first. getAllServices() already returns every
+      // characteristic's current value, so no per-service refresh is needed.
+      const hapServices = await this.loadAccessories()
+      if (disconnected) {
+        return
+      }
+
+      // Emit HAP ready immediately so HAP accessories can be controlled
+      client.emit('hap-accessories-ready-for-control')
+      client.emit('accessories-data', hapServices)
+
+      // Load Matter accessories (maybe slower due to IPC)
+      const matterServices = await this.loadMatterAccessories()
+      if (disconnected) {
+        return
+      }
+
+      // Emit Matter ready
+      client.emit('matter-accessories-ready-for-control')
+      if (matterServices.length > 0) {
+        client.emit('accessories-data', matterServices)
+      }
+
+      // Merge both for caching and legacy compatibility
+      services = [...hapServices, ...matterServices]
+      this.accessoriesCache.set('services', services)
+    }
+
+    // Expose this session's reload so a repeat `get-accessories` for this same
+    // socket re-fetches in place rather than re-registering listeners.
+    this.clientSessions.set(client, { reload: () => loadAllAccessories(true) })
+
+    try {
+      // Ensure Matter monitoring is started (idempotent — one-shot per UI
+      // process lifetime, shared across concurrent connects). Every client
+      // awaits the same promise so loadMatterAccessories can rely on core's
+      // monitoring being active by the time it runs, regardless of how many
+      // clients have connected before.
+      await this.ensureMatterMonitoringStarted()
+
+      // Initial load
+      await loadAllAccessories(false)
+
+      monitor = await this.ensureHapMonitor()
+    } catch (e) {
+      onEnd()
+      throw e
+    }
+
+    // The client left while setup was in flight - `onEnd` already ran, so
+    // wiring anything up now would leak it
+    if (disconnected) {
+      return
+    }
+
+    // Handling incoming requests. The handler must never reject: socket.io
+    // does not await listeners, there is no global unhandledRejection handler,
+    // and Node's default response to an unhandled rejection is to exit - so a
+    // single malformed `accessory-control` payload would take the whole UI
+    // process down.
+    const requestHandler = async (msg?: AccessoryControlMessage) => {
+      if (!msg || typeof msg !== 'object') {
+        return
+      }
+      // This listener outlives the guarded 'get-accessories' message, so a
+      // deleted user must not keep controlling accessories on an open socket
+      if (!await isWsClientAuthorized(client, { admin: false })) {
+        return
+      }
+      if (msg.refresh) {
+        // Reload all accessories (typically triggered by Matter accessory changes)
+        await loadAllAccessories(true)
+      } else if (msg.set) {
+        // Check if this is a Matter accessory
+        if (msg.set.uniqueId && msg.set.uniqueId.startsWith('matter:')) {
+          if (msg.set.cluster && msg.set.attributes) {
+            await this.handleMatterControl(client, {
+              uniqueId: msg.set.uniqueId,
+              cluster: msg.set.cluster,
+              attributes: msg.set.attributes,
+            })
+          }
+        } else {
+          // HAP accessory (existing logic)
+          const service = services.find(x => x.uniqueId === msg.set.uniqueId)
+          if (service && 'serviceCharacteristics' in service) {
+            try {
+              await service.setCharacteristic(msg.set.iid, msg.set.value)
+
+              // Re-read the touched service shortly afterwards so its cached
+              // values catch up with any side effects of this write. Only this
+              // service: a full reload plus a GET per service on every tap is
+              // heavy on a Pi, and live changes elsewhere still arrive through
+              // the shared characteristic monitor.
+              setTimeout(() => {
+                if (disconnected) {
+                  return
+                }
+                service.refreshCharacteristics().catch((error) => {
+                  this.logger.error(`Failed to refresh characteristics for service ${service.uniqueId}: ${error.message}`)
+                })
+              }, 1500)
+            } catch (e) {
+              client.emit('accessory-control-failure', e.message)
+            }
+          }
+        }
+      }
+    }
+    client.on('accessory-control', (msg?: AccessoryControlMessage) => {
+      requestHandler(msg).catch((e) => {
+        this.logger.error(`Failed to handle accessory control request as ${e.message}.`)
+        client.emit('accessory-control-failure', e.message)
+      })
+    })
+
+    monitor.on('service-update', updateHandler)
+    this.hapClient.on('instance-discovered', instanceUpdateHandler)
+
+    // Load a second time in case anything was missed
+    secondaryLoadTimeout = setTimeout(async () => {
+      secondaryLoadTimeout = null
+      await loadAllAccessories(true)
+    }, 3000)
+
+    // Send a refresh instances request
+    this.hapClient.refreshInstances()
+  }
+
+  /**
+   * Create (once) and share the HAP characteristic monitor across every
+   * connected client. Concurrent first connects await the same promise so
+   * monitorCharacteristics() is only ever called once per UI process - each
+   * call finishes the previous monitor, which is exactly the bug this
+   * prevents.
+   */
+  private async ensureHapMonitor(): Promise<Awaited<ReturnType<HapClient['monitorCharacteristics']>>> {
+    if (!this.hapMonitorPromise) {
+      const attempt = this.hapClient.monitorCharacteristics().catch((e) => {
+        if (this.hapMonitorPromise === attempt) {
+          this.hapMonitorPromise = null
+        }
+        throw e
+      })
+      this.hapMonitorPromise = attempt
+    }
+    return this.hapMonitorPromise
+  }
+
+  /**
+   * Load all the accessories from Homebridge
+   */
+  public async loadAccessories(): Promise<ServiceType[]> {
+    if (!this.configService.homebridgeInsecureMode) {
+      throw new BadRequestException('Homebridge must be running in insecure mode to access accessories.')
+    }
+
+    try {
+      return await this.hapClient.getAllServices()
+    } catch (e) {
+      if (e.response?.status === 401) {
+        this.logger.warn('Homebridge must be running in insecure mode to view and control accessories from this plugin.')
+      } else {
+        this.logger.error(`Failed to load accessories from Homebridge as ${e.message}.`)
+      }
+      return []
+    }
+  }
+
+  /**
+   * Get a single accessory and refresh its characteristics
+   * @param uniqueId
+   */
+  public async getAccessory(uniqueId: string) {
+    // Check if this is a Matter accessory
+    if (uniqueId.startsWith('matter:')) {
+      return this.getMatterAccessory(uniqueId)
+    }
+
+    // HAP accessory (existing logic)
+    const services = await this.loadAccessories()
+    const service = services.find(x => x.uniqueId === uniqueId)
+
+    if (!service) {
+      throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`)
+    }
+
+    try {
+      await service.refreshCharacteristics()
+      return service
+    } catch (e) {
+      throw new BadRequestException(e.message)
+    }
+  }
+
+  /**
+   * Get a single Matter accessory with detailed info
+   * @param uniqueId
+   */
+  private async getMatterAccessory(uniqueId: string): Promise<MatterService> {
+    try {
+      const { uuid, partId } = this.parseMatterUniqueId(uniqueId)
+
+      // Request detailed info via IPC using unified Matter event channel
+      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfo', (correlationId) => {
+        this.homebridgeIpcService.sendMessage('getMatterAccessoryInfo', { uuid, correlationId })
+      })
+
+      if (response.error) {
+        throw new BadRequestException(response.error)
+      }
+
+      // If asking for a part, find it
+      if (partId) {
+        const part = response.parts?.find((p: MatterAccessoryPart) => p.id === partId)
+        if (part) {
+          return this.transformMatterAccessory(response, part)
+        }
+        throw new BadRequestException(`Part '${partId}' not found in accessory`)
+      }
+
+      return this.transformMatterAccessory(response)
+    } catch (error) {
+      this.logger.error(`Failed to get Matter accessory info for ${uniqueId}:`, error)
+      throw new BadRequestException(error.message || 'Failed to get Matter accessory info')
+    }
+  }
+
+  /**
+   * Set a characteristics value
+   * @param uniqueId
+   * @param characteristicType
+   * @param value
+   */
+  public async setAccessoryCharacteristic(uniqueId: string, characteristicType: string, value: number | boolean | string) {
+    const services = await this.loadAccessories()
+    const service = services.find(x => x.uniqueId === uniqueId)
+
+    if (!service) {
+      throw new BadRequestException(`Service with uniqueId of '${uniqueId}' not found.`)
+    }
+
+    const characteristic = service.getCharacteristic(characteristicType)
+
+    if (!characteristic || !characteristic.canWrite) {
+      const types = service.serviceCharacteristics.filter(x => x.canWrite).map(x => `'${x.type}'`).join(', ')
+      throw new BadRequestException(`Invalid characteristicType. Valid types are: ${types}.`)
+    }
+
+    // Integers
+    if (['uint8', 'uint16', 'uint32', 'uint64'].includes(characteristic.format)) {
+      value = Number.parseInt(value as string, 10)
+      // NaN slips through both range checks below (every comparison against
+      // NaN is false), so a non-numeric value would be sent on to Homebridge
+      if (Number.isNaN(value)) {
+        throw new BadRequestException('Invalid value. The value must be a number.')
+      }
+      if (characteristic.minValue !== undefined && value < characteristic.minValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`)
+      }
+      if (characteristic.maxValue !== undefined && value > characteristic.maxValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`)
+      }
+    }
+
+    // Floats
+    if (characteristic.format === 'float') {
+      value = Number.parseFloat(value as string)
+      if (Number.isNaN(value)) {
+        throw new BadRequestException('Invalid value. The value must be a number.')
+      }
+      if (characteristic.minValue !== undefined && value < characteristic.minValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`)
+      }
+      if (characteristic.maxValue !== undefined && value > characteristic.maxValue) {
+        throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`)
+      }
+    }
+
+    // Booleans
+    if (characteristic.format === 'bool') {
+      if (typeof value === 'string') {
+        if (['true', '1'].includes(value.toLowerCase())) {
+          value = true
+        } else if (['false', '0'].includes(value.toLowerCase())) {
+          value = false
+        }
+      } else if (typeof value === 'number') {
+        value = value === 1
+      }
+
+      if (typeof value !== 'boolean') {
+        throw new BadRequestException('Invalid value. The value must be a boolean (true or false).')
+      }
+    }
+
+    try {
+      await characteristic.setValue(value)
+      await service.refreshCharacteristics()
+      return service
+    } catch (e) {
+      throw new BadRequestException(e.message)
+    }
+  }
+
+  /**
+   * Get the accessory layout
+   */
+  public async getAccessoryLayout(username: string) {
+    try {
+      const accessoryLayout = await readJson(this.configService.accessoryLayoutPath)
+      if (username in accessoryLayout) {
+        return accessoryLayout[username]
+      } else {
+        throw new Error('User not in Accessory Layout')
+      }
+    } catch (e) {
+      return [
+        {
+          name: 'Default Room',
+          isDefault: true,
+          services: [],
+        },
+      ]
+    }
+  }
+
+  /**
+   * Saves the accessory layout
+   * @param user
+   * @param layout
+   */
+  public async saveAccessoryLayout(user: string, layout: Record<string, unknown>) {
+    // Ensure the accessories dir exists for the first-ever save before
+    // we acquire the file lock — pathExists/mkdirp don't touch the
+    // accessory-layout.json itself.
+    if (!await pathExists(join(this.configService.storagePath, 'accessories'))) {
+      await mkdirp(join(this.configService.storagePath, 'accessories'))
+    }
+
+    // Per-path mutex on accessory-layout.json so two near-simultaneous
+    // save-layout socket events don't both read the same baseline and
+    // drop one user's update on top of the other's.
+    await this.jsonStore.mutate<Record<string, unknown>>(
+      this.configService.accessoryLayoutPath,
+      (current) => {
+        const accessoryLayout = current ?? {}
+        accessoryLayout[user] = layout
+        return accessoryLayout
+      },
+    )
+    this.logger.log(`Accessory layout changes saved for ${user}.`)
+    return layout
+  }
+
+  /**
+   * Reset the instance pool and do a full scan for Homebridge instances
+   */
+  public resetInstancePool() {
+    if (this.configService.homebridgeInsecureMode) {
+      this.hapClient.resetInstancePool()
+    }
+  }
+
+  /**
+   * Parse a Matter uniqueId into its components
+   */
+  private parseMatterUniqueId(uniqueId: string): { uuid: string, partId?: string } {
+    const parts = uniqueId.replace('matter:', '').split(':')
+    return {
+      uuid: parts[0],
+      partId: parts[1],
+    }
+  }
+
+  /**
+   * Build a Matter uniqueId from components
+   */
+  private buildMatterUniqueId(uuid: string, partId?: string): string {
+    return partId ? `matter:${uuid}:${partId}` : `matter:${uuid}`
+  }
+
+  /**
+   * Wait for a specific Matter event type
+   * Matter events use a unified 'matterEvent' channel with different types.
+   * Uses a correlationId to avoid cross-talk between concurrent requests.
+   * Retries once on timeout (10s per attempt).
+   */
+  private async waitForMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void): Promise<T> {
+    try {
+      return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+    } catch {
+      this.logger.warn(`Matter IPC request '${eventType}' timed out, retrying...`)
+      try {
+        return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+      } catch (retryError) {
+        this.logger.error(`Matter IPC request '${eventType}' failed after retry`)
+        throw retryError
+      }
+    }
+  }
+
+  /**
+   * Single attempt to wait for a Matter event with the given timeout.
+   * Each request gets a correlation id and parks `{ resolve, reject }` in
+   * `matterRequests`; the shared dispatcher (installed on first use)
+   * routes incoming `matterEvent`s to the right waiter. Pre-fix this
+   * registered a fresh listener per request, so N concurrent requests
+   * meant N listeners and each emit did O(N) work.
+   */
+  private async attemptMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void, timeoutMs: number): Promise<T> {
+    this.ensureMatterDispatcher()
+    const correlationId = `${eventType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        if (this.matterRequests.delete(correlationId)) {
+          reject(new Error('The Homebridge service did not respond'))
+        }
+      }, timeoutMs)
+
+      this.matterRequests.set(correlationId, {
+        eventType,
+        resolve,
+        reject,
+        timer,
+      })
+
+      try {
+        sendRequest(correlationId)
+      } catch (e) {
+        if (this.matterRequests.delete(correlationId)) {
+          clearTimeout(timer)
+          reject(e)
+        }
+      }
+    })
+  }
+
+  /**
+   * Install the single `matterEvent` listener on first use. Routes each
+   * incoming event to the waiter parked under its correlation id.
+   * Events whose correlation id is unknown (or whose `eventType` doesn't
+   * match the parked request's expectation) are dropped — matches the
+   * pre-fix per-listener filter behaviour.
+   */
+  private ensureMatterDispatcher(): void {
+    if (this.matterDispatcherInstalled) {
+      return
+    }
+    this.matterDispatcherInstalled = true
+    this.homebridgeIpcService.on('matterEvent', (event: MatterEvent) => {
+      if (!event?.correlationId) {
+        return
+      }
+      const waiter = this.matterRequests.get(event.correlationId)
+      if (!waiter) {
+        return
+      }
+      if (event.type !== waiter.eventType) {
+        return
+      }
+      this.matterRequests.delete(event.correlationId)
+      clearTimeout(waiter.timer)
+      waiter.resolve(event.data)
+    })
+  }
+
+  /**
+   * Follow the Homebridge process lifecycle (statuses come from core's
+   * ServerStatus enum: 'pending' / 'ok' / 'down'). A restarted core comes
+   * back with Matter monitoring off, so the one-shot must be cleared on
+   * 'down' and re-armed on 'ok' — but only while sockets are connected;
+   * with nobody watching, the next client connect re-arms it as normal.
+   */
+  private readonly onServerStatusUpdate = (data: { status?: string }): void => {
+    if (data?.status === 'down') {
+      this.resetMatterMonitoringState()
+    } else if (data?.status === 'ok' && this.activeClients.size > 0 && !this.matterMonitoringStartPromise) {
+      this.rearmMatterMonitoring()
+    }
+  }
+
+  /**
+   * Forget that Matter monitoring was ever started, so the next
+   * ensureMatterMonitoringStarted call sends a fresh enable to core. The
+   * update listener comes off the IPC bus too — re-arming installs a new
+   * one, and leaving the old one attached would double up every event.
+   */
+  private resetMatterMonitoringState(): void {
+    if (this.matterUpdateListener) {
+      this.homebridgeIpcService.removeListener('matterEvent', this.matterUpdateListener)
+      this.matterUpdateListener = null
+    }
+    this.matterMonitoringActive = false
+    this.matterMonitoringStartPromise = null
+  }
+
+  /**
+   * Re-arm Matter monitoring for the viewers already connected, then have
+   * them re-fetch — the restarted core rebuilt its Matter state from
+   * scratch, so this process's cached cluster values can't be trusted.
+   */
+  private rearmMatterMonitoring(): void {
+    this.ensureMatterMonitoringStarted()
+      .then(() => {
+        // False when the start returned early (Matter unsupported or not
+        // enabled) — nothing to reload in that case.
+        if (!this.matterMonitoringActive) {
+          return
+        }
+        for (const client of this.activeClients) {
+          client.emit('matter-accessories-reload-required')
+        }
+      })
+      .catch((error) => {
+        this.logger.warn(`Failed to re-arm Matter monitoring after Homebridge restart: ${error.message}`)
+      })
+  }
+
+  /**
+   * Idempotently start Matter monitoring for the lifetime of this UI process.
+   *
+   * The actual start is one-shot: concurrent first-client connects all share
+   * the same cached promise so we only send one `startMatterMonitoring` IPC
+   * regardless of how many sockets arrive. If the start fails the cached
+   * promise is cleared so a later client connect can retry — a transient
+   * core-side hiccup shouldn't leave Matter monitoring permanently inactive
+   * until the UI process restarts.
+   */
+  private async ensureMatterMonitoringStarted(): Promise<void> {
+    if (this.matterMonitoringActive) {
+      return
+    }
+    if (!this.matterMonitoringStartPromise) {
+      const attempt = this.startMatterMonitoring().catch((error) => {
+        this.logger.error('Failed to start Matter monitoring:', error)
+        if (this.matterMonitoringStartPromise === attempt) {
+          this.matterMonitoringStartPromise = null
+        }
+      })
+      this.matterMonitoringStartPromise = attempt
+    }
+    return this.matterMonitoringStartPromise
+  }
+
+  /**
+   * Start Matter monitoring via IPC.
+   *
+   * Gates the first `getMatterAccessories` on core's `monitoringStarted` ack
+   * so we don't race core's Matter init (which would log
+   * 'Matter monitoring not active'). The ack arrives via the shared
+   * matterEvent dispatcher, which only routes events that echo back the
+   * request's correlationId — so the wait is feature-flagged: against an
+   * older Homebridge that doesn't echo, we fall back to flipping the active
+   * flag synchronously (the pre-ack behaviour) rather than hanging on a
+   * reply that will never be delivered.
+   */
+  private async startMatterMonitoring(): Promise<void> {
+    // Skip if the running Homebridge version pre-dates Matter, or if the user
+    // hasn't turned Matter on for any bridge. Without the latter check we'd
+    // still fire startMatterMonitoring + getMatterAccessories every time the
+    // accessories tab loads, producing timeout/retry/failed log spam.
+    const featureFlags = this.configService.getFeatureFlags()
+    if (!featureFlags.matterSupport || !this.configService.isMatterEnabled()) {
+      return
+    }
+
+    this.logger.debug('Starting Matter accessory monitoring')
+
+    // Install the matter event listener BEFORE sending the start request so
+    // we don't miss any server-pushed accessoryUpdate/Added/Removed events
+    // that core may emit immediately after monitoring becomes active. The
+    // correlation-id dispatcher (which handles request/response events like
+    // accessoriesData and the monitoring acks) is installed lazily by
+    // waitForMatterEvent and runs alongside this listener on the same channel.
+    const listener: (event: MatterEvent) => void = (event) => {
+      switch (event.type) {
+        case 'accessoryUpdate':
+          this.handleMatterStateUpdate(event.data)
+          break
+
+        case 'accessoryAdded':
+        case 'accessoryRemoved':
+          this.logger.debug(`Matter accessory ${event.type}: ${event.data.uuid} - triggering reload`)
+          // Trigger a reload of only Matter accessories for all connected clients
+          for (const client of this.activeClients) {
+            client.emit('matter-accessories-reload-required')
+          }
+          break
+      }
+    }
+    this.matterUpdateListener = listener
+    this.homebridgeIpcService.on('matterEvent', listener)
+
+    try {
+      if (featureFlags.matterMonitoringAck) {
+        // Send with a correlationId and await core's ack before flipping the
+        // flag — this is what closes the startup race.
+        await this.waitForMatterEvent('monitoringStarted', (correlationId) => {
+          this.homebridgeIpcService.sendMessage('startMatterMonitoring', { correlationId })
+        })
+      } else {
+        // Older Homebridge doesn't echo correlationId on the ack, so the
+        // dispatcher would drop it. Fall back to fire-and-forget and accept
+        // the small startup-race window the ack would otherwise close.
+        this.homebridgeIpcService.sendMessage('startMatterMonitoring')
+      }
+
+      this.matterMonitoringActive = true
+      this.logger.debug('Matter monitoring started successfully')
+    } catch (error) {
+      // Tear the listener back down so a retry from ensureMatterMonitoringStarted
+      // doesn't end up with two listeners attached for accessory updates.
+      this.homebridgeIpcService.removeListener('matterEvent', listener)
+      if (this.matterUpdateListener === listener) {
+        this.matterUpdateListener = null
+      }
+      throw error
+    }
+  }
+
+  /**
+   * Load Matter accessories via IPC
+   */
+  private async loadMatterAccessories(): Promise<MatterService[]> {
+    const featureFlags = this.configService.getFeatureFlags()
+    if (!featureFlags.matterSupport || !this.configService.isMatterEnabled()) {
+      return []
+    }
+
+    if (!this.matterMonitoringActive) {
+      this.logger.warn('Matter monitoring not active, skipping accessory load')
+      return []
+    }
+
+    try {
+      // Request Matter accessories via IPC using unified Matter event channel
+      const response = await this.waitForMatterEvent<MatterAccessoriesResponse>('accessoriesData', (correlationId) => {
+        this.homebridgeIpcService.sendMessage('getMatterAccessories', { correlationId })
+      })
+
+      if (response.error) {
+        throw new Error(response.error)
+      }
+
+      const accessories = response.accessories || []
+      this.logger.debug(`Loaded ${accessories.length} Matter accessories from IPC`)
+
+      // Transform to unified format with protocol marker
+      const matterServices = accessories.flatMap((accessory: MatterAccessory) => {
+        const services: MatterService[] = []
+
+        // Main accessory
+        services.push({
+          ...this.transformMatterAccessory(accessory),
+          protocol: 'matter',
+        })
+
+        // Parts (composed devices)
+        if (accessory.parts) {
+          for (const part of accessory.parts) {
+            services.push({
+              ...this.transformMatterAccessory(accessory, part),
+              protocol: 'matter',
+            })
+          }
+        }
+
+        return services
+      })
+
+      this.logger.debug(`Transformed ${matterServices.length} Matter services (including parts)`)
+
+      // Apply instanceBlacklist filtering to Matter accessories
+      const blacklist = this.configService.ui.accessoryControl?.instanceBlacklist || []
+      const filteredServices = blacklist.length > 0
+        ? matterServices.filter((s) => {
+            if (blacklist.some(b => s.instance.username.toLowerCase() === b.toLowerCase())) {
+              this.logger.debug(`Matter accessory '${s.displayName}' filtered by instanceBlacklist (bridge: ${s.instance.username})`)
+              return false
+            }
+            return true
+          })
+        : matterServices
+
+      this.logger.debug(`${filteredServices.length} Matter services after blacklist filtering`)
+      this.matterAccessories = filteredServices
+      return filteredServices
+    } catch (error) {
+      this.logger.warn('Failed to load Matter accessories:', error)
+      return []
+    }
+  }
+
+  /**
+   * Transform Matter accessory to unified service format
+   */
+  private transformMatterAccessory(accessory: MatterAccessory, part?: MatterAccessoryPart): MatterService {
+    const targetClusters = part?.clusters || accessory.clusters
+    const displayName = part
+      ? `${accessory.displayName} - ${part.displayName}`
+      : accessory.displayName
+    const uniqueId = this.buildMatterUniqueId(accessory.uuid, part?.id)
+
+    const deviceType = part?.deviceType || accessory.deviceType
+
+    // Verify bridge.username is set for layout caching
+    const bridgeUsername = accessory.bridge?.username || 'unknown'
+    if (bridgeUsername === 'unknown') {
+      this.logger.warn(`Matter accessory '${displayName}' (${uniqueId}) has no bridge.username - layout may not persist correctly`)
+    }
+
+    return {
+      uniqueId,
+      uuid: accessory.uuid,
+      serviceName: displayName,
+      displayName,
+      deviceType,
+      clusters: targetClusters,
+      partId: part?.id,
+      protocol: 'matter',
+      instance: {
+        name: accessory.bridge?.name || 'Matter Bridge',
+        username: bridgeUsername,
+      },
+      accessoryInformation: {
+        'Name': displayName,
+        'Manufacturer': accessory.manufacturer || 'Unknown',
+        'Model': accessory.model || deviceType,
+        'Serial Number': accessory.serialNumber || accessory.uuid,
+        'Firmware Revision': accessory.firmwareRevision || '1.0.0',
+      },
+      // Additional Matter info
+      bridge: accessory.bridge,
+      plugin: accessory.plugin,
+      platform: accessory.platform,
+      commissioned: accessory.commissioned,
+      fabricCount: accessory.fabricCount,
+      fabrics: accessory.fabrics,
+      // Aid/iid placeholders (not used for Matter but required by some UI code)
+      aid: 0,
+      iid: 0,
+    }
+  }
+
+  /**
+   * Handle Matter state updates from IPC
+   */
+  private handleMatterStateUpdate(data: MatterStateUpdate): void {
+    const uniqueId = this.buildMatterUniqueId(data.uuid, data.partId)
+
+    const service = this.matterAccessories.find(s => s.uniqueId === uniqueId)
+    if (!service) {
+      return
+    }
+
+    // Update cluster state
+    service.clusters[data.cluster] = {
+      ...service.clusters[data.cluster],
+      ...data.state,
+    }
+
+    // Notify all connected clients
+    for (const client of this.activeClients) {
+      client.emit('accessories-data', [service])
+    }
+  }
+
+  /**
+   * Handle Matter accessory control commands
+   */
+  private async handleMatterControl(client: Socket, control: {
+    uniqueId: string
+    cluster: string
+    attributes: Record<string, unknown>
+  }): Promise<void> {
+    try {
+      const { uuid, partId } = this.parseMatterUniqueId(control.uniqueId)
+
+      // Find the accessory in the cache to get the bridge username
+      const accessory = this.matterAccessories.find(acc => acc.uuid === uuid)
+      const bridgeUsername = accessory?.bridge?.username
+
+      // Send control command via IPC using unified Matter event channel
+      const response = await this.waitForMatterEvent<MatterControlResponse>('accessoryControlResponse', (correlationId) => {
+        this.homebridgeIpcService.sendMessage('matterAccessoryControl', {
+          uuid,
+          cluster: control.cluster,
+          attributes: control.attributes,
+          bridgeUsername,
+          partId,
+          correlationId,
+        })
+      })
+
+      if (!response.success) {
+        client.emit('accessory-control-failure', response.error || 'Matter control failed')
+        return
+      }
+
+      // Update local cluster state and notify all clients, mirroring handleMatterStateUpdate
+      if (accessory?.clusters?.[control.cluster]) {
+        accessory.clusters[control.cluster] = {
+          ...accessory.clusters[control.cluster],
+          ...control.attributes,
+        }
+
+        for (const c of this.activeClients) {
+          c.emit('accessories-data', [accessory])
+        }
+      }
+    } catch (error) {
+      this.logger.error('Matter control failed:', error)
+      client.emit('accessory-control-failure', error.message || 'Matter control failed')
+    }
+  }
+}

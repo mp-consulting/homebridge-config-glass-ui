@@ -1,0 +1,506 @@
+import type { ITerminalOptions } from '@xterm/xterm'
+
+import { inject, Injectable, OnDestroy, signal } from '@angular/core'
+import { Title } from '@angular/platform-browser'
+import { TranslateService } from '@ngx-translate/core'
+import dayjs from 'dayjs'
+import { ActiveToast, ToastrService } from 'ngx-toastr'
+import { Subject } from 'rxjs'
+import { first, takeUntil } from 'rxjs/operators'
+
+import { ApiService } from '@/app/core/communication/api.service'
+import { RestartToastComponent } from '@/app/core/components/restart-toast/restart-toast.component'
+import { AppSettingsInterface, EnvInterface } from '@/app/core/settings.interfaces'
+
+@Injectable({
+  providedIn: 'root',
+})
+export class SettingsService implements OnDestroy {
+  private $api = inject(ApiService)
+  private $title = inject(Title)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private settingsLoadedSubject = new Subject()
+  private readonly defaultTheme = 'deep-purple'
+  private forbiddenKeys = ['__proto__', 'constructor', 'prototype']
+  private serverTimeToastCleanup$ = new Subject<void>()
+  private destroyed = false
+
+  // Back off to a steady five seconds: a server that is restarting is usually
+  // back within a few seconds, and one that is not should not be hammered.
+  private static readonly RETRY_DELAYS_MS = [1000, 2000, 5000]
+
+  public restartToastRef: ActiveToast<any> | null = null
+  public terminalSettingsChanged = new Subject<{ fontSize?: number, fontWeight?: string, lightingMode?: 'light' | 'dark' }>()
+
+  public env: EnvInterface = {} as EnvInterface
+  public host!: string
+  public proxyHost!: string
+  public formAuth = true
+  public sessionTimeout = 28800
+  public sessionTimeoutInactivityBased = false
+  public uiVersion!: string
+  public theme!: string
+  public lightingMode!: 'auto' | 'light' | 'dark'
+  public currentLightingMode!: 'auto' | 'light' | 'dark'
+  public actualLightingMode!: 'light' | 'dark'
+  public browserLightingMode!: 'light' | 'dark'
+  public glassMode = true
+  public menuMode!: 'default' | 'freeze'
+  public keepOrphans!: boolean
+  public wallpaper!: string
+  public serverTimeOffset = 0
+  public rtl = false // set true if current translation is RLT
+  public browserLang!: string // set by the browser language
+  public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
+  public settingsLoaded = false
+
+  /**
+   * Set while the very first settings load is failing and being retried, so the
+   * app can show that it is waiting rather than nothing at all. Only the initial
+   * load touches this - once the settings are in, it is never set again.
+   */
+  public readonly serverUnreachable = signal(false)
+  public readonly themeList = [
+    'orange',
+    'red',
+    'pink',
+    'purple',
+    'deep-purple',
+    'indigo',
+    'blue',
+    'blue-grey',
+    'cyan',
+    'green',
+    'teal',
+    'grey',
+    'brown',
+  ]
+
+  constructor() {
+    void this.loadAppSettingsWithRetry()
+  }
+
+  public ngOnDestroy(): void {
+    this.destroyed = true
+  }
+
+  /**
+   * The first settings load, retried until it lands.
+   *
+   * Nothing in the app can render until it does: every route guard, the layout
+   * and the login page all wait on `onSettingsLoaded`, which is a Subject that
+   * only ever emits on success. A single failed request therefore used to leave
+   * the app on a blank page for ever - no error, no retry, and no route
+   * activated to render one.
+   *
+   * That is not an unlikely case. Refreshing the page while the UI restarts
+   * after updating itself hits it every time, and the only way out was another
+   * refresh once the server happened to be back.
+   */
+  private async loadAppSettingsWithRetry(): Promise<void> {
+    for (let attempt = 0; !this.destroyed; attempt++) {
+      try {
+        await this.getAppSettings()
+        this.serverUnreachable.set(false)
+        return
+      } catch (error) {
+        // Only the first one: this retries for as long as the server is away,
+        // and a line every five seconds would bury whatever else is in there.
+        if (attempt === 0) {
+          console.error('Could not load the app settings, retrying until the server answers...', error)
+        }
+        this.serverUnreachable.set(true)
+        const delay = SettingsService.RETRY_DELAYS_MS[Math.min(attempt, SettingsService.RETRY_DELAYS_MS.length - 1)]
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
+  }
+
+  public async getAppSettings() {
+    const data = await this.$api.get('/auth/settings') as AppSettingsInterface
+    this.formAuth = data.formAuth
+    this.sessionTimeout = data.sessionTimeout
+    this.sessionTimeoutInactivityBased = data.sessionTimeoutInactivityBased
+    this.env = data.env
+    this.host = data.host!
+    this.proxyHost = data.proxyHost!
+    this.lightingMode = data.lightingMode
+    this.wallpaper = data.wallpaper
+    this.setLightingMode(this.lightingMode, 'user')
+    this.setTheme(data.theme)
+    this.setGlassMode(data.glassMode !== false)
+    this.setMenuMode(data.menuMode)
+    this.setKeepOrphans(data.keepOrphans)
+    this.setTitle(this.env.homebridgeInstanceName)
+    this.checkServerTime(data.serverTimestamp)
+    this.setUiVersion(data.env.packageVersion)
+    this.setLang(this.env.lang!)
+    this.settingsLoaded = true
+    this.settingsLoadedSubject.next(undefined)
+    this.browserLang = this.$translate.getBrowserCultureLang()!
+  }
+
+  public setBrowserLightingMode(lighting: 'light' | 'dark') {
+    this.browserLightingMode = lighting
+    if (this.lightingMode === 'auto') {
+      this.setLightingMode(lighting, 'browser')
+    }
+  }
+
+  public setLightingMode(lightingMode: 'auto' | 'light' | 'dark', source: 'user' | 'browser') {
+    if (source === 'user') {
+      this.lightingMode = lightingMode
+    }
+    this.currentLightingMode = lightingMode
+    this.actualLightingMode = this.currentLightingMode === 'auto' ? this.browserLightingMode : this.currentLightingMode
+    if (this.theme) {
+      this.setTheme(this.theme)
+    }
+  }
+
+  public setTheme(theme: string) {
+    // Default theme is deep-purple
+    if (!theme || !this.themeList.includes(theme)) {
+      theme = this.defaultTheme
+
+      // Save the new property to the config file
+      this.$api.patch('/config-editor/ui', { theme })
+        .catch(error => console.error('Error saving setTheme:', error))
+    }
+
+    // Grab the body element
+    const bodySelector = window.document.querySelector('body')!
+
+    // Remove all existing theme classes
+    bodySelector.classList.remove(`glass-ui-${this.theme}`)
+    bodySelector.classList.remove(`glass-ui-dark-mode-${this.theme}`)
+
+    // Set the new theme
+    this.theme = theme
+    if (this.actualLightingMode === 'dark') {
+      bodySelector.classList.add(`glass-ui-dark-mode-${this.theme}`)
+      if (!bodySelector.classList.contains('dark-mode')) {
+        bodySelector.classList.add('dark-mode')
+      }
+    } else {
+      bodySelector.classList.add(`glass-ui-${this.theme}`)
+      if (bodySelector.classList.contains('dark-mode')) {
+        bodySelector.classList.remove('dark-mode')
+      }
+    }
+
+    this.updateTerminalBodyClass()
+
+    // Update same-origin iframes
+    const iframes = window.document.querySelectorAll('iframe')
+    iframes.forEach((iframe, index) => {
+      try {
+        const iframeDoc = iframe.contentDocument
+        if (iframeDoc) {
+          const iframeBody = iframeDoc.body
+
+          if (this.actualLightingMode === 'dark') {
+            if (iframeBody.classList.contains(`glass-ui-${this.theme}`)) {
+              iframeBody.classList.remove(`glass-ui-${this.theme}`)
+            }
+            if (!iframeBody.classList.contains(`glass-ui-dark-mode-${this.theme}`)) {
+              iframeBody.classList.add(`glass-ui-dark-mode-${this.theme}`)
+            }
+            if (!iframeBody.classList.contains('dark-mode')) {
+              iframeBody.classList.add('dark-mode')
+            }
+          } else {
+            if (!iframeBody.classList.contains(`glass-ui-${this.theme}`)) {
+              iframeBody.classList.add(`glass-ui-${this.theme}`)
+            }
+            if (iframeBody.classList.contains(`glass-ui-dark-mode-${this.theme}`)) {
+              iframeBody.classList.remove(`glass-ui-dark-mode-${this.theme}`)
+            }
+            if (iframeBody.classList.contains('dark-mode')) {
+              iframeBody.classList.remove('dark-mode')
+            }
+          }
+        }
+      } catch (e) {
+        console.warn(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src })
+      }
+    })
+  }
+
+  /**
+   * Toggle the liquid glass surfaces. The look is pure CSS scoped under the
+   * glass-mode body class, so switching it needs no reload - only the terminals
+   * are told, because their background colour is set in code rather than CSS.
+   */
+  public setGlassMode(enabled: boolean) {
+    this.glassMode = enabled
+    window.document.body.classList.toggle('glass-mode', enabled)
+    window.document.querySelectorAll('iframe').forEach((iframe) => {
+      try {
+        iframe.contentDocument?.body.classList.toggle('glass-mode', enabled)
+      } catch {
+        // Cross-origin iframe, nothing to do
+      }
+    })
+    this.terminalSettingsChanged.next({ lightingMode: this.getEffectiveTerminalLightingMode() })
+  }
+
+  /**
+   * Mark the body when terminals and log viewers use the dark theme. On light
+   * glass a dark terminal would otherwise print white text on a pale pane, so the
+   * glass styles give those panes a dark tint while this class is set.
+   */
+  public updateTerminalBodyClass() {
+    window.document.body.classList.toggle('terminal-dark', this.getEffectiveTerminalLightingMode() === 'dark')
+  }
+
+  public setMenuMode(value: 'default' | 'freeze') {
+    this.menuMode = value
+  }
+
+  public setKeepOrphans(value: boolean) {
+    this.keepOrphans = value
+  }
+
+  public setLang(lang: string) {
+    if (lang) {
+      this.$translate.use(lang)
+      try {
+        window.localStorage.setItem('uix.lang', lang)
+      } catch {
+        // Some private-browsing modes block localStorage writes; ignore.
+      }
+    } else {
+      lang = 'auto'
+      try {
+        window.localStorage.removeItem('uix.lang')
+      } catch {
+        // ignored
+      }
+    }
+    this.env.lang = lang
+  }
+
+  public setItem(key: string, value: any) {
+    if (this.forbiddenKeys.includes(key)) {
+      return
+    }
+    (this as Record<string, any>)[key] = value
+  }
+
+  public setEnvItem(key: string, value: any) {
+    // If the key contains a dot, we assume it's a nested property
+    if (key.includes('.')) {
+      const keys = key.split('.')
+      let current: Record<string, any> = this.env
+      for (let i = 0; i < keys.length - 1; i += 1) {
+        if (this.forbiddenKeys.includes(keys[i])) {
+          return
+        }
+        if (!current[keys[i]]) {
+          current[keys[i]] = {}
+        }
+        current = current[keys[i]]
+      }
+      if (!this.forbiddenKeys.includes(keys.at(-1)!)) {
+        current[keys.at(-1)!] = value
+      }
+    } else {
+      (this.env as Record<string, any>)[key] = value
+    }
+  }
+
+  /**
+   * Check to make sure the server time is roughly the same as the client time.
+   * A warning is shown if the time difference is >= 8 hours.
+   * @param timestamp
+   */
+  private checkServerTime(timestamp: string) {
+    const serverTime = dayjs(timestamp)
+    const diff = serverTime.diff(dayjs(), 'hour')
+    this.serverTimeOffset = diff * 60 * 60
+    if (diff >= 8 || diff <= -8) {
+      // Clean up previous subscription if exists
+      this.serverTimeToastCleanup$.next()
+
+      const toast = this.$toastr.warning(
+        this.$translate.instant('settings.datetime.incorrect'),
+        this.$translate.instant('toast.title_warning'),
+        {
+          timeOut: 20000,
+          tapToDismiss: false,
+        },
+      )
+
+      toast.onTap
+        .pipe(takeUntil(this.serverTimeToastCleanup$))
+        .subscribe(() => {
+          window.open('https://homebridge.io/w/JqTFs', '_blank')
+        })
+    }
+  }
+
+  private setUiVersion(version: string) {
+    if (!this.uiVersion) {
+      this.uiVersion = version
+    }
+  }
+
+  private setTitle(title: string) {
+    this.$title.setTitle(title || 'Homebridge')
+  }
+
+  public setPageTitle(pageTitle?: string) {
+    const baseName = this.env.homebridgeInstanceName || 'Homebridge'
+    if (pageTitle) {
+      this.$title.setTitle(`${baseName} — ${pageTitle}`)
+    } else {
+      this.$title.setTitle(baseName)
+    }
+  }
+
+  /**
+   * Check if a specific feature is enabled based on feature flags
+   * @param featureKey - The feature flag key to check
+   * @returns true if the feature is enabled, false otherwise
+   */
+  public isFeatureEnabled(featureKey: string): boolean {
+    return this.env.featureFlags?.[featureKey] ?? false
+  }
+
+  /**
+   * Show the "changes saved — restart required" toast.
+   *
+   * Uses the accessible RestartToastComponent: an announced message plus a
+   * focusable Restart button and Close button for keyboard/screen-reader users
+   * (clicking elsewhere on the toast does nothing). Shared by the settings and
+   * backup pages so both behave identically and stay accessible. The toast is a
+   * singleton — repeat calls while one is already showing are no-ops.
+   */
+  public showRestartToast(): void {
+    if (this.restartToastRef) {
+      return
+    }
+
+    this.restartToastRef = this.$toastr.info(
+      this.$translate.instant('settings.changes.saved'),
+      this.$translate.instant('menu.hbrestart.title'),
+      {
+        toastComponent: RestartToastComponent,
+        // Extra class so the cursor override (only the buttons are clickable,
+        // not the whole toast) can be scoped to this toast — see toastr.scss.
+        toastClass: 'ngx-toastr hb-restart-toast',
+        timeOut: 0,
+        tapToDismiss: false,
+        disableTimeOut: true,
+        positionClass: 'toast-bottom-right',
+      },
+    )
+
+    this.restartToastRef.onHidden?.subscribe(() => {
+      this.restartToastRef = null
+    })
+  }
+
+  // Terminal configuration constants
+  private readonly TERMINAL_DEFAULTS = {
+    FONT_SIZE: 13,
+    FONT_WEIGHT: '400' as const,
+    LINE_HEIGHT: 1.2,
+  } as const
+
+  private readonly TERMINAL_COLORS = {
+    DARK: {
+      FULL_PAGE: '#000000',
+      WIDGET: '#2b2b2b',
+    },
+    GLASS: {
+      BACKGROUND: '#00000000',
+      SELECTION: '#ffffff40',
+    },
+    LIGHT: {
+      BACKGROUND: '#00000000',
+      FOREGROUND: '#2b2b2b',
+      CURSOR: '#d2d2d2',
+      SELECTION: '#d2d2d2',
+    },
+  } as const
+
+  /**
+   * Get the effective terminal theme with override enforcement
+   * CRITICAL: Terminal theme MUST be dark when main lighting mode is dark
+   * This prevents light terminals in dark mode regardless of config settings
+   * @returns 'dark' or 'light' - always 'dark' if actualLightingMode is 'dark'
+   */
+  public getEffectiveTerminalLightingMode(): 'dark' | 'light' {
+    // HARD OVERRIDE: If user is in dark mode, terminal MUST be dark
+    if (this.actualLightingMode === 'dark') {
+      return 'dark'
+    }
+
+    // Only allow light terminal theme when in light mode
+    return this.env.terminal?.lightingMode || 'dark'
+  }
+
+  /**
+   * Get theme options for terminals
+   * @param isWidget - Whether this is for a widget (uses #2b2b2b background in dark mode to match widget box)
+   * @returns Object with theme and allowTransparency settings
+   */
+  public getTerminalThemeOptions(isWidget = false): { theme: any, allowTransparency: boolean } {
+    const theme = this.getEffectiveTerminalLightingMode()
+
+    // On glass the terminal is see-through so the frosted card shows behind the text
+    if (this.glassMode && theme === 'dark') {
+      return {
+        theme: {
+          background: this.TERMINAL_COLORS.GLASS.BACKGROUND,
+          selectionBackground: this.TERMINAL_COLORS.GLASS.SELECTION,
+        },
+        allowTransparency: true,
+      }
+    }
+
+    if (theme === 'light') {
+      return {
+        theme: {
+          background: this.TERMINAL_COLORS.LIGHT.BACKGROUND,
+          foreground: this.TERMINAL_COLORS.LIGHT.FOREGROUND,
+          cursor: this.TERMINAL_COLORS.LIGHT.CURSOR,
+          selectionBackground: this.TERMINAL_COLORS.LIGHT.SELECTION,
+        },
+        allowTransparency: true,
+      }
+    }
+
+    return {
+      theme: {
+        background: isWidget
+          ? this.TERMINAL_COLORS.DARK.WIDGET
+          : this.TERMINAL_COLORS.DARK.FULL_PAGE,
+      },
+      allowTransparency: false,
+    }
+  }
+
+  /**
+   * Get terminal options with global font settings applied
+   * @param overrides - Optional overrides for terminal options
+   * @param isWidget - Whether this is for a widget (uses #2b2b2b background in dark mode to match widget box)
+   * @returns ITerminalOptions with fontSize and fontWeight from global settings
+   */
+  public getTerminalOptions(overrides?: Partial<ITerminalOptions>, isWidget = false): ITerminalOptions {
+    const themeOptions = this.getTerminalThemeOptions(isWidget)
+    return {
+      fontSize: this.env.terminal?.fontSize || this.TERMINAL_DEFAULTS.FONT_SIZE,
+      fontWeight: this.env.terminal?.fontWeight || this.TERMINAL_DEFAULTS.FONT_WEIGHT,
+      lineHeight: this.TERMINAL_DEFAULTS.LINE_HEIGHT,
+      allowProposedApi: true,
+      theme: themeOptions.theme,
+      allowTransparency: themeOptions.allowTransparency,
+      screenReaderMode: true,
+      ...overrides,
+    } as ITerminalOptions
+  }
+}

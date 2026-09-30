@@ -1,0 +1,96 @@
+@let state = lockState();
+@let isLocked = state === 1;
+@let stateText =
+  state === 1
+    ? ('accessories.control.locked' | translate)
+    : state === 2
+      ? ('accessories.control.unlocked' | translate)
+      : state === 0
+        ? ('accessories.control.jammed' | translate)
+        : '';
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType = 'accessories.core.lock_mechanism' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText =
+  stateText
+    ? `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`
+    : `${srBaseName + (includeType ? `, ${srType}` : '')}`;
+
+<div
+  class="accessory-box"
+  role="switch"
+  tabindex="0"
+  [class.accessory-on]="state !== 1"
+  [class.unlocked]="state === 2"
+  [class.jammed]="state === 0"
+  [class.cursor-pointer]="readyForControl()"
+  [attr.aria-checked]="isLocked"
+  [attr.aria-label]="srText"
+  (shortClick)="onClick()"
+  (longClick)="onLongClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
+>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+  <div class="d-flex flex-column h-100">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
+        <!-- shackle, locked -->
+        <path
+          d="M8 16 C6 -4, 26 -4, 24 16"
+          fill="none"
+          stroke="#7f7f7f"
+          stroke-width="2"
+          class="shackle-locked"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <!-- shackle, unlocked -->
+        <path
+          d="M8 16 C6 -2, 22 -2, 24 7"
+          fill="none"
+          stroke="#7f7f7f"
+          stroke-width="2"
+          class="shackle-unlocked"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-opacity="0"
+        />
+        <!-- main lock -->
+        <rect x="5" y="16" width="22" height="15" rx="3" fill="none" stroke="#7f7f7f" stroke-width="2" />
+        <!-- status keyhole -->
+        <circle
+          cx="16"
+          cy="23.5"
+          r="3"
+          stroke="#7f7f7f"
+          stroke-width="0.5"
+          fill="#4caf50"
+          fill-opacity="0.5"
+          class="keyhole"
+        />
+      </svg>
+    </div>
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
+    @if (state === 1) {
+      <div class="accessory-label grey-text" aria-hidden="true">{{ 'accessories.control.locked' | translate }}</div>
+    } @else if (state === 2) {
+      <div class="accessory-label red-text" aria-hidden="true">{{ 'accessories.control.unlocked' | translate }}</div>
+    } @else if (state === 0) {
+      <div class="accessory-label red-text" aria-hidden="true">{{ 'accessories.control.jammed' | translate }}</div>
+    }
+  </div>
+</div>

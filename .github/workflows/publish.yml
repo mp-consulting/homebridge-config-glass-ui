@@ -1,0 +1,41 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            ui/package-lock.json
+
+      # Use the npm bundled with Node 24. A global `npm install -g npm@latest`
+      # self-upgrade can land a build whose bundled `sigstore` dependency is
+      # not unpacked, breaking `npm publish --provenance` with
+      # "Cannot find module 'sigstore'". The CI (build.yml) already runs
+      # `npm ci` on the bundled npm across Node 22/24/26, so it is sufficient
+      # here too.
+      - name: Install dependencies
+        run: npm ci && npm ci --prefix ui
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: npm publish --provenance --access public

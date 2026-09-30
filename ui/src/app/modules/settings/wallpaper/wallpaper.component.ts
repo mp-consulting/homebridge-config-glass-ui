@@ -1,0 +1,113 @@
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { ReactiveFormsModule } from '@angular/forms'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
+
+import { ApiService } from '@/app/core/communication/api.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
+import { environment } from '@/environments/environment'
+
+@Component({
+  selector: 'app-wallpaper',
+  imports: [ReactiveFormsModule, TranslatePipe],
+  standalone: true,
+  templateUrl: './wallpaper.component.html',
+  styleUrl: './wallpaper.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class WallpaperComponent implements OnInit {
+  // Injected dependencies
+  private $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
+  // Signals
+  readonly wallpaperInput = viewChild<ElementRef>('wallpaperInput')
+  public readonly clicked = signal(false)
+  public readonly selectedFile = signal<File | null>(null)
+  public readonly wallpaperUrl = signal<string | null>(null)
+  public readonly originalWallpaperUrl = signal<string | null>(null)
+
+  // Other properties
+  public maxFileSizeText: string = globalThis.backup.maxBackupSizeText
+
+  public ngOnInit(): void {
+    if (this.$settings.env.customWallpaperHash) {
+      this.wallpaperUrl.set(`${environment.api.base}/auth/wallpaper/${this.$settings.env.customWallpaperHash}`)
+      this.originalWallpaperUrl.set(this.wallpaperUrl())
+    }
+  }
+
+  public onFileChange(event: Event): void {
+    const files = (event.target as HTMLInputElement).files
+    if (files?.length) {
+      const file = files[0]
+      // Validate size before base64-encoding the bytes into a Data URL
+      // for preview — large images otherwise pin the renderer thread
+      // and then the server rejects the upload anyway.
+      if (file.size > globalThis.backup.maxBackupSize) {
+        ;(event.target as HTMLInputElement).value = ''
+        this.selectedFile.set(null)
+        this.wallpaperUrl.set(this.originalWallpaperUrl())
+        this.$toastr.error(
+          this.$translate.instant('backup.backup_exceeds_max_size', {
+            maxBackupSizeText: this.maxFileSizeText,
+            size: `${(file.size / (1024 * 1024)).toFixed(1)}MB`,
+          }),
+          this.$translate.instant('toast.title_error'),
+        )
+        return
+      }
+      this.selectedFile.set(file)
+      const reader = new FileReader()
+      reader.onload = (e: any) => {
+        this.wallpaperUrl.set(e.target.result)
+      }
+      reader.readAsDataURL(this.selectedFile()!)
+    } else {
+      this.selectedFile.set(null)
+      this.wallpaperUrl.set(this.originalWallpaperUrl())
+    }
+  }
+
+  public async saveWallpaper(): Promise<void> {
+    this.clicked.set(true)
+    try {
+      if (this.selectedFile()) {
+        const formData: FormData = new FormData()
+        formData.append('wallpaper', this.selectedFile()!, this.selectedFile()?.name)
+        await this.$api.post('/server/wallpaper', formData)
+        this.$settings.setItem('wallpaper', `ui-wallpaper.${this.selectedFile()?.name.split('.').pop()}`)
+        this.$activeModal.close()
+        this.$toastr.success(this.$translate.instant('settings.display.wallpaper_success'), this.$translate.instant('toast.title_success'))
+      } else {
+        await this.$api.delete('/server/wallpaper')
+        this.$activeModal.close()
+      }
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.clicked.set(false)
+    }
+  }
+
+  public clearWallpaper(): void {
+    this.selectedFile.set(null)
+    this.wallpaperUrl.set(this.wallpaperUrl() === this.originalWallpaperUrl()
+      ? null
+      : this.originalWallpaperUrl())
+    const input = this.wallpaperInput()
+    if (input) {
+      input.nativeElement.value = ''
+    }
+  }
+
+  public dismissModal(): void {
+    this.$activeModal.dismiss('Dismiss')
+  }
+}

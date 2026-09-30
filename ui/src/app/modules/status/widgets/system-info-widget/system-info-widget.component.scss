@@ -1,0 +1,17 @@
+table.table-sm {
+  margin-bottom: 0;
+}
+
+table.table-sm th,
+table.table-sm td {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+.system-info-link {
+  @media (hover: hover) {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
