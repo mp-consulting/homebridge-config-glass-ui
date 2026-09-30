@@ -145,9 +145,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
         }
 
         this.twoFactorCodeRequired.set(true)
-        setTimeout(() => {
+        // Cleared on destroy: a login that completes (and navigates away)
+        // within 100ms would otherwise focus a field that no longer exists
+        const focusTimer = setTimeout(() => {
           document.getElementById('form-ota')?.focus()
         }, 100)
+        this.destroyRef.onDestroy(() => clearTimeout(focusTimer))
       } else {
         this.invalidCredentials.set(true)
       }
