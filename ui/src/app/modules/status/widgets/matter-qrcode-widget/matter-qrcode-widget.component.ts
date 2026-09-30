@@ -57,7 +57,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
     // Listen to homebridge-status events for unified status updates
     this.statusHandler = (data: HomebridgeStatusResponse) => {
       this.applyMatterStatus(data)
-      requestAnimationFrame(() => this.resizeQrCode())
+      this.scheduleResize()
     }
 
     this.io.socket.on('homebridge-status', this.statusHandler)
@@ -77,6 +77,11 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
     if (this.io && this.statusHandler) {
       this.io.socket.off('homebridge-status', this.statusHandler)
     }
+    this.destroyed = true
+    if (this.resizeFrame !== null) {
+      cancelAnimationFrame(this.resizeFrame)
+      this.resizeFrame = null
+    }
   }
 
   /**
@@ -95,6 +100,23 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   }
 
   private resizeRetries = 0
+  // The pending resize frame, cancelled on destroy: while the card has no height
+  // the resize keeps re-scheduling itself, which must not outlive the widget
+  private resizeFrame: number | null = null
+  private destroyed = false
+
+  private scheduleResize(): void {
+    if (this.destroyed) {
+      return
+    }
+    if (this.resizeFrame !== null) {
+      cancelAnimationFrame(this.resizeFrame)
+    }
+    this.resizeFrame = requestAnimationFrame(() => {
+      this.resizeFrame = null
+      this.resizeQrCode()
+    })
+  }
 
   private resizeQrCode(): void {
     const containerHeight = (this.qrcodeContainerElement()!.nativeElement as HTMLElement).offsetHeight
@@ -104,7 +126,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
     // nothing; try again on the next few frames instead
     if (!containerHeight && this.resizeRetries < 10) {
       this.resizeRetries += 1
-      requestAnimationFrame(() => this.resizeQrCode())
+      this.scheduleResize()
       return
     }
     this.resizeRetries = 0
@@ -145,7 +167,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.applyMatterStatus(data)
           // Resize after data is set and DOM updates
-          requestAnimationFrame(() => this.resizeQrCode())
+          this.scheduleResize()
         },
       })
   }
