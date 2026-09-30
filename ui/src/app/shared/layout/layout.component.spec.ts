@@ -3,6 +3,7 @@ import type { FakeApi, FakeAuth, FakeIoNamespace, FakeModalService, FakeSettings
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -31,6 +32,7 @@ import { provideFakes, provideTestTranslate } from '@/testing/providers'
  */
 describe('layoutComponent', () => {
   let auth: FakeAuth
+  let lastFixture: ReturnType<typeof TestBed.createComponent<LayoutComponent>>
   let settings: FakeSettings
   let ws: FakeWs
   let io: FakeIoNamespace
@@ -46,6 +48,7 @@ describe('layoutComponent', () => {
    * @param options.settingsLoaded - whether /auth/settings has answered yet
    * @param options.onSettingsLoaded - the settings-loaded stream to use
    * @param options.admin - whether the signed-in user is an admin
+   * @param options.sslStartupError - why HTTPS could not be enabled, if it failed
    */
   async function open(options: {
     uiVersion?: string
@@ -53,6 +56,7 @@ describe('layoutComponent', () => {
     settingsLoaded?: boolean
     onSettingsLoaded?: Subject<void>
     admin?: boolean
+    sslStartupError?: string
   } = {}) {
     TestBed.resetTestingModule()
     auth = makeAuth({ user: { admin: options.admin ?? true } })
@@ -61,6 +65,7 @@ describe('layoutComponent', () => {
       uiVersion: options.uiVersion ?? environment.serverTarget,
       ...(options.settingsLoaded === false ? { settingsLoaded: false } : {}),
       ...(options.onSettingsLoaded ? { onSettingsLoaded: options.onSettingsLoaded } : {}),
+      ...(options.sslStartupError ? { env: { ssl: { startupError: options.sslStartupError } } } : {}),
     } as any)
     ws = fakeWs()
     io = ws.namespace('app')
@@ -76,7 +81,7 @@ describe('layoutComponent', () => {
     })
 
     // The sidebar and the routed page are each tested on their own
-    TestBed.overrideComponent(LayoutComponent, { set: { imports: [], schemas: [NO_ERRORS_SCHEMA] } })
+    TestBed.overrideComponent(LayoutComponent, { set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] } })
 
     const router = TestBed.inject(Router)
     navigate = vi.fn(async () => true)
@@ -91,6 +96,7 @@ describe('layoutComponent', () => {
       await Promise.resolve()
     }
 
+    lastFixture = fixture
     return fixture.componentInstance
   }
 
@@ -278,6 +284,33 @@ describe('layoutComponent', () => {
       const layout = await open()
 
       expect(layout.sidebarExpanded()).toBe(false)
+    })
+  })
+
+  describe('HTTPS fallback warning', () => {
+    const reason = 'Could not load the configured certificate: ENOENT'
+
+    it('warns an admin that HTTPS could not be enabled', async () => {
+      const layout = await open({ sslStartupError: reason })
+      lastFixture.detectChanges()
+
+      expect(layout.sslStartupError()).toBe(reason)
+      expect(lastFixture.nativeElement.querySelector('.alert-warning')).not.toBeNull()
+    })
+
+    it('does not show the warning to a non-admin, who cannot fix it', async () => {
+      const layout = await open({ admin: false, sslStartupError: reason })
+      lastFixture.detectChanges()
+
+      expect(layout.sslStartupError()).toBeNull()
+      expect(lastFixture.nativeElement.querySelector('.alert-warning')).toBeNull()
+    })
+
+    it('shows nothing when HTTPS is fine', async () => {
+      await open()
+      lastFixture.detectChanges()
+
+      expect(lastFixture.nativeElement.querySelector('.alert-warning')).toBeNull()
     })
   })
 })

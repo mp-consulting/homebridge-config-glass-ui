@@ -355,6 +355,7 @@
   "form.optional": "ไม่บังคับ",
   "form.search": "ค้นหา…",
   "form.select.auto": "อัตโนมัติ (ใช้การตั้งค่าเบราว์เซอร์)",
+  "layout.ssl_fallback_warning": "HTTPS is configured but could not be enabled, so this page is served over plain HTTP and passwords are sent unencrypted. {{ reason }}. Fix the SSL settings, then restart Homebridge Glass UI.",
   "login.invalid_code": "รหัสที่ป้อนไม่ถูกต้องหรือหมดอายุแล้ว",
   "login.invalid_credentials": "ชื่อผู้ใช้และรหัสผ่านไม่ถูกต้อง",
   "login.invalid_credentials_2": "หากคุณสูญเสียการเข้าถึง ให้ลบไฟล์ <code>auth.json</code> ในไดเรกทอรีพื้นที่จัดเก็บ Homebridge ของคุณ แล้วรีสตาร์ท Homebridge จากนั้นรีเฟรชหน้านี้เพื่อตั้งค่าบัญชีผู้ดูแลระบบใหม่ การตั้งค่า Homebridge/UI ของคุณจะยังคงเดิม ยกเว้นบัญชีผู้ใช้ UI บัญชีผู้ใช้เดียวที่จะเป็นบัญชีผู้ดูแลระบบที่คุณกำลังตั้งค่าอยู่ในขณะนี้",

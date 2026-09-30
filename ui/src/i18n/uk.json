@@ -355,6 +355,7 @@
   "form.optional": "Необов'язково",
   "form.search": "Пошук...",
   "form.select.auto": "Автоматично (використовувати налаштування браузера)",
+  "layout.ssl_fallback_warning": "HTTPS is configured but could not be enabled, so this page is served over plain HTTP and passwords are sent unencrypted. {{ reason }}. Fix the SSL settings, then restart Homebridge Glass UI.",
   "login.invalid_code": "Введений код неправильний або термін його дії минув",
   "login.invalid_credentials": "Неправильне ім'я користувача або пароль.",
   "login.invalid_credentials_2": "Якщо Ви втратите доступ, видаліть файл <code>auth.json</code> у каталозі сховища Homebridge та перезапустіть Homebridge. Потім оновіть цю сторінку, щоб налаштувати новий обліковий запис адміністратора. Ваші налаштування Homebridge/інтерфейсу користувача залишаться незмінними, за винятком облікових записів користувачів інтерфейсу користувача. Єдиним обліковим записом користувача буде обліковий запис адміністратора, який Ви налаштовуєте зараз.",

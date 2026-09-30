@@ -355,6 +355,7 @@
   "form.optional": "Optional",
   "form.search": "Search...",
   "form.select.auto": "自動 (ブラウザの設定に従う)",
+  "layout.ssl_fallback_warning": "HTTPS is configured but could not be enabled, so this page is served over plain HTTP and passwords are sent unencrypted. {{ reason }}. Fix the SSL settings, then restart Homebridge Glass UI.",
   "login.invalid_code": "入力したコードが間違っているか有効期限が切れています",
   "login.invalid_credentials": "ユーザー名またはパスワードが間違っています",
   "login.invalid_credentials_2": "アクセスできなくなった場合はHomebridgeストレージディレクトリの<code>auth.json</code>を削除して再起動し、このページをリロードして新しい管理者アカウントを設定してください。Homebridge/UIの設定はユーザーアカウントを除いて変わりません。管理者アカウントのみが残ります。",

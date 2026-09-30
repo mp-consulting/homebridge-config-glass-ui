@@ -355,6 +355,7 @@
   "form.optional": "Opzionale",
   "form.search": "Cerca...",
   "form.select.auto": "Automatico (Usa impostazioni browser)",
+  "layout.ssl_fallback_warning": "HTTPS is configured but could not be enabled, so this page is served over plain HTTP and passwords are sent unencrypted. {{ reason }}. Fix the SSL settings, then restart Homebridge Glass UI.",
   "login.invalid_code": "Il codice inserito non è corretto o è scaduto",
   "login.invalid_credentials": "Utente o password non validi",
   "login.invalid_credentials_2": "Se perdi l'accesso, elimina il file <code>auth.json</code> nella tua directory di archiviazione di Homebridge e riavvia Homebridge. Quindi aggiorna questa pagina per configurare un nuovo account amministratore. Le impostazioni di Homebridge/UI rimarranno invariate, ad eccezione degli account utente dell'interfaccia. L'unico account utente sarà l'account amministratore che stai configurando ora.",

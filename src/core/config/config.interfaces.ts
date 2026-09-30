@@ -11,6 +11,8 @@ export interface StartupConfig {
     passphrase?: string
   }
   cspWsOverride?: string
+  // Why HTTPS was configured but could not be enabled (the UI then serves plain HTTP)
+  sslError?: string
   // Extra origins permitted to frame the UI, from `ui.allowFrameAncestors`.
   // Empty by default, so the CSP is `frame-ancestors 'self'` — same-origin only.
   allowedFrameAncestors?: string[]

@@ -162,6 +162,9 @@ export class ConfigService {
    * Settings that are sent to the UI
    * @param {boolean} authorized - return more settings if the user is authorized
    */
+  // Set at startup when ui.ssl is configured but HTTPS could not be enabled
+  public sslStartupError: string | null = null
+
   public uiSettings(authorized: boolean = false) {
     const toReturn = {
       env: {
@@ -230,6 +233,7 @@ export class ConfigService {
           hasPassphrase: Boolean(this.ui.ssl?.passphrase),
           selfSigned: this.ui.ssl?.selfSigned,
           selfSignedHostnames: this.ui.ssl?.selfSignedHostnames,
+          startupError: this.sslStartupError,
         },
         accessoryControl: {
           debug: this.ui.accessoryControl?.debug,

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router, RouterOutlet } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
-import { TranslateService } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
 import { lt } from 'semver'
 
@@ -18,6 +18,7 @@ import { environment } from '@/environments/environment'
   imports: [
     SidebarComponent,
     RouterOutlet,
+    TranslatePipe,
   ],
   standalone: true,
   templateUrl: './layout.component.html',
@@ -59,7 +60,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
   // Signals
   public readonly sidebarExpanded = signal(false)
 
+  // HTTPS is configured but the server fell back to plain HTTP. Only an admin
+  // can fix the SSL settings, so only an admin is told.
+  public readonly sslStartupError = signal<string | null>(null)
+
   public ngOnInit(): void {
+    this.sslStartupError.set(this.$auth.user?.admin ? (this.$settings.env.ssl?.startupError ?? null) : null)
     this.io = this.$ws.connectToNamespace('app')
     // ⚠️ `reconnect` is a Manager event in socket.io-client 4.x — it is only
     // emitted on `socket.io`, never on the Socket, so a listener on the

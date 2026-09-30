@@ -355,6 +355,7 @@
   "form.optional": "Tùy chọn",
   "form.search": "Tìm kiếm...",
   "form.select.auto": "Tự động (Theo cài đặt trình duyệt)",
+  "layout.ssl_fallback_warning": "HTTPS is configured but could not be enabled, so this page is served over plain HTTP and passwords are sent unencrypted. {{ reason }}. Fix the SSL settings, then restart Homebridge Glass UI.",
   "login.invalid_code": "Mã đã nhập không đúng hoặc đã hết hạn",
   "login.invalid_credentials": "Tên đăng nhập hoặc mật khẩu không đúng",
   "login.invalid_credentials_2": "Nếu bạn mất quyền truy cập, hãy xóa tệp <code>auth.json</code> trong thư mục lưu trữ Homebridge và khởi động lại Homebridge. Sau đó tải lại trang để thiết lập tài khoản admin mới. Cài đặt Homebridge/UI sẽ không thay đổi, ngoại trừ tài khoản người dùng UI.",

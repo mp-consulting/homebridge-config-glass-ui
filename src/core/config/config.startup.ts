@@ -57,6 +57,7 @@ export async function getStartupConfig() {
       } catch (e) {
         logger.error(`Could not generate self-signed certificate: ${e.message}`)
         logger.error(e)
+        config.sslError = `Could not generate a self-signed certificate: ${e.message}`
       }
     } else if ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx) {
       // Traditional file-based SSL
@@ -81,6 +82,7 @@ export async function getStartupConfig() {
       } catch (e) {
         logger.error(`Could not start server with SSL enabled as ${e.message}.`)
         logger.error(e)
+        config.sslError = `Could not load the configured certificate: ${e.message}`
       }
     }
   }

@@ -55,6 +55,8 @@ export interface EnvInterface {
     hasPassphrase?: boolean
     selfSigned?: boolean
     selfSignedHostnames?: string[]
+    // Set when HTTPS is configured but could not be enabled at startup
+    startupError?: string | null
   }
   accessoryControl?: {
     debug?: boolean

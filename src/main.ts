@@ -106,6 +106,11 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   )
 
   const configService: ConfigService = app.get(ConfigService)
+
+  // HTTPS was configured but failed, so this server speaks plain HTTP. Keep
+  // serving - refusing to start would lock the admin out of the UI they need
+  // to fix it - but tell them, rather than only logging it
+  configService.sslStartupError = startupConfig.sslError ?? null
   const logger: Logger = app.get(Logger)
 
   // Serve index.html without a cache

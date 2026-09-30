@@ -355,6 +355,7 @@
   "form.optional": "Optional",
   "form.search": "搜索...",
   "form.select.auto": "自动（使用浏览器设置）",
+  "layout.ssl_fallback_warning": "HTTPS is configured but could not be enabled, so this page is served over plain HTTP and passwords are sent unencrypted. {{ reason }}. Fix the SSL settings, then restart Homebridge Glass UI.",
   "login.invalid_code": "输入的代码不正确或已过期",
   "login.invalid_credentials": "无效的用户名或密码",
   "login.invalid_credentials_2": "如果您失去访问权限，请删除 Homebridge 存储目录中的 <code>auth.json</code> 文件并重启 Homebridge。然后刷新此页面以设置新的管理员账户。除 UI 用户账户外，您的 Homebridge/UI 设置将保持不变。唯一的用户账户将是您现在正在设置的管理员账户。",
