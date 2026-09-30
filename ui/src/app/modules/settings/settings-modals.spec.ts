@@ -1,7 +1,7 @@
 import type { FakeApi, FakeSettings } from '@/testing'
 
 import { TestBed } from '@angular/core/testing'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccessoryOverviewCacheService } from '@/app/core/caching/accessory-overview-cache.service'
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA, NETWORK_INTERFACES_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -385,7 +385,23 @@ describe('settings modals', () => {
       })
     }
 
-    beforeEach(() => configure())
+    beforeEach(() => {
+      configure()
+      // The preview is read with FileReader. jsdom's reader cannot read these
+      // fixture files on every Node version (Node 22 and 24 fail with
+      // "Expected an Uint8Array" after the test has finished), so a
+      // synchronous stand-in keeps the preview deterministic.
+      vi.stubGlobal('FileReader', class {
+        onload: ((event: { target: { result: string } }) => void) | null = null
+        readAsDataURL(file: File) {
+          this.onload?.({ target: { result: `data:image/png;base64,preview-of-${file.name}` } })
+        }
+      })
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
 
     it('shows the wallpaper already saved on the server', async () => {
       configure('abc123')
@@ -421,6 +437,7 @@ describe('settings modals', () => {
       modal.onFileChange(fileEvent([makeFile('nice.png', 1024)]))
 
       expect(modal.selectedFile()?.name).toBe('nice.png')
+      expect(modal.wallpaperUrl()).toBe('data:image/png;base64,preview-of-nice.png')
       expect(toastr.at('error')).toHaveLength(0)
     })
 
