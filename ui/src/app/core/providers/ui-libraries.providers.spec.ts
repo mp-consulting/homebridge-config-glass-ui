@@ -1,11 +1,20 @@
 /// <reference types="vite/client" />
 
+import { createComponent, createEnvironmentInjector, EnvironmentInjector, Injector } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { Framework, FrameworkLibraryService } from '@ng-formworks/core'
+import { LineController } from 'chart.js'
+import { NG_CHARTS_CONFIGURATION } from 'ng2-charts'
 import { ToastrService } from 'ngx-toastr'
 import { describe, expect, it } from 'vitest'
 
 import { AppToastComponent } from '@/app/core/components/app-toast/app-toast.component'
+import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { provideUiLibraries } from '@/app/core/providers/ui-libraries.providers'
+import { LAYOUT_ROUTES } from '@/app/layout.routes'
+import { activeModalStub, fakeApi, makeSettings, toastrStub } from '@/testing'
+import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
  * The third-party UI libraries, and the build configuration one of them depends
@@ -121,6 +130,62 @@ describe('the ui library configuration', () => {
       .map(asset => asset.output)
 
     expect(vsOutputs).toContain('./assets/monaco/min/vs')
+  })
+
+  describe('what stays out of the initial bundle', () => {
+    // Whatever is registered at bootstrap is downloaded by /login. Chart.js and
+    // the JSON schema form (with ajv) were most of main, for pages behind
+    // sign-in only
+
+    it('does not register the charts or the form framework at bootstrap', () => {
+      TestBed.resetTestingModule()
+      TestBed.configureTestingModule({ providers: [provideUiLibraries()] })
+
+      expect(TestBed.inject(NG_CHARTS_CONFIGURATION, null)).toBeNull()
+      expect(TestBed.inject(Framework, null)).toBeNull()
+    })
+
+    it('registers the chart components on the signed-in layout route', () => {
+      // Without them chart.js throws '"line" is not a registered controller'
+      // and the cpu, memory and network widgets stay empty
+      TestBed.resetTestingModule()
+      const layout = createEnvironmentInjector(LAYOUT_ROUTES[0].providers!, TestBed.inject(EnvironmentInjector))
+
+      expect(layout.get(NG_CHARTS_CONFIGURATION).registerables).toContain(LineController)
+    })
+
+    it('keeps every signed-in page under that route', () => {
+      const paths = LAYOUT_ROUTES[0].children!.map(route => route.path)
+
+      expect(paths).toEqual(expect.arrayContaining(['', 'restart', 'plugins', 'accessories', 'logs', 'settings', 'platform-tools']))
+    })
+
+    it('lets the plugin settings modal bring its own form framework', async () => {
+      // ManagePluginsService is a root service and opens this modal from the
+      // root injector, which a route-level provider never reaches. The modal's
+      // own import of Bootstrap5FrameworkModule is what NgbModal's
+      // createComponent turns into the modal's injector
+      const { PluginConfigComponent } = await import('@/app/core/plugins/plugin-config/plugin-config.component')
+      TestBed.resetTestingModule()
+      TestBed.configureTestingModule({
+        providers: [provideTestTranslate(), provideFakes({ api: fakeApi(), settings: makeSettings(), toastr: toastrStub() })],
+      })
+      // Created the way NgbModal does it: createComponent over the root injector
+      const ref = createComponent(PluginConfigComponent, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        elementInjector: Injector.create({
+          providers: [
+            { provide: NgbActiveModal, useValue: activeModalStub() },
+            { provide: PLUGIN_MODAL_DATA, useValue: { schema: {}, plugin: { name: 'homebridge-example' } } },
+          ],
+        }),
+      })
+
+      // bootstrap-5 specifically: the schema form falls back to formworks' own
+      // unstyled framework when it is missing, which still renders
+      expect(ref.injector.get(FrameworkLibraryService).hasFramework('bootstrap-5')).toBe(true)
+      ref.destroy()
+    })
   })
 
   describe('the toasts', () => {

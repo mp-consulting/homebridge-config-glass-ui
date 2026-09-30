@@ -11,6 +11,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap/accordion'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
+import { Bootstrap5FrameworkModule } from '@ng-formworks/bootstrap5'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { v4 as uuid } from 'uuid'
@@ -37,6 +38,10 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
     NgbAccordionCollapse,
     NgbAccordionBody,
     SchemaFormComponent,
+    // Not for its markup: importing it gives this modal its own injector with
+    // the form framework, since ManagePluginsService opens it from the root
+    // injector and the framework is no longer provided at bootstrap
+    Bootstrap5FrameworkModule,
     HomebridgeDeconzComponent,
     HomebridgeHueComponent,
     TranslatePipe,
