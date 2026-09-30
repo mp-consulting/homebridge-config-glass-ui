@@ -581,14 +581,16 @@ describe('bridgesWidgetComponent', () => {
       expect(childIo.end).toHaveBeenCalled()
     })
 
-    it('leaves the shared status socket running when the widget is removed', async () => {
-      // StatusComponent owns the `status` monitor; ending it from a widget
-      // would stop the status pushes for every other widget on the dashboard
+    it('releases its hold on the shared status socket when the widget is removed', async () => {
+      // end() only drops this widget's reference - WsService keeps the server
+      // session up while StatusComponent still holds it (see ws.service.spec).
+      // Never ending would leak the reference and keep `monitor-server-status`
+      // running after the dashboard is gone
       await open()
 
       TestBed.resetTestingModule()
 
-      expect(mainIo.end).not.toHaveBeenCalled()
+      expect(mainIo.end).toHaveBeenCalledTimes(1)
     })
 
     it('detaches its own listeners when the widget is removed', async () => {

@@ -1,14 +1,23 @@
+import type { UpdateAllJournal } from '@/app/core/update-all/update-all.interfaces'
+import type { LogService } from '@/app/core/utilities/log.service'
 import type { FakeSocket } from '@/testing'
 
+import { createEnvironmentInjector, EnvironmentInjector, NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
+import { provideRouter } from '@angular/router'
+import { TranslatePipe } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { SOCKET_FACTORY } from '@/app/core/communication/socket.factory'
 import { WsService } from '@/app/core/communication/ws.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
+import { BridgesWidgetComponent } from '@/app/modules/status/widgets/bridges-widget/bridges-widget.component'
 import { environment } from '@/environments/environment'
-import { fakeSocket, makeAuth } from '@/testing'
-import { provideFakes } from '@/testing/providers'
+import { activeModalStub, fakeApi, fakeSaveAs, fakeSocket, fakeTerminals, makeAuth, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
  * ⚠️ No `vi.mock('socket.io-client')` here. The unit-test builder compiles the
@@ -71,11 +80,15 @@ describe('WsService', () => {
   })
 
   describe('caching a namespace', () => {
-    it('returns the same namespace and does not open a second socket', () => {
+    it('shares one socket between callers and does not open a second', () => {
       const first = service.connectToNamespace('status')
       const second = service.connectToNamespace('status')
 
-      expect(second).toBe(first)
+      // Each caller gets its own handle (its own end()), over the same socket
+      // and the same `connected` subject
+      expect(second).not.toBe(first)
+      expect(second.socket).toBe(first.socket)
+      expect(second.connected).toBe(first.connected)
       expect(io).toHaveBeenCalledTimes(1)
     })
 
@@ -116,8 +129,14 @@ describe('WsService', () => {
     it('returns the open namespace without opening another socket', () => {
       const opened = service.connectToNamespace('status')
 
-      expect(service.getExistingNamespace('status')).toBe(opened)
+      expect(service.getExistingNamespace('status').socket).toBe(opened.socket)
       expect(io).toHaveBeenCalledTimes(1)
+    })
+
+    it('hands a borrower no end(), so it cannot end the session it does not own', () => {
+      service.connectToNamespace('status')
+
+      expect(service.getExistingNamespace('status').end).toBeUndefined()
     })
   })
 
@@ -166,6 +185,252 @@ describe('WsService', () => {
       // The namespace is shared - status feeds the dashboard and every widget -
       // so wiping listeners when one consumer closes would silence the rest
       expect(sockets[0].removeAllListeners).not.toHaveBeenCalled()
+    })
+
+    it('keeps the server session while another consumer still holds the namespace', () => {
+      const first = service.connectToNamespace('log')
+      service.connectToNamespace('log')
+
+      first.end!()
+
+      // 'end' drops every server-side subscription on the socket - including
+      // the ones the second consumer is still reading
+      expect(sockets[0].payloadsFor('end')).toHaveLength(0)
+    })
+
+    it('ends the server session when the last consumer releases', () => {
+      const first = service.connectToNamespace('log')
+      const second = service.connectToNamespace('log')
+
+      first.end!()
+      second.end!()
+
+      expect(sockets[0].payloadsFor('end')).toHaveLength(1)
+    })
+
+    it('releases a consumer only once however often it ends', () => {
+      const first = service.connectToNamespace('log')
+      const second = service.connectToNamespace('log')
+
+      // A stop() that runs twice must not give up the other consumer's hold
+      first.end!()
+      first.end!()
+      expect(sockets[0].payloadsFor('end')).toHaveLength(0)
+
+      second.end!()
+      expect(sockets[0].payloadsFor('end')).toHaveLength(1)
+    })
+
+    it('counts afresh on the cached socket after the last release', () => {
+      service.connectToNamespace('log').end!()
+      const again = service.connectToNamespace('log')
+      const other = service.connectToNamespace('log')
+
+      again.end!()
+      expect(sockets[0].payloadsFor('end')).toHaveLength(1)
+
+      other.end!()
+      expect(sockets[0].payloadsFor('end')).toHaveLength(2)
+      expect(io).toHaveBeenCalledTimes(1)
+    })
+
+    it('counts each namespace on its own', () => {
+      const log = service.connectToNamespace('log')
+      service.connectToNamespace('status')
+
+      log.end!()
+
+      expect(sockets[0].payloadsFor('end')).toHaveLength(1)
+      expect(sockets[1].payloadsFor('end')).toHaveLength(0)
+    })
+  })
+})
+
+/**
+ * The real consumers that share a namespace, over the real WsService. Each of
+ * these used to end the other's server session when it closed.
+ */
+describe('consumers sharing a namespace', () => {
+  let sockets: Map<string, FakeSocket>
+  let xterm: ReturnType<typeof fakeTerminals>
+
+  /**
+   * The fake socket for a namespace, created up front so a spec can arrange
+   * acknowledgements before a consumer opens it.
+   * @param namespace - e.g. 'log'
+   */
+  function socketFor(namespace: string): FakeSocket {
+    if (!sockets.has(namespace)) {
+      sockets.set(namespace, fakeSocket(false))
+    }
+    return sockets.get(namespace)!
+  }
+
+  // Comes up a tick after WsService binds its `connect` listener, the way a
+  // real socket does
+  const factory = vi.fn((url: string) => {
+    const socket = socketFor(url.slice(`${environment.api.socket}/`.length))
+    void Promise.resolve().then(() => {
+      socket.connected = true
+      socket.fire('connect')
+    })
+    return socket as any
+  })
+
+  async function settle() {
+    for (let tick = 0; tick < 12; tick += 1) {
+      await Promise.resolve()
+    }
+  }
+
+  beforeEach(() => {
+    TestBed.resetTestingModule()
+    sockets = new Map()
+    xterm = fakeTerminals()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  describe('the dashboard logs widget and the plugin logs modal', () => {
+    let widget: LogService
+    let pluginLogs: LogService
+
+    beforeEach(async () => {
+      const { LogService } = await import('@/app/core/utilities/log.service')
+      TestBed.configureTestingModule({
+        providers: [
+          provideTestTranslate(),
+          provideFakes({ auth: makeAuth(), api: fakeApi(), toastr: toastrStub(), modal: modalServiceSpy() }),
+          { provide: SOCKET_FACTORY, useValue: factory },
+          { provide: TERMINAL_FACTORY, useValue: xterm.factory },
+          { provide: SAVE_AS, useValue: fakeSaveAs() },
+        ],
+      })
+      // Each host provides its own LogService - the widget and the modal
+      // opened over it hold one each
+      const root = TestBed.inject(EnvironmentInjector)
+      widget = createEnvironmentInjector([LogService], root).get(LogService)
+      pluginLogs = createEnvironmentInjector([LogService], root).get(LogService)
+
+      widget.startTerminal({ nativeElement: document.createElement('div') })
+      pluginLogs.startTerminal({ nativeElement: document.createElement('div') }, {}, undefined, 'homebridge-example')
+      await settle()
+    })
+
+    const line = '\u001B[36m[homebridge-example]\u001B[0m Hello\n\r'
+
+    it('runs one server stream that both terminals read', () => {
+      // Both ask; the server keeps one stream per socket and ignores the repeat
+      expect(socketFor('log').payloadsFor('tail-log')).toHaveLength(2)
+
+      socketFor('log').fire('stdout', line)
+
+      expect(xterm.terminals[0].written.join('')).toContain('Hello')
+      expect(xterm.terminals[1].written.join('')).toContain('Hello')
+    })
+
+    it('keeps the widget streaming when the modal closes', () => {
+      pluginLogs.destroyTerminal()
+
+      expect(socketFor('log').payloadsFor('end')).toHaveLength(0)
+      socketFor('log').fire('stdout', line)
+      expect(xterm.terminals[0].written.join('')).toContain('Hello')
+    })
+
+    it('keeps the modal streaming when the widget goes away first', () => {
+      widget.destroyTerminal()
+
+      expect(socketFor('log').payloadsFor('end')).toHaveLength(0)
+      socketFor('log').fire('stdout', line)
+      expect(xterm.terminals[1].written.join('')).toContain('Hello')
+    })
+
+    it('ends the stream once both have closed', () => {
+      pluginLogs.destroyTerminal()
+      widget.destroyTerminal()
+
+      expect(socketFor('log').payloadsFor('end')).toHaveLength(1)
+    })
+  })
+
+  describe('the update-all modal and the bridges widget', () => {
+    const username = '0E:AA:BB:CC:DD:EE'
+
+    it('leaves the widget its child bridge updates when the modal closes', async () => {
+      vi.useFakeTimers()
+      const api = fakeApi()
+      const journal: UpdateAllJournal = {
+        schemaVersion: 1,
+        runId: 'run-1',
+        startedAt: '2026-08-19T10:00:00.000Z',
+        finishedAt: '2026-08-19T10:05:00.000Z',
+        items: [{ type: 'plugin', name: 'homebridge-example', from: '1.0.0', to: '1.1.0', status: 'ok', childBridgeUsernames: [username] }],
+        restart: { homebridge: 'not-needed', ui: 'not-needed', childBridges: 'done' },
+      }
+      api.respond('get', '/update-all/plan', {
+        items: [{ type: 'plugin', name: 'homebridge-example', from: '1.0.0', to: '1.1.0', restartImpact: 'child-bridges', childBridgeUsernames: [username] }],
+        needsReview: [],
+        skipped: [],
+      })
+      api.respond('post', '/update-all/start', {})
+      api.respond('get', '/update-all/journal', journal)
+      socketFor('update-all').respondTo('subscribe', { active: false, journal })
+      socketFor('status').respondTo('get-homebridge-status', { status: 'ok', name: 'Homebridge' })
+      socketFor('child-bridges').respondTo('get-homebridge-child-bridge-status', [
+        { username, name: 'Kitchen Bridge', plugin: 'homebridge-example', status: 'pending' },
+      ])
+
+      const { UpdateAllModalComponent } = await import('@/app/core/update-all/update-all-modal.component')
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([{ path: 'restart', children: [] }]),
+          provideTestTranslate(),
+          provideFakes({
+            api,
+            auth: makeAuth({ user: { admin: true } }),
+            settings: makeSettings(),
+            toastr: toastrStub(),
+            activeModal: activeModalStub(),
+          }),
+          { provide: TtlCacheService, useValue: { invalidateAll: vi.fn() } },
+          { provide: SOCKET_FACTORY, useValue: factory },
+          { provide: TERMINAL_FACTORY, useValue: xterm.factory },
+        ],
+      })
+      for (const component of [BridgesWidgetComponent, UpdateAllModalComponent]) {
+        TestBed.overrideComponent(component, { set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] } })
+      }
+
+      const bridges = TestBed.createComponent(BridgesWidgetComponent)
+      bridges.componentRef.setInput('widget', { component: 'BridgesWidgetComponent' })
+      bridges.detectChanges()
+      await settle()
+
+      const modal = TestBed.createComponent(UpdateAllModalComponent)
+      modal.detectChanges()
+      await settle()
+      await modal.componentInstance.confirm()
+      await settle()
+      modal.detectChanges()
+      vi.advanceTimersByTime(1)
+
+      // The run finished with a child bridge restart, so the modal watches the
+      // shared child-bridges socket alongside the widget
+      expect(modal.componentInstance.phase()).toBe('summary')
+      expect(socketFor('child-bridges').payloadsFor('monitor-child-bridge-status')).toHaveLength(2)
+
+      modal.destroy()
+
+      expect(socketFor('child-bridges').payloadsFor('end')).toHaveLength(0)
+      socketFor('child-bridges').fire('child-bridge-status-update', { username, name: 'Kitchen Bridge', status: 'ok' })
+      expect(bridges.componentInstance.childBridges()[0].status).toBe('ok')
+
+      bridges.destroy()
+
+      expect(socketFor('child-bridges').payloadsFor('end')).toHaveLength(1)
     })
   })
 })

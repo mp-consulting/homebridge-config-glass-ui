@@ -150,6 +150,12 @@ export class LogService {
     // reliably fires for both fresh and cache-hit paths — do NOT also emit
     // `tail-log` synchronously here, or the server will attach two log streams
     // to this socket and every line is delivered twice (see #2806).
+    //
+    // A second LogService on the same page (the plugin logs modal over the
+    // dashboard logs widget) shares this socket and sends its own `tail-log`.
+    // The server keeps one stream per socket and ignores the repeat, so both
+    // terminals read the first one's `stdout`; the stream only stops when the
+    // last of them ends its WsService handle (see destroyTerminal).
     this.io.connected!
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {

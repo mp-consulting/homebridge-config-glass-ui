@@ -22,6 +22,9 @@ export class WsService {
 
   private namespaceConnectionCache: Record<string, IoNamespace> = {}
 
+  // How many consumers currently hold each namespace (see connectToNamespace)
+  private namespaceRefCounts: Record<string, number> = {}
+
   /**
    * Wrapper function to reuse the same connection.
    *
@@ -35,42 +38,37 @@ export class WsService {
    * …without an additional `if (io.socket.connected) emit('start')` fallback —
    * adding both makes the `emit` fire twice on cache-hit (see #2806).
    *
+   * Every call takes a reference on the namespace and returns a handle of its
+   * own: `socket`, `connected` and `request` are the shared ones, but `end()`
+   * only releases this caller's reference. The server-side 'end' — which drops
+   * every subscription the socket holds, whoever started it — is emitted when
+   * the last holder releases. Otherwise closing one consumer cuts off the rest
+   * (e.g. the plugin logs modal ending the `log` stream the dashboard logs
+   * widget is still reading). So every caller must end() exactly the handle it
+   * got, and a caller that never ends keeps the server subscriptions alive for
+   * everyone.
+   *
    * @param namespace
    */
   public connectToNamespace(namespace: string): IoNamespace {
-    if (this.namespaceConnectionCache[namespace]) {
-      // Return the cached IoNamespace unchanged. Reassigning `io.connected`
-      // or rebinding `on('connect')` here would orphan earlier subscribers
-      // on the previous ReplaySubject and stack a new `connect` listener on
-      // every call — eventually tripping MaxListenersExceededWarning and
-      // double-emitting on reconnect.
-      return this.namespaceConnectionCache[namespace]
+    const shared = this.namespaceConnectionCache[namespace] ?? this.openNamespace(namespace)
+    this.namespaceRefCounts[namespace] = (this.namespaceRefCounts[namespace] ?? 0) + 1
+
+    // Released once: a second end() from the same consumer (e.g. a stop()
+    // called twice) must not give up a reference another consumer holds
+    let released = false
+    return {
+      socket: shared.socket,
+      connected: shared.connected,
+      request: shared.request,
+      end: () => {
+        if (released) {
+          return
+        }
+        released = true
+        this.releaseNamespace(namespace)
+      },
     }
-
-    /* first time connecting to namespace */
-    const io = this.establishConnectionToNamespace(namespace)
-    io.connected = new ReplaySubject<void>(1)
-
-    // Wait for the connection and broadcast when ready
-    io.socket.on('connect', () => {
-      io.connected!.next()
-    })
-
-    // Define end function. We deliberately do NOT call removeAllListeners()
-    // or complete() the shared `connected` ReplaySubject here — the
-    // namespace is cached and shared across multiple components (e.g. the
-    // `status` socket feeds StatusComponent and every status widget;
-    // `child-bridges` feeds accessories, plugins, plugin-card). Wiping
-    // listeners or completing the subject when one consumer closes would
-    // silence every other consumer. Each consumer must therefore manage
-    // its own listener teardown.
-    io.end = () => {
-      io.socket.emit('end')
-    }
-
-    // Cache the connection
-    this.namespaceConnectionCache[namespace] = io
-    return io
   }
 
   // There is deliberately no "push the rotated token onto cached sockets" step.
@@ -80,8 +78,55 @@ export class WsService {
   // re-verifies the JWT and re-reads the user record on every message, so an
   // expired or revoked token stops working on an already-open socket regardless.
 
+  /**
+   * Borrow a namespace some other consumer has already opened, without taking
+   * a reference on it. The result has no `end()`: a borrower never owns the
+   * server-side session, so it only detaches its own listeners.
+   * @param namespace
+   */
   public getExistingNamespace(namespace: string): IoNamespace {
     return this.namespaceConnectionCache[namespace]
+  }
+
+  /**
+   * Open and cache the shared connection for a namespace.
+   * @param namespace
+   */
+  private openNamespace(namespace: string): IoNamespace {
+    const io = this.establishConnectionToNamespace(namespace)
+    io.connected = new ReplaySubject<void>(1)
+
+    // Wait for the connection and broadcast when ready. Bound once here, not
+    // per connectToNamespace() call: rebinding on every call would stack a
+    // `connect` listener each time — eventually tripping
+    // MaxListenersExceededWarning and double-emitting on reconnect.
+    io.socket.on('connect', () => {
+      io.connected!.next()
+    })
+
+    this.namespaceConnectionCache[namespace] = io
+    return io
+  }
+
+  /**
+   * Drop one consumer's reference, ending the server-side session when it was
+   * the last one.
+   *
+   * We deliberately do NOT call removeAllListeners(), complete() the shared
+   * `connected` ReplaySubject or disconnect here, even for the last holder —
+   * the socket stays cached for the next consumer, and `connected` keeps
+   * replaying to it. Each consumer must therefore manage its own listener
+   * teardown.
+   * @param namespace
+   */
+  private releaseNamespace(namespace: string): void {
+    const remaining = (this.namespaceRefCounts[namespace] ?? 0) - 1
+    if (remaining > 0) {
+      this.namespaceRefCounts[namespace] = remaining
+      return
+    }
+    delete this.namespaceRefCounts[namespace]
+    this.namespaceConnectionCache[namespace]?.socket.emit('end')
   }
 
   /**

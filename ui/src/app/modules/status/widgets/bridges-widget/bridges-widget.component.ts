@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
@@ -16,7 +15,7 @@ import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/wid
 
 @Component({
   selector: 'app-bridges-widget',
-  imports: [ChildBridgeStatusIconsComponent, NgbTooltip, TranslatePipe],
+  imports: [ChildBridgeStatusIconsComponent, TranslatePipe],
   standalone: true,
   templateUrl: './bridges-widget.component.html',
   styleUrl: './bridges-widget.component.scss',
@@ -253,10 +252,10 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    // Deliberately no `ioMain.end()`: the `status` namespace is owned by
-    // StatusComponent, which starts `monitor-server-status` and ends it on
-    // destroy. Ending it here when the widget is removed would stop the
-    // status pushes for the whole dashboard. Only detach our own listeners.
+    // `end()` on these handles only releases this widget's reference: the
+    // server-side session is ended by WsService once the last holder lets go,
+    // so StatusComponent's `monitor-server-status` and any other
+    // `child-bridges` consumer (e.g. the update-all modal) keep running.
     if (this.ioMain) {
       if (this.statusHandler) {
         this.ioMain.socket.off('homebridge-status', this.statusHandler)
@@ -264,10 +263,8 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
       if (this.disconnectHandler) {
         this.ioMain.socket.off('disconnect', this.disconnectHandler)
       }
+      this.ioMain.end?.()
     }
-    // `child-bridges` monitoring on the dashboard is started by this widget
-    // alone (`monitor-child-bridge-status` above), so ending it is ours to do;
-    // leaving it running would stack a second server-side watcher on re-add.
     if (this.ioChild) {
       if (this.childStatusHandler) {
         this.ioChild.socket.off('child-bridge-status-update', this.childStatusHandler)
