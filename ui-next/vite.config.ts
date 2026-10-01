@@ -84,6 +84,14 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 4200,
     strictPort: true,
+    // Plugin custom-UI iframes are served from the backend origin (:8581) and
+    // fetch fonts from this dev server with CORS, also over a LAN IP.
+    cors: true,
+  },
+  // Pre-bundled up front: discovering it on first load makes Vite re-optimise
+  // and reload mid-render ("Invalid hook call").
+  optimizeDeps: {
+    include: ['@monaco-editor/react'],
   },
   build: {
     outDir: '../public',
@@ -94,5 +102,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/testing/setup.ts'],
     isolate: true,
+    // Node 25+ ships its own localStorage, which hides jsdom's.
+    execArgv: ['--no-experimental-webstorage'],
   },
 })

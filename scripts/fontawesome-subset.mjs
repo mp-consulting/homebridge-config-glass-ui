@@ -98,7 +98,8 @@ async function collectIconNames(dir, found) {
       await collectIconNames(full, found)
       continue
     }
-    if (!/\.(?:html|tsx?)$/.test(entry)) {
+    // Specs mention font files and icons that never reach the shipped UI.
+    if (!/\.(?:html|tsx?)$/.test(entry) || /\.(?:spec|test)\.tsx?$/.test(entry)) {
       continue
     }
     const content = await readFile(full, 'utf8')
@@ -149,6 +150,13 @@ const before = Object.fromEntries(
 // Feed the same name list to every family; fontawesome-subset only emits an
 // icon into a family's font if that family actually contains it, and silently
 // skips the rest — so over-inclusion is safe and guarantees no missing glyph.
+// A font subset to zero glyphs fails to decode ("cmap: No subtables") and
+// blanks every icon, so keep the full fonts until the UI references some.
+if (names.length === 0) {
+  console.log(`[fa-subset] no icon names referenced in ${uiDir}/src — keeping the full fonts`)
+  process.exit(0)
+}
+
 await fontawesomeSubset(
   { solid: names, regular: names, brands: names },
   faWebfontsDir,
