@@ -83,3 +83,4 @@ info
 
 # ui-next (React migration)
 *.tsbuildinfo
+ui-next/src/schema-form/__corpus__/schemas/
