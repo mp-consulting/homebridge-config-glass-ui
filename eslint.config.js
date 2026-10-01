@@ -2,9 +2,11 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    ignores: ['dist', 'info', '.angular', 'ui/.angular'],
+    ignores: ['dist', 'info', '.angular', 'ui/.angular', 'ui-next/src/scss/vendor'],
     typescript: true,
     angular: true,
+    // React rules for the ui-next migration; `angular` goes at the cutover.
+    react: true,
     formatters: {
       css: true,
       html: true,

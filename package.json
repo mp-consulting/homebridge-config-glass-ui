@@ -57,7 +57,10 @@
     "test:ui": "npm run test --prefix ui",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
-    "watch:ui": "npm run start --prefix ui"
+    "watch:ui": "npm run start --prefix ui",
+    "build:ui-next": "npm run build --prefix ui-next && node scripts/verify-monaco-assets.mjs",
+    "test:ui-next": "npm run test --prefix ui-next",
+    "watch:next": "concurrently \"npm run start --prefix ui-next\" \"npm run watch:server\""
   },
   "dependencies": {
     "@fastify/helmet": "13.1.1",
@@ -110,6 +113,7 @@
     "@angular-eslint/eslint-plugin-template": "^22.2.0",
     "@angular-eslint/template-parser": "^22.2.0",
     "@antfu/eslint-config": "^9.3.0",
+    "@eslint-react/eslint-plugin": "^5.23.3",
     "@nestjs/testing": "^12.0.1",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/fs-extra": "^11.0.4",
@@ -124,6 +128,7 @@
     "@vitest/coverage-v8": "^4.1.11",
     "concurrently": "^10.0.5",
     "eslint-plugin-format": "^2.0.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
     "form-data": "^4.0.6",
     "nodemon": "^3.1.14",
     "patch-package": "^8.0.1",

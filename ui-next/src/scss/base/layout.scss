@@ -1,0 +1,204 @@
+/*
+ * Base Layout
+ */
+
+html,
+body {
+  height: 100%;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+body {
+  background-color: #f4f4f4;
+}
+
+.body-top-padding {
+  padding-top: 5.5rem;
+}
+
+a,
+a:hover,
+a:focus {
+  text-decoration: none !important;
+  --bs-link-decoration: none !important;
+}
+
+.grey-text,
+.grey-text a {
+  color: #999999 !important;
+}
+
+.pink-text,
+.pink-text a {
+  color: #e91e63 !important;
+}
+
+.green-text,
+.green-text a {
+  color: #4caf50 !important;
+}
+
+.cyan-text,
+.cyan-text a {
+  color: #00bcd4 !important;
+}
+
+.red-text,
+.red-text a {
+  color: #d32f2f !important;
+}
+
+.orange-text,
+.orange-text a {
+  color: #ff9800 !important;
+}
+
+.purple-text {
+  color: #9c42f5;
+}
+
+.on-text {
+  color: #ffcf55;
+}
+
+.off-text {
+  color: #808080;
+}
+
+.navbar-brand {
+  color: #ffffff !important;
+}
+
+.table {
+  --bs-table-color: initial;
+  --bs-table-bg: initial;
+}
+
+.list-group-item {
+  border: none !important;
+  font-weight: 300;
+}
+
+.list-group-item:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
+h3 {
+  font-weight: 300;
+  @media (max-width: 575px) {
+    font-size: 1.5rem;
+  }
+}
+
+p,
+h2,
+h4,
+h5,
+h6,
+table th,
+table td,
+small,
+.small {
+  font-weight: 300;
+}
+
+.card .card-text {
+  font-size: 0.9rem;
+  color: #747373;
+  font-weight: 300;
+}
+
+td {
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: #999999 !important;
+}
+
+th {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.alert {
+  border-width: 1px;
+  border-radius: 0.5rem;
+  padding: 20px;
+  text-align: center;
+}
+
+.alert-warning {
+  border-color: #ffa000;
+}
+
+.alert-error {
+  border-color: #d32f2f;
+}
+
+.hover-pointer {
+  cursor: pointer;
+}
+
+// Reset native <button> chrome for buttons that act as disclosure-section
+// toggles (collapsible headers in support, settings, etc.). Lets a real
+// <button> render identically to the previous `<div role="button">` markup
+// while keeping native Enter/Space activation and proper button semantics
+// for screen readers.
+.disclosure-toggle {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.list-group-box {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.5rem;
+
+  .list-group-item:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  .list-group-item:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+}
+
+.adjust-for-mobile {
+  height: calc(100% - 32px);
+  width: calc(100% + 17px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 60px);
+    width: calc(100% + 16px);
+  }
+}
+
+// Prevent tooltips appearing in front of opened modal on mobile
+.tooltip {
+  z-index: 1020 !important;
+}
+
+.modal {
+  .tooltip {
+    z-index: 1070 !important;
+  }
+}
+
+.noUi-handle {
+  background-color: transparent;
+}

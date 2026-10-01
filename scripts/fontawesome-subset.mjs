@@ -17,11 +17,16 @@ import { copyFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const uiSrc = resolve(__dirname, '../ui/src')
-const uiRequire = createRequire(resolve(__dirname, '../ui/package.json'))
+// `--ui-dir <name>` picks the UI package to subset for (default `ui`), so the
+// React app in `ui-next` can share this script during the migration.
+const uiDirArg = process.argv.indexOf('--ui-dir')
+const uiDir = uiDirArg === -1 ? 'ui' : process.argv[uiDirArg + 1]
+const uiSrc = resolve(__dirname, '..', uiDir, 'src')
+const uiRequire = createRequire(resolve(__dirname, '..', uiDir, 'package.json'))
 
 // pathToFileURL: dynamic import() rejects bare Windows paths (e.g. `D:\...`).
 const { fontawesomeSubset } = await import(
@@ -93,7 +98,7 @@ async function collectIconNames(dir, found) {
       await collectIconNames(full, found)
       continue
     }
-    if (!/\.(?:html|ts)$/.test(entry)) {
+    if (!/\.(?:html|tsx?)$/.test(entry)) {
       continue
     }
     const content = await readFile(full, 'utf8')
@@ -150,7 +155,7 @@ await fontawesomeSubset(
 )
 
 const kib = n => `${(n / 1024).toFixed(1)} KiB`
-console.log(`[fa-subset] ${names.length} icon names referenced in ui/src`)
+console.log(`[fa-subset] ${names.length} icon names referenced in ${uiDir}/src`)
 for (const f of fonts) {
   const b = before[f]
   const a = fileSize(resolve(faWebfontsDir, f))

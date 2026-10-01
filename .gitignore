@@ -80,3 +80,6 @@ info
 
 # AI agents
 .claude
+
+# ui-next (React migration)
+*.tsbuildinfo
