@@ -1,5 +1,7 @@
 export * from './convert-mired'
 export * from './convert-temp'
+export * from './date'
+export * from './decimal'
 export * from './duration'
 export * from './interpolate-md'
 export * from './prettify'

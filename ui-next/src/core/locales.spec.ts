@@ -10,10 +10,14 @@ import { chooseStartupLanguage, localeIdFor, storedLanguage, supportedLocales } 
  * - a language shipped but missing from `supportedLocales` falls back to the
  *   `en` locale, so the UI is translated but its dates and number separators
  *   are wrong for the reader;
- * - a language in `supportedLocales` with no translation file loads untranslated.
+ * - a language in `supportedLocales` with no translation file loads untranslated;
+ * - a language missing from the settings picker or the config editor's guided
+ *   schema is shipped, translated, and unreachable.
  *
- * The checks against the settings picker and the config editor's guided schema
- * move here once those modules are ported (Phase 4).
+ * ⚠️ The last two lists are read out of the source files rather than imported,
+ * because both are literals inside a module that does not export them. Each
+ * lookup asserts it matched something first — a moved block has to fail loudly
+ * here rather than quietly check an empty list.
  */
 describe('the supported locales', () => {
   /**
@@ -26,8 +30,50 @@ describe('the supported locales', () => {
     .map(path => path.split('/').pop()!.replace('.json', ''))
     .sort()
 
+  /** The sources of the two modules carrying a hand-written language list. */
+  const sources = import.meta.glob<string>(
+    ['/src/modules/settings/sections/DisplaySection.tsx', '/src/modules/config-editor/config-schema.ts'],
+    { query: '?raw', import: 'default', eager: true },
+  )
+
+  /**
+   * One of the two source files, by the part of its path that identifies it.
+   * @param name - a fragment of the file name
+   */
+  function source(name: string): string {
+    const match = Object.entries(sources).find(([path]) => path.includes(name))
+    expect(match, `source not found: ${name}`).toBeDefined()
+    return match![1]
+  }
+
+  /** The settings picker's list: the `LANGUAGES` table the select renders after "auto". */
+  function settingsPickerList(): string {
+    const tsx = source('DisplaySection.tsx')
+    const start = tsx.indexOf('const LANGUAGES')
+    expect(start, 'the language list of the settings picker could not be found').toBeGreaterThan(-1)
+    const end = tsx.indexOf('\n]', start)
+    expect(end, 'the end of the settings language list could not be found').toBeGreaterThan(start)
+    return tsx.slice(start, end)
+  }
+
+  /** The guided schema's list: the `lang` property's `oneOf`. */
+  function configSchemaList(): string {
+    // Sliced by hand rather than matched with one regex: the pair of lazy
+    // wildcards that needs is the shape the linter rejects for backtracking
+    const ts = source('config-schema.ts')
+    const start = ts.indexOf('description: \'The language used for the UI.\'')
+    expect(start, 'the language schema could not be found').toBeGreaterThan(-1)
+    // Each entry ends `] },` so the first `],` is the end of the list itself
+    const end = ts.indexOf('],', start)
+    expect(end, 'the end of the language schema could not be found').toBeGreaterThan(start)
+    return ts.slice(start, end)
+  }
+
   it('found the translation files to compare against', () => {
+    // Guards the rest of the block: an empty list would make several of these
+    // assertions vacuous rather than wrong
     expect(shippedLanguages.length).toBeGreaterThan(20)
+    expect(Object.keys(sources)).toHaveLength(2)
   })
 
   it('ships a translation for every language it lists', () => {
@@ -155,6 +201,29 @@ describe('the supported locales', () => {
 
       expect(chooseStartupLanguage('kl', 'kl-GL')).toBeUndefined()
       expect(localeIdFor(undefined)).toBe('en')
+    })
+  })
+
+  describe('the lists the user picks from', () => {
+    const settingsPicked = () => [...settingsPickerList().matchAll(/\['([\w-]+)',/g)].map(match => match[1])
+    const schemaPicked = () => [...configSchemaList().matchAll(/enum: \['([\w-]+)'\]/g)]
+      .map(match => match[1])
+      .filter(value => value !== 'auto')
+
+    it('offers every shipped language in the settings picker', () => {
+      expect(settingsPicked().sort()).toEqual(shippedLanguages)
+    })
+
+    it('offers every shipped language in the config editor schema', () => {
+      // The guided form the json editor shows for the UI's own config block. A
+      // language missing here cannot be set by anyone editing the config that way
+      expect(schemaPicked().sort()).toEqual(shippedLanguages)
+    })
+
+    it('names each language once in each list', () => {
+      for (const [name, values] of [['settings picker', settingsPicked()], ['config schema', schemaPicked()]] as const) {
+        expect(new Set(values).size, `the ${name} lists a language twice`).toBe(values.length)
+      }
     })
   })
 })
