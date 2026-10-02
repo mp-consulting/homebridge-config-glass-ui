@@ -28,14 +28,14 @@ const KNOWN: Record<string, string> = knownDifferences
  * parallel.
  *
  * Skips when the corpus has not been fetched/recorded. Env:
- * - `GOLDEN_ONLY=<substring>` limits the run to matching plugins;
+ * - `GOLDEN_ONLY=<substring>[,<substring>...]` limits the run to matching plugins;
  * - a JSON report per shard is written to `$TMPDIR/schema-form-golden-report.<shard>.json`.
  */
 export function defineGoldenSuite(shard: number) {
-  const only = process.env.GOLDEN_ONLY
+  const only = process.env.GOLDEN_ONLY?.split(',').filter(Boolean)
   const corpus = loadCorpus()
     .filter((_, i) => i % GOLDEN_SHARDS === shard)
-    .filter(({ golden }) => !only || golden.plugin.includes(only))
+    .filter(({ golden }) => !only || only.some(part => golden.plugin.includes(part)))
   const report: Record<string, Entry> = {}
 
   describe.skipIf(corpus.length === 0)(`schemaForm golden parity (shard ${shard + 1}/${GOLDEN_SHARDS})`, () => {

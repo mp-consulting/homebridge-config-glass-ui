@@ -1,0 +1,446 @@
+{
+  "plugin": "homebridge-anthemreceiver-plus",
+  "version": "1.2.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Anthem Receiver Plus",
+        "Port": 14999,
+        "PanelBrightness": true,
+        "Zone1": {
+          "Active": true,
+          "Power": true,
+          "Mute": true,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": true,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "Port": 14999,
+        "PanelBrightness": true,
+        "Zone1": {
+          "Active": true,
+          "Power": true,
+          "Mute": true,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": true,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "Port": 14999,
+        "PanelBrightness": true,
+        "Zone1": {
+          "Active": true,
+          "Power": true,
+          "Mute": true,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": true,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        },
+        "MaxVolumeDB": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "Port": 14999,
+        "PanelBrightness": false,
+        "Zone1": {
+          "Active": true,
+          "Power": true,
+          "Mute": true,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": true,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        },
+        "MaxVolumeDB": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "Port": 14999,
+        "PanelBrightness": false,
+        "Zone1": {
+          "Active": true,
+          "Power": false,
+          "Mute": true,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": true,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        },
+        "MaxVolumeDB": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "Port": 14999,
+        "PanelBrightness": false,
+        "Zone1": {
+          "Active": true,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": true,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        },
+        "MaxVolumeDB": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "Port": 14999,
+        "PanelBrightness": false,
+        "Zone1": {
+          "Active": true,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": true,
+          "ALM": true,
+          "ARC": true,
+          "Volume": false,
+          "DolbyPostProcessing": true
+        },
+        "Zone2": {
+          "Active": false,
+          "Power": false,
+          "Mute": false,
+          "MultipleInputs": false,
+          "Volume": false,
+          "DolbyPostProcessing": false
+        },
+        "MaxVolumeDB": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Anthem Receiver Plugin Configuration",
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Front Panel Brightness",
+        "Maximum volume (dB)",
+        "Zone 1 - Platform Accessories",
+        "Power",
+        "Mute",
+        "Volume",
+        "Input Selector",
+        "Audio Listening Mode",
+        "ARC - (Toggle ARC status for active input, ARC must be configured)",
+        "Dolby Audio Processing",
+        "Zone 1 - Power/Input Accessory",
+        "Enable Zone 1 Power/Input",
+        "Name:",
+        "Zone 2 - Platform Accessories",
+        "Zone 2 - Power/Input Accessory"
+      ]
+    }
+  ]
+}

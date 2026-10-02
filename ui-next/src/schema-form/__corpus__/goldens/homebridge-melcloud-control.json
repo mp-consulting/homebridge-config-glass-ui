@@ -1,0 +1,1242 @@
+{
+  "plugin": "homebridge-melcloud-control",
+  "version": "4.13.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: melcloud"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 48,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 44,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "language": "0",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "0",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "0",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "0",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "0",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": false,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "0",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "disabled",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureRoomZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 11,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "melcloud",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureOutdoorSensor": false,
+                "temperatureRoomSensor": false,
+                "temperatureFlowSensor": false,
+                "temperatureReturnSensor": false,
+                "temperatureRoomZone1Sensor": false,
+                "temperatureFlowZone1Sensor": false,
+                "temperatureReturnZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureFlowWaterTankSensor": false,
+                "temperatureReturnWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "temperatureFlowZone2Sensor": false,
+                "temperatureReturnZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 18,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 36,
+        "radio": 0,
+        "select": 14,
+        "add": 10,
+        "remove": 10
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Presets",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "melcloud",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureOutdoorSensor": false,
+                "temperatureRoomSensor": false,
+                "temperatureFlowSensor": false,
+                "temperatureReturnSensor": false,
+                "temperatureRoomZone1Sensor": false,
+                "temperatureFlowZone1Sensor": false,
+                "temperatureReturnZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureFlowWaterTankSensor": false,
+                "temperatureReturnWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "temperatureFlowZone2Sensor": false,
+                "temperatureReturnZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 36,
+        "radio": 0,
+        "select": 15,
+        "add": 10,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Presets",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "melcloud",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureOutdoorSensor": false,
+                "temperatureRoomSensor": false,
+                "temperatureFlowSensor": false,
+                "temperatureReturnSensor": false,
+                "temperatureRoomZone1Sensor": false,
+                "temperatureFlowZone1Sensor": false,
+                "temperatureReturnZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureFlowWaterTankSensor": false,
+                "temperatureReturnWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "temperatureFlowZone2Sensor": false,
+                "temperatureReturnZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 36,
+        "radio": 0,
+        "select": 16,
+        "add": 10,
+        "remove": 12
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Presets",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "melcloud",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              },
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureOutdoorSensor": false,
+                "temperatureRoomSensor": false,
+                "temperatureFlowSensor": false,
+                "temperatureReturnSensor": false,
+                "temperatureRoomZone1Sensor": false,
+                "temperatureFlowZone1Sensor": false,
+                "temperatureReturnZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureFlowWaterTankSensor": false,
+                "temperatureReturnWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "temperatureFlowZone2Sensor": false,
+                "temperatureReturnZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 42,
+        "radio": 0,
+        "select": 22,
+        "add": 12,
+        "remove": 15
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Presets",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "melcloud",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureOutdoorSensor": false,
+                "temperatureRoomSensor": false,
+                "temperatureFlowSensor": false,
+                "temperatureReturnSensor": false,
+                "temperatureRoomZone1Sensor": false,
+                "temperatureFlowZone1Sensor": false,
+                "temperatureReturnZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureFlowWaterTankSensor": false,
+                "temperatureReturnWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "temperatureFlowZone2Sensor": false,
+                "temperatureReturnZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 36,
+        "radio": 0,
+        "select": 16,
+        "add": 10,
+        "remove": 12
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Presets",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "MELCloud Control",
+        "accounts": [
+          {
+            "name": "golden",
+            "language": "1",
+            "type": "melcloud",
+            "ataDevices": [
+              {
+                "temperatureRoomSensor": true,
+                "temperatureOutdoorSensor": true,
+                "inStandbySensor": true,
+                "connectSensor": true,
+                "errorSensor": false,
+                "remoteRoomTemperatureSupport": false
+              }
+            ],
+            "atwDevices": [
+              {
+                "temperatureOutdoorSensor": false,
+                "temperatureRoomSensor": false,
+                "temperatureFlowSensor": false,
+                "temperatureReturnSensor": false,
+                "temperatureRoomZone1Sensor": false,
+                "temperatureFlowZone1Sensor": false,
+                "temperatureReturnZone1Sensor": false,
+                "temperatureWaterTankSensor": false,
+                "temperatureFlowWaterTankSensor": false,
+                "temperatureReturnWaterTankSensor": false,
+                "temperatureRoomZone2Sensor": false,
+                "temperatureFlowZone2Sensor": false,
+                "temperatureReturnZone2Sensor": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "ervDevices": [
+              {
+                "temperatureRoomSensor": false,
+                "temperatureOutdoorSensor": false,
+                "temperatureSensorSupply": false,
+                "inStandbySensor": false,
+                "connectSensor": false,
+                "errorSensor": false
+              }
+            ],
+            "refreshInterval": 120,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 36,
+        "radio": 0,
+        "select": 15,
+        "add": 10,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Name",
+        "User",
+        "Password",
+        "Language",
+        "Account Type",
+        "",
+        "",
+        "Id",
+        "Display Type",
+        "Settings",
+        "Presets",
+        "Monitoring And Control",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

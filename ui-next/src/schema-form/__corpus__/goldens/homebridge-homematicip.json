@@ -1,0 +1,179 @@
+{
+  "plugin": "homebridge-homematicip",
+  "version": "2.9.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 6,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "HomematicIP",
+        "hideSecuritySystem": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Access Point SGTIN / HCU ID",
+        "Authentication Token",
+        "Pairing PIN",
+        "Hide Home Security System"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "hideSecuritySystem": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Access Point SGTIN / HCU ID",
+        "Authentication Token",
+        "Pairing PIN",
+        "Hide Home Security System"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "hideSecuritySystem": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Access Point SGTIN / HCU ID",
+        "Authentication Token",
+        "Pairing PIN",
+        "Hide Home Security System"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "hideSecuritySystem": true,
+        "devices": [
+          {
+            "hide": false,
+            "asContactSensor": false,
+            "asClimateSensor": false,
+            "lightSensor": false,
+            "lightSwitch": false,
+            "openLatch": false,
+            "separateChannels": false,
+            "simpleSwitch": false,
+            "withRainSensor": false,
+            "withStormSensor": false,
+            "withSunshineSensor": false,
+            "withWindSpeedSensor": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Access Point SGTIN / HCU ID",
+        "Authentication Token",
+        "Pairing PIN",
+        "Hide Home Security System",
+        "Device",
+        "SGTIN / Serial Number",
+        "Hide Device",
+        "Expose as Contact Sensor",
+        "Expose as Climate Sensor",
+        "Expose Light Sensor",
+        "Expose Light Switch",
+        "Open Latch when Unlocking",
+        "Authorization PIN",
+        "Expose Channels as Separate Accessories",
+        "Expose as Simple Switch",
+        "Expose Rain Sensor",
+        "Expose Storm Sensor",
+        "Expose Sunshine Sensor",
+        "Expose Wind Speed Sensor"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "hideSecuritySystem": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Access Point SGTIN / HCU ID",
+        "Authentication Token",
+        "Pairing PIN",
+        "Hide Home Security System"
+      ]
+    }
+  ]
+}

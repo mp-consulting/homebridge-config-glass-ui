@@ -1,0 +1,198 @@
+{
+  "plugin": "homebridge-inteo-somfy-blinds",
+  "version": "1.1.6",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 7,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Somfy Blinds",
+        "advanced": {
+          "retryAttempts": 4,
+          "requestTimeout": 500
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Hub MAC Address",
+        "Blinds",
+        "",
+        "Blind Name",
+        "Open Scene Number",
+        "Close Scene Number",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "advanced": {
+          "retryAttempts": 4,
+          "requestTimeout": 500
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Hub MAC Address",
+        "Blinds",
+        "",
+        "Blind Name",
+        "Open Scene Number",
+        "Close Scene Number",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "advanced": {
+          "retryAttempts": 4,
+          "requestTimeout": 500
+        },
+        "blinds": [
+          {
+            "openScene": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Hub MAC Address",
+        "Blinds",
+        "",
+        "Blind Name",
+        "Open Scene Number",
+        "Close Scene Number",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "advanced": {
+          "retryAttempts": 4,
+          "requestTimeout": 500
+        },
+        "blinds": [
+          {
+            "openScene": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "Hub MAC Address",
+        "Blinds",
+        "",
+        "Blind Name",
+        "Open Scene Number",
+        "Close Scene Number",
+        "",
+        "Blind Name",
+        "Open Scene Number",
+        "Close Scene Number",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "advanced": {
+          "retryAttempts": 4,
+          "requestTimeout": 500
+        },
+        "blinds": [
+          {
+            "openScene": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Hub MAC Address",
+        "Blinds",
+        "",
+        "Blind Name",
+        "Open Scene Number",
+        "Close Scene Number",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

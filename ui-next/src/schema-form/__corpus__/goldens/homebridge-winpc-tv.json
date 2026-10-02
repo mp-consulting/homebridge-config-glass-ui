@@ -1,0 +1,136 @@
+{
+  "plugin": "homebridge-winpc-tv",
+  "version": "1.1.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 5,
+      "value": 7
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Windows PC",
+        "httpPort": 8000,
+        "pollInterval": 60,
+        "broadcastAddress": "255.255.255.255",
+        "wolPort": 9,
+        "statusPath": "/",
+        "shutdownPath": "/?action=System.Shutdown",
+        "restartPath": "/?action=System.Restart",
+        "sleepPath": "/?action=System.Standby",
+        "httpTimeoutMs": 4000,
+        "wolRetries": 3,
+        "wolRetryDelayMs": 400,
+        "wolMaxCycles": 3,
+        "wolBootWaitMs": 20000
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "MAC Address",
+        "IP Address",
+        "Airytec Username",
+        "Airytec Password",
+        "Airytec Port",
+        "Poll Interval (seconds)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 8000,
+        "pollInterval": 60,
+        "broadcastAddress": "255.255.255.255",
+        "wolPort": 9,
+        "statusPath": "/",
+        "shutdownPath": "/?action=System.Shutdown",
+        "restartPath": "/?action=System.Restart",
+        "sleepPath": "/?action=System.Standby",
+        "httpTimeoutMs": 4000,
+        "wolRetries": 3,
+        "wolRetryDelayMs": 400,
+        "wolMaxCycles": 3,
+        "wolBootWaitMs": 20000
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "MAC Address",
+        "IP Address",
+        "Airytec Username",
+        "Airytec Password",
+        "Airytec Port",
+        "Poll Interval (seconds)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "pollInterval": 60,
+        "broadcastAddress": "255.255.255.255",
+        "wolPort": 9,
+        "statusPath": "/",
+        "shutdownPath": "/?action=System.Shutdown",
+        "restartPath": "/?action=System.Restart",
+        "sleepPath": "/?action=System.Standby",
+        "httpTimeoutMs": 4000,
+        "wolRetries": 3,
+        "wolRetryDelayMs": 400,
+        "wolMaxCycles": 3,
+        "wolBootWaitMs": 20000
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "MAC Address",
+        "IP Address",
+        "Airytec Username",
+        "Airytec Password",
+        "Airytec Port",
+        "Poll Interval (seconds)",
+        "Advanced"
+      ]
+    }
+  ]
+}

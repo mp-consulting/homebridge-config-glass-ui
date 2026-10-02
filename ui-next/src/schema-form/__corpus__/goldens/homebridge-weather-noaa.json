@@ -1,0 +1,133 @@
+{
+  "plugin": "homebridge-weather-noaa",
+  "version": "1.11.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "NOAA Weather",
+        "refreshInterval": 15,
+        "adaptivePolling": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Latitude",
+        "Longitude",
+        "NOAA Station ID (Optional)",
+        "Refresh Interval (minutes)",
+        "Adaptive Polling",
+        "Contact (User-Agent)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refreshInterval": 15,
+        "adaptivePolling": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Latitude",
+        "Longitude",
+        "NOAA Station ID (Optional)",
+        "Refresh Interval (minutes)",
+        "Adaptive Polling",
+        "Contact (User-Agent)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refreshInterval": 15,
+        "adaptivePolling": true,
+        "latitude": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Latitude",
+        "Longitude",
+        "NOAA Station ID (Optional)",
+        "Refresh Interval (minutes)",
+        "Adaptive Polling",
+        "Contact (User-Agent)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refreshInterval": 15,
+        "adaptivePolling": false,
+        "latitude": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Latitude",
+        "Longitude",
+        "NOAA Station ID (Optional)",
+        "Refresh Interval (minutes)",
+        "Adaptive Polling",
+        "Contact (User-Agent)"
+      ]
+    }
+  ]
+}

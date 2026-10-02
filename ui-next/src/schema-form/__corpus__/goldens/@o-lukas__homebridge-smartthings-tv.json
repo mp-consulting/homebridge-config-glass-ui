@@ -1,0 +1,1125 @@
+{
+  "plugin": "@o-lukas/homebridge-smartthings-tv",
+  "version": "3.0.24",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: oauth"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 24"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 37,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": false,
+        "cyclicCallsLogging": false,
+        "registerApplications": false,
+        "registerPictureModes": false,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": false,
+        "cyclicCallsLogging": false,
+        "registerApplications": false,
+        "registerPictureModes": false,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "token": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": false,
+        "cyclicCallsLogging": false,
+        "registerApplications": false,
+        "registerPictureModes": false,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "token": "golden",
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": false,
+        "registerApplications": false,
+        "registerPictureModes": false,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "token": "golden",
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": false,
+        "registerPictureModes": false,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "token": "golden",
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": false,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "token": "golden",
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "pat",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "token": "golden",
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "SmartThings personal access token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "oauth",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "OAuth client id",
+        "OAuth client secret",
+        "OAuth refresh token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "oauth",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true,
+            "category": 24
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 3
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "OAuth client id",
+        "OAuth client secret",
+        "OAuth refresh token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "oauth",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true,
+            "category": 24
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 15,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 4
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "OAuth client id",
+        "OAuth client secret",
+        "OAuth refresh token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "oauth",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true,
+            "category": 24
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 17,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "OAuth client id",
+        "OAuth client secret",
+        "OAuth refresh token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "oauth",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true,
+            "category": 24
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 18,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "OAuth client id",
+        "OAuth client secret",
+        "OAuth refresh token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "tokenType": "oauth",
+        "deviceMappings": [
+          {
+            "wol": false,
+            "ping": false,
+            "validateApplications": true,
+            "category": 24
+          }
+        ],
+        "tvDeviceTypes": [
+          "oic.d.tv",
+          "x.com.st.d.monitor"
+        ],
+        "soundbarDeviceTypes": [
+          "oic.d.networkaudio"
+        ],
+        "capabilityLogging": true,
+        "cyclicCallsLogging": true,
+        "registerApplications": true,
+        "registerPictureModes": true,
+        "registerSoundModes": false,
+        "registerAmbientSwitch": false,
+        "registerAmbientModes": false,
+        "registerVolumeSlider": false,
+        "registerInputSwitches": false,
+        "pollInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 17,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "SmartThings authentication type",
+        "OAuth client id",
+        "OAuth client secret",
+        "OAuth refresh token",
+        "Capability Logging",
+        "Cyclic calls Logging",
+        "Register applications",
+        "Register picture modes",
+        "Register sound modes",
+        "Register ambient mode switch",
+        "Register ambient modes",
+        "Register volume slider",
+        "Register input sources as switches",
+        "State polling interval [ms]",
+        "Device Blocklist",
+        "Device Id",
+        "Device Id",
+        "Device Mappings",
+        "",
+        "Device Id",
+        "Name override",
+        "Wake-on-lan functionality",
+        "Ping functionality",
+        "Info key",
+        "Custom input sources list",
+        "",
+        "Input source name",
+        "Input source id",
+        "",
+        "Input source name",
+        "Input source id",
+        "Custom application list",
+        "",
+        "Application name",
+        "Application IDs",
+        "Application ID",
+        "Validate application list",
+        "Display icon",
+        "TV device types",
+        "Device type",
+        "Device type",
+        "Soundbar device types",
+        "Device type"
+      ]
+    }
+  ]
+}

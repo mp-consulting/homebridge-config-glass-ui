@@ -1,0 +1,360 @@
+{
+  "plugin": "@0x5e/homebridge-tuya-platform",
+  "version": "1.7.0-beta.58",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 2"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: tuyaSmart"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 20,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 13,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "appSchema": "tuyaSmart",
+          "debug": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "appSchema": "tuyaSmart",
+          "debug": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "debug": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Advance Settings"
+      ]
+    }
+  ]
+}

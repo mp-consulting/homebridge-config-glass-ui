@@ -1,0 +1,257 @@
+{
+  "plugin": "homebridge-easy-mqtt",
+  "version": "2.1.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: AirQualitySensor"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 53,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": false,
+            "disableLogging": false
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "name": "golden",
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": false,
+            "disableLogging": false
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "name": "golden",
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": true,
+            "disableLogging": false
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "name": "golden",
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": true,
+            "disableLogging": true
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "name": "golden",
+              "type": "AirQualitySensor",
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": true,
+            "disableLogging": true
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 30,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "name": "golden",
+              "type": "AirQualitySensor",
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": true,
+            "disableLogging": true
+          },
+          {
+            "info": {
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": false,
+            "disableLogging": false
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 36,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Accessory",
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Easy MQTT",
+        "accessories": [
+          {
+            "info": {
+              "name": "golden",
+              "type": "AirQualitySensor",
+              "protocol": "HomeKit"
+            },
+            "resetOnRestart": true,
+            "disableLogging": true
+          }
+        ],
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 30,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    }
+  ]
+}

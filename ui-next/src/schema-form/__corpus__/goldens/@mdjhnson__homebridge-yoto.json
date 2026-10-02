@@ -1,0 +1,597 @@
+{
+  "plugin": "@mdjhnson/homebridge-yoto",
+  "version": "0.1.7",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 26,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "tpc_ot5BY24FLyZoCX9MnykipB",
+        "httpPollIntervalMs": 60000,
+        "services": {
+          "playbackControls": false,
+          "smartSpeaker": false,
+          "television": false,
+          "televisionLibrary": true,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 60000,
+        "services": {
+          "playbackControls": false,
+          "smartSpeaker": false,
+          "television": false,
+          "televisionLibrary": true,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": false,
+          "smartSpeaker": false,
+          "television": false,
+          "televisionLibrary": true,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": true,
+          "smartSpeaker": false,
+          "television": false,
+          "televisionLibrary": true,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": true,
+          "smartSpeaker": false,
+          "television": true,
+          "televisionLibrary": true,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "TV Inputs for Library Cards",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": true,
+          "smartSpeaker": false,
+          "television": true,
+          "televisionLibrary": false,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "TV Inputs for Library Cards",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": true,
+          "smartSpeaker": false,
+          "television": true,
+          "televisionLibrary": false,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "TV Inputs for Library Cards",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": true,
+          "smartSpeaker": false,
+          "television": true,
+          "televisionLibrary": false,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            },
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "TV Inputs for Library Cards",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Yoto",
+        "clientId": "golden",
+        "httpPollIntervalMs": 7,
+        "services": {
+          "playbackControls": true,
+          "smartSpeaker": false,
+          "television": true,
+          "televisionLibrary": false,
+          "battery": true,
+          "temperature": true,
+          "nightlight": false,
+          "cardSlot": true,
+          "cardControls": [
+            {
+              "playOnAll": false
+            }
+          ],
+          "shortcuts": false,
+          "dayMode": true,
+          "sleepTimer": false,
+          "sleepTimerMinutesPerPercent": 1,
+          "bluetooth": false,
+          "volumeLimits": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Authentication",
+        "Accessory Services",
+        "Playback Controls",
+        "TV Playback Accessory",
+        "TV Inputs for Library Cards",
+        "Volume Limits",
+        "Battery",
+        "Temperature Sensor",
+        "Card Slot",
+        "Day Mode",
+        "Nightlight",
+        "Bluetooth",
+        "Sleep Timer",
+        "Shortcuts",
+        "Card Controls",
+        "",
+        "Label",
+        "Card ID",
+        "Play on All Yotos",
+        "Advanced"
+      ]
+    }
+  ]
+}

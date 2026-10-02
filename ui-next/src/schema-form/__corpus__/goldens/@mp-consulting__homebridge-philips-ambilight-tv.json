@@ -1,0 +1,859 @@
+{
+  "plugin": "@mp-consulting/homebridge-philips-ambilight-tv",
+  "version": "1.7.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 8,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: FOLLOW_VIDEO/STANDARD"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: Source"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 45,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Philips Ambilight TV",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": true,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": false,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "sourceSwitches": false,
+            "ambilightHueSwitch": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": true,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": false,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "sourceSwitches": false,
+            "ambilightHueSwitch": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": true,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": false,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": false,
+            "ambilightHueSwitch": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": false,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": false,
+            "ambilightHueSwitch": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": false,
+            "ambilightHueSwitch": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/NATURAL",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/STANDARD",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/STANDARD",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/STANDARD",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 15,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/STANDARD",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/STANDARD",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "My Philips TV",
+            "pollingInterval": 10000,
+            "wakeOnLanEnabled": false,
+            "ambilightMode": "FOLLOW_VIDEO/STANDARD",
+            "ambilightOnStart": true,
+            "infoButtonKey": "Source",
+            "backButtonKey": "Back",
+            "playPauseButtonKey": "PlayPause",
+            "inputs": [
+              {
+                "displayOrder": 7
+              }
+            ],
+            "sourceSwitches": true,
+            "ambilightHueSwitch": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "TV Devices",
+        "TV Devices",
+        "",
+        "TV Name",
+        "IP Address",
+        "MAC Address",
+        "Username",
+        "Password",
+        "Polling Interval (ms)",
+        "Wake-on-LAN",
+        "Ambilight Mode",
+        "Start Ambilight when TV turns on",
+        "Info Button Key",
+        "Back Button Key",
+        "Play/Pause Button Key",
+        "Source Switches",
+        "Ambilight + Hue Switch",
+        "State Sensors (for HomeKit automations)",
+        "Power (TV On/Off)",
+        "Ambilight (Active/Inactive)",
+        "Muted (Yes/No)",
+        "Custom Input Sources (Optional)",
+        "Custom Buttons (Optional)",
+        "Custom Apps (Optional)"
+      ]
+    }
+  ]
+}

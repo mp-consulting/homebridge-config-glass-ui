@@ -1,0 +1,1483 @@
+{
+  "plugin": "homebridge-fritz-platform",
+  "version": "6.0.19",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 9,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: cable"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: characteristic"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 67,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "FritzPlatform",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 15
+          }
+        },
+        "debug": false,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 15
+          }
+        },
+        "debug": false,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": false,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false,
+            "connection": "cable"
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false,
+            "connection": "cable",
+            "options": {
+              "wifi_2ghz": "characteristic"
+            }
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false,
+            "connection": "cable",
+            "options": {
+              "wifi_2ghz": "characteristic"
+            }
+          },
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 17,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false,
+            "connection": "cable",
+            "options": {
+              "wifi_2ghz": "characteristic"
+            }
+          },
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          },
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 18,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 28,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 8
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false,
+            "connection": "cable",
+            "options": {
+              "wifi_2ghz": "characteristic"
+            }
+          },
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          },
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          },
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 9
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "oldFW": false,
+            "wifiUnits": 2,
+            "master": false,
+            "readOnly": false,
+            "hide": false,
+            "connection": "cable",
+            "options": {
+              "wifi_2ghz": "characteristic"
+            }
+          },
+          {
+            "active": false,
+            "ssl": true,
+            "tr064": true,
+            "igd": false,
+            "wifiUnits": 2
+          }
+        ],
+        "options": {
+          "presence": {
+            "anyone": false,
+            "guest": false
+          },
+          "polling": {
+            "timer": 7
+          }
+        },
+        "debug": true,
+        "presence": [
+          {
+            "active": false
+          },
+          {
+            "active": false
+          }
+        ],
+        "wol": [
+          {
+            "active": false
+          }
+        ],
+        "smarthome": [
+          {
+            "active": false
+          }
+        ],
+        "network": [
+          {
+            "active": false
+          }
+        ],
+        "childLock": [
+          {
+            "active": false
+          }
+        ],
+        "callmonitor": {
+          "active": false
+        },
+        "extras": {
+          "alarm": {
+            "active": false
+          },
+          "wakeup": {
+            "active": false
+          },
+          "ringlock": {
+            "active": false
+          },
+          "phoneBook": {
+            "active": false
+          },
+          "dnsServer": {
+            "active": false
+          },
+          "fallbackInternet": {
+            "active": false
+          }
+        },
+        "telegram": {
+          "active": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 18,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 28,
+        "radio": 0,
+        "select": 8,
+        "add": 7,
+        "remove": 8
+      },
+      "labels": [
+        "Name",
+        "Log",
+        "Devices",
+        "Extras",
+        "Presence",
+        "Child Lock",
+        "Wake on LAN",
+        "Smart Home",
+        "Callmonitor",
+        "Network Monitor",
+        "Options",
+        "Telegram"
+      ]
+    }
+  ]
+}

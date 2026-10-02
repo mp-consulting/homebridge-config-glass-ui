@@ -1,0 +1,344 @@
+{
+  "plugin": "homebridge-mg-saic",
+  "version": "0.9.10",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: EU"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "MG SAIC",
+        "region": "Australia",
+        "pollIntervalMinutes": 15,
+        "enablePreconditioning": true,
+        "enableDoorSensors": true,
+        "enableTemperatureSensors": false,
+        "enableHeatedSeats": false,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "Australia",
+        "pollIntervalMinutes": 15,
+        "enablePreconditioning": true,
+        "enableDoorSensors": true,
+        "enableTemperatureSensors": false,
+        "enableHeatedSeats": false,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "Australia",
+        "pollIntervalMinutes": 7,
+        "enablePreconditioning": true,
+        "enableDoorSensors": true,
+        "enableTemperatureSensors": false,
+        "enableHeatedSeats": false,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "Australia",
+        "pollIntervalMinutes": 7,
+        "enablePreconditioning": false,
+        "enableDoorSensors": true,
+        "enableTemperatureSensors": false,
+        "enableHeatedSeats": false,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "Australia",
+        "pollIntervalMinutes": 7,
+        "enablePreconditioning": false,
+        "enableDoorSensors": false,
+        "enableTemperatureSensors": false,
+        "enableHeatedSeats": false,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "Australia",
+        "pollIntervalMinutes": 7,
+        "enablePreconditioning": false,
+        "enableDoorSensors": false,
+        "enableTemperatureSensors": true,
+        "enableHeatedSeats": false,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "Australia",
+        "pollIntervalMinutes": 7,
+        "enablePreconditioning": false,
+        "enableDoorSensors": false,
+        "enableTemperatureSensors": true,
+        "enableHeatedSeats": true,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "EU",
+        "pollIntervalMinutes": 7,
+        "enablePreconditioning": false,
+        "enableDoorSensors": false,
+        "enableTemperatureSensors": true,
+        "enableHeatedSeats": true,
+        "enableRearDefrost": false,
+        "enableFrontDefrost": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "iSmart account email",
+        "iSmart account password",
+        "Region",
+        "Vehicle VIN (optional)",
+        "Poll interval (minutes)",
+        "Expose cabin pre-conditioning (aircon) as Cabin Heat / Cabin Cool HeaterCoolers",
+        "Expose door / boot / bonnet contact sensors",
+        "Expose interior/exterior temperature sensors",
+        "Expose heated seat switches (left/right)",
+        "Expose rear window defrost switch",
+        "Expose front window defrost switch"
+      ]
+    }
+  ]
+}

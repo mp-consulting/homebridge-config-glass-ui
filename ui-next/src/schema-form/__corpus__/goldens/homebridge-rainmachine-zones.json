@@ -1,0 +1,127 @@
+{
+  "plugin": "homebridge-rainmachine-zones",
+  "version": "0.0.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "RainMachine",
+        "ignoreInactiveZones": true,
+        "pollInterval": 30,
+        "defaultRunTime": 600
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "RainMachine Address",
+        "Password",
+        "Ignore inactive zones",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "ignoreInactiveZones": true,
+        "pollInterval": 30,
+        "defaultRunTime": 600
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "RainMachine Address",
+        "Password",
+        "Ignore inactive zones",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "ignoreInactiveZones": true,
+        "pollInterval": 7,
+        "defaultRunTime": 600
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "RainMachine Address",
+        "Password",
+        "Ignore inactive zones",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "ignoreInactiveZones": false,
+        "pollInterval": 7,
+        "defaultRunTime": 600
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "RainMachine Address",
+        "Password",
+        "Ignore inactive zones",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

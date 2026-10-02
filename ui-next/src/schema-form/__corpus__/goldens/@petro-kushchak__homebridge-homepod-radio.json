@@ -1,0 +1,484 @@
+{
+  "plugin": "@petro-kushchak/homebridge-homepod-radio",
+  "version": "3.2.6",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 26,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 12,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "HomePod Mini Radio",
+        "httpPort": 7654,
+        "enableVolumeControl": true,
+        "verboseMode": false,
+        "radios": [
+          {
+            "onSwitch": false,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Volume",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7654,
+        "enableVolumeControl": true,
+        "verboseMode": false,
+        "radios": [
+          {
+            "onSwitch": false,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Volume",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": true,
+        "verboseMode": false,
+        "radios": [
+          {
+            "onSwitch": false,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Volume",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": false,
+        "radios": [
+          {
+            "onSwitch": false,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": false,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": true,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": true,
+            "autoResume": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": true,
+            "autoResume": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": true,
+            "autoResume": true
+          },
+          {
+            "onSwitch": false,
+            "autoResume": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": true,
+            "autoResume": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "httpPort": 7,
+        "enableVolumeControl": false,
+        "verboseMode": true,
+        "radios": [
+          {
+            "onSwitch": true,
+            "autoResume": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "HomePod Id",
+        "Serial Number",
+        "Path to audio/playlist files",
+        "Port for HTTP requests",
+        "Enable Volume Control",
+        "Debug Mode",
+        "Audio Buttons",
+        "New Audio Button",
+        "Radio Speakers",
+        "New Radio"
+      ]
+    }
+  ]
+}

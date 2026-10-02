@@ -1,0 +1,906 @@
+{
+  "plugin": "homebridge-google-tv",
+  "version": "1.1.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 25,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 17,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 13,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "ADBCast",
+        "devices": [
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 22,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "",
+        "Name",
+        "Package",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 33,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "",
+        "Name",
+        "Package",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 17,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 33,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "",
+        "Name",
+        "Package",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 22,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "",
+        "Name",
+        "Package",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "disableVolumeBulb": true,
+            "inputs": [
+              "Prime Video"
+            ]
+          },
+          {
+            "disableVolumeBulb": false,
+            "inputs": [
+              "Home",
+              "YouTube",
+              "Netflix",
+              "Prime Video"
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 22,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Configured TVs",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "TV",
+        "Name",
+        "IP Address",
+        "Disable Volume / Playback Dimmer Lightbulb",
+        "Remote Certificate",
+        "ADB Endpoint",
+        "Enabled Apps/Inputs",
+        "Home",
+        "YouTube",
+        "Netflix",
+        "Prime Video",
+        "Disney+",
+        "Apple TV",
+        "Hulu",
+        "HBO Max",
+        "Spotify",
+        "Plex",
+        "Custom App Packges",
+        "",
+        "Name",
+        "Package",
+        "Android TV Pairing Code",
+        "Certificate Data (Internal)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "plugin": "homebridge-rainpoint-irrigation-control",
+  "version": "1.1.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: US"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Rainpoint Irrigation",
+        "regionHome": "US",
+        "homeIndex": 0,
+        "pollInterval": 30,
+        "flatValves": false,
+        "debugmode": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Region",
+        "Home index",
+        "Poll interval (seconds)",
+        "Flat valves",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "regionHome": "US",
+        "homeIndex": 0,
+        "pollInterval": 30,
+        "flatValves": false,
+        "debugmode": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Region",
+        "Home index",
+        "Poll interval (seconds)",
+        "Flat valves",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "regionHome": "US",
+        "homeIndex": 7,
+        "pollInterval": 30,
+        "flatValves": false,
+        "debugmode": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Region",
+        "Home index",
+        "Poll interval (seconds)",
+        "Flat valves",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "regionHome": "US",
+        "homeIndex": 7,
+        "pollInterval": 30,
+        "flatValves": true,
+        "debugmode": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Region",
+        "Home index",
+        "Poll interval (seconds)",
+        "Flat valves",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "regionHome": "US",
+        "homeIndex": 7,
+        "pollInterval": 30,
+        "flatValves": true,
+        "debugmode": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Region",
+        "Home index",
+        "Poll interval (seconds)",
+        "Flat valves",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "regionHome": "US",
+        "homeIndex": 7,
+        "pollInterval": 30,
+        "flatValves": true,
+        "debugmode": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Region",
+        "Home index",
+        "Poll interval (seconds)",
+        "Flat valves",
+        "Debug logging"
+      ]
+    }
+  ]
+}

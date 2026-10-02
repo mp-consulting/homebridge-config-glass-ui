@@ -1,0 +1,497 @@
+{
+  "plugin": "homebridge-shelly-matter",
+  "version": "0.9.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: light"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 11,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "ShellyMatter",
+        "mdnsDiscover": true,
+        "rpcOverUdp": false,
+        "devices": [
+          {
+            "hidden": false,
+            "powerMetering": true,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": true,
+        "rpcOverUdp": false,
+        "devices": [
+          {
+            "hidden": false,
+            "powerMetering": true,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": false,
+        "devices": [
+          {
+            "hidden": false,
+            "powerMetering": true,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": true,
+        "devices": [
+          {
+            "hidden": false,
+            "powerMetering": true,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": true,
+        "devices": [
+          {
+            "hidden": true,
+            "powerMetering": true,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": true,
+        "devices": [
+          {
+            "hidden": true,
+            "powerMetering": false,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": true,
+        "devices": [
+          {
+            "accessoryType": "light",
+            "hidden": true,
+            "powerMetering": false,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": true,
+        "devices": [
+          {
+            "accessoryType": "light",
+            "hidden": true,
+            "powerMetering": false,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          },
+          {
+            "hidden": false,
+            "powerMetering": true,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdnsDiscover": false,
+        "rpcOverUdp": true,
+        "devices": [
+          {
+            "accessoryType": "light",
+            "hidden": true,
+            "powerMetering": false,
+            "splitChannels": true,
+            "channels": [
+              {
+                "hidden": false
+              }
+            ]
+          }
+        ],
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Discover devices via mDNS",
+        "RPC over UDP (Gen 2+)",
+        "Devices",
+        "",
+        "Device id",
+        "IP address or hostname, optionally with a port as ip:port (e.g. behind a Shelly Range Extender). Filled automatically for discovered devices; lets the plugin work without mDNS.",
+        "Name shown in the Home app",
+        "Accessory type (empty = default: outlet for plugs, light otherwise)",
+        "Hide (do not expose to Matter)",
+        "Power metering (if available on device)",
+        "Username",
+        "Password",
+        "Network interface",
+        "Debug logging"
+      ]
+    }
+  ]
+}

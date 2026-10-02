@@ -1,0 +1,398 @@
+{
+  "plugin": "homebridge-aquadaemon",
+  "version": "1.0.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: aquachemd"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 19,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 17,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 16,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "AquaDaemon",
+        "instances": [
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "port": 7,
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "port": 7,
+            "no_delete_on_sync": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          },
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          },
+          {
+            "no_delete_on_sync": false
+          },
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance",
+        "New Instance",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          },
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          },
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 15,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance",
+        "New Instance"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "instances": [
+          {
+            "serverType": "aquachemd",
+            "port": 7,
+            "doser_as_switch": false,
+            "use_tank_volume_uom": false,
+            "no_delete_on_sync": true
+          },
+          {
+            "no_delete_on_sync": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Instances",
+        "New Instance",
+        "New Instance"
+      ]
+    }
+  ]
+}

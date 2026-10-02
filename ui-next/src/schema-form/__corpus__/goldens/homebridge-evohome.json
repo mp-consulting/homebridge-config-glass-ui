@@ -1,0 +1,328 @@
+{
+  "plugin": "homebridge-evohome",
+  "version": "1.0.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: keepExistingUntil"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Evohome",
+        "locationIndex": 0,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": false,
+        "logTemperatureChanges": false,
+        "switchAway": true,
+        "switchDayOff": true,
+        "switchEco": true,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 0,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": false,
+        "logTemperatureChanges": false,
+        "switchAway": true,
+        "switchDayOff": true,
+        "switchEco": true,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 7,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": false,
+        "logTemperatureChanges": false,
+        "switchAway": true,
+        "switchDayOff": true,
+        "switchEco": true,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 7,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": true,
+        "logTemperatureChanges": false,
+        "switchAway": true,
+        "switchDayOff": true,
+        "switchEco": true,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 7,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": true,
+        "logTemperatureChanges": false,
+        "switchAway": false,
+        "switchDayOff": true,
+        "switchEco": true,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 7,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": true,
+        "logTemperatureChanges": false,
+        "switchAway": false,
+        "switchDayOff": false,
+        "switchEco": true,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 7,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": true,
+        "logTemperatureChanges": false,
+        "switchAway": false,
+        "switchDayOff": false,
+        "switchEco": false,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "locationIndex": 7,
+        "pollIntervalSeconds": 300,
+        "setpointMode": "keepExistingUntil",
+        "temperatureAboveAsOff": true,
+        "logTemperatureChanges": false,
+        "switchAway": false,
+        "switchDayOff": false,
+        "switchEco": false,
+        "switchHeatingOff": true,
+        "switchCustom": true,
+        "history": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "Username / email address",
+        "Password",
+        "Heating behaviour",
+        "System mode switches",
+        "Advanced"
+      ]
+    }
+  ]
+}

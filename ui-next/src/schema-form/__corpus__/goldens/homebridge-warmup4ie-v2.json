@@ -1,0 +1,240 @@
+{
+  "plugin": "homebridge-warmup4ie-v2",
+  "version": "3.13.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "WarmUP",
+        "refresh": 60,
+        "duration": 60,
+        "disableChildLock": false,
+        "disableVacationSwitch": false,
+        "disableFrostSwitch": false,
+        "disableHistory": false,
+        "disableAirSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "my.warmup.com email",
+        "my.warmup.com password",
+        "Polling interval (seconds)",
+        "Override duration (minutes)",
+        "Hide child-lock control",
+        "Hide Vacation Mode switch",
+        "Hide Frost Protection switch",
+        "Disable Eve history graphs",
+        "Hide standalone air-temp sensor"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refresh": 60,
+        "duration": 60,
+        "disableChildLock": false,
+        "disableVacationSwitch": false,
+        "disableFrostSwitch": false,
+        "disableHistory": false,
+        "disableAirSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "my.warmup.com email",
+        "my.warmup.com password",
+        "Polling interval (seconds)",
+        "Override duration (minutes)",
+        "Hide child-lock control",
+        "Hide Vacation Mode switch",
+        "Hide Frost Protection switch",
+        "Disable Eve history graphs",
+        "Hide standalone air-temp sensor"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refresh": 60,
+        "duration": 60,
+        "disableChildLock": true,
+        "disableVacationSwitch": false,
+        "disableFrostSwitch": false,
+        "disableHistory": false,
+        "disableAirSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "my.warmup.com email",
+        "my.warmup.com password",
+        "Polling interval (seconds)",
+        "Override duration (minutes)",
+        "Hide child-lock control",
+        "Hide Vacation Mode switch",
+        "Hide Frost Protection switch",
+        "Disable Eve history graphs",
+        "Hide standalone air-temp sensor"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refresh": 60,
+        "duration": 60,
+        "disableChildLock": true,
+        "disableVacationSwitch": true,
+        "disableFrostSwitch": false,
+        "disableHistory": false,
+        "disableAirSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "my.warmup.com email",
+        "my.warmup.com password",
+        "Polling interval (seconds)",
+        "Override duration (minutes)",
+        "Hide child-lock control",
+        "Hide Vacation Mode switch",
+        "Hide Frost Protection switch",
+        "Disable Eve history graphs",
+        "Hide standalone air-temp sensor"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refresh": 60,
+        "duration": 60,
+        "disableChildLock": true,
+        "disableVacationSwitch": true,
+        "disableFrostSwitch": true,
+        "disableHistory": false,
+        "disableAirSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "my.warmup.com email",
+        "my.warmup.com password",
+        "Polling interval (seconds)",
+        "Override duration (minutes)",
+        "Hide child-lock control",
+        "Hide Vacation Mode switch",
+        "Hide Frost Protection switch",
+        "Disable Eve history graphs",
+        "Hide standalone air-temp sensor"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "refresh": 60,
+        "duration": 60,
+        "disableChildLock": true,
+        "disableVacationSwitch": true,
+        "disableFrostSwitch": true,
+        "disableHistory": true,
+        "disableAirSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "my.warmup.com email",
+        "my.warmup.com password",
+        "Polling interval (seconds)",
+        "Override duration (minutes)",
+        "Hide child-lock control",
+        "Hide Vacation Mode switch",
+        "Hide Frost Protection switch",
+        "Disable Eve history graphs",
+        "Hide standalone air-temp sensor"
+      ]
+    }
+  ]
+}

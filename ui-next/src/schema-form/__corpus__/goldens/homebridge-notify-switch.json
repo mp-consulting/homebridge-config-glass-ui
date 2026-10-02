@@ -1,0 +1,1564 @@
+{
+  "plugin": "homebridge-notify-switch",
+  "version": "1.3.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 12h"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: mdy"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 25,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 19,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Notify Switch",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": true,
+          "name": "Notifications Enabled"
+        },
+        "debug": false,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": true,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": false,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": true,
+          "name": "Notifications Enabled"
+        },
+        "debug": false,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": true,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": false,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": false,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": true,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": false,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": true,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": false,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": false,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 5,
+        "add": 11,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          },
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 36,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 6,
+        "add": 12,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          },
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          },
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 46,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 7,
+        "add": 13,
+        "remove": 8
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          },
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 36,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 6,
+        "add": 12,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "configVersion": 1,
+        "defaultCountry": "US",
+        "timeFormat": "12h",
+        "dateFormat": "mdy",
+        "masterSwitch": {
+          "enabled": false,
+          "name": "Notifications Enabled"
+        },
+        "debug": true,
+        "providers": [
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          },
+          {
+            "type": "twilio",
+            "port": 465,
+            "security": "ssl",
+            "parseMode": "none",
+            "server": "https://ntfy.sh",
+            "auth": "none"
+          }
+        ],
+        "switches": [
+          {
+            "enabled": false,
+            "cooldownSeconds": 0,
+            "failureMode": "any",
+            "failureSensor": true,
+            "failureSensorResetSeconds": 300,
+            "actions": [
+              {
+                "channel": "sms",
+                "bcc": false,
+                "priority": "default"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 35,
+        "number": 0,
+        "textarea": 1,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 6,
+        "add": 12,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Default Country",
+        "Time format",
+        "Date format",
+        "Master Switch",
+        "Show master switch",
+        "Master switch name",
+        "Debug logging",
+        "Providers",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "",
+        "ID",
+        "Type",
+        "Name",
+        "Credentials File",
+        "Account SID",
+        "API Key SID",
+        "API Key Secret",
+        "SMS Senders",
+        "Phone number",
+        "Messaging Service SID",
+        "Email From",
+        "Address",
+        "Name",
+        "Recipient Groups",
+        "",
+        "ID",
+        "Name",
+        "SMS",
+        "Phone number",
+        "Email",
+        "Email address",
+        "Telegram",
+        "Chat ID",
+        "ntfy",
+        "Topic",
+        "Switches",
+        "",
+        "ID",
+        "Name",
+        "Enabled",
+        "Cooldown (seconds)",
+        "Failure Mode",
+        "Failure Sensor",
+        "Failure Sensor Reset (seconds)",
+        "Actions",
+        "",
+        "Provider",
+        "Channel",
+        "Sender",
+        "Groups",
+        "Group id",
+        "Extra Recipients",
+        "Recipient",
+        "Message"
+      ]
+    }
+  ]
+}

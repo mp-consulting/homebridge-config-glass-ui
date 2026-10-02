@@ -1,0 +1,1007 @@
+{
+  "plugin": "@orenasher/homebridge-denon-soundmode",
+  "version": "1.4.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 32,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 28,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 22,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Denon Sound Modes",
+        "port": 23,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": false,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": false,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 23,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": false,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": false,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": false,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": false,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": false,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              },
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              },
+              {
+                "stateless": false
+              }
+            ]
+          },
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              },
+              {
+                "stateless": false
+              }
+            ]
+          },
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          },
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              },
+              {
+                "stateless": false
+              }
+            ]
+          },
+          {
+            "allZoneStereo": false
+          },
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 17,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              },
+              {
+                "stateless": false
+              }
+            ]
+          },
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "pollInterval": 5,
+        "volume": {
+          "enabled": true,
+          "name": "Denon Volume"
+        },
+        "amp": {
+          "enabled": true,
+          "ampName": "Denon Amp",
+          "switchGroupName": "Denon Inputs"
+        },
+        "groups": [
+          {
+            "allZoneStereo": true,
+            "modes": [
+              {
+                "stateless": true
+              }
+            ]
+          },
+          {
+            "allZoneStereo": false,
+            "modes": [
+              {
+                "stateless": false
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Receiver IP",
+        "Telnet port",
+        "Poll interval (seconds)",
+        "Volume / power accessory",
+        "Add volume accessory",
+        "Name",
+        "Maximum volume (raw receiver scale, e.g. 80)",
+        "Amp (Television + input switches)",
+        "Add amp/input accessories",
+        "Amplifier name",
+        "Input switches group name",
+        "Groups (one tile each)",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status",
+        "",
+        "Group name",
+        "Add All Zone Stereo switch",
+        "Modes",
+        "",
+        "Name",
+        "Command (after MS); empty = status only",
+        "Status regex (optional)",
+        "Button without status"
+      ]
+    }
+  ]
+}

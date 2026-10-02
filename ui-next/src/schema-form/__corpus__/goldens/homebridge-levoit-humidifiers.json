@@ -1,0 +1,378 @@
+{
+  "plugin": "homebridge-levoit-humidifiers",
+  "version": "1.23.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Levoit Humidifiers",
+        "accessories": {
+          "humidity_sensor": true,
+          "mist": true,
+          "warm_mist": true,
+          "sleep_mode": true,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 30
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "accessories": {
+          "humidity_sensor": true,
+          "mist": true,
+          "warm_mist": true,
+          "sleep_mode": true,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 30
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "accessories": {
+          "humidity_sensor": true,
+          "mist": true,
+          "warm_mist": true,
+          "sleep_mode": true,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 7
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "accessories": {
+          "humidity_sensor": false,
+          "mist": true,
+          "warm_mist": true,
+          "sleep_mode": true,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 7
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "accessories": {
+          "humidity_sensor": false,
+          "mist": false,
+          "warm_mist": true,
+          "sleep_mode": true,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 7
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "accessories": {
+          "humidity_sensor": false,
+          "mist": false,
+          "warm_mist": false,
+          "sleep_mode": true,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 7
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "accessories": {
+          "humidity_sensor": false,
+          "mist": false,
+          "warm_mist": false,
+          "sleep_mode": false,
+          "display": true,
+          "night_light": true,
+          "auto_pro": true,
+          "child_lock": true
+        },
+        "options": {
+          "enableDebugMode": false,
+          "showOffWhenDisconnected": false,
+          "pollingInterval": 7
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Email",
+        "Password",
+        "Accessories",
+        "Humidity Sensor",
+        "Mist Fan",
+        "Warm Mist Fan",
+        "Sleep Mode Switch",
+        "Display Switch",
+        "Night Light Slider",
+        "Auto Pro Mode Switch",
+        "Child Lock",
+        "Options",
+        "Enable Debug Mode",
+        "Show Off When Disconnected",
+        "Polling Interval (seconds)"
+      ]
+    }
+  ]
+}

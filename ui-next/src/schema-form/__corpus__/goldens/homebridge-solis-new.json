@@ -1,0 +1,89 @@
+{
+  "plugin": "homebridge-solis-new",
+  "version": "1.0.13",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Solis PV Inverter - Loft"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Hostname",
+        "Update interval (s)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Hostname",
+        "Update interval (s)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "interval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Hostname",
+        "Update interval (s)"
+      ]
+    }
+  ]
+}

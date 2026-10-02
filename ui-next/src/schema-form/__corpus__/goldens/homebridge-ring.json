@@ -1,0 +1,509 @@
+{
+  "plugin": "homebridge-ring",
+  "version": "14.3.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: some"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 36,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 29,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "alarmOnEntryDelay": false,
+        "hideLightGroups": false,
+        "hideDoorbellSwitch": false,
+        "hideCameraLight": false,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": false,
+        "hideLightGroups": false,
+        "hideDoorbellSwitch": false,
+        "hideCameraLight": false,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": false,
+        "hideLightGroups": false,
+        "hideDoorbellSwitch": false,
+        "hideCameraLight": false,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": false,
+        "hideDoorbellSwitch": false,
+        "hideCameraLight": false,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": false,
+        "hideCameraLight": false,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": false,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7,
+        "nightModeBypassFor": "some"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7,
+        "nightModeBypassFor": "some"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7,
+        "nightModeBypassFor": "some"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7,
+        "nightModeBypassFor": "some"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7,
+        "nightModeBypassFor": "some"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    },
+    {
+      "data": {
+        "alarmOnEntryDelay": true,
+        "hideLightGroups": true,
+        "hideDoorbellSwitch": true,
+        "hideCameraLight": true,
+        "hideCameraMotionSensor": false,
+        "hideCameraSirenSwitch": false,
+        "hideInHomeDoorbellSwitch": false,
+        "hideAlarmSirenSwitch": false,
+        "showPanicButtons": false,
+        "avoidSnapshotBatteryDrain": false,
+        "debug": false,
+        "disableLogs": false,
+        "refreshToken": "golden",
+        "cameraStatusPollingSeconds": 7,
+        "nightModeBypassFor": "some"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Refresh Token",
+        "Optional Configuration"
+      ]
+    }
+  ]
+}

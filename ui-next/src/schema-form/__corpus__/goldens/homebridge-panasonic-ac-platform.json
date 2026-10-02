@@ -1,0 +1,649 @@
+{
+  "plugin": "homebridge-panasonic-ac-platform",
+  "version": "6.8.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 1"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 44,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": false,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "exposeInsideTemp": false,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": false,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "exposeInsideTemp": false,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": false,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": false,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": false,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": false,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": false,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": false,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": false,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": true,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": true,
+            "exposeOutdoorTemp": true,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": true,
+            "exposeOutdoorTemp": true,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 1,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": true,
+            "exposeOutdoorTemp": true,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 1,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": true,
+            "exposeOutdoorTemp": true,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          },
+          {
+            "excludeDevice": false,
+            "refreshWhenOn": 10,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "exposeInsideTemp": false,
+            "exposeOutdoorTemp": false,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 39,
+        "radio": 0,
+        "select": 9,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Panasonic AC Platform",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "excludeDevice": true,
+            "refreshWhenOn": 1,
+            "refreshWhenOff": 60,
+            "swingDefaultUD": 2,
+            "swingDefaultLR": 2,
+            "minHeatingTemperature": 7,
+            "exposeInsideTemp": true,
+            "exposeOutdoorTemp": true,
+            "exposePower": false,
+            "exposeNanoe": false,
+            "exposeInsideCleaning": false,
+            "exposeEcoNavi": false,
+            "exposeEcoFunction": false,
+            "exposeAutoMode": false,
+            "exposeCoolMode": false,
+            "exposeHeatMode": false,
+            "exposeDryMode": false,
+            "exposeFanMode": false,
+            "exposeNanoeStandAloneMode": false,
+            "exposeQuietMode": false,
+            "exposePowerfulMode": false,
+            "exposeSwingUpDown": false,
+            "exposeSwingLeftRight": false,
+            "exposeFanSpeed": false
+          }
+        ],
+        "suppressOutgoingUpdates": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Account",
+        "Logs and debug",
+        "Devices"
+      ]
+    }
+  ]
+}

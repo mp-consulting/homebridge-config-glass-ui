@@ -1,0 +1,545 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-ewelink",
+  "version": "12.18.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: auto"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: en"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 34,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 26,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 18,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": false,
+        "disableNoResponse": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": false,
+        "disableNoResponse": false,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": false,
+        "disableNoResponse": false,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": false,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 9
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 10
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 11
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 10
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 9
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    },
+    {
+      "data": {
+        "name": "eWeLink",
+        "mode": "auto",
+        "language": "en",
+        "disableDeviceLogging": true,
+        "disableNoResponse": true,
+        "username": "golden",
+        "apiPort": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Required Settings",
+        "Username",
+        "Password",
+        "Connection Mode",
+        "Advanced Settings",
+        "Single Channel Devices",
+        "Multi Channel Devices",
+        "Light Devices",
+        "Thermostat Devices",
+        "Fan Devices",
+        "Sensor Devices",
+        "RF Bridge Devices",
+        "RF Subdevices"
+      ]
+    }
+  ]
+}

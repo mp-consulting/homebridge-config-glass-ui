@@ -1,0 +1,226 @@
+{
+  "plugin": "homebridge-mqttthing",
+  "version": "1.1.49",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 2,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 0,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: airPressureSensor"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 33,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "confirmationIndicateOffline": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Type",
+        "Advanced",
+        "Accessory Information"
+      ]
+    },
+    {
+      "data": {
+        "confirmationIndicateOffline": false,
+        "onlineValue": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Type",
+        "Advanced",
+        "Accessory Information"
+      ]
+    },
+    {
+      "data": {
+        "confirmationIndicateOffline": false,
+        "onlineValue": "golden",
+        "confirmationPeriodms": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Type",
+        "Advanced",
+        "Accessory Information"
+      ]
+    },
+    {
+      "data": {
+        "confirmationIndicateOffline": true,
+        "onlineValue": "golden",
+        "confirmationPeriodms": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Type",
+        "Advanced",
+        "Accessory Information"
+      ]
+    },
+    {
+      "data": {
+        "confirmationIndicateOffline": true,
+        "onlineValue": "golden",
+        "confirmationPeriodms": 7,
+        "type": "airPressureSensor",
+        "mqttPubOptions": {
+          "retain": false
+        },
+        "logMqtt": false,
+        "optimizePublishing": false,
+        "history": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Type",
+        "Name",
+        "MQTT Settings",
+        "MQTT Topics",
+        "Advanced",
+        "Accessory Information"
+      ]
+    },
+    {
+      "data": {
+        "confirmationIndicateOffline": true,
+        "onlineValue": "golden",
+        "confirmationPeriodms": 7,
+        "type": "airPressureSensor",
+        "mqttPubOptions": {
+          "retain": false
+        },
+        "logMqtt": false,
+        "optimizePublishing": false,
+        "history": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Type",
+        "Name",
+        "MQTT Settings",
+        "MQTT Topics",
+        "Advanced",
+        "Accessory Information"
+      ]
+    },
+    {
+      "data": {
+        "confirmationIndicateOffline": true,
+        "onlineValue": "golden",
+        "confirmationPeriodms": 7,
+        "type": "airPressureSensor",
+        "mqttPubOptions": {
+          "retain": false
+        },
+        "logMqtt": false,
+        "optimizePublishing": false,
+        "history": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Type",
+        "Name",
+        "MQTT Settings",
+        "MQTT Topics",
+        "Advanced",
+        "Accessory Information"
+      ]
+    }
+  ]
+}

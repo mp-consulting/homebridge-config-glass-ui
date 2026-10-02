@@ -1,0 +1,454 @@
+{
+  "plugin": "homebridge-tydom",
+  "version": "0.32.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 10,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: fr"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 13,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 10,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 9,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "hostname": "mediation.tydom.com",
+        "locale": "fr",
+        "refreshInterval": 14400,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 14400,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 6
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 7
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 7
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 6
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "hostname": "golden",
+        "locale": "fr",
+        "refreshInterval": 7,
+        "staleAfter": 300,
+        "webhooks": [
+          {
+            "type": "discord"
+          }
+        ],
+        "debug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Connection",
+        "Hostname",
+        "Username",
+        "Delta Dore account e-mail",
+        "Password",
+        "Alarm",
+        "Devices",
+        "Notifications",
+        "Advanced"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+{
+  "plugin": "homebridge-mercedes-lock",
+  "version": "1.2.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: North America"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 5,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Mercedes Lock",
+        "region": "North America",
+        "pollIntervalSeconds": 180,
+        "showLock": true,
+        "showDoors": true,
+        "showWindows": true,
+        "showFuelBattery": true,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 180,
+        "showLock": true,
+        "showDoors": true,
+        "showWindows": true,
+        "showFuelBattery": true,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": true,
+        "showDoors": true,
+        "showWindows": true,
+        "showFuelBattery": true,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": true,
+        "showWindows": true,
+        "showFuelBattery": true,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": false,
+        "showWindows": true,
+        "showFuelBattery": true,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": false,
+        "showWindows": false,
+        "showFuelBattery": true,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": false,
+        "showWindows": false,
+        "showFuelBattery": false,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": false,
+        "showWindows": false,
+        "showFuelBattery": false,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": false,
+        "showWindows": false,
+        "showFuelBattery": false,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "region": "North America",
+        "pollIntervalSeconds": 7,
+        "showLock": false,
+        "showDoors": false,
+        "showWindows": false,
+        "showFuelBattery": false,
+        "showEvBattery": true,
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Mercedes Me Accounts",
+        "",
+        "Mercedes Me Email",
+        "Mercedes Me Password",
+        "Region",
+        "VIN (optional)",
+        "Poll Interval (seconds)",
+        "HomeKit Services",
+        "Show Door Lock",
+        "Show Doors Sensor",
+        "Show Windows Sensor",
+        "Show Fuel Level",
+        "Show EV Charge Level",
+        "Debug Logging"
+      ]
+    }
+  ]
+}

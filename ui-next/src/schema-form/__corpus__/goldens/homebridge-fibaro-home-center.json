@@ -1,0 +1,373 @@
+{
+  "plugin": "homebridge-fibaro-home-center",
+  "version": "3.2.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: disabled"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: enabledBefore"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 32,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 3,
+        "markDeadDevices": false,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "disabled",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 3,
+        "markDeadDevices": false,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "disabled",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 7,
+        "markDeadDevices": false,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "disabled",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 7,
+        "markDeadDevices": true,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "disabled",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 7,
+        "markDeadDevices": true,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "disabled",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 7,
+        "markDeadDevices": true,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "enabledBefore",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 7,
+        "markDeadDevices": true,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "enabledBefore",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          },
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "FibaroHC",
+        "pollerperiod": 7,
+        "markDeadDevices": true,
+        "thermostattimeout": 7200,
+        "thermostatmaxtemperature": 100,
+        "securitysystem": "disabled",
+        "addRoomNameToDeviceName": "enabledBefore",
+        "logsLevel": 1,
+        "devices": [
+          {
+            "displayAs": "switch"
+          }
+        ],
+        "url": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Basic settings",
+        "",
+        "Address: IP or URL",
+        "",
+        "Username",
+        "Password",
+        "Advanced settings",
+        "Global variables",
+        "Logs",
+        "Individual devices settings"
+      ]
+    }
+  ]
+}

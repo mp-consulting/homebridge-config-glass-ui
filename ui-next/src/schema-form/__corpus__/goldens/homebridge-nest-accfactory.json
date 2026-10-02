@@ -1,0 +1,939 @@
+{
+  "plugin": "homebridge-nest-accfactory",
+  "version": "0.4.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 7,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: nest"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 37,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 23,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 2,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 2,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "google",
+            "fieldTest": true,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "google",
+            "fieldTest": true,
+            "exclude": true
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "google",
+            "fieldTest": true,
+            "exclude": true
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": false,
+            "weather": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "google",
+            "fieldTest": true,
+            "exclude": true
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "nest",
+            "fieldTest": true,
+            "exclude": true
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Access Token",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "nest",
+            "fieldTest": true,
+            "exclude": true
+          },
+          {
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 16,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Access Token",
+        "Use Field Test API",
+        "Exclude Account",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "nest",
+            "fieldTest": true,
+            "exclude": true
+          },
+          {
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          },
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Access Token",
+        "Use Field Test API",
+        "Exclude Account",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "nest",
+            "fieldTest": true,
+            "exclude": true
+          },
+          {
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          },
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          },
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 6
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Access Token",
+        "Use Field Test API",
+        "Exclude Account",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "nest",
+            "fieldTest": true,
+            "exclude": true
+          },
+          {
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          },
+          {
+            "exclude": false,
+            "weather": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Access Token",
+        "Use Field Test API",
+        "Exclude Account",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    },
+    {
+      "data": {
+        "name": "NestAccfactory",
+        "accounts": [
+          {
+            "name": "golden",
+            "type": "nest",
+            "fieldTest": true,
+            "exclude": true
+          },
+          {
+            "type": "google",
+            "fieldTest": false,
+            "exclude": false
+          }
+        ],
+        "options": {
+          "debug": false,
+          "eveHistory": true,
+          "exclude": false,
+          "ffmpegDebug": false,
+          "ffmpegHWAccel": false,
+          "ffmpegPath": "/usr/local/bin/ffmpeg",
+          "ffmpegTranscode": false,
+          "logMotionEvents": true,
+          "maxStreams": 7,
+          "supportDump": false
+        },
+        "devices": [
+          {
+            "eveHistory": false,
+            "exclude": false
+          }
+        ],
+        "homes": [
+          {
+            "exclude": true,
+            "weather": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 16,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Accounts",
+        "",
+        "",
+        "Name",
+        "Type",
+        "Access Token",
+        "Use Field Test API",
+        "Exclude Account",
+        "",
+        "Name",
+        "Type",
+        "Issue Token",
+        "Cookie",
+        "Use Field Test API",
+        "Exclude Account",
+        "Home Settings",
+        "Device Settings",
+        "Options"
+      ]
+    }
+  ]
+}

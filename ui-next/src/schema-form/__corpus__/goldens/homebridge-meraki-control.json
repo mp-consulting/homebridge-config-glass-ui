@@ -1,0 +1,705 @@
+{
+  "plugin": "homebridge-meraki-control",
+  "version": "1.7.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 44,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 27,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 16,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "disableAccessory": false,
+            "dashboardClientsControl": false,
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": false,
+            "dashboardClientsControl": false,
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": false,
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": false,
+            "enableSonsorClients": false,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": false,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          },
+          {
+            "disableAccessory": false,
+            "dashboardClientsControl": false,
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 15,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 25,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              },
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meraki Control",
+        "devices": [
+          {
+            "name": "golden",
+            "disableAccessory": true,
+            "dashboardClientsControl": true,
+            "enablePrefixForClientName": true,
+            "enableSonsorClients": true,
+            "dashboardClientsPolicy": [
+              {
+                "mode": false
+              }
+            ],
+            "accessPointsControl": false,
+            "switches": [
+              {
+                "mode": false
+              }
+            ],
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Network",
+        "API Path",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,508 @@
+{
+  "plugin": "homebridge-bond",
+  "version": "3.3.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 6,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 5,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 1,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "include_dimmer": false,
+        "include_toggle_state": false,
+        "fan_speed_values": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": false,
+        "include_toggle_state": false,
+        "fan_speed_values": false,
+        "bonds": [
+          {
+            "ip_address": "golden"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": false,
+        "include_toggle_state": false,
+        "fan_speed_values": false,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": false,
+        "fan_speed_values": false,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": false,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true,
+        "bonds": [
+          {
+            "ip_address": "golden",
+            "ms_between_actions": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    },
+    {
+      "data": {
+        "include_dimmer": true,
+        "include_toggle_state": true,
+        "fan_speed_values": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Bonds",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Bond",
+        "IP Address",
+        "Bond Token",
+        "Hide Device IDs",
+        "Wait between commands",
+        "Include dimmer",
+        "Include toggle switch for fixing device state.",
+        "Use fan speed values"
+      ]
+    }
+  ]
+}

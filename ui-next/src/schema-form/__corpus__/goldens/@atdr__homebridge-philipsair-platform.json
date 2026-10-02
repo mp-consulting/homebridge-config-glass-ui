@@ -1,0 +1,537 @@
+{
+  "plugin": "@atdr/homebridge-philipsair-platform",
+  "version": "1.3.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 5,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 30,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "PhilipsAirPlatform",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": true,
+        "cliDebug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": true,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": true,
+        "cliDebug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": true,
+        "extendedError": true,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": true,
+        "cliDebug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": true,
+        "cliDebug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          },
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": true,
+        "cliDebug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "warn": false,
+        "error": false,
+        "devices": [
+          {
+            "active": true,
+            "manufacturer": "Philips",
+            "serialNumber": "000000",
+            "port": 7,
+            "humidifier": false,
+            "light": false,
+            "temperature": false,
+            "humidity": false,
+            "sleepSpeed": false,
+            "allergicFunc": false,
+            "preFilter": false,
+            "carbonFilter": false,
+            "hepaFilter": false
+          }
+        ],
+        "debug": true,
+        "cliDebug": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "aioairctrl Path",
+        "Log",
+        "Devices",
+        "",
+        "Active",
+        "Model",
+        "Name",
+        "Host Address",
+        "Port",
+        "Refresh Interval",
+        "Home app display",
+        "Accessories",
+        "Extras"
+      ]
+    }
+  ]
+}

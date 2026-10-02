@@ -1,0 +1,1425 @@
+{
+  "plugin": "homebridge-broadlink-rm-blaster",
+  "version": "1.11.6",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: switch"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 24,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 6,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "enableMqtt": false,
+        "mqttHost": "localhost:1883",
+        "mqttRequiresAuth": false,
+        "mqttBaseTopic": "broadlinkrm",
+        "mqttLastSeenFormat": "iso8601",
+        "rmDevices": [
+          {
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "mqttSubscribe": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "mqttHost": "localhost:1883",
+        "mqttRequiresAuth": false,
+        "mqttBaseTopic": "broadlinkrm",
+        "mqttLastSeenFormat": "iso8601",
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "mqttSubscribe": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "mqttHost": "localhost:1883",
+        "mqttRequiresAuth": false,
+        "mqttBaseTopic": "broadlinkrm",
+        "mqttLastSeenFormat": "iso8601",
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 7,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "mqttSubscribe": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "mqttHost": "localhost:1883",
+        "mqttRequiresAuth": false,
+        "mqttBaseTopic": "broadlinkrm",
+        "mqttLastSeenFormat": "iso8601",
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 7,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "mqttSubscribe": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "mqttHost": "localhost:1883",
+        "mqttRequiresAuth": false,
+        "mqttBaseTopic": "broadlinkrm",
+        "mqttLastSeenFormat": "iso8601",
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 7,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "mqttSubscribe": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": true,
+        "mqttHost": "localhost:1883",
+        "mqttRequiresAuth": false,
+        "mqttBaseTopic": "broadlinkrm",
+        "mqttLastSeenFormat": "iso8601",
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 7,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "mqttSubscribe": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 49,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 25,
+        "radio": 0,
+        "select": 3,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "Retain sensor data messages",
+        "last_seen Format Override",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "switch",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 47,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 6
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          },
+          {
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "switch",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 49,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 8
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          },
+          {
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "switch",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          },
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 53,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 2,
+        "add": 9,
+        "remove": 9
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          },
+          {
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "switch",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          },
+          {
+            "accessoryType": "light",
+            "switchCooldownSeconds": 1,
+            "mqttSubscribe": false,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 54,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 2,
+        "add": 9,
+        "remove": 10
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          },
+          {
+            "enableTemperatureHumidity": false,
+            "enableMqttPublish": false,
+            "mqttRetain": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "switch",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 50,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 20,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 9
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "enableMqtt": false,
+        "rmDevices": [
+          {
+            "name": "golden",
+            "enableTemperatureHumidity": true,
+            "enableMqttPublish": true
+          }
+        ],
+        "accessories": [
+          {
+            "accessoryType": "switch",
+            "switchCooldownSeconds": 7,
+            "mqttRetain": true
+          }
+        ],
+        "advancedAccessories": [
+          {
+            "switchCooldownSeconds": 1,
+            "timeoutSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "fans": [
+          {
+            "speedCount": 1,
+            "speedPowersOn": false,
+            "speedPowersOff": false,
+            "speedResumes": false,
+            "swingRemembers": false,
+            "swingPowersOn": false,
+            "swingPowersOff": false,
+            "switchCooldownSeconds": 1,
+            "onFollowUpPressCount": 1,
+            "pressIntervalSeconds": 0.5,
+            "modes": [
+              {
+                "powersOn": false,
+                "powersOff": false,
+                "remembers": false
+              }
+            ],
+            "resyncSwitch": false,
+            "speedDebounceSeconds": 0.5,
+            "swingSwitch": false,
+            "swingOnPowerOn": false,
+            "mqttRetain": true
+          }
+        ],
+        "dimmers": [
+          {
+            "useLastKnownBrightness": false,
+            "useDefaultBrightnessLevel": false,
+            "defaultBrightnessLevel": 50,
+            "useMaxBrightnessLevel": false,
+            "maxBrightnessLevel": 100,
+            "debounceSeconds": 0.5,
+            "mqttRetain": true
+          }
+        ],
+        "tvs": [
+          {
+            "switchCooldownSeconds": 1,
+            "mqttRetain": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 48,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 1,
+        "add": 9,
+        "remove": 7
+      },
+      "labels": [
+        "Broadlink RM Devices",
+        "",
+        "Name",
+        "IP Address",
+        "HomeKit thermometer accessory",
+        "Publish temperature and humidity to MQTT",
+        "MQTT",
+        "Simple On/Off Accessories",
+        "Advanced Accessories",
+        "Fans",
+        "Dimmer Lights",
+        "TVs",
+        "Notifications",
+        "ntfy.sh Notification Topic"
+      ]
+    }
+  ]
+}

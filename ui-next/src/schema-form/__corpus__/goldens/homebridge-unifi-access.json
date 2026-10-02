@@ -1,0 +1,235 @@
+{
+  "plugin": "homebridge-unifi-access",
+  "version": "2.0.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 23,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 11,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "verifyTls": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "address": "golden",
+            "verifyTls": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "address": "golden",
+            "verifyTls": true
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "address": "golden",
+            "verifyTls": true
+          },
+          {
+            "verifyTls": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "address": "golden",
+            "verifyTls": true
+          },
+          {
+            "verifyTls": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "address": "golden",
+            "verifyTls": true
+          },
+          {
+            "verifyTls": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "UniFi Access",
+        "controllers": [
+          {
+            "address": "golden",
+            "verifyTls": true
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "UniFi Access Controllers",
+        "Plugin Feature Options (Optional)",
+        "Additional Settings (Optional)"
+      ]
+    }
+  ]
+}

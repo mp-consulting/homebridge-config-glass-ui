@@ -1,0 +1,923 @@
+{
+  "plugin": "homebridge-eliot-smart-control",
+  "version": "1.15.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: leave"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: leave"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 21,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Eliot Smart Control",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 30,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 30,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": true,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          },
+          {
+            "name": "Desk",
+            "idlePollSeconds": 30,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          },
+          {
+            "name": "Desk",
+            "idlePollSeconds": 30,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          },
+          {
+            "name": "Desk",
+            "idlePollSeconds": 30,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "desks": [
+          {
+            "name": "Desk",
+            "idlePollSeconds": 7,
+            "memorySwitches": false,
+            "childLockSwitch": false,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": true,
+              "endOfDay": "nothing",
+              "timerSlider": false
+            }
+          },
+          {
+            "name": "Desk",
+            "idlePollSeconds": 30,
+            "memorySwitches": true,
+            "childLockSwitch": true,
+            "ecoMode": "leave",
+            "collisionSensitivity": "leave",
+            "autoMove": {
+              "sittingMm": 800,
+              "standingMm": 1200,
+              "intervalMinutes": 30,
+              "warnMinutes": 5,
+              "days": [
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri"
+              ],
+              "switchOffDaily": false,
+              "endOfDay": "nothing",
+              "timerSlider": true
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Desks",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "",
+        "Name",
+        "Dongle address",
+        "Idle refresh (seconds)",
+        "Eco mode",
+        "Anti-collision sensitivity",
+        "Child lock as a switch",
+        "Memory switches",
+        "Automatic sit/stand",
+        "Advanced"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,569 @@
+{
+  "plugin": "homebridge-ness-d16x-cg",
+  "version": "2.1.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: outlet"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: state"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 39,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 21,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Ness",
+        "host": "192.168.1.2",
+        "port": 2401,
+        "keypadCode": "0000",
+        "verboseLog": false,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 2401,
+        "keypadCode": "0000",
+        "verboseLog": false,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": false,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          },
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          },
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          },
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          },
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "host": "192.168.1.2",
+        "port": 7,
+        "keypadCode": "0000",
+        "verboseLog": true,
+        "outputs": [
+          {
+            "type": "outlet",
+            "garageDoorMode": "state",
+            "transitionSeconds": 15
+          }
+        ],
+        "zones": [
+          {
+            "type": "motion"
+          }
+        ],
+        "excludeModes": [
+          "Home"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "Host",
+        "Port",
+        "Keypad Code",
+        "Verbose Log",
+        "Arming Modes to exclude",
+        "Outputs",
+        "Zones"
+      ]
+    }
+  ]
+}

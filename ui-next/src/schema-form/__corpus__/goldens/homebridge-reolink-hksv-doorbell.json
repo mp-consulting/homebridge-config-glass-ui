@@ -1,0 +1,730 @@
+{
+  "plugin": "homebridge-reolink-hksv-doorbell",
+  "version": "1.7.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 10,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: visitor"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: main"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 39,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "debug": false,
+        "mqtt": {
+          "enabled": false,
+          "useTls": false
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": false,
+        "mqtt": {
+          "enabled": false,
+          "useTls": false
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": false,
+        "mqtt": {
+          "enabled": false,
+          "useTls": false
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": false,
+          "useTls": false
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": false
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": true
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": true
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": true,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": true
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": true,
+            "ringTrigger": "visitor",
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": true
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": true,
+            "ringTrigger": "visitor",
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveStream": "main",
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": true
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": true,
+            "ringTrigger": "visitor",
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveStream": "main",
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          },
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "isDoorbell": false,
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 16,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 21,
+        "radio": 0,
+        "select": 6,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    },
+    {
+      "data": {
+        "debug": true,
+        "mqtt": {
+          "enabled": true,
+          "useTls": true
+        },
+        "cameras": [
+          {
+            "useHttps": false,
+            "allowInsecureHttps": false,
+            "channel": 7,
+            "isDoorbell": true,
+            "ringTrigger": "visitor",
+            "enableMotion": false,
+            "enableHksv": false,
+            "enableAudio": false,
+            "liveStream": "main",
+            "liveViewTranscode": false,
+            "standaloneAccessory": false,
+            "liveViewRtmp": false
+          }
+        ],
+        "ffmpegPath": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Allgemein",
+        "Eigener ffmpeg-Pfad",
+        "Debug-Logging (inkl. ffmpeg-Ausgabe)",
+        "MQTT-Broker",
+        "MQTT aktivieren",
+        "MQTT-Broker-Adresse",
+        "Benutzername",
+        "Passwort",
+        "TLS verwenden (mqtts)",
+        "",
+        "Kamera",
+        "Name",
+        "Kamera-Adresse",
+        "Benutzername",
+        "Passwort",
+        "Türklingel",
+        "Als Türklingel (Doorbell) anzeigen",
+        "Klingel-Ereignisquelle",
+        "MQTT-Topic für Klingeln",
+        "Status (Payload, optional)",
+        "HomeKit Secure Video",
+        "HomeKit Secure Video (HKSV) aktivieren",
+        "Erweitert"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,645 @@
+{
+  "plugin": "homebridge-blueair-purifier",
+  "version": "1.2.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: Australia"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: Default (all other regions)"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 23,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": false,
+        "uiDebug": false,
+        "devices": [
+          {
+            "led": false,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": false,
+        "uiDebug": false,
+        "devices": [
+          {
+            "led": false,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": false,
+        "uiDebug": false,
+        "devices": [
+          {
+            "led": false,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": true,
+        "uiDebug": false,
+        "devices": [
+          {
+            "led": false,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": false,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": true,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Default (all other regions)",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": true,
+            "airQualitySensor": true,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Australia",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": true,
+            "airQualitySensor": true,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Australia",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": true,
+            "airQualitySensor": true,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7,
+        "cloudRegion": "Default (all other regions)"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Australia",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": true,
+            "airQualitySensor": true,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          },
+          {
+            "led": false,
+            "airQualitySensor": false,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7,
+        "cloudRegion": "Default (all other regions)"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    },
+    {
+      "data": {
+        "region": "Australia",
+        "verboseLogging": true,
+        "uiDebug": true,
+        "devices": [
+          {
+            "led": true,
+            "airQualitySensor": true,
+            "temperatureSensor": false,
+            "germShield": false,
+            "nightMode": false
+          }
+        ],
+        "name": "golden",
+        "pollingInterval": 7,
+        "cloudRegion": "Default (all other regions)"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Common Settings",
+        "Name",
+        "Username",
+        "Password",
+        "Region",
+        "Cloud Region Override",
+        "Account UUID",
+        "Verbose Logging",
+        "UI Debug",
+        "Polling Interval",
+        "",
+        "ID",
+        "Name",
+        "Model",
+        "Serial Number",
+        "Filter Change Level",
+        "LED",
+        "Air Quality Sensor",
+        "Temperature Sensor",
+        "Germ Shield",
+        "Night Mode"
+      ]
+    }
+  ]
+}

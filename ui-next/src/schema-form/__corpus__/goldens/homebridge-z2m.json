@@ -1,0 +1,1508 @@
+{
+  "plugin": "homebridge-z2m",
+  "version": "1.11.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 8,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: debug"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: switch"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 25,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "zigbee2mqtt",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": false,
+          "keepalive": 60,
+          "version": 4,
+          "disable_qos": false
+        },
+        "log": {
+          "debug_as_info": false,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": false,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": false,
+          "keepalive": 60,
+          "version": 4,
+          "disable_qos": false
+        },
+        "log": {
+          "debug_as_info": false,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": false,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": false,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": false
+        },
+        "log": {
+          "debug_as_info": false,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": false,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": false
+        },
+        "log": {
+          "debug_as_info": false,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": false,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": false,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": false,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": false,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "switch": {
+              "type": "switch"
+            },
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 3
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "switch": {
+              "type": "switch"
+            },
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 7
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "switch": {
+              "type": "switch"
+            },
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 8
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "switch": {
+              "type": "switch"
+            },
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 9
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    },
+    {
+      "data": {
+        "mqtt": {
+          "base_topic": "golden",
+          "server": "mqtt://localhost:1883",
+          "reject_unauthorized": true,
+          "keepalive": 7,
+          "version": 4,
+          "disable_qos": true
+        },
+        "log": {
+          "debug_as_info": true,
+          "mqtt_publish": "debug"
+        },
+        "defaults": {
+          "exclude": true,
+          "ignore_availability": false,
+          "ignore_z2m_online": false,
+          "converters": {
+            "switch": {
+              "type": "switch"
+            },
+            "light": {
+              "request_brightness": false
+            }
+          }
+        },
+        "exclude_grouped_devices": false,
+        "devices": [
+          {
+            "exclude": false,
+            "ignore_availability": false,
+            "ignore_z2m_online": false,
+            "converters": {
+              "light": {
+                "request_brightness": false
+              }
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 5,
+        "add": 14,
+        "remove": 9
+      },
+      "labels": [
+        "MQTT",
+        "Base topic",
+        "Server",
+        "SSL/TLS certificate of CA",
+        "SSL/TLS key for client-authentication",
+        "SSL/TLS certificate for client-authentication",
+        "Username",
+        "Password",
+        "Client ID",
+        "Disable self-signed SSL certificates",
+        "Keep Alive",
+        "MQTT version",
+        "Disable QoS",
+        "Logging",
+        "Log debug messages as info level",
+        "Published MQTT messages",
+        "Device defaults",
+        "Exclude devices by default",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Exclude devices that are part of a group",
+        "Devices",
+        "",
+        "Zigbee Identifier / Friendly name",
+        "Exclude entire device",
+        "Ignore availability information",
+        "Ignore Zigbee2MQTT online status",
+        "Excluded properties (keys)",
+        "Excluded endpoints",
+        "Included properties (keys)",
+        "Include/exclude values",
+        "",
+        "Property (key)",
+        "Included values",
+        "Excluded values",
+        "Converters",
+        "Switch",
+        "Type",
+        "Occupancy",
+        "Type",
+        "Light",
+        "Request brightness",
+        "Experimental feature flags",
+        "Experimental feature flags"
+      ]
+    }
+  ]
+}

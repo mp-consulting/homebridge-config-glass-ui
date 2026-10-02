@@ -1,0 +1,512 @@
+{
+  "plugin": "homebridge-freeathome-local-api-add",
+  "version": "9.7.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: Undefined"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 18,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 11,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "My free@home Setup",
+        "tlsEnabled": true,
+        "disableCertificateVerification": false,
+        "motionSensorAutoReset": true,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": false,
+        "experimental": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": true,
+        "disableCertificateVerification": false,
+        "motionSensorAutoReset": true,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": false,
+        "experimental": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": false,
+        "motionSensorAutoReset": true,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": false,
+        "experimental": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": true,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": false,
+        "experimental": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": false,
+        "experimental": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": true,
+        "experimental": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": true,
+        "experimental": false,
+        "typeMappings": [
+          {
+            "type": "Undefined"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": true,
+        "experimental": false,
+        "typeMappings": [
+          {
+            "type": "Undefined"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": true,
+        "experimental": false,
+        "typeMappings": [
+          {
+            "type": "Undefined"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": true,
+        "experimental": false,
+        "typeMappings": [
+          {
+            "type": "Undefined"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "tlsEnabled": false,
+        "disableCertificateVerification": true,
+        "motionSensorAutoReset": false,
+        "motionSensorDefaultResetTimer": 20000,
+        "verboseErrors": true,
+        "experimental": false,
+        "typeMappings": [
+          {
+            "type": "Undefined"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "System Access Point Hostname",
+        "User ID",
+        "Password",
+        "TLS Enabled",
+        "Disable TLS Certificate Verification",
+        "Automatic Reset for Motion Sensors",
+        "Motion Sensor Default Reset Timer",
+        "Verbose Errors",
+        "Experimental Accessories",
+        "Ignored Channels",
+        "Type Mappings",
+        "",
+        "Channel",
+        "Type"
+      ]
+    }
+  ]
+}

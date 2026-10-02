@@ -1,0 +1,298 @@
+{
+  "plugin": "homebridge-winix-purifiers",
+  "version": "2.2.6",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 2,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 0,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "exposeAirQuality": false,
+        "exposeAmbientLight": false,
+        "exposePlasmawave": false,
+        "exposeAutoSwitch": false,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 30,
+        "deviceRefreshIntervalMinutes": 60
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    },
+    {
+      "data": {
+        "exposeAirQuality": false,
+        "exposeAmbientLight": false,
+        "exposePlasmawave": false,
+        "exposeAutoSwitch": false,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 30,
+        "deviceRefreshIntervalMinutes": 60,
+        "auth": {
+          "username": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    },
+    {
+      "data": {
+        "exposeAirQuality": false,
+        "exposeAmbientLight": false,
+        "exposePlasmawave": false,
+        "exposeAutoSwitch": false,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 7,
+        "deviceRefreshIntervalMinutes": 60,
+        "auth": {
+          "username": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    },
+    {
+      "data": {
+        "exposeAirQuality": true,
+        "exposeAmbientLight": false,
+        "exposePlasmawave": false,
+        "exposeAutoSwitch": false,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 7,
+        "deviceRefreshIntervalMinutes": 60,
+        "auth": {
+          "username": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    },
+    {
+      "data": {
+        "exposeAirQuality": true,
+        "exposeAmbientLight": true,
+        "exposePlasmawave": false,
+        "exposeAutoSwitch": false,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 7,
+        "deviceRefreshIntervalMinutes": 60,
+        "auth": {
+          "username": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    },
+    {
+      "data": {
+        "exposeAirQuality": true,
+        "exposeAmbientLight": true,
+        "exposePlasmawave": true,
+        "exposeAutoSwitch": false,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 7,
+        "deviceRefreshIntervalMinutes": 60,
+        "auth": {
+          "username": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    },
+    {
+      "data": {
+        "exposeAirQuality": true,
+        "exposeAmbientLight": true,
+        "exposePlasmawave": true,
+        "exposeAutoSwitch": true,
+        "exposeSleepSwitch": false,
+        "filterReplacementIndicatorPercentage": 10,
+        "pollIntervalSeconds": 7,
+        "deviceRefreshIntervalMinutes": 60,
+        "auth": {
+          "username": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Options",
+        "Air Quality Sensor",
+        "Ambient Light Sensor",
+        "Plasmawave Switch",
+        "Auto Switch",
+        "Sleep Switch",
+        "Filter Replacement Indicator Percentage",
+        "Poll Interval (seconds)",
+        "Device Refresh Interval (minutes)",
+        "Authentication"
+      ]
+    }
+  ]
+}

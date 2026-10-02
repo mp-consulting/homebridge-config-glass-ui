@@ -1,0 +1,380 @@
+{
+  "plugin": "homebridge-mitsubishi-comfort",
+  "version": "1.10.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 22,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 10,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 30,
+        "disablePolling": false,
+        "debug": false,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": false,
+        "localPollInterval": 15
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 30,
+        "disablePolling": false,
+        "debug": false,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": false,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": false,
+        "debug": false,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": false,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": false,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": false,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": true,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": false,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": true,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": true,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": true,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": true,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": true,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": true,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": true,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": true,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    },
+    {
+      "data": {
+        "name": "Kumo",
+        "pollInterval": 7,
+        "disablePolling": true,
+        "debug": true,
+        "streamingHealthCheckInterval": 30,
+        "streamingStaleThreshold": 60,
+        "degradedPollInterval": 10,
+        "localControl": true,
+        "localPollInterval": 15,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Kumo Cloud Credentials",
+        "Username",
+        "Password",
+        "Advanced Settings",
+        "Local Control (experimental)",
+        "Device Mirroring"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "plugin": "homebridge-econet-rheem",
+  "version": "1.7.12",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 13,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Econet Rheem",
+        "enableHistory": false,
+        "disableLogging": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Email",
+        "Password",
+        "",
+        "Enable History",
+        "Disable Logging",
+        "Devices",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key"
+      ]
+    },
+    {
+      "data": {
+        "name": "Econet Rheem",
+        "enableHistory": false,
+        "disableLogging": false,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Email",
+        "Password",
+        "",
+        "Enable History",
+        "Disable Logging",
+        "Devices",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key"
+      ]
+    },
+    {
+      "data": {
+        "name": "Econet Rheem",
+        "enableHistory": true,
+        "disableLogging": false,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Email",
+        "Password",
+        "",
+        "Enable History",
+        "Disable Logging",
+        "Devices",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key"
+      ]
+    },
+    {
+      "data": {
+        "name": "Econet Rheem",
+        "enableHistory": true,
+        "disableLogging": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Email",
+        "Password",
+        "",
+        "Enable History",
+        "Disable Logging",
+        "Devices",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key"
+      ]
+    },
+    {
+      "data": {
+        "name": "Econet Rheem",
+        "enableHistory": true,
+        "disableLogging": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Email",
+        "Password",
+        "",
+        "Enable History",
+        "Disable Logging",
+        "Devices",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key"
+      ]
+    },
+    {
+      "data": {
+        "name": "Econet Rheem",
+        "enableHistory": true,
+        "disableLogging": true,
+        "email": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Email",
+        "Password",
+        "",
+        "Enable History",
+        "Disable Logging",
+        "Devices",
+        "",
+        "Serial Number",
+        "Device Name",
+        "Active Key"
+      ]
+    }
+  ]
+}

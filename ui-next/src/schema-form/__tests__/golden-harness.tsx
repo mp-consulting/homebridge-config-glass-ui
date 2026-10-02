@@ -47,6 +47,7 @@ export interface Mismatch {
 
 /** The recorder's settle time; `GOLDEN_SETTLE_MS` overrides it for goldens recorded with a longer one */
 const SETTLE_MS = Number(process.env.GOLDEN_SETTLE_MS || 120)
+const SETTLE_MAX_MS = 5000
 const TEXT_TYPES = new Set(['text', 'email', 'url', 'password'])
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi
 const ADD_SELECTOR = 'add-reference-widget button'
@@ -213,13 +214,68 @@ function applyStep(root: HTMLElement, step: Step) {
  * flushes renders when an `act()` scope ends, so time passes in short scopes,
  * the way a browser renders between timers.
  */
-async function settle() {
-  const end = Date.now() + SETTLE_MS
+// The real timer functions, for the harness's own polling, and the form's
+// short timers and intervals still pending (the recorder waited for those too)
+const realSetTimeout = globalThis.setTimeout
+const realClearTimeout = globalThis.clearTimeout
+const realSetInterval = globalThis.setInterval
+const realClearInterval = globalThis.clearInterval
+const pendingTimers = new Set<unknown>()
+
+/** Track the form's short timeouts while a golden replays; returns the restore function. */
+function trackTimers(): () => void {
+  globalThis.setTimeout = ((handler: (...args: any[]) => void, delay?: number, ...args: any[]) => {
+    const tracked = (delay ?? 0) <= 1000
+    const timer: { id?: unknown } = {}
+    timer.id = realSetTimeout(() => {
+      pendingTimers.delete(timer.id)
+      handler(...args)
+    }, delay)
+    if (tracked) {
+      pendingTimers.add(timer.id)
+    }
+    return timer.id
+  }) as typeof setTimeout
+  globalThis.clearTimeout = ((id: any) => {
+    pendingTimers.delete(id)
+    realClearTimeout(id)
+  }) as typeof clearTimeout
+  // rxjs schedules debounceTime & co with setInterval, cleared once the action ran
+  globalThis.setInterval = ((handler: (...args: any[]) => void, delay?: number, ...args: any[]) => {
+    const id = realSetInterval(handler, delay, ...args)
+    if ((delay ?? 0) <= 1000) {
+      pendingTimers.add(id)
+    }
+    return id
+  }) as typeof setInterval
+  globalThis.clearInterval = ((id: any) => {
+    pendingTimers.delete(id)
+    realClearInterval(id)
+  }) as typeof clearInterval
+  return () => {
+    globalThis.setTimeout = realSetTimeout
+    globalThis.clearTimeout = realClearTimeout
+    globalThis.setInterval = realSetInterval
+    globalThis.clearInterval = realClearInterval
+    pendingTimers.clear()
+  }
+}
+
+/**
+ * Wait for the form to settle: at least SETTLE_MS, then until data, validity
+ * and the DOM have been quiet for SETTLE_MS and the form's short timers have
+ * fired (capped), like the recorder, which waited for ng-formworks to go idle. A fixed wait let a big form's first
+ * render run past the snapshot when the machine was busy. `ready` holds the
+ * first snapshot until the form has reported its data and validity once.
+ */
+async function settle(lastChange: () => number, ready: () => boolean = () => true) {
+  const start = Date.now()
+  const quiet = () => ready() && pendingTimers.size === 0 && Date.now() - Math.max(start, lastChange()) >= SETTLE_MS
   do {
     await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, Math.min(5, Math.max(0, end - Date.now()))))
+      await new Promise(resolve => realSetTimeout(resolve, 5))
     })
-  } while (Date.now() < end)
+  } while (!quiet() && Date.now() - start < SETTLE_MAX_MS)
 }
 
 /** Replay one golden and return every difference found */
@@ -288,6 +344,7 @@ export async function replayGolden(golden: Golden, schemaFile: any): Promise<Rep
   let lastData: any
   let hasData = false
   let lastValid: boolean | null = null
+  let lastChangeAt = 0
 
   const configSchema = {
     schema: schemaFile.schema,
@@ -297,6 +354,7 @@ export async function replayGolden(golden: Golden, schemaFile: any): Promise<Rep
     fixArrays: schemaFile.fixArrays,
   }
 
+  const restoreTimers = trackTimers()
   const result = render(
     <SchemaForm
       configSchema={configSchema}
@@ -305,13 +363,21 @@ export async function replayGolden(golden: Golden, schemaFile: any): Promise<Rep
       onDataChange={(value) => {
         lastData = value
         hasData = true
+        lastChangeAt = Date.now()
       }}
       onValidChange={(value) => {
         lastValid = value
+        lastChangeAt = Date.now()
       }}
     />,
   )
   const root = result.container as HTMLElement
+  // Widgets mounting and unmounting count as activity too: a condition can
+  // remove controls without changing the data
+  const observer = new MutationObserver(() => {
+    lastChangeAt = Date.now()
+  })
+  observer.observe(root, { childList: true, subtree: true })
 
   const snapshot = (): Snapshot => ({
     data: hasData ? scrubUuids(JSON.parse(JSON.stringify(lastData ?? null))) : null,
@@ -326,7 +392,7 @@ export async function replayGolden(golden: Golden, schemaFile: any): Promise<Rep
   const stepOf = (index: number) => (index > 0 ? steps[index - 1] : undefined)
 
   try {
-    await settle()
+    await settle(() => lastChangeAt, () => hasData && lastValid !== null)
     actual.push(snapshot())
 
     // A remove step clicks the button of the array item the recorder removed
@@ -363,11 +429,13 @@ export async function replayGolden(golden: Golden, schemaFile: any): Promise<Rep
         mismatches.push({ snapshot: i + 1, step, field: 'replay', expected: 'step applied', actual: String(error) })
         break
       }
-      await settle()
+      await settle(() => lastChangeAt)
       actual.push(snapshot())
     }
   } finally {
+    observer.disconnect()
     cleanup()
+    restoreTimers()
   }
 
   for (let index = 0; index < actual.length; index++) {

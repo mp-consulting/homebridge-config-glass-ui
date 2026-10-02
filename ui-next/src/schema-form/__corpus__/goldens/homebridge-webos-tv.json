@@ -1,0 +1,816 @@
+{
+  "plugin": "homebridge-webos-tv",
+  "version": "2.5.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: both"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: tv_speaker"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 61,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "My LG TV",
+            "pollingInterval": 5,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "forceSsl": false,
+            "hideTvService": false,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 5,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "forceSsl": false,
+            "hideTvService": false,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "forceSsl": false,
+            "hideTvService": false,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "forceSsl": false,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": false,
+            "forceSsl": false,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": false,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false,
+            "soundOutputButtons": [
+              {
+                "soundOutput": "tv_speaker"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 34,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 11
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false,
+            "soundOutputButtons": [
+              {
+                "soundOutput": "tv_speaker"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 36,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 12
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false,
+            "soundOutputButtons": [
+              {
+                "soundOutput": "tv_speaker"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 38,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 13
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false,
+            "soundOutputButtons": [
+              {
+                "soundOutput": "tv_speaker"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 42,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 14
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "forceSsl": true,
+            "hideTvService": true,
+            "volumeLimit": 100,
+            "volumeControl": "both",
+            "channelControl": true,
+            "mediaControl": false,
+            "screenControl": false,
+            "screenSaverControl": false,
+            "serviceMenuButton": false,
+            "ezAdjustButton": false,
+            "backlightControl": false,
+            "brightnessControl": false,
+            "colorControl": false,
+            "contrastControl": false,
+            "soundOutputButtons": [
+              {
+                "soundOutput": "tv_speaker"
+              }
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 38,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 4,
+        "add": 11,
+        "remove": 13
+      },
+      "labels": [
+        "",
+        "Device name",
+        "TV ip address",
+        "TV mac address",
+        "undefined",
+        "Advanced settings",
+        "General TV service settings",
+        "Remap control center remote buttons",
+        "App buttons",
+        "Channel buttons",
+        "Notification buttons",
+        "Remote control buttons",
+        "Remote sequence button",
+        "Sound output buttons",
+        "Picture mode buttons",
+        "Sound mode buttons",
+        "Occupancy triggers"
+      ]
+    }
+  ]
+}

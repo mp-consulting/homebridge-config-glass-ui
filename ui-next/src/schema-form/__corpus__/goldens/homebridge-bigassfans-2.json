@@ -1,0 +1,613 @@
+{
+  "plugin": "homebridge-bigassfans-2",
+  "version": "1.1.42",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 21,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Big Ass Fans",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": false,
+            "showLightAutoSwitch": false,
+            "showDimToWarmSwitch": false,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 60000,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": false,
+            "showLightAutoSwitch": false,
+            "showDimToWarmSwitch": false,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 60000,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": false,
+            "showLightAutoSwitch": false,
+            "showDimToWarmSwitch": false,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": true,
+            "showLightAutoSwitch": false,
+            "showDimToWarmSwitch": false,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": true,
+            "showLightAutoSwitch": true,
+            "showDimToWarmSwitch": false,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": true,
+            "showLightAutoSwitch": true,
+            "showDimToWarmSwitch": true,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": true,
+            "showLightAutoSwitch": true,
+            "showDimToWarmSwitch": true,
+            "showEcoModeSwitch": true,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": true,
+            "showLightAutoSwitch": true,
+            "showDimToWarmSwitch": true,
+            "showEcoModeSwitch": true,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          },
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": false,
+            "showLightAutoSwitch": false,
+            "showDimToWarmSwitch": false,
+            "showEcoModeSwitch": false,
+            "disableDirectionControl": false,
+            "probeFrequency": 60000,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "fans": [
+          {
+            "name": "i6 fan",
+            "showFanAutoSwitch": true,
+            "showLightAutoSwitch": true,
+            "showDimToWarmSwitch": true,
+            "showEcoModeSwitch": true,
+            "disableDirectionControl": false,
+            "probeFrequency": 7,
+            "noLights": false,
+            "showHumidity": true,
+            "showTemperature": true,
+            "showFanOccupancySensor": false,
+            "showLightOccupancySensor": false,
+            "showStandbyLED": false,
+            "enableIncrementalButtons": false,
+            "incrementalButtonsDelay": 500,
+            "enableDebugPort": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Fans",
+        "",
+        "Fan Name",
+        "Fan IP Address Or Hostname",
+        "MAC Address",
+        "Fan Auto Switch (Legacy)",
+        "Light Auto Switch",
+        "Dim To Warm Switch",
+        "Eco Mode Switch",
+        "Disable Direction Control",
+        "Probe Frequency (ms)",
+        "Hide Light Controls",
+        "Show Humidity Sensor",
+        "Show Temperature Sensor",
+        "Show Fan Occupancy Sensor",
+        "Show Light Occupancy Sensor",
+        "Show Standby LED Controls",
+        "Enable +/- Buttons",
+        "Incremental Button Reset Delay (ms)",
+        "Enable Debug Port"
+      ]
+    }
+  ]
+}

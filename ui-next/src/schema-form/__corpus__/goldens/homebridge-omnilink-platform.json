@@ -1,0 +1,1170 @@
+{
+  "plugin": "homebridge-omnilink-platform",
+  "version": "1.6.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: smoke"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: smoke"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 70,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 51,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Omni",
+        "port": 4369,
+        "includeAreas": true,
+        "includeZones": true,
+        "includeBypassZones": false,
+        "includeButtons": true,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 4369,
+        "includeAreas": true,
+        "includeZones": true,
+        "includeBypassZones": false,
+        "includeButtons": true,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": true,
+        "includeZones": true,
+        "includeBypassZones": false,
+        "includeButtons": true,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": true,
+        "includeBypassZones": false,
+        "includeButtons": true,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": false,
+        "includeButtons": true,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": true,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "motion",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "smoke",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "smoke",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "smoke",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "smoke",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 29,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "smoke",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "port": 7,
+        "includeAreas": false,
+        "includeZones": false,
+        "includeBypassZones": true,
+        "includeButtons": false,
+        "includeUnits": true,
+        "includeThermostats": true,
+        "includeEmergencyAlarms": true,
+        "includeAccessControls": true,
+        "includeAuxiliarySensors": true,
+        "setHomeToAway": false,
+        "setNightToAway": false,
+        "includeHoldStatusSwitches": false,
+        "includeFanModeSwitches": false,
+        "includeHumidityControls": false,
+        "targetHumiditySetPointType": 1,
+        "targetHumidityDifference": 0,
+        "minTemperature": 0,
+        "maxTemperature": 40,
+        "defaultAccessoryMappings": {
+          "zone": "smoke",
+          "zoneFireEmergency": "smoke",
+          "unit": "switch"
+        },
+        "pushover": {
+          "alarms": {
+            "burglary": false,
+            "fire": false,
+            "gas": false,
+            "auxiliary": false,
+            "freeze": false,
+            "water": false,
+            "duress": false,
+            "temperature": false
+          },
+          "troubles": {
+            "freeze": false,
+            "batterylow": false,
+            "acpower": false,
+            "phoneline": false,
+            "digitalcommunicator": false,
+            "fuse": false
+          }
+        },
+        "mqtt": {
+          "showMqttEvents": false
+        },
+        "syncTime": false,
+        "showHomebridgeEvents": false,
+        "showOmniEvents": false,
+        "excludeZoneStatusChanges": false,
+        "excludeTemperatureChanges": false,
+        "showRequestResponse": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "refreshStatusesInterval": 60
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 4,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "",
+        "Key 1",
+        "Key 2",
+        "Accessory Settings",
+        "Pushover Notifications",
+        "MQTT Settings",
+        "Other Settings"
+      ]
+    }
+  ]
+}

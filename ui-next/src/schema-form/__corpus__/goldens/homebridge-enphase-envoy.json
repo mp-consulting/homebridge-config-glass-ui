@@ -1,0 +1,826 @@
+{
+  "plugin": "homebridge-enphase-envoy",
+  "version": "10.8.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 63,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": false,
+            "energyHistoryTime": 0,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": false
+            },
+            "enpowerDryContactsControl": false,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": false,
+            "energyHistoryTime": 0,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": false
+            },
+            "enpowerDryContactsControl": false,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": false,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": false
+            },
+            "enpowerDryContactsControl": false,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": false,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": false
+            },
+            "enpowerDryContactsControl": false,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": false,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": false,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": false,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 35,
+        "add": 18,
+        "remove": 18
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 36,
+        "add": 18,
+        "remove": 19
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 37,
+        "add": 18,
+        "remove": 20
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 38,
+        "add": 18,
+        "remove": 21
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Enphase Envoy",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "envoyFirmware7xxTokenGenerationMode": 0,
+            "energyMeter": true,
+            "energyHistoryTime": 7,
+            "energyHistoryReserveSpace": 1,
+            "lockControl": {
+              "enable": true,
+              "namePrefix": true
+            },
+            "enpowerDryContactsControl": true,
+            "enpowerDryContactsSensor": false,
+            "productionDataRefreshTime": 10,
+            "liveDataRefreshTime": 5,
+            "ensembleDataRefreshTime": 15,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 37,
+        "add": 18,
+        "remove": 20
+      },
+      "labels": [
+        "",
+        "Accessory name",
+        "IP/Hostname",
+        "Accessory type",
+        "Credentials",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

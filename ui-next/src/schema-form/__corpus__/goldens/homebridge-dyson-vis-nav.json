@@ -1,0 +1,467 @@
+{
+  "plugin": "homebridge-dyson-vis-nav",
+  "version": "1.4.5",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: Off"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: Log API Headers"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 14,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 3,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Dyson 360 Vis Nav",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": true,
+        "wildcardTopic": false,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": true,
+        "wildcardTopic": false,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": false,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true,
+        "debugFeatures": [
+          "Log API Headers"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true,
+        "debugFeatures": [
+          "Log API Headers"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true,
+        "debugFeatures": [
+          "Log API Headers"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true,
+        "debugFeatures": [
+          "Log API Headers"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "provisioningMethod": "Remote Account",
+        "dysonAccount": {
+          "country": "GB"
+        },
+        "simpleModeTagsRvc": false,
+        "wildcardTopic": true,
+        "logMapStyle": "Off",
+        "unreachableTimeout": 120,
+        "debug": true,
+        "debugFeatures": [
+          "Log API Headers"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Device Filtering",
+        "Advanced",
+        "",
+        "Email",
+        "Password",
+        "Country",
+        "Token",
+        "Provisioning Method"
+      ]
+    }
+  ]
+}

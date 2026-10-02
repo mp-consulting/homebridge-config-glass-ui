@@ -1,0 +1,204 @@
+{
+  "plugin": "homebridge-balboa-spa",
+  "version": "3.0.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: Pump 2"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 7,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Spa",
+        "autoCreateAccessories": true,
+        "debugUseDummySpa": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Automatically Create All Spa Controls as Accessories",
+        "Name",
+        "Manually Created Accessories",
+        "",
+        "Spa IP Address"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "autoCreateAccessories": true,
+        "debugUseDummySpa": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Automatically Create All Spa Controls as Accessories",
+        "Name",
+        "Manually Created Accessories",
+        "",
+        "Spa IP Address"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "autoCreateAccessories": false,
+        "debugUseDummySpa": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Automatically Create All Spa Controls as Accessories",
+        "Name",
+        "Manually Created Accessories",
+        "",
+        "Spa IP Address"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "autoCreateAccessories": false,
+        "debugUseDummySpa": false,
+        "devices": [
+          {
+            "deviceType": "Pump 2"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Automatically Create All Spa Controls as Accessories",
+        "Name",
+        "Manually Created Accessories",
+        "",
+        "Spa IP Address"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "autoCreateAccessories": false,
+        "debugUseDummySpa": false,
+        "devices": [
+          {
+            "deviceType": "Pump 2"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Automatically Create All Spa Controls as Accessories",
+        "Name",
+        "Manually Created Accessories",
+        "",
+        "Spa IP Address"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "autoCreateAccessories": false,
+        "debugUseDummySpa": false,
+        "devices": [
+          {
+            "deviceType": "Pump 2"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Automatically Create All Spa Controls as Accessories",
+        "Name",
+        "Manually Created Accessories",
+        "",
+        "Spa IP Address"
+      ]
+    }
+  ]
+}

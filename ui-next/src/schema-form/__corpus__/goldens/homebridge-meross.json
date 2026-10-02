@@ -1,0 +1,363 @@
+{
+  "plugin": "homebridge-meross",
+  "version": "10.8.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 21,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 15,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 9,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 18,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Meross Key",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": false,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 18,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 13
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 19,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 14
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 15
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 19,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 14
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 18,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 13
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    },
+    {
+      "data": {
+        "name": "Meross",
+        "disableDeviceLogging": true,
+        "username": "golden"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Meross Username",
+        "Meross Password",
+        "Advanced Settings",
+        "Single-Channel Devices",
+        "Multi-Channel Devices",
+        "Light Devices",
+        "Fan Devices",
+        "Diffuser Devices",
+        "Purifier Devices",
+        "Humidifier Devices",
+        "Thermostat Devices",
+        "Garage Devices",
+        "Roller Devices",
+        "Baby Devices",
+        "Sensor Devices"
+      ]
+    }
+  ]
+}

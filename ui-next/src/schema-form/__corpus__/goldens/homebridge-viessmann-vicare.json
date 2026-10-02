@@ -1,0 +1,1048 @@
+{
+  "plugin": "homebridge-viessmann-vicare",
+  "version": "2.0.81",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: auto"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: sensor"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Viessmann",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": true,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": true,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": false,
+        "cache": {
+          "enabled": true,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": true,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": true,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": false,
+        "cache": {
+          "enabled": true,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": false,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": true,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": false,
+        "cache": {
+          "enabled": true,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": false,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": true,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": true,
+        "cache": {
+          "enabled": true,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": false,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": false,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": true,
+        "cache": {
+          "enabled": true,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": false,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": false,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": true,
+        "cache": {
+          "enabled": false,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": false,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": false,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": true,
+        "cache": {
+          "enabled": false,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "authMethod": "auto",
+        "redirectPort": 4200,
+        "authTimeout": 300000,
+        "tokenRefreshBuffer": 300000,
+        "enableTokenPersistence": false,
+        "refreshInterval": 120000,
+        "requestTimeout": 30000,
+        "enableRateLimitProtection": false,
+        "maxRetries": 3,
+        "retryDelay": 30000,
+        "rateLimitResetBuffer": 60000,
+        "enableApiMetrics": true,
+        "debug": false,
+        "reportServerPort": 0,
+        "reportServerPath": "/var/lib/homebridge",
+        "forceServiceRecreation": true,
+        "cache": {
+          "enabled": false,
+          "installationsTTL": 86400000,
+          "featuresTTL": 120000,
+          "devicesTTL": 21600000,
+          "gatewaysTTL": 43200000,
+          "maxEntries": 1000,
+          "enableSmartRefresh": false,
+          "enableConditionalRequests": false,
+          "enableIntelligentPrefetch": false,
+          "compressionEnabled": false
+        },
+        "advanced": {
+          "baseDelay": 1000,
+          "maxDelay": 300000,
+          "maxConsecutiveErrors": 5,
+          "deviceUpdateDelay": 1000,
+          "userAgent": "homebridge-viessmann-vicare/2.0.0"
+        },
+        "features": {
+          "enableBoilerAccessories": true,
+          "enableDHWAccessories": true,
+          "enableHeatingCircuitAccessories": true,
+          "enableTemperaturePrograms": true,
+          "enableQuickSelections": true,
+          "enableBurnerStatus": true,
+          "enableRoomSensorDiscovery": false,
+          "enableRoomSensors": true,
+          "enableBoilerAlarm": true,
+          "exposeWaterPressureEve": true,
+          "dhwTemperatureDisplay": "sensor",
+          "dhwPeakHours": 6,
+          "enableLegacyDiagnosticSensors": false,
+          "exposeDhwTemperatureSensor": true,
+          "holidayDays": 7,
+          "holidayAtHomeDays": 7,
+          "dhwDefaultMode": "eco",
+          "exposeProgramTemperatures": true,
+          "curveAutoTune": false,
+          "curveAutoTuneIntervalHours": 24,
+          "curveAutoTuneMaxSlopeDelta": 0.3,
+          "curveAutoTuneMaxShiftDelta": 3
+        },
+        "network": {
+          "enableIPv6": false,
+          "enableKeepAlive": true
+        },
+        "enableImmediateBurnerUpdates": true,
+        "burnerUpdateDelay": 30000,
+        "burnerUpdateDebounce": 5000,
+        "postCommandRetry": {
+          "guardDuration": 120000
+        },
+        "reportServerTimeout": 600,
+        "reportRetentionDays": 30,
+        "logging": {
+          "csv": {
+            "enabled": true
+          },
+          "mysql": {
+            "enabled": false,
+            "host": "localhost",
+            "port": 3306,
+            "database": "homebridge",
+            "user": "viessmann_rw",
+            "table": "viessmann_history",
+            "autoCreateTable": true
+          }
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 28,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "🔐 Basic Configuration",
+        "Platform Name",
+        "Client ID",
+        "Client Secret",
+        "Username/Email",
+        "Password",
+        "🔑 Authentication Method",
+        "Authentication Method",
+        "Host IP Address",
+        "Dashboard / OAuth Redirect Port",
+        "OAuth Authentication Timeout (ms)",
+        "🔥 Dashboard & reports",
+        "⚙️ Manual Authentication (Advanced)",
+        "🔒 Token Management",
+        "🎯 Installation Filtering",
+        "🎯 Custom Names & Localization",
+        "⚡ Performance & Rate Limiting",
+        "💾 Enhanced API Caching",
+        "🎛️ Feature Control",
+        "🔧 Advanced Settings",
+        "🌐 Network Settings",
+        "🔥 Burner & Command Settings",
+        "📊 Monitoring & Debug"
+      ]
+    }
+  ]
+}
