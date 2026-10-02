@@ -90,3 +90,4 @@ e2e/.run/
 test-results/
 playwright-report/
 e2e/specs/__screenshots__/
+e2e/specs/*-snapshots/
