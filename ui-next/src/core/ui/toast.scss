@@ -1,0 +1,19 @@
+// Was app-toast.component.scss / restart-toast.component.scss: the fade in and
+// out every toast host runs (the durations come from the toast options).
+.ngx-toastr.toast-in {
+  animation: toast-animation var(--animation-duration) var(--animation-easing);
+}
+
+.ngx-toastr.toast-out {
+  animation: toast-animation var(--animation-duration) var(--animation-easing) reverse forwards;
+}
+
+@keyframes toast-animation {
+  0% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
