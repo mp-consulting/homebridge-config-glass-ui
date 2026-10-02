@@ -78,10 +78,16 @@ async function worker() {
     }
     const minutes = ((Date.now() - started) / 60000).toFixed(1)
     console.log(`[record] ${done}/${plugins.length} ${status} ${plugin} (${minutes} min)`)
-    for (const line of result.output.split('\n')) {
+    const lines = result.output.split('\n')
+    for (const line of lines) {
       if (line.includes('[golden] ')) {
         console.log(`  ${line.trim()}`)
       }
+    }
+    if (result.code !== 0) {
+      // Why it failed: the end of the test run's own output
+      const tail = lines.filter(line => line.trim() && !line.includes('[golden] ')).slice(-15)
+      console.log(tail.map(line => `  | ${line}`).join('\n'))
     }
   }
 }

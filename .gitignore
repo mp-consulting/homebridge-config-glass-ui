@@ -85,3 +85,8 @@ info
 *.tsbuildinfo
 ui-next/src/schema-form/__corpus__/schemas/
 ui-next/spikes/**/screenshots/
+
+# Playwright parity suite builds and results
+e2e/.run/
+test-results/
+playwright-report/
