@@ -41,6 +41,8 @@ const child = spawn('npx', ['tsx', 'src/bin/standalone.ts', '-U', storage], {
   env: {
     ...process.env,
     UIX_BASE_PATH_OVERRIDE: resolve(repoRoot, 'e2e/.run', ui),
+    // The mock plugins, so the plugin list doesn't depend on what this machine has installed
+    UIX_CUSTOM_PLUGIN_PATH: join(storage, 'plugins'),
     UIX_INSECURE_MODE: '',
     UIX_DEVELOPMENT: '',
   },

@@ -15,6 +15,8 @@ const UIS = [
 
 export default defineConfig({
   testDir: './specs',
+  // No {projectName}: the React project compares against the Angular screenshots
+  snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
