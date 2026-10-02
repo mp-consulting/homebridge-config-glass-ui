@@ -98,3 +98,18 @@ Each routed page lives in `src/modules/<dir>/` (same dir names as `ui/src/app/mo
   `managePlugins` with the Angular method names (owner: Phase 3a; used by 3b, 4, 6).
 - A service that only exists to hold state for one page becomes a hook or a Zustand store in that
   module; a service several modules use goes in `src/core/`.
+
+## Accessories (Phase 5)
+
+- `src/core/accessories/accessories.ts` — `accessories` service + `useAccessoriesStore` from
+  `accessories.service.ts` (rooms, per-user layout, service merging, socket events), same method
+  names. Interfaces in `accessories.interfaces.ts`.
+- `src/core/accessories/types/use-manage-accessory.ts` — `BaseManageComponent` as a hook:
+  `useManageAccessory(service, options)` returns the same members the Angular base class gave its
+  subclasses (debounced characteristic writes, live service updates, slider gradient, close/dismiss).
+  The manage modal receives `{ service, activeModal }` as props (`AccessoryManageModalData`).
+- One dir per type, as in Angular: `src/core/accessories/types/{hap,matter}/<dir>/` with
+  `<Pascal>Tile.tsx` exporting `<Pascal>Tile({ service, readyForControl? })` and, if Angular had a
+  manage component, `<Pascal>Manage.tsx` exporting `<Pascal>Manage(props)`. `<Pascal>` is the
+  Angular class name without `Component` (e.g. `LightbulbTile`, `LightbulbManage`,
+  `DimmableLightTile`). `accessory-tile/AccessoryTile.tsx` maps service types to these by name.
