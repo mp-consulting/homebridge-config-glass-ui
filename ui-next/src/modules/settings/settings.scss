@@ -1,0 +1,255 @@
+// Ported from settings.component.scss. Angular scoped it to <app-settings>;
+// here everything is nested under the page's root class instead.
+.hb-settings {
+  // Fade out/in animation for content during theme change
+  .settings-content {
+    opacity: 1;
+    transition: opacity 0.25s ease-in-out;
+
+    &.theme-transitioning {
+      opacity: 0;
+    }
+  }
+
+  // Completely disable interaction with terminal theme dropdown when in dark mode
+  .disabled-no-interaction {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+  }
+
+  form {
+    position: relative;
+  }
+
+  .search-bar {
+    outline: none;
+    box-sizing: inherit !important;
+    background-color: inherit;
+    height: 50px !important;
+    width: 100%;
+    border-width: 0.5px;
+    padding: 10px 45px 10px 10px;
+    margin-bottom: 15px;
+
+    @media (hover: hover) {
+      &:hover {
+        border: 1px solid #000000;
+      }
+    }
+    &:focus {
+      border: 1px solid #000000;
+      box-shadow: 0 1px 0 0 #000000;
+    }
+  }
+
+  .search-bar-clear {
+    position: absolute;
+    right: 8px;
+    top: 25px;
+    height: 50px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #d0d0d0;
+    cursor: pointer;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: #a0a0a0;
+    }
+  }
+
+  // Cron input styling
+  .cron-input {
+    letter-spacing: 0.15em;
+    text-align: center;
+  }
+
+  // Right-aligned text input
+  .text-end-input {
+    text-align: right;
+  }
+
+  // Minimum width for buttons and labels
+  .min-w-50 {
+    min-width: 50px;
+  }
+
+  // Let the container's own border-radius clip content so that
+  // visually-first/last items get rounded corners even when
+  // DOM-first/last items are hidden by the search filter.
+  .list-group-box {
+    overflow: hidden;
+  }
+
+  // ── smoothHide replacement: expand/collapse for settings rows ──
+  .setting-row {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+      grid-template-rows 450ms cubic-bezier(0, 0, 0.2, 1),
+      opacity 450ms cubic-bezier(0, 0, 0.2, 1),
+      transform 450ms cubic-bezier(0, 0, 0.2, 1),
+      padding 450ms cubic-bezier(0, 0, 0.2, 1),
+      border-bottom-width 450ms cubic-bezier(0, 0, 0.2, 1);
+    opacity: 1;
+    transform: scale(1);
+
+    &.setting-hidden {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transform: scale(0.98);
+      padding: 0 !important;
+      border-bottom: 0 !important;
+      transition-duration: 150ms;
+      transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    }
+  }
+
+  .setting-row-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  // ── fadeInOut replacement: save indicator icons ──
+  // Element enters DOM via @if, CSS keyframe handles the fade-in.
+  // No leave animation — instant removal on save complete is fine UX.
+  .save-indicator {
+    animation: hb-settings-fade-in 750ms ease;
+  }
+
+  // ── Respect reduced motion preference ──
+  @media (prefers-reduced-motion: reduce) {
+    .setting-row {
+      transition: none;
+    }
+
+    .save-indicator {
+      animation: none;
+    }
+  }
+
+  // ── Layout: section index beside a readable-width column ──
+  // On wide screens the settings no longer stretch edge to edge; a sticky index
+  // on the left jumps between sections. Narrower screens get the index as a
+  // scrollable row of chips above the settings.
+  .settings-layout {
+    @media (min-width: 1200px) {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 940px);
+      gap: 32px;
+      align-items: start;
+    }
+  }
+
+  .settings-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 2px 2px 6px;
+    margin-bottom: 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (min-width: 1200px) {
+      position: sticky;
+      top: 24px;
+      flex-direction: column;
+      gap: 2px;
+      overflow: visible;
+      margin-top: 1.5rem;
+      padding: 8px;
+      border-radius: 20px;
+    }
+  }
+
+  .settings-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+    border: 0;
+    background: rgba(127, 127, 127, 0.1);
+    color: inherit;
+    font: inherit;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    text-align: left;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+
+    i {
+      width: 18px;
+      text-align: center;
+      opacity: 0.75;
+    }
+
+    &:hover {
+      background: rgba(127, 127, 127, 0.18);
+    }
+
+    &.active {
+      color: var(--glass-primary, currentColor);
+      background: rgba(var(--glass-primary-rgb, 127, 127, 127), 0.16);
+      font-weight: 500;
+
+      i {
+        opacity: 1;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+  }
+
+  // Scroll a jumped-to section so its heading clears the top edge
+  .settings-section {
+    scroll-margin-top: 16px;
+  }
+
+  // ── Rows ──
+  // Labels read as labels (the base list style is weight 300 throughout), and
+  // descriptions stay light underneath them.
+  .settings-content {
+    .list-group-item {
+      font-weight: 400;
+      padding: 14px 20px;
+
+      small {
+        font-weight: 300;
+        display: inline-block;
+        margin-top: 2px;
+        line-height: 1.4;
+      }
+    }
+
+    h5.primary-text {
+      font-weight: 500;
+      font-size: 1.1rem;
+      letter-spacing: 0.01em;
+    }
+  }
+}
+
+@keyframes hb-settings-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

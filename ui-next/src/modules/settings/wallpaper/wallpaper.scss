@@ -1,0 +1,37 @@
+// Ported from wallpaper.component.scss (scoped to the modal there)
+.hb-wallpaper {
+  .anim {
+    -webkit-animation: hb-wallpaper-gradient 20s ease infinite;
+    -moz-animation: hb-wallpaper-gradient 20s ease infinite;
+    animation: hb-wallpaper-gradient 20s ease infinite;
+  }
+
+  .wallpaper-preview {
+    height: 200px;
+  }
+
+  .wallpaper-delete-btn {
+    top: 10px;
+    right: 10px;
+  }
+
+  .wallpaper-placeholder {
+    height: 200px;
+    width: 350px;
+    margin: 0 auto;
+  }
+}
+
+@keyframes hb-wallpaper-gradient {
+  0% {
+    background-position: 0 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
