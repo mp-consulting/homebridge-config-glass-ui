@@ -1,6 +1,6 @@
 import type { ChildBridge } from '@/core/plugins/manage-plugins.interfaces'
-import type { PluginsPageHost } from '@/modules/plugins/plugins-page.store'
-import type { FormEvent, ReactElement } from 'react'
+import type { PluginsPageHost, PluginsPageStoreApi } from '@/modules/plugins/plugins-page.store'
+import type { FormEvent, ReactElement, RefObject } from 'react'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
@@ -36,6 +36,46 @@ function ToolbarTooltip({ text, children }: { text: string, children: ReactEleme
   )
 }
 
+/**
+ * The search form. It is the only part of the page that follows the query, so
+ * a keystroke re-renders the input and not the page with every plugin card.
+ */
+function PluginSearchForm({ store, inputRef }: { store: PluginsPageStoreApi, inputRef: RefObject<HTMLInputElement | null> }) {
+  const { t } = useTranslation()
+  const query = useStore(store, s => s.query)
+  const actions = store.getState()
+
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    actions.onSubmit({ query: store.getState().query })
+  }
+
+  return (
+    <form noValidate onSubmit={onSubmit}>
+      <input
+        ref={inputRef}
+        type="text"
+        className="search-bar"
+        name="query"
+        value={query}
+        placeholder={t('plugins.placeholder_search_plugin')}
+        aria-label={t('plugins.placeholder_search_plugin')}
+        onChange={event => actions.setQuery(event.target.value)}
+      />
+      {query && (
+        <button
+          type="button"
+          className="search-bar-clear"
+          aria-label={t('form.button_clear')}
+          onClick={() => actions.onClearSearch()}
+        >
+          <i className="fas fa-square-xmark" aria-hidden="true"></i>
+        </button>
+      )}
+    </form>
+  )
+}
+
 export function PluginsPage() {
   const { t } = useTranslation()
   const location = useLocation()
@@ -52,7 +92,6 @@ export function PluginsPage() {
   const showSearchBar = useStore(store, s => s.showSearchBar)
   const showExitButton = useStore(store, s => s.showExitButton)
   const isSearchMode = useStore(store, s => s.isSearchMode)
-  const query = useStore(store, s => s.query)
   const uiUpdateAvailable = useStore(store, s => s.uiUpdateAvailable)
 
   const childBridgesByPlugin = useMemo(() => groupChildBridgesByPlugin(childBridges), [childBridges])
@@ -105,11 +144,6 @@ export function PluginsPage() {
   useCanDeactivate(nextPath => store.getState().canDeactivate(nextPath))
 
   const actions = store.getState()
-
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    actions.onSubmit({ query: store.getState().query })
-  }
 
   return (
     <div className="hb-plugins">
@@ -176,28 +210,7 @@ export function PluginsPage() {
           {showSearchBar && (
             <div className="row" id="plugin-search-region">
               <div className="col-md-12">
-                <form noValidate onSubmit={onSubmit}>
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    className="search-bar"
-                    name="query"
-                    value={query}
-                    placeholder={t('plugins.placeholder_search_plugin')}
-                    aria-label={t('plugins.placeholder_search_plugin')}
-                    onChange={event => actions.setQuery(event.target.value)}
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      className="search-bar-clear"
-                      aria-label={t('form.button_clear')}
-                      onClick={() => actions.onClearSearch()}
-                    >
-                      <i className="fas fa-square-xmark" aria-hidden="true"></i>
-                    </button>
-                  )}
-                </form>
+                <PluginSearchForm store={store} inputRef={searchInputRef} />
               </div>
             </div>
           )}

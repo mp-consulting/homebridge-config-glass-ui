@@ -5,7 +5,7 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import { closestCenter, DndContext, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { accessories } from '@/core/accessories/accessories'
@@ -14,7 +14,8 @@ import { mobileDetect } from '@/core/utilities/mobile-detect'
 
 import { AccessoryPointerSensor } from './accessory-drag'
 
-function SortableAccessory({ service, disabled }: { service: ServiceTypeX, disabled: boolean }) {
+/** Memoised, so a live update re-renders only the tile whose service changed. */
+const SortableAccessory = memo(({ service, disabled }: { service: ServiceTypeX, disabled: boolean }) => {
   const { setNodeRef, listeners, transform, transition, isDragging } = useSortable({ id: service.uniqueId as string, disabled })
   return (
     <div
@@ -26,7 +27,8 @@ function SortableAccessory({ service, disabled }: { service: ServiceTypeX, disab
       <AccessoryTile service={service} />
     </div>
   )
-}
+})
+SortableAccessory.displayName = 'SortableAccessory'
 
 /**
  * The accessories pinned to the dashboard, in the order the widget stores.
@@ -95,7 +97,10 @@ export function AccessoriesWidget({ widget, saveWidgets }: WidgetProps) {
     }
   }, [])
 
-  const sensors = useSensors(useSensor(AccessoryPointerSensor, { activationConstraint: { distance: 5 }, isMobile }))
+  // Memoised options: a new options object makes new sensors, which re-render
+  // every sortable tile on each render of the widget
+  const sensorOptions = useMemo(() => ({ activationConstraint: { distance: 5 }, isMobile }), [isMobile])
+  const sensors = useSensors(useSensor(AccessoryPointerSensor, sensorOptions))
 
   // Save the service order onto the widget, which the dashboard persists
   const onDragEnd = ({ active, over }: DragEndEvent) => {
@@ -114,6 +119,11 @@ export function AccessoriesWidget({ widget, saveWidgets }: WidgetProps) {
 
   const visible = dashboardAccessories.filter(service => !service.hidden)
 
+  // The same ids array while the ids are the same, so the sortable context
+  // (and every tile under it) does not change on each live update
+  const visibleIdsKey = JSON.stringify(visible.map(s => s.uniqueId as string))
+  const visibleIds = useMemo(() => JSON.parse(visibleIdsKey) as string[], [visibleIdsKey])
+
   return (
     <div className="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
       <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
@@ -121,7 +131,7 @@ export function AccessoriesWidget({ widget, saveWidgets }: WidgetProps) {
       </div>
       {dashboardAccessories.length > 0 && (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-          <SortableContext items={visible.map(s => s.uniqueId as string)} strategy={rectSortingStrategy}>
+          <SortableContext items={visibleIds} strategy={rectSortingStrategy}>
             <div className="d-flex flex-wrap gridster-item-content">
               {visible.map(service => (
                 <SortableAccessory key={service.uniqueId} service={service} disabled={isMobile} />

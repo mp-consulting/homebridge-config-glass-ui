@@ -16,13 +16,15 @@ import {
 } from '@dnd-kit/core'
 import { rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Dropdown } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 
 import { accessories, useAccessoriesStore } from '@/core/accessories/accessories'
 import { AccessoryTile } from '@/core/accessories/accessory-tile/AccessoryTile'
 import { useAuthStore } from '@/core/auth/auth.store'
+import { escapeHtml } from '@/core/helpers/html.helper'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { openModal } from '@/core/ui/modal'
@@ -45,10 +47,17 @@ import { EditRoom } from '@/modules/accessories/edit-room/EditRoom'
 
 import './accessories.scss'
 
-const LINK_INSECURE = '<a href="https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Enabling-Accessory-Control" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
+/** The wiki link the "must use insecure mode" message embeds: an icon, so it carries its own name. */
+function insecureModeLink(label: string): string {
+  return `<a href="https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Enabling-Accessory-Control" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(label)}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
+}
 
 /** Ten invisible boxes that keep the last row of tiles aligned to the grid. */
 const PLACEHOLDERS = Array.from({ length: 10 }, (_, i) => i)
+
+const MOUSE_SENSOR_OPTIONS = { activationConstraint: { distance: 5 } }
+const TOUCH_SENSOR_OPTIONS = { activationConstraint: { delay: 150, tolerance: 5 } }
+const KEYBOARD_SENSOR_OPTIONS = { coordinateGetter: sortableKeyboardCoordinates }
 
 /**
  * Rooms are dragged onto rooms; a tile onto the tile under the pointer, else
@@ -70,7 +79,18 @@ const collisionDetection: CollisionDetection = (args) => {
   return closestCenter({ ...args, droppableContainers: ofType('service') })
 }
 
-function SortableService({ service, enabled }: { service: ServiceTypeX, enabled: boolean }) {
+/**
+ * The same ids array while the ids are the same, so a sortable context (and
+ * every sortable item under it) does not change on each live update.
+ * @param ids - the item ids, in order
+ */
+function useStableIds(ids: string[]): string[] {
+  const key = JSON.stringify(ids)
+  return useMemo(() => JSON.parse(key) as string[], [key])
+}
+
+/** Memoised, as are the rooms: a live update re-renders only the tile whose service changed. */
+const SortableService = memo(({ service, enabled }: { service: ServiceTypeX, enabled: boolean }) => {
   const { setNodeRef, listeners, transform, transition, isDragging } = useSortable({
     id: serviceDragId(service),
     data: { type: 'service' },
@@ -87,7 +107,8 @@ function SortableService({ service, enabled }: { service: ServiceTypeX, enabled:
       <AccessoryTile service={service} />
     </div>
   )
-}
+})
+SortableService.displayName = 'SortableService'
 
 interface RoomProps {
   room: AccessoryRoom
@@ -98,8 +119,9 @@ interface RoomProps {
   onEdit: (index: number) => void
 }
 
-function SortableRoom({ room, index, layoutLocked, manageLayoutMode, isVisible, onEdit }: RoomProps) {
+const SortableRoom = memo(({ room, index, layoutLocked, manageLayoutMode, isVisible, onEdit }: RoomProps) => {
   const { t } = useTranslation()
+  const serviceIds = useStableIds(room.services.map(serviceDragId))
   const { setNodeRef, setActivatorNodeRef, attributes, listeners, transform, transition } = useSortable({
     id: roomDragId(room),
     data: { type: 'room' },
@@ -133,7 +155,7 @@ function SortableRoom({ room, index, layoutLocked, manageLayoutMode, isVisible, 
       )}
       <div className="row mb-4">
         {room.services.length > 0 && (
-          <SortableContext items={room.services.map(serviceDragId)} strategy={rectSortingStrategy}>
+          <SortableContext items={serviceIds} strategy={rectSortingStrategy}>
             <div className="col-md-12 d-flex flex-wrap noselect services-bag">
               {room.services.map(service => (isVisible(service)
                 ? <SortableService key={service.uniqueId} service={service} enabled={manageLayoutMode} />
@@ -152,7 +174,8 @@ function SortableRoom({ room, index, layoutLocked, manageLayoutMode, isVisible, 
       </div>
     </div>
   )
-}
+})
+SortableRoom.displayName = 'SortableRoom'
 
 /** `/accessories`: the accessories, grouped into the user's rooms. */
 export function Accessories() {
@@ -174,7 +197,7 @@ export function Accessories() {
   const previousBridgeSelectionRef = useRef<string[] | null>(null)
   // The bridge names live in a Map on the service; this re-renders the
   // filtered tiles when one arrives
-  const [, bumpBridgeNames] = useReducer((version: number) => version + 1, 0)
+  const [bridgeNamesVersion, bumpBridgeNames] = useReducer((version: number) => version + 1, 0)
 
   const shouldShowFilters = hasPlugins && availableBridges.length > 0
   const isShowingAllBridges = selectedBridges !== null
@@ -257,12 +280,15 @@ export function Accessories() {
 
   const lockLayout = () => setLayoutLocked(true)
 
-  const isVisible = (service: ServiceTypeX) => shouldDisplayService(service, {
+  // Stable between live updates, so the memoised rooms skip them. The bridge
+  // names are a Map mutated in place: its version re-creates the filter.
+  const isVisible = useCallback((service: ServiceTypeX) => shouldDisplayService(service, {
     manageLayoutMode,
     hideHidden,
     selectedBridges,
     bridgeNames: accessories.bridgeUsernameToNameMap,
-  })
+  // eslint-disable-next-line react/exhaustive-deps
+  }), [manageLayoutMode, hideHidden, selectedBridges, bridgeNamesVersion])
 
   const addRoom = async () => {
     const ref = openModal(AddRoom, { existingRooms: accessories.rooms() }, { size: 'lg', backdrop: 'static' })
@@ -305,6 +331,10 @@ export function Accessories() {
       // Modal dismissed, do nothing
     }
   }, [])
+
+  const onEditRoom = useCallback((index: number) => {
+    void editRoom(index)
+  }, [editRoom])
 
   const openSupport = () => {
     openModal(AccessorySupport, {}, { size: 'lg', backdrop: 'static' })
@@ -363,10 +393,12 @@ export function Accessories() {
 
   // Dragging is restricted to manage-layout mode, where filters are off and the
   // model and the DOM stay 1-to-1 (#2790)
+  // Options hoisted to constants: a new options object makes new sensors, and
+  // new sensors re-render every sortable tile on each render of the page
   const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(MouseSensor, MOUSE_SENSOR_OPTIONS),
+    useSensor(TouchSensor, TOUCH_SENSOR_OPTIONS),
+    useSensor(KeyboardSensor, KEYBOARD_SENSOR_OPTIONS),
   )
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
@@ -441,6 +473,8 @@ export function Accessories() {
     )
   }
 
+  const roomIds = useStableIds(rooms.map(roomDragId))
+
   const supportButton = (
     <button type="button" className="btn btn-elegant my-0 me-0" aria-label={t('support.title')} onClick={openSupport}>
       <i className="far fa-circle-question" aria-hidden="true"></i>
@@ -460,8 +494,15 @@ export function Accessories() {
                 <i className="fas fa-lightbulb primary-text icon-xl" aria-hidden="true"></i>
               </div>
               <h5 className="mb-3 mt-0">{t('accessories.control_disabled')}</h5>
-              <SafeHtml as="p" className="mb-0 small" html={t('accessories.message_must_use_insecure_mode', { link: LINK_INSECURE })} />
-              {isAdmin && <p className="mt-2 mb-0 small">{t('accessories.settings_link')}</p>}
+              <SafeHtml as="p" className="mb-0 small" html={t('accessories.message_must_use_insecure_mode', { link: insecureModeLink(t('accessories.link_enabling_control')) })} />
+              {/* "the cog icon in the side menu" is behind the hamburger on phones: link straight to Settings too */}
+              {isAdmin && (
+                <p className="mt-2 mb-0 small">
+                  {t('accessories.settings_link')}
+                  {' '}
+                  <Link to="/settings">{t('accessories.settings_link_open')}</Link>
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -515,7 +556,7 @@ export function Accessories() {
       {hasPlugins
         ? (
             <DndContext sensors={sensors} collisionDetection={collisionDetection} onDragEnd={onDragEnd}>
-              <SortableContext items={rooms.map(roomDragId)} strategy={verticalListSortingStrategy}>
+              <SortableContext items={roomIds} strategy={verticalListSortingStrategy}>
                 <div>
                   {rooms.map((room, index) => (
                     <SortableRoom
@@ -525,7 +566,7 @@ export function Accessories() {
                       layoutLocked={layoutLocked}
                       manageLayoutMode={manageLayoutMode}
                       isVisible={isVisible}
-                      onEdit={index => void editRoom(index)}
+                      onEdit={onEditRoom}
                     />
                   ))}
                 </div>

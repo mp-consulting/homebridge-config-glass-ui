@@ -81,6 +81,17 @@ export class AccessoriesService {
   private cachedDataRequested = false
   private customAttributesApplied = new Set<string>()
   private combinedServiceIds = new Set<string>()
+  // `accessories.services` indexed by uniqueId (first occurrence), so a live
+  // update does not scan the whole list per service. See `indexOfService()`.
+  private serviceIndex = new Map<string | undefined, number>()
+  private indexedServices: ServiceTypeX[] | null = null
+  // What the last `accessories-data` pass left behind: the rooms it set, the
+  // layout it ordered them by, and the services it replaced. While neither the
+  // rooms nor the layout changed since, only the rooms that gained or replaced
+  // a service can be out of order, so the others are not re-sorted.
+  private lastRoomsSnapshot: AccessoryRoom[] | null = null
+  private lastOrderedLayout: AccessoryLayout | null = null
+  private lastChangedIds = new Set<string | undefined>()
   private io!: IoNamespace
   // Bumped by stop(): replies to requests made in an earlier session are dropped
   private session = 0
@@ -227,15 +238,15 @@ export class AccessoriesService {
 
       // Keep the flat accessories list in sync so later parses/refreshes build on the
       // new reference instead of resurrecting the stale one.
-      const flatIndex = this.accessories.services.findIndex(s => s.uniqueId === updated.uniqueId)
+      const flatIndex = this.indexOfService(updated.uniqueId)
       if (flatIndex !== -1) {
         this.accessories.services[flatIndex] = updated
       }
 
-      this.rooms.update(rooms => rooms.map(room => ({
-        ...room,
-        services: room.services.map(s => (s.uniqueId === updated.uniqueId ? updated : s)),
-      })))
+      // Only the rooms holding the service get new objects
+      this.rooms.update(rooms => rooms.map(room => (room.services.some(s => s.uniqueId === updated.uniqueId)
+        ? { ...room, services: room.services.map(s => (s.uniqueId === updated.uniqueId ? updated : s)) }
+        : room)))
 
       this.saveLayout()
     } catch {
@@ -272,6 +283,11 @@ export class AccessoriesService {
     this.io?.end?.()
     this.rooms.set([])
     this.accessories = { services: [] }
+    this.serviceIndex.clear()
+    this.indexedServices = null
+    this.lastRoomsSnapshot = null
+    this.lastOrderedLayout = null
+    this.lastChangedIds = new Set()
     this.customAttributesApplied.clear()
     this.combinedServiceIds.clear()
     this.accessoryLayout = undefined as unknown as AccessoryLayout
@@ -328,13 +344,25 @@ export class AccessoriesService {
         if (!this.sessionActive) {
           return
         }
-        this.parseServices(data as ServiceTypeX[])
+        // One event per characteristic change: everything below touches only
+        // the services in the payload (and the rooms holding them), so the
+        // rooms and services nothing changed in keep their references and
+        // their memoised tiles do not re-render.
+        const roomsBefore = this.rooms()
+        const changed = this.parseServices(data as ServiceTypeX[])
         this.combineRelatedServices()
-        this.generateHelpers()
-        this.sortIntoRooms()
+        this.generateHelpers(data as ServiceTypeX[])
+        const touchedRooms = this.sortIntoRooms()
+        this.propagateLinkedChanges(changed)
 
-        // Always order rooms to handle accessories that arrive late (e.g., Matter accessories)
-        this.orderRooms()
+        // Always order rooms to handle accessories that arrive late (e.g., Matter accessories).
+        // Only the rooms that can be out of order are sorted, unless the rooms
+        // or the layout were changed from outside since the last pass.
+        const orderAll = roomsBefore !== this.lastRoomsSnapshot || this.accessoryLayout !== this.lastOrderedLayout
+        const previousChanged = this.lastChangedIds
+        this.orderRooms(orderAll
+          ? null
+          : room => touchedRooms.has(room.name) || room.services.some(s => changed.has(s.uniqueId) || previousChanged.has(s.uniqueId)))
 
         // Service objects are replaced, not mutated, so point the rooms at the
         // new references for anything that compares by identity
@@ -343,6 +371,10 @@ export class AccessoriesService {
         // Apply custom attributes after refreshing room references
         // This ensures attributes are applied to the new service objects, not the old ones
         this.applyCustomAttributes()
+
+        this.lastRoomsSnapshot = this.rooms()
+        this.lastOrderedLayout = this.accessoryLayout
+        this.lastChangedIds = changed
 
         this.accessoryData.next(data)
       },
@@ -616,17 +648,63 @@ export class AccessoriesService {
   }
 
   /**
-   * Parse the incoming accessory data and refresh existing accessory statuses
+   * The position of a service in `accessories.services` (its first occurrence),
+   * or -1. Served from an index by uniqueId, rebuilt when the list was replaced
+   * or changed from outside (specs and the manage modals swap it).
    */
-  private parseServices(services: ServiceTypeX[]) {
+  private indexOfService(uniqueId: string | undefined): number {
+    const list = this.accessories.services
+    const index = this.indexedServices === list ? this.serviceIndex.get(uniqueId) : undefined
+    if (index !== undefined && list[index]?.uniqueId === uniqueId) {
+      return index
+    }
+    if (index === undefined && this.indexedServices === list && this.serviceIndex.size === list.length) {
+      return -1
+    }
+    this.reindexServices()
+    return this.serviceIndex.get(uniqueId) ?? -1
+  }
+
+  private reindexServices() {
+    const list = this.accessories.services
+    this.serviceIndex = new Map()
+    list.forEach((service, index) => {
+      if (!this.serviceIndex.has(service.uniqueId)) {
+        this.serviceIndex.set(service.uniqueId, index)
+      }
+    })
+    this.indexedServices = list
+  }
+
+  /** The current object for a uniqueId, or undefined. */
+  private currentService(uniqueId: string | undefined): ServiceTypeX | undefined {
+    const index = this.indexOfService(uniqueId)
+    return index === -1 ? undefined : this.accessories.services[index]
+  }
+
+  /** Set the rooms, unless nothing changed. */
+  private setRooms(next: AccessoryRoom[]) {
+    if (next !== this.rooms()) {
+      this.rooms.set(next)
+    }
+  }
+
+  /**
+   * Parse the incoming accessory data and refresh existing accessory statuses.
+   * Returns the uniqueIds of the services the payload replaced or added.
+   */
+  private parseServices(services: ServiceTypeX[]): Set<string | undefined> {
+    const changed = new Set<string | undefined>(services.map(service => service.uniqueId))
+
     if (!this.accessories.services.length) {
       this.accessories.services = services
-      return
+      this.reindexServices()
+      return changed
     }
 
     // Replace existing objects instead of mutating them
     services.forEach((service) => {
-      const existingIndex = this.accessories.services.findIndex(x => x.uniqueId === service.uniqueId)
+      const existingIndex = this.indexOfService(service.uniqueId)
 
       if (existingIndex !== -1) {
         // Replace the object instead of mutating it
@@ -635,14 +713,60 @@ export class AccessoriesService {
         this.customAttributesApplied.delete(service.uniqueId!)
       } else {
         this.accessories.services.push(service)
+        if (this.indexedServices === this.accessories.services && this.serviceIndex.size === this.accessories.services.length - 1) {
+          this.serviceIndex.set(service.uniqueId, this.accessories.services.length - 1)
+        } else {
+          this.reindexServices()
+        }
       }
     })
+
+    return changed
   }
 
   /**
-   * Sort the accessories into their rooms
+   * Sort the accessories into their rooms. Returns the names of the rooms that
+   * received a service.
    */
-  private sortIntoRooms() {
+  private sortIntoRooms(): Set<string> {
+    const touched = new Set<string>()
+
+    // The rooms are copied on write: only a room that receives a service gets
+    // a new object, so the others keep their references
+    let working: AccessoryRoom[] | null = null
+    const copied = new Set<number>()
+    const rooms = () => working ?? this.rooms()
+    const addTo = (name: string, service: ServiceTypeX): boolean => {
+      const current = rooms()
+      let added = false
+      current.forEach((room, index) => {
+        if (room.name !== name) {
+          return
+        }
+        working ??= [...current]
+        if (!copied.has(index)) {
+          working[index] = { ...room, services: [...room.services] }
+          copied.add(index)
+        }
+        working[index].services.push(service)
+        touched.add(name)
+        added = true
+      })
+      return added
+    }
+
+    // The uniqueIds already allocated to an active room
+    const inRooms = new Set<string | undefined>()
+    for (const room of this.rooms()) {
+      for (const service of room.services) {
+        inRooms.add(service.uniqueId)
+      }
+    }
+
+    // Services by bridge, aid and iid (first occurrence), for the links
+    let byAddress: Map<string, ServiceTypeX> | null = null
+    const addressOf = (username: string | undefined, aid: number, iid: number) => `${username}\u0000${aid}\u0000${iid}`
+
     this.accessories.services.forEach((service) => {
       // Don't put hidden types or combined services into rooms
       // Matter services use deviceType instead of type
@@ -652,103 +776,170 @@ export class AccessoriesService {
 
       // Link services
       if (service.linked) {
+        if (!byAddress) {
+          byAddress = new Map()
+          for (const s of this.accessories.services) {
+            const key = addressOf(s.instance?.username, s.aid, s.iid)
+            if (!byAddress.has(key)) {
+              byAddress.set(key, s)
+            }
+          }
+        }
+        const lookup = byAddress
         service.linkedServices = {}
         service.linked.forEach((iid) => {
-          service.linkedServices![iid] = this.accessories.services.find(s => s.aid === service.aid && s.iid === iid
-            && s.instance.username === service.instance.username)!
+          service.linkedServices![iid] = lookup.get(addressOf(service.instance?.username, service.aid, iid))!
         })
       }
 
       // Check if the service has already been allocated to an active room
-      const inRoom = this.rooms().find(r => r.services.find(s => s.uniqueId === service.uniqueId))
+      if (inRooms.has(service.uniqueId)) {
+        return
+      }
 
       // Not in an active room, perhaps the service is in the layout cache
-      if (!inRoom) {
-        const cached = this.findInLayout(service)
+      const cached = this.findInLayout(service)
 
-        if (cached) {
-          // Apply custom attributes from cache before adding to room
-          if (cached.service.customType) {
-            service.customType = cached.service.customType
-          }
-          if (cached.service.customName) {
-            service.customName = cached.service.customName
-          }
-          if (cached.service.hidden) {
-            service.hidden = cached.service.hidden
-          }
-          if (cached.service.onDashboard) {
-            service.onDashboard = cached.service.onDashboard
-          }
-
-          // Mark that custom attributes have been applied to this accessory
-          this.customAttributesApplied.add(service.uniqueId!)
-
-          // Add to the correct room
-          this.rooms.update(current => current.map(r =>
-            r.name === cached.room.name
-              ? { ...r, services: [...r.services, service] }
-              : r,
-          ))
-        } else {
-          // Mark as processed (even though no custom attributes to apply)
-          this.customAttributesApplied.add(service.uniqueId!)
-
-          // New accessory add to the default room
-          const defaultRoom = this.rooms().find(r => r.isDefault === true)
-            || this.rooms().find(r => r.name === 'Default Room')
-
-          if (defaultRoom) {
-            this.rooms.update(current => current.map(r =>
-              r.name === defaultRoom.name
-                ? { ...r, services: [...r.services, service] }
-                : r,
-            ))
-          } else {
-            this.rooms.update(current => [...current, {
-              name: 'Default Room',
-              isDefault: true,
-              services: [service],
-            }])
-          }
+      if (cached) {
+        // Apply custom attributes from cache before adding to room
+        if (cached.service.customType) {
+          service.customType = cached.service.customType
         }
+        if (cached.service.customName) {
+          service.customName = cached.service.customName
+        }
+        if (cached.service.hidden) {
+          service.hidden = cached.service.hidden
+        }
+        if (cached.service.onDashboard) {
+          service.onDashboard = cached.service.onDashboard
+        }
+
+        // Mark that custom attributes have been applied to this accessory
+        this.customAttributesApplied.add(service.uniqueId!)
+
+        // Add to the correct room
+        if (addTo(cached.room.name, service)) {
+          inRooms.add(service.uniqueId)
+        }
+      } else {
+        // Mark as processed (even though no custom attributes to apply)
+        this.customAttributesApplied.add(service.uniqueId!)
+
+        // New accessory add to the default room
+        const defaultRoom = rooms().find(r => r.isDefault === true)
+          || rooms().find(r => r.name === 'Default Room')
+
+        if (defaultRoom) {
+          addTo(defaultRoom.name, service)
+        } else {
+          working = [...rooms(), {
+            name: 'Default Room',
+            isDefault: true,
+            services: [service],
+          }]
+          copied.add(working.length - 1)
+          touched.add('Default Room')
+        }
+        // The default room always exists by name, so it was added
+        inRooms.add(service.uniqueId)
       }
     })
+
+    if (working) {
+      this.setRooms(working)
+    }
+    return touched
   }
 
   /**
-   * Order the services within each room based on the cached layout positions
+   * A tile reads its linked services (a television's inputs, a heater-cooler's
+   * fan, a lock's management), but those links are written onto the parent in
+   * place. So that a memoised tile still sees a linked service change, a parent
+   * whose linked service was replaced is replaced by a copy too.
    */
-  private orderRooms() {
-    this.rooms.update(current => current.map((room) => {
+  private propagateLinkedChanges(changed: Set<string | undefined>) {
+    const list = this.accessories.services
+    let grew = true
+    while (grew) {
+      grew = false
+      list.forEach((service, index) => {
+        if (!service.linkedServices || changed.has(service.uniqueId)) {
+          return
+        }
+        const linkedChanged = Object.values(service.linkedServices).some(linked => linked && changed.has(linked.uniqueId))
+        if (linkedChanged) {
+          list[index] = { ...service } as ServiceTypeX
+          changed.add(service.uniqueId)
+          grew = true
+        }
+      })
+    }
+  }
+
+  /**
+   * Order the services within each room based on the cached layout positions.
+   * @param only - which rooms to order; all of them when null
+   */
+  private orderRooms(only: ((room: AccessoryRoom) => boolean) | null) {
+    const current = this.rooms()
+    let next: AccessoryRoom[] | null = null
+    current.forEach((room, index) => {
+      if (only && !only(room)) {
+        return
+      }
       const roomCache = this.accessoryLayout.find(r => r.name === room.name)
       if (!roomCache) {
-        return room
+        return
       }
 
-      const sortedServices = room.services.toSorted((a, b) => {
-        const posA = roomCache.services.findIndex(s => this.servicesMatch(s, a))
-        const posB = roomCache.services.findIndex(s => this.servicesMatch(s, b))
-        return posA - posB
-      })
-      return { ...room, services: sortedServices }
-    }))
+      // Each service's position is looked up once, not once per comparison
+      const positions = new Map<ServiceTypeX, number>()
+      for (const service of room.services) {
+        if (!positions.has(service)) {
+          positions.set(service, roomCache.services.findIndex(s => this.servicesMatch(s, service)))
+        }
+      }
+      const sortedServices = room.services.toSorted((a, b) => positions.get(a)! - positions.get(b)!)
+      if (sortedServices.every((service, i) => service === room.services[i])) {
+        return
+      }
+      next ??= [...current]
+      next[index] = { ...room, services: sortedServices }
+    })
+    if (next) {
+      this.setRooms(next)
+    }
   }
 
   /**
    * Refresh rooms to use updated service references.
    * After parseServices() replaces service objects, we need to update the rooms
-   * to point to the new service references from this.accessories.services
+   * to point to the new service references from this.accessories.services.
+   * A room none of whose services were replaced keeps its reference.
    */
   private refreshRoomsForChangeDetection() {
-    this.rooms.update(current => current.map(room => ({
-      ...room,
-      services: room.services.map((service) => {
+    const current = this.rooms()
+    let changedRooms = false
+    const next = current.map((room) => {
+      let services: ServiceTypeX[] | null = null
+      room.services.forEach((service, index) => {
         // Find the updated service from the main accessories array
-        const updatedService = this.accessories.services.find(s => s.uniqueId === service.uniqueId)
-        return updatedService || service
-      }),
-    })))
+        const updatedService = this.currentService(service.uniqueId)
+        if (updatedService && updatedService !== service) {
+          services ??= [...room.services]
+          services[index] = updatedService
+        }
+      })
+      if (!services) {
+        return room
+      }
+      changedRooms = true
+      return { ...room, services }
+    })
+    if (changedRooms) {
+      this.setRooms(next)
+    }
   }
 
   /**
@@ -790,10 +981,11 @@ export class AccessoriesService {
   }
 
   /**
-   * Generate helpers for accessory control
+   * Generate helpers for accessory control on the services of a payload (the
+   * others got theirs when they arrived, and copies carry them over)
    */
-  private generateHelpers() {
-    this.accessories.services.forEach((service) => {
+  private generateHelpers(services: ServiceTypeX[]) {
+    services.forEach((service) => {
       // Matter accessories use cluster-based control
       if (service.protocol === 'matter') {
         if (!service.getCluster) {
@@ -869,23 +1061,25 @@ export class AccessoriesService {
   }
 
   /**
-   * Check if two services belong to the same physical accessory
+   * The key two services of the same physical accessory share
    * (same name, serial number, and bridge instance)
    */
-  private isSameAccessory(a: ServiceType, b: ServiceType): boolean {
-    return a.accessoryInformation.Name === b.accessoryInformation.Name
-      && a.accessoryInformation['Serial Number'] === b.accessoryInformation['Serial Number']
-      && a.instance.username === b.instance.username
+  private accessoryKey(service: ServiceType): string {
+    return JSON.stringify([
+      service.accessoryInformation?.Name,
+      service.accessoryInformation?.['Serial Number'],
+      service.instance?.username,
+    ])
   }
 
-  private attachLockManagementToMechanism(service: ServiceType) {
+  private attachLockManagementToMechanism(service: ServiceType, sameAccessory: ServiceType[]) {
     const lockMechanisms: ServiceType[] = []
     const lockManagements: ServiceType[] = []
 
-    for (const serv of this.accessories.services) {
-      if (serv.type === 'LockMechanism' && this.isSameAccessory(serv, service)) {
+    for (const serv of sameAccessory) {
+      if (serv.type === 'LockMechanism') {
         lockMechanisms.push(serv)
-      } else if (serv.type === 'LockManagement' && this.isSameAccessory(serv, service)) {
+      } else if (serv.type === 'LockManagement') {
         lockManagements.push(serv)
       }
     }
@@ -900,46 +1094,20 @@ export class AccessoriesService {
     }
   }
 
-  private attachFanToHeaterCooler(service: ServiceType) {
-    const heaterCoolers: ServiceType[] = []
+  /** Link the one fan of an accessory that has exactly one `parentType` service, and hide the fan's own tile. */
+  private attachFanTo(service: ServiceType, parentType: string, sameAccessory: ServiceType[]) {
+    const parents: ServiceType[] = []
     const fans: ServiceType[] = []
 
-    for (const serv of this.accessories.services) {
-      if (this.isSameAccessory(serv, service)) {
-        if (serv.type === 'HeaterCooler') {
-          heaterCoolers.push(serv)
-        } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
-          fans.push(serv)
-        }
+    for (const serv of sameAccessory) {
+      if (serv.type === parentType) {
+        parents.push(serv)
+      } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
+        fans.push(serv)
       }
     }
 
-    if (heaterCoolers.length === 1 && fans.length === 1) {
-      const fan = fans[0]
-
-      if (!service.linkedServices) {
-        service.linkedServices = {}
-      }
-      service.linkedServices[fan.iid] = fan
-      this.combinedServiceIds.add(fan.uniqueId!)
-    }
-  }
-
-  private attachFanToHumidifierDehumidifier(service: ServiceType) {
-    const humidifierDehumidifiers: ServiceType[] = []
-    const fans: ServiceType[] = []
-
-    for (const serv of this.accessories.services) {
-      if (this.isSameAccessory(serv, service)) {
-        if (serv.type === 'HumidifierDehumidifier') {
-          humidifierDehumidifiers.push(serv)
-        } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
-          fans.push(serv)
-        }
-      }
-    }
-
-    if (humidifierDehumidifiers.length === 1 && fans.length === 1) {
+    if (parents.length === 1 && fans.length === 1) {
       const fan = fans[0]
 
       if (!service.linkedServices) {
@@ -953,11 +1121,30 @@ export class AccessoriesService {
   private combineRelatedServices() {
     this.combinedServiceIds.clear()
 
+    // The services of each physical accessory, in list order - built only when
+    // there is something to combine
+    let byAccessory: Map<string, ServiceType[]> | null = null
+    const sameAccessoryAs = (service: ServiceType): ServiceType[] => {
+      if (!byAccessory) {
+        byAccessory = new Map()
+        for (const serv of this.accessories.services) {
+          const key = this.accessoryKey(serv)
+          const group = byAccessory.get(key)
+          if (group) {
+            group.push(serv)
+          } else {
+            byAccessory.set(key, [serv])
+          }
+        }
+      }
+      return byAccessory.get(this.accessoryKey(service)) ?? []
+    }
+
     for (const service of this.accessories.services) {
       if (service.type === 'HeaterCooler') {
-        this.attachFanToHeaterCooler(service)
+        this.attachFanTo(service, 'HeaterCooler', sameAccessoryAs(service))
       } else if (service.type === 'HumidifierDehumidifier') {
-        this.attachFanToHumidifierDehumidifier(service)
+        this.attachFanTo(service, 'HumidifierDehumidifier', sameAccessoryAs(service))
       } else if (service.type === 'LockMechanism') {
         // Here rather than in parseServices, which is where this used to live.
         // parseServices returns early on the very first payload, so the link
@@ -967,15 +1154,25 @@ export class AccessoriesService {
         // before the replacement objects were written back, so the mechanism
         // ended up linked to the previous management object — a stale
         // reference that was replaced again on the following event.
-        this.attachLockManagementToMechanism(service)
+        this.attachLockManagementToMechanism(service, sameAccessoryAs(service))
       }
     }
 
-    // Remove combined fan services from rooms
-    this.rooms.update(current => current.map(room => ({
-      ...room,
-      services: room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId!)),
-    })))
+    // Remove combined fan services from rooms; the other rooms keep their references
+    if (this.combinedServiceIds.size) {
+      const current = this.rooms()
+      let removed = false
+      const next = current.map((room) => {
+        if (!room.services.some(s => this.combinedServiceIds.has(s.uniqueId!))) {
+          return room
+        }
+        removed = true
+        return { ...room, services: room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId!)) }
+      })
+      if (removed) {
+        this.setRooms(next)
+      }
+    }
   }
 }
 

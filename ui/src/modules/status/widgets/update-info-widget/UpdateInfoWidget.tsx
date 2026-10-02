@@ -9,7 +9,6 @@ import { Link } from 'react-router'
 import { useAuthStore } from '@/core/auth'
 import { HbV2Modal } from '@/core/components/hb-v2-modal/HbV2Modal'
 import { Information } from '@/core/components/information/Information'
-import { managePlugins } from '@/core/plugins/manage-plugins'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { i18n } from '@/core/ui/i18n'
@@ -34,6 +33,14 @@ const MIDDOT = ' · '
 
 /** Keep a press on a toolbar button from starting a grid drag. */
 const stopPropagation = (event: SyntheticEvent) => event.stopPropagation()
+
+/**
+ * The plugin manager (and the schema-form engine, ajv and lodash behind it) is
+ * only needed once a button is clicked, so it is not part of the dashboard.
+ */
+async function loadManagePlugins() {
+  return (await import('@/core/plugins/manage-plugins')).managePlugins
+}
 
 export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
   const { t } = useTranslation()
@@ -81,12 +88,14 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     openModal(HbV2Modal, { isUpdating: false, skipIfCompatible: false }, { size: 'lg', backdrop: 'static' })
   }
 
-  const installAlternateVersion = (pkg: Plugin): void => {
+  const installAlternateVersion = async (pkg: Plugin): Promise<void> => {
+    const managePlugins = await loadManagePlugins()
     // A callback to refresh the widget when the version changes
     void managePlugins.installAlternateVersion(pkg, () => ctrl.refreshAfterVersionChange(pkg))
   }
 
-  const updatePackage = (pkg: Plugin): void => {
+  const updatePackage = async (pkg: Plugin): Promise<void> => {
+    const managePlugins = await loadManagePlugins()
     void managePlugins.upgradeHomebridge(pkg, pkg.latestVersion)
   }
 
@@ -94,7 +103,8 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     saveWidgets({ dockerExpanded: !widget.dockerExpanded })
   }
 
-  const updateAllModal = (): void => {
+  const updateAllModal = async (): Promise<void> => {
+    const managePlugins = await loadManagePlugins()
     const ref = managePlugins.openUpdateAllModal()
 
     // A run that only restarts child bridges never disconnects the status
@@ -150,7 +160,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                         <button
                           type="button"
                           className="btn btn-link p-0 text-decoration-none card-link card-link-title"
-                          onClick={() => installAlternateVersion(homebridgePkg)}
+                          onClick={() => void installAlternateVersion(homebridgePkg)}
                         >
                           Homebridge
                         </button>
@@ -162,11 +172,11 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                     && ctrl.homebridgeUpdatePolicy !== 'none'
                     && ctrl.homebridgeUpdatePolicy !== 'major'
                     && (
-                      <HoverTooltip text="Homebridge v2 Readiness" placement="top">
+                      <HoverTooltip text={t('status.readiness.title', { app: 'Homebridge v2' })} placement="top">
                         <button
                           type="button"
                           className="btn btn-link p-0 text-decoration-none ms-1"
-                          aria-label="Homebridge v2 Readiness"
+                          aria-label={t('status.readiness.title', { app: 'Homebridge v2' })}
                           onClick={readyForV2Modal}
                         >
                           <i
@@ -202,7 +212,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                   {homebridgePkg.updateAvailable && isAdmin && (
                     <>
                       {MIDDOT}
-                      {updateButton(() => updatePackage(homebridgePkg))}
+                      {updateButton(() => void updatePackage(homebridgePkg))}
                     </>
                   )}
                 </>
@@ -224,7 +234,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                 <button
                   type="button"
                   className="btn btn-link p-0 text-decoration-none card-link card-link-title"
-                  onClick={() => installAlternateVersion(homebridgeUiPkg)}
+                  onClick={() => void installAlternateVersion(homebridgeUiPkg)}
                 >
                   Homebridge Glass UI
                 </button>
@@ -239,7 +249,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                   {homebridgeUiPkg.updateAvailable && isAdmin && (
                     <>
                       {MIDDOT}
-                      {updateButton(() => updatePackage(homebridgeUiPkg))}
+                      {updateButton(() => void updatePackage(homebridgeUiPkg))}
                     </>
                   )}
                 </>
@@ -324,7 +334,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                 aria-label={t('update_all.title')}
                 onMouseDown={stopPropagation}
                 onTouchStart={stopPropagation}
-                onClick={updateAllModal}
+                onClick={() => void updateAllModal()}
               >
                 <i className="fas fa-arrow-alt-circle-up" aria-hidden="true"></i>
               </button>

@@ -135,6 +135,20 @@ describe('pluginsPage', () => {
     expect(container.querySelector('.plugin-summary')).toBeNull()
   })
 
+  it('does not re-render the cards while a query is typed', async () => {
+    const { container } = render({ installed: [plugin('homebridge-a'), plugin('homebridge-b')] })
+    await settle()
+    fireEvent.click(screen.getByRole('button', { name: 'form.search' }))
+    const input = container.querySelector<HTMLInputElement>('input.search-bar')!
+
+    cardRenders.length = 0
+    fireEvent.change(input, { target: { value: 'h' } })
+    fireEvent.change(input, { target: { value: 'hu' } })
+
+    expect(input.value).toBe('hu')
+    expect(cardRenders).toEqual([])
+  })
+
   it('offers update all only from two updates', async () => {
     render({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
     await settle()

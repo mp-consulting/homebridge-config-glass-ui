@@ -1,5 +1,6 @@
 import type { ServiceTypeX } from '@/core/accessories/accessories.interfaces'
 
+import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { accessories, useAccessoriesStore } from '@/core/accessories/accessories'
@@ -12,8 +13,11 @@ export interface AccessoryTileProps {
 /**
  * One accessory on the rooms page or the dashboard widget: the menu button
  * (a spinner until the protocol is ready for control) and the tile for its type.
+ *
+ * Memoised: the accessories service replaces only the service objects a live
+ * update changed, so the other tiles skip the render.
  */
-export function AccessoryTile({ service }: AccessoryTileProps) {
+export const AccessoryTile = memo(({ service }: AccessoryTileProps) => {
   const { t } = useTranslation()
   const isMatter = service.protocol === 'matter'
   const readyForControl = useAccessoriesStore(state => (isMatter ? state.matterReadyForControl : state.hapReadyForControl))
@@ -64,4 +68,5 @@ export function AccessoryTile({ service }: AccessoryTileProps) {
         : tile}
     </>
   )
-}
+})
+AccessoryTile.displayName = 'AccessoryTile'

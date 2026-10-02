@@ -190,6 +190,14 @@ describe('the update info widget', () => {
       })
     }
 
+    /** Click a button whose handler loads the plugin manager on demand, and wait for it. */
+    async function press(element: HTMLElement) {
+      fireEvent.click(element)
+      await act(async () => {
+        await vi.dynamicImportSettled()
+      })
+    }
+
     /** The tile whose title is `name`. */
     const tile = (name: string | RegExp) => screen.getAllByText(name)[0].closest('.hb-status-item') as HTMLElement
     const icon = (name: string | RegExp) => tile(name).querySelector('i')!.className
@@ -228,7 +236,7 @@ describe('the update info widget', () => {
 
     it('names it Homebridge, whatever the package is called', async () => {
       await create()
-      fireEvent.click(screen.getByRole('button', { name: 'Homebridge' }))
+      await press(screen.getByRole('button', { name: 'Homebridge' }))
 
       expect(fakes.managePlugins.installAlternateVersion.mock.calls[0][0].displayName).toBe('Homebridge')
     })
@@ -244,7 +252,7 @@ describe('the update info widget', () => {
       await create({ payload: { homebridge: { installedVersion }, hbV2Ready: false } })
 
       // The readiness button is only offered before v2
-      expect(!screen.queryByLabelText('Homebridge v2 Readiness')).toBe(expected)
+      expect(!screen.queryByLabelText('status.readiness.title')).toBe(expected)
     })
 
     it('shows the plugins that are out of date', async () => {
@@ -337,32 +345,32 @@ describe('the update info widget', () => {
       it('shows the answer the server worked out', async () => {
         await create({ payload: { hbV2Ready: false } })
 
-        expect(screen.getByLabelText('Homebridge v2 Readiness').querySelector('i')).toHaveClass('orange-text')
+        expect(screen.getByLabelText('status.readiness.title').querySelector('i')).toHaveClass('orange-text')
       })
 
       it('is not offered to a non-admin', async () => {
         // Only an admin can act on it
         await create({ payload: { hbV2Ready: false }, admin: false })
 
-        expect(screen.queryByLabelText('Homebridge v2 Readiness')).toBeNull()
+        expect(screen.queryByLabelText('status.readiness.title')).toBeNull()
       })
 
       it('is not offered once v2 is already running', async () => {
         await create({ payload: { homebridge: { installedVersion: '2.0.0' }, hbV2Ready: false } })
 
-        expect(screen.queryByLabelText('Homebridge v2 Readiness')).toBeNull()
+        expect(screen.queryByLabelText('status.readiness.title')).toBeNull()
       })
 
       it('is not offered when homebridge updates are muted', async () => {
         await create({ env: { homebridgeUpdatePolicy: 'none' } })
 
-        expect(screen.queryByLabelText('Homebridge v2 Readiness')).toBeNull()
+        expect(screen.queryByLabelText('status.readiness.title')).toBeNull()
       })
 
       it('opens the readiness modal', async () => {
         await create()
 
-        fireEvent.click(screen.getByLabelText('Homebridge v2 Readiness'))
+        fireEvent.click(screen.getByLabelText('status.readiness.title'))
 
         expect(modal.lastOpened()!.component).toBe(HbV2Modal)
         expect(modal.propsFor()).toMatchObject({ isUpdating: false, skipIfCompatible: false })
@@ -484,7 +492,7 @@ describe('the update info widget', () => {
       it('opens the version picker for the package', async () => {
         await create()
 
-        fireEvent.click(screen.getByRole('button', { name: 'Homebridge Glass UI' }))
+        await press(screen.getByRole('button', { name: 'Homebridge Glass UI' }))
 
         expect(fakes.managePlugins.installAlternateVersion).toHaveBeenCalledWith(expect.objectContaining({ name: '@mp-consulting/homebridge-config-glass-ui' }), expect.any(Function))
       })
@@ -492,7 +500,7 @@ describe('the update info widget', () => {
       it('re-reads the homebridge version afterwards', async () => {
         // The row would otherwise still show the version that was replaced
         await create({ payload: { hbV2Ready: false } })
-        fireEvent.click(screen.getByRole('button', { name: 'Homebridge' }))
+        await press(screen.getByRole('button', { name: 'Homebridge' }))
         io.socket.respondTo('homebridge-version-check', { name: 'homebridge', installedVersion: '2.0.0', updateAvailable: false })
 
         await act(async () => {
@@ -500,12 +508,12 @@ describe('the update info widget', () => {
         })
 
         expect(tile('Homebridge')).toHaveTextContent('v2.0.0')
-        expect(screen.queryByLabelText('Homebridge v2 Readiness')).toBeNull()
+        expect(screen.queryByLabelText('status.readiness.title')).toBeNull()
       })
 
       it('re-reads the ui version afterwards', async () => {
         await create()
-        fireEvent.click(screen.getByRole('button', { name: 'Homebridge Glass UI' }))
+        await press(screen.getByRole('button', { name: 'Homebridge Glass UI' }))
         io.socket.respondTo('homebridge-ui-version-check', { installedVersion: '5.1.0', updateAvailable: true })
 
         await act(async () => {
@@ -517,7 +525,7 @@ describe('the update info widget', () => {
 
       it('says so when the version cannot be re-read', async () => {
         await create()
-        fireEvent.click(screen.getByRole('button', { name: 'Homebridge' }))
+        await press(screen.getByRole('button', { name: 'Homebridge' }))
         io.socket.respondTo('homebridge-version-check', { error: 'socket error' })
 
         await act(async () => {
@@ -530,7 +538,7 @@ describe('the update info widget', () => {
       it('sends an update straight to the upgrade flow', async () => {
         await create({ payload: { homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.9.0', updateAvailable: true } } })
 
-        fireEvent.click(within(tile('Homebridge')).getByText('plugins.button_update'))
+        await press(within(tile('Homebridge')).getByText('plugins.button_update'))
 
         expect(fakes.managePlugins.upgradeHomebridge).toHaveBeenCalledWith(expect.objectContaining({ name: 'homebridge' }), '1.9.0')
       })
@@ -581,7 +589,7 @@ describe('the update info widget', () => {
       it('opens the plan modal through the shared opener', async () => {
         await create({ payload: allOutOfDate() })
 
-        fireEvent.click(button()!)
+        await press(button()!)
 
         expect(fakes.managePlugins.openUpdateAllModal).toHaveBeenCalledTimes(1)
       })
@@ -592,7 +600,7 @@ describe('the update info widget', () => {
         const count = () => io.requests.filter(entry => entry.resource === 'get-version-overview').length
         const before = count()
 
-        fireEvent.click(button()!)
+        await press(button()!)
         modal.lastOpened()!.ref.close()
         await settle()
 
@@ -604,7 +612,7 @@ describe('the update info widget', () => {
         const count = () => io.requests.filter(entry => entry.resource === 'get-version-overview').length
         const before = count()
 
-        fireEvent.click(button()!)
+        await press(button()!)
         modal.lastOpened()!.ref.close('handover')
         await settle()
 
@@ -616,7 +624,7 @@ describe('the update info widget', () => {
         const count = () => io.requests.filter(entry => entry.resource === 'get-version-overview').length
         const before = count()
 
-        fireEvent.click(button()!)
+        await press(button()!)
         modal.lastOpened()!.ref.dismiss('cancel')
         await settle()
 
