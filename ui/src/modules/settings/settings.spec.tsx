@@ -151,6 +151,34 @@ describe('the settings page', () => {
     vi.restoreAllMocks()
   })
 
+  describe('saving a field on its own', () => {
+    it('waits for the field to settle, restarting the wait on each save, and leaves the value alone', async () => {
+      api.clearCalls()
+      page.save('uiTemp', 'c')
+      await vi.advanceTimersByTimeAsync(600)
+      page.save('uiTemp', 'f')
+      await vi.advanceTimersByTimeAsync(600)
+
+      expect(uiPatch()).toBeUndefined()
+
+      await vi.advanceTimersByTimeAsync(SETTLE_MS)
+
+      expect(api.callsTo('patch', '/config-editor/ui')).toHaveLength(1)
+      expect(uiPatch()).toEqual({ tempUnits: 'f' })
+      expect(values().uiTemp).not.toBe('f')
+    })
+
+    it('saves nothing once the page is destroyed', async () => {
+      api.clearCalls()
+      page.save('uiTemp', 'f')
+      page.destroy()
+      page.save('uiGlass', false)
+      await vi.advanceTimersByTimeAsync(SETTLE_MS)
+
+      expect(uiPatch()).toBeUndefined()
+    })
+  })
+
   describe('settings stored in the ui config', () => {
     it.each([
       ['uiLang', 'de', 'lang', 'de'],
