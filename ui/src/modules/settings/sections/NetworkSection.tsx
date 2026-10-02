@@ -221,7 +221,7 @@ export function NetworkSection() {
           <span>
             {t('settings.ports.title')}
           </span>
-          <button type="button" className="btn btn-primary waves-effect" onClick={() => page.openPortOverview()}>
+          <button type="button" className="btn btn-primary waves-effect" aria-label={t('settings.ports.title')} onClick={() => page.openPortOverview()}>
             <i aria-hidden="true" className="fas fa-arrow-right"></i>
           </button>
         </div>

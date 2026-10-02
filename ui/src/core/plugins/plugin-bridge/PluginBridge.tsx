@@ -88,7 +88,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                   />
                 </div>
                 <ul className="mb-3">
-                  <SafeHtml as="li" html={t('child_bridge.about', { link: ctrl.linkChildBridges })} />
+                  <SafeHtml as="li" html={t('child_bridge.about', { link: ctrl.linkChildBridges(t('child_bridge.link_wiki')) })} />
                   {!!configBlocks.length && (
                     <>
                       <li>{t('child_bridge.bridges_paired')}</li>
@@ -157,7 +157,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                       {hasLinks
                         ? (
                             <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
-                              <span className="mb-2 mb-md-0 w-100 w-md-50">Child Bridge</span>
+                              <span className="mb-2 mb-md-0 w-100 w-md-50">{t('child_bridge.config.use')}</span>
                               <div className="text-start text-md-end w-100 w-md-50 grey-text">
                                 {t('child_bridge.config.prevent')}
                               </div>
@@ -339,7 +339,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                                     <label htmlFor="bridge-debug" className="mb-2 mb-md-0 w-100 w-md-50">
                                       <span className="font-monospace">DEBUG</span>
                                       <br />
-                                      <SafeHtml as="small" className="grey-text" html={t('settings.service.debug_tooltip_child', { link: ctrl.linkDebug })} />
+                                      <SafeHtml as="small" className="grey-text" html={t('settings.service.debug_tooltip_child', { link: ctrl.linkDebug(t('settings.link_debug_values')) })} />
                                     </label>
                                     <div className="text-start text-md-end w-100 w-md-50">
                                       {!!ctrl.globalDebug() && (

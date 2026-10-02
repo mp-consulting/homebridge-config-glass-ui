@@ -68,6 +68,17 @@ describe('the system info widget', () => {
     expect(screen.getByText('status.widget.info')).toBeInTheDocument()
   })
 
+  it('shows a spinner until the server answers, then the details', async () => {
+    const waiting = await open({ connected: false })
+
+    expect(screen.getByRole('status', { name: 'status.widget.info.loading' })).toBeInTheDocument()
+    expect(waiting.container.querySelector('.fa-spin')).not.toBeNull()
+    waiting.unmount()
+
+    await open()
+    expect(screen.queryByRole('status')).toBeNull()
+  })
+
   it('names the os differently on macOS and Windows', async () => {
     const mac = await open({ serverInfo: { os: { distro: 'macOS', codename: 'Sequoia', release: '15.1', platform: 'darwin', arch: 'x64' }, network: {}, time: {}, homebridgeRunningInSynologyPackage: false } })
     expect(rows(mac.container)[0][1]).toBe('macOS Sequoia (15.1)')

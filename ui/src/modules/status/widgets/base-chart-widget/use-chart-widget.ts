@@ -77,9 +77,10 @@ function baseOptions(color?: string): ChartOptions<'line'> {
  * interval (only while the socket is up), restarted from scratch when the
  * widget's settings change.
  * @param props - the widget's props
- * @param fetchData - asks the server for a reading; the latest one is always called
+ * @param fetchData - asks the server for a reading; the latest one is always called. It gets the
+ * refresh interval (seconds) to send along, so the server samples at least that often.
  */
-export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, series: ChartSeries) => void): ChartWidget {
+export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, series: ChartSeries, refreshInterval: number) => void): ChartWidget {
   const { widget, configureEvent, updateWidget } = props
   const io = useNamespace('status')
   const backgroundRef = useRef<HTMLDivElement | null>(null)
@@ -131,9 +132,11 @@ export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, 
 
   const fetchRef = useRef(fetchData)
   fetchRef.current = fetchData
+  const refreshIntervalRef = useRef(refreshInterval)
+  refreshIntervalRef.current = refreshInterval
   const fetchNow = useCallback(() => {
     if (io) {
-      fetchRef.current(io, series)
+      fetchRef.current(io, series, refreshIntervalRef.current)
     }
   }, [io, series])
 

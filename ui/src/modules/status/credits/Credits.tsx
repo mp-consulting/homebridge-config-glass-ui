@@ -2,6 +2,8 @@ import type { ModalComponentProps } from '@/core/ui/modal'
 
 import { useTranslation } from 'react-i18next'
 
+import { SafeHtml } from '@/core/ui/SafeHtml'
+
 const translators = [
   { language: 'Finnish', github: 'l1500s' },
   { language: 'Hebrew', github: 'seidnerj' },
@@ -11,6 +13,11 @@ const translators = [
   { language: 'Ukrainian', github: 'xrust83' },
   { language: 'Vietnam', github: 'khanhnd88' },
 ]
+
+/** A link out for a credit line; the names and urls are fixed, not user input. */
+function creditLink(href: string, text: string): string {
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`
+}
 
 /** The credits modal opened from the heart in the dashboard footer. */
 export function Credits({ activeModal }: ModalComponentProps) {
@@ -29,45 +36,20 @@ export function Credits({ activeModal }: ModalComponentProps) {
         </div>
         <h5>Homebridge</h5>
         <ul>
-          <li>
-            Homebridge was originally created by
-            {' '}
-            <a href="https://twitter.com/nfarina" target="_blank" rel="noopener noreferrer">Nick Farina</a>
-            .
-          </li>
-          <li>
-            The original HomeKit API work was done by
-            {' '}
-            <a href="https://twitter.com/khaost" target="_blank" rel="noopener noreferrer">Khaos Tian</a>
-            {' '}
-            in his
-            {' '}
-            <a href="https://github.com/homebridge/HAP-NodeJS" target="_blank" rel="noopener noreferrer">HAP-NodeJS</a>
-            {' '}
-            project.
-          </li>
-          <li>
-            Homebridge and HAP-NodeJS have since been maintained and improved by
-            {' '}
-            <a href="https://github.com/Supereg" target="_blank" rel="noopener noreferrer">Supereg</a>
-            .
-          </li>
-          <li>
-            We are grateful to
-            {' '}
-            <a href="https://github.com/homebridge/homebridge/graphs/contributors">all contributors</a>
-            {' '}
-            of Homebridge since its first commit in December 2014.
-          </li>
+          <SafeHtml as="li" html={t('status.credits.created_by', { link: creditLink('https://twitter.com/nfarina', 'Nick Farina') })} />
+          <SafeHtml
+            as="li"
+            html={t('status.credits.hap_work', {
+              author: creditLink('https://twitter.com/khaost', 'Khaos Tian'),
+              project: creditLink('https://github.com/homebridge/HAP-NodeJS', 'HAP-NodeJS'),
+            })}
+          />
+          <SafeHtml as="li" html={t('status.credits.maintained_by', { link: creditLink('https://github.com/Supereg', 'Supereg') })} />
+          <SafeHtml as="li" html={t('status.credits.contributors', { link: creditLink('https://github.com/homebridge/homebridge/graphs/contributors', t('status.credits.all_contributors')) })} />
         </ul>
         <h5>Homebridge Glass UI</h5>
         <ul>
-          <li>
-            Homebridge Glass UI is developed and maintained by
-            {' '}
-            <a href="https://github.com/mp-consulting" target="_blank" rel="noopener noreferrer">MP Consulting</a>
-            .
-          </li>
+          <SafeHtml as="li" html={t('status.credits.glass_by', { link: creditLink('https://github.com/mp-consulting', 'MP Consulting') })} />
         </ul>
         <h5>{t('status.credits.translations')}</h5>
         <ul>

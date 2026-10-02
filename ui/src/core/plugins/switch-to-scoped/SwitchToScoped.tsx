@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
+import { escapeHtml } from '@/core/helpers/html.helper'
 import { cls } from '@/core/plugins/class-names'
 import { RE_ANSI } from '@/core/regex.constants'
 import { settingsActions, useSettingsStore } from '@/core/settings'
@@ -21,7 +22,10 @@ import './switch-to-scoped.scss'
 
 export type SwitchToScopedProps = SwitchToScopedModalData & ModalComponentProps
 
-const moreInfo = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
+/** The icon-only wiki link, named for screen readers by `label` */
+function moreInfoLink(label: string): string {
+  return `<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank" aria-label="${escapeHtml(label)}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
+}
 const prefix = '<span class="font-monospace">@homebridge-plugins/</span>'
 
 /** Move a plugin to its `@homebridge-plugins/` name: install the new, remove the old, restart. */
@@ -135,7 +139,7 @@ export function SwitchToScoped({ activeModal, plugin }: SwitchToScopedProps) {
         setRestarting(false)
       }
 
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
       setFailure(message)
       console.error(error)
       toast.error(message, t('toast.title_error'))
@@ -174,7 +178,7 @@ export function SwitchToScoped({ activeModal, plugin }: SwitchToScopedProps) {
         <ul className="mb-0">
           <SafeHtml as="li" html={t('plugins.manage.scoped.info_1', { prefix })} />
           <li>{t('plugins.manage.scoped_message')}</li>
-          <SafeHtml as="li" html={t('plugins.manage.scoped.info_2', { link: moreInfo })} />
+          <SafeHtml as="li" html={t('plugins.manage.scoped.info_2', { link: moreInfoLink(t('plugins.manage.link_scoped_wiki')) })} />
           {onlineUpdateOk
             ? <li>{t('plugins.manage.scoped.process')}</li>
             : (

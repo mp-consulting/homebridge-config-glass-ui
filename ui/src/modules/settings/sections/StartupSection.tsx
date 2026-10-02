@@ -107,7 +107,7 @@ export function StartupSection() {
             {t('settings.startup.scheduled_restart')}
             <br />
             <small className="grey-text pe-2">
-              <SafeHtml as="span" html={t('settings.startup.scheduled_restart_desc', { link: linkCron })} />
+              <SafeHtml as="span" html={t('settings.startup.scheduled_restart_desc', { link: linkCron(t('settings.link_crontab_guru')) })} />
               {' '}
               {t('settings.startup.scheduled_restart_desc_2')}
             </small>
@@ -178,7 +178,7 @@ export function StartupSection() {
           <span>
             <span className="font-monospace">DEBUG</span>
             <br />
-            <SafeHtml as="small" className="grey-text pe-2" html={t('settings.service.debug_tooltip', { link: linkDebug })} />
+            <SafeHtml as="small" className="grey-text pe-2" html={t('settings.service.debug_tooltip', { link: linkDebug(t('settings.link_debug_values')) })} />
           </span>
           <div className={CONTROL_WRAP}>
             <TextInput field="hbEnvDebug" className={MONO_INPUT} placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service" />

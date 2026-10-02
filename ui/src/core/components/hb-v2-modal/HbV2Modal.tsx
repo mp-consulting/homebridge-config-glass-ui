@@ -194,14 +194,16 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
                         {plugin.hb2Ready === 'supported' && (
                           <i
                             className="fas fa-check-circle green-text fa-xl"
-                            aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2."
+                            role="img"
+                            aria-label={t('plugins.compat.hb2_supported')}
                           >
                           </i>
                         )}
                         {plugin.hb2Ready === 'unknown' && (
                           <i
                             className="fas fa-question-circle orange-text fa-xl"
-                            aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2, but it may still work."
+                            role="img"
+                            aria-label={t('plugins.compat.hb2_unknown')}
                           >
                           </i>
                         )}

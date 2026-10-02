@@ -34,11 +34,16 @@ export function SystemInfoWidget({ widget }: WidgetProps) {
   const io = useNamespace('status')
   // An empty shape rather than nothing: the template reads nested fields
   const [serverInfo, setServerInfo] = useState<ServerInfo>({ network: {}, os: {}, time: {} } as ServerInfo)
+  // Until the server answers the card would be an empty table
+  const [loaded, setLoaded] = useState(false)
   const [nodejsInfo, setNodejsInfo] = useState<NodeJsInfo>({} as NodeJsInfo)
 
   // Re-read on every (re)connect: the server may have been updated while it was away
   const getSystemInfo = useCallback(() => {
-    void io?.request<ServerInfo>('get-homebridge-server-info').then(data => setServerInfo(data))
+    void io?.request<ServerInfo>('get-homebridge-server-info').then((data) => {
+      setServerInfo(data)
+      setLoaded(true)
+    })
     void io?.request<NodeJsInfo>('nodejs-version-check').then(data => setNodejsInfo(data))
   }, [io])
 
@@ -60,7 +65,12 @@ export function SystemInfoWidget({ widget }: WidgetProps) {
   return (
     <div className="hb-system-info-widget flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
       <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>{t('status.widget.info')}</div>
-      <div className="d-flex flex-wrap w-100 px-1">
+      {!loaded && (
+        <div className="d-flex flex-grow-1 align-items-center justify-content-center" role="status" aria-label={t('status.widget.info.loading')}>
+          <i className="fas fa-circle-notch fa-spin fa-2xl grey-text" aria-hidden="true"></i>
+        </div>
+      )}
+      <div className="d-flex flex-wrap w-100 px-1" hidden={!loaded}>
         <table className="table table-sm table-borderless gridster-item-content">
           <tbody>
             {'homebridgeRunningInSynologyPackage' in serverInfo && (

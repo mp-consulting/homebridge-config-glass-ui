@@ -100,7 +100,7 @@ export function SecuritySection() {
             {runningOnRaspbianImage
               ? (
                   <small className="grey-text pe-2">
-                    <SafeHtml as="span" html={t('settings.security.https_raspbian', { link: linkRaspbianSsl })} />
+                    <SafeHtml as="span" html={t('settings.security.https_raspbian', { link: linkRaspbianSsl(t('settings.link_raspbian_ssl')) })} />
                   </small>
                 )
               : (

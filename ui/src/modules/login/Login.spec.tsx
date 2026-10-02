@@ -146,6 +146,23 @@ describe('login', () => {
       expect(router.state.location.pathname).toBe('/login')
     })
 
+    it('announces the failure to screen readers', async () => {
+      login.mockRejectedValue(httpError(401))
+      open()
+      await fill('admin', 'wrong')
+
+      await submit()
+
+      expect(screen.getByRole('alert')).toHaveTextContent('login.invalid_credentials')
+    })
+
+    it('names the fields for assistive technology, not just by placeholder', () => {
+      open()
+
+      expect(screen.getByRole('textbox', { name: 'users.label_username' })).toBe(input('form-username'))
+      expect(screen.getByLabelText('users.label_password')).toBe(input('form-pass'))
+    })
+
     it('clears a previous failure when trying again', async () => {
       login.mockRejectedValueOnce(httpError(401))
       const { router } = open()

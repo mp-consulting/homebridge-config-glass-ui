@@ -15,7 +15,7 @@ export function PluginBridgeSchedule({ ctrl }: { ctrl: PluginBridgeController })
       <label htmlFor="bridge-scheduled-restart" className="mb-2 mb-md-0 w-100 w-md-50">
         {t('settings.startup.scheduled_restart')}
         <br />
-        <SafeHtml as="small" className="grey-text" html={t('settings.startup.scheduled_restart_desc', { link: ctrl.linkCron })} />
+        <SafeHtml as="small" className="grey-text" html={t('settings.startup.scheduled_restart_desc', { link: ctrl.linkCron(t('settings.link_crontab_guru')) })} />
       </label>
       <div className="text-start text-md-end w-100 w-md-50 d-flex flex-column align-items-end">
         {/*

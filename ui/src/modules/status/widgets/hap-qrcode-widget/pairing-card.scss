@@ -30,11 +30,11 @@
     font-size: 0.75rem;
     font-weight: 500;
     white-space: nowrap;
-    color: #b26a00;
+    color: #8a5200;
     background: rgba(255, 160, 0, 0.14);
 
     &.is-paired {
-      color: #2e7d32;
+      color: #24692a;
       background: rgba(76, 175, 80, 0.16);
     }
   }
@@ -94,6 +94,7 @@
   }
 
   .pairing-pin-copy {
+    position: relative;
     width: 30px;
     height: 30px;
     border: 0;
@@ -110,6 +111,15 @@
     &:focus-visible {
       opacity: 1;
       background: rgba(127, 127, 127, 0.14);
+    }
+
+    // A finger-sized hit area on phones without growing the round button
+    @media (max-width: 767px) {
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -7px;
+      }
     }
   }
 

@@ -38,7 +38,7 @@ describe('toast', () => {
       })
       await tick()
 
-      expect(document.querySelector('.toast-close-button')?.getAttribute('aria-label')).toBe('Close')
+      expect(document.querySelector('.toast-close-button')?.getAttribute('aria-label')).toBe('form.button_close')
     })
 
     it('keeps at most two on screen at once', () => {
@@ -108,7 +108,7 @@ describe('toast', () => {
       })
       await tick()
 
-      expect(document.querySelector('.toast-close-button')?.getAttribute('aria-label')).toBe('Close')
+      expect(document.querySelector('.toast-close-button')?.getAttribute('aria-label')).toBe('form.button_close')
       expect(document.querySelector('.toast-close-button span')?.getAttribute('aria-hidden')).toBe('true')
     })
 

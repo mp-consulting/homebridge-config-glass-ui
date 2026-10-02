@@ -39,7 +39,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
         }
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? error.message : 'Failed to load pairings'
+        const message = error instanceof Error ? error.message : t('toast.api_error_generic')
         toast.error(message, i18n.t('toast.title_error'))
         activeModal.close()
       }
@@ -72,7 +72,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
     } catch (error) {
       setClicked(false)
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to clean bridges'
+      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
       toast.error(message, t('toast.title_error'))
     }
   }

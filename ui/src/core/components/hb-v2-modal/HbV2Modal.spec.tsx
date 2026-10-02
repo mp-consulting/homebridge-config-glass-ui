@@ -118,6 +118,13 @@ describe('hbV2Modal', () => {
       expect(installedPlugins.map(p => p.name)).toEqual(['homebridge-example'])
     })
 
+    it('names each plugin\'s verdict icon with a translated label', async () => {
+      await open({ plugins: [installed('homebridge-a', '^2.0.0'), installed('homebridge-b', '^1.8.0')] })
+
+      expect(screen.getByRole('img', { name: 'plugins.compat.hb2_supported' })).toHaveClass('fa-check-circle')
+      expect(screen.getByRole('img', { name: 'plugins.compat.hb2_unknown' })).toHaveClass('fa-question-circle')
+    })
+
     it('lists the plugins in name order', async () => {
       await open({ plugins: [installed('homebridge-zebra', '^2.0.0'), installed('homebridge-apple', '^2.0.0')] })
 

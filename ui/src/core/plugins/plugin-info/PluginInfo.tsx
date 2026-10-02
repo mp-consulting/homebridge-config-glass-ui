@@ -4,6 +4,7 @@ import type { PluginModalData } from '@/core/ui/modal-data'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { escapeHtml } from '@/core/helpers/html.helper'
 import { cls } from '@/core/plugins/class-names'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
@@ -12,8 +13,11 @@ import './plugin-info.scss'
 export type PluginInfoProps = PluginModalData & ModalComponentProps
 
 const defaultIcon = 'assets/hb-icon.png'
-const linkScoped = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
-const linkVerified = '<a href="https://github.com/homebridge/plugins/wiki/Verified-Plugins" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
+
+/** An icon-only wiki link, named for screen readers by `label` */
+function wikiLink(href: string, label: string): string {
+  return `<a href="${href}" target="_blank" aria-label="${escapeHtml(label)}"><i class="fas fa-external-link-alt primary-text" aria-hidden="true"></i></a>`
+}
 
 /** What the verified / scoped shields of a plugin mean. */
 export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
@@ -95,7 +99,10 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
         <SafeHtml
           as="p"
           className="mb-0 grey-text"
-          html={t('plugins.manage.more_info', { scopedLink: linkScoped, verifiedLink: linkVerified })}
+          html={t('plugins.manage.more_info', {
+            scopedLink: wikiLink('https://github.com/homebridge/plugins/wiki/Scoped-Plugins', t('plugins.manage.link_scoped_wiki')),
+            verifiedLink: wikiLink('https://github.com/homebridge/plugins/wiki/Verified-Plugins', t('plugins.manage.link_verified_wiki')),
+          })}
         />
       </div>
       <div className="modal-footer justify-content-between">

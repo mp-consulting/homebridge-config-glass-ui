@@ -1,7 +1,35 @@
 // Was the component's scoped stylesheet; everything is nested under the card's root class.
 .hb-plugin-card {
+  // The icon column keeps its width, so a long package name cannot squeeze it
+  // and shift one card's text against the next. The content takes the rest and
+  // may shrink, which lets the title truncate instead of running under the
+  // action button.
+  .card-body > .d-flex > .d-flex:first-child {
+    flex-shrink: 0;
+  }
+
   .plugin-content {
-    min-width: calc(100% - 80px);
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .card-title {
+    min-width: 0;
+    flex: 1 1 auto;
+
+    + .ms-auto {
+      flex-shrink: 0;
+    }
+  }
+
+  // The package name is a button inside the truncating line: truncate the
+  // button's own text so it ends in an ellipsis (the full name is its title)
+  .card-text.text-truncate > .card-link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
   }
 
   // The plugin name and @author lines were plain <a class="card-link"> text that
@@ -103,6 +131,26 @@
 
   .card-title + .ms-auto .card-link {
     background: rgba(var(--glass-primary-rgb, 127, 127, 127), 0.12);
+  }
+
+  // Phone-sized hit areas for the round buttons, without changing how they look
+  // (the ⋮ toggle's ::before is Bootstrap's dropstart caret, so it uses ::after,
+  // which dropstart hides, with the caret styles reset)
+  @media (max-width: 767px) {
+    .card-title + .ms-auto .card-link,
+    .dropdown-toggle-no-outline {
+      position: relative;
+    }
+
+    .card-title + .ms-auto .card-link::before,
+    .dropdown-toggle-no-outline::after {
+      content: '';
+      display: block !important;
+      position: absolute;
+      inset: -5px;
+      margin: 0;
+      border: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

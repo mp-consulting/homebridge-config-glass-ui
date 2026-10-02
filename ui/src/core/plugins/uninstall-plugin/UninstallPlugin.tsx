@@ -82,7 +82,7 @@ export function UninstallPlugin({
         setRemoveChildBridges(nextRemoveConfig)
       } catch (error) {
         console.error('Failed to initialize:', error)
-        const message = error instanceof Error ? error.message : 'Failed to load plugin information'
+        const message = error instanceof Error ? error.message : t('toast.api_error_generic')
         toast.error(message, i18n.t('toast.title_error'))
       } finally {
         if (!cancelled) {
@@ -124,7 +124,7 @@ export function UninstallPlugin({
       await api.delete(`/server/pairings/${id}`)
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to remove child bridge'
+      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
       toast.error(message, t('toast.title_error'))
     }
   }
@@ -138,7 +138,7 @@ export function UninstallPlugin({
         await removePluginConfig()
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error ? error.message : t('toast.api_error_generic')
         toast.error(message, t('toast.title_error'))
       }
     }

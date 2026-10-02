@@ -184,6 +184,11 @@
     padding: 7px 14px;
     border-radius: 999px;
     cursor: pointer;
+
+    // A finger-sized chip on phones
+    @media (max-width: 767px) {
+      min-height: 44px;
+    }
     transition:
       background-color 0.2s,
       color 0.2s;
@@ -199,7 +204,7 @@
     }
 
     &.active {
-      color: var(--glass-primary, currentColor);
+      color: var(--glass-text-accent, var(--glass-primary, currentColor));
       background: rgba(var(--glass-primary-rgb, 127, 127, 127), 0.16);
       font-weight: 500;
 

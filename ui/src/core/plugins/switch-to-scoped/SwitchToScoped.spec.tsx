@@ -11,8 +11,7 @@ import { fileSaver } from '@/core/utilities/file-saver'
 import { xtermFactory } from '@/core/utilities/terminal'
 import { ws as realWs } from '@/core/ws'
 import { fakeApi, fakeTerminals, makeEnv, renderWithProviders, toastStub } from '@/testing'
-
-import '@/testing/i18n'
+import { showEnglish, showKeys } from '@/testing/i18n'
 
 vi.mock('@/core/ws', async () => ({ ws: (await import('@/testing')).fakeWs() }))
 
@@ -69,6 +68,19 @@ describe('switching a plugin to its scoped name', () => {
       }
     })
   }
+
+  it('gives the icon-only wiki link a translated name', async () => {
+    await showEnglish()
+    try {
+      const view = await open()
+
+      const link = view.getByRole('link', { name: 'About scoped plugins (opens in a new tab)' })
+      expect(link).toHaveAttribute('href', 'https://github.com/homebridge/plugins/wiki/Scoped-Plugins')
+      expect(link.querySelector('i')).toHaveAttribute('aria-hidden', 'true')
+    } finally {
+      await showKeys()
+    }
+  })
 
   it('installs the new name, then removes the old one, in that order', async () => {
     // The other way round would leave the user with no working plugin if the

@@ -1,7 +1,7 @@
 import type { ChildBridge, Plugin } from '@/core/plugins/manage-plugins.interfaces'
 import type { ReactElement } from 'react'
 
-import { useMemo, useReducer, useState } from 'react'
+import { memo, useMemo, useReducer, useState } from 'react'
 import { Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
@@ -78,7 +78,7 @@ function worstStatus(childBridges: ChildBridge[]): string {
   return 'pending'
 }
 
-export function PluginCard({ plugin, childBridges, isSearchResult = false }: PluginCardProps) {
+function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: PluginCardProps) {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => !!state.user?.admin)
   const [isMobile] = useState<string>(() => mobileDetect.detect.mobile() || '')
@@ -422,37 +422,40 @@ export function PluginCard({ plugin, childBridges, isSearchResult = false }: Plu
                     type="button"
                     className="card-link btn btn-link p-0 text-decoration-none"
                     aria-label={t('plugins.button_info')}
+                    title={plugin.name}
                     onClick={() => pluginInfoModal(plugin)}
                   >
                     <i className={shieldClass} aria-hidden="true"></i>
                     <span className="grey-text" aria-hidden="true">{plugin.name}</span>
                   </button>
                 </p>
-                {/* plugin author and donate modal */}
-                <p className="card-text mb-2">
-                  {verified && plugin.funding
-                    ? (
-                        <button
-                          type="button"
-                          className="card-link btn btn-link p-0 text-decoration-none"
-                          aria-label={t('plugins.donate.tile_donate_to', { author: plugin.author })}
-                          onClick={() => openFundingModal(plugin)}
-                        >
-                          <i className="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
+                {/* plugin author and donate modal; nothing to show without an author */}
+                {plugin.author && (
+                  <p className="card-text mb-2">
+                    {verified && plugin.funding
+                      ? (
+                          <button
+                            type="button"
+                            className="card-link btn btn-link p-0 text-decoration-none"
+                            aria-label={t('plugins.donate.tile_donate_to', { author: plugin.author })}
+                            onClick={() => openFundingModal(plugin)}
+                          >
+                            <i className="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
+                            <span className="grey-text">
+                              @
+                              {plugin.author}
+                            </span>
+                          </button>
+                        )
+                      : (
                           <span className="grey-text">
+                            <i className="fas fa-heart fa-lg me-1 heart-muted" aria-hidden="true"></i>
                             @
                             {plugin.author}
                           </span>
-                        </button>
-                      )
-                    : (
-                        <span className="grey-text">
-                          <i className="fas fa-heart fa-lg me-1 heart-muted" aria-hidden="true"></i>
-                          @
-                          {plugin.author}
-                        </span>
-                      )}
-                </p>
+                        )}
+                  </p>
+                )}
                 {/* plugin versioning and actions dropdown */}
                 <div className="d-flex flex-row">
                   <p className="card-text mb-0 grey-text">
@@ -702,3 +705,10 @@ export function PluginCard({ plugin, childBridges, isSearchResult = false }: Plu
     </div>
   )
 }
+
+/**
+ * One plugin's card. Memoised: the plugins page passes the same plugin and
+ * child bridge objects until they change, so a card re-renders only for its own
+ * plugin.
+ */
+export const PluginCard = memo(PluginCardComponent)

@@ -37,7 +37,11 @@ html body.glass-mode {
   --glass-shadow: 0 8px 32px rgba(40, 30, 90, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   --glass-shadow-lift: 0 12px 36px rgba(40, 30, 90, 0.16), inset 0 1px 0 rgba(255, 255, 255, 1);
   --glass-text: #1d1b26;
-  --glass-muted: #6e6b7b;
+  --glass-muted: #55525f;
+  // The accent as TEXT. Backgrounds and fills keep --glass-primary; in dark mode
+  // the text tint is mixed halfway to white, which clears 4.5:1 on the dark base
+  // for every theme colour.
+  --glass-text-accent: var(--glass-primary);
   --glass-input: rgba(255, 255, 255, 0.7);
   --glass-blur: 22px;
   --glass-bg-glow-1: 0.34;
@@ -69,6 +73,7 @@ html body.glass-mode {
     --glass-shadow-lift: 0 12px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     --glass-text: #f1effa;
     --glass-muted: #9d9aac;
+    --glass-text-accent: color-mix(in srgb, var(--glass-primary) 50%, #ffffff);
     --glass-input: rgba(0, 0, 0, 0.28);
     --glass-bg-glow-1: 0.42;
     --glass-bg-glow-2: 0.22;
@@ -80,6 +85,13 @@ html body.glass-mode {
   }
 
   // ── Typography ──────────────────────────────────────────
+
+  // Accent-coloured text (page titles, section toggles, widget links) reads the
+  // text token, so dark mode gets the lighter tint
+  .primary-text,
+  .btn-link.primary-text {
+    color: var(--glass-text-accent) !important;
+  }
 
   h3.primary-text {
     font-size: 2.1rem;
@@ -119,7 +131,6 @@ html body.glass-mode {
     // 1px border + 8px wrapper padding + 4px row padding + half the 38px icon box.
     .header {
       background: transparent !important;
-      display: block !important;
       padding: 10px 0 16px 17px !important;
 
       a {
@@ -143,7 +154,7 @@ html body.glass-mode {
         position: static !important;
         font-size: 20px !important;
         font-weight: 500;
-        color: var(--glass-primary) !important;
+        color: var(--glass-text-accent) !important;
         white-space: nowrap;
         overflow: hidden;
         max-width: 0;
@@ -162,7 +173,6 @@ html body.glass-mode {
 
     .link-wrapper {
       flex: 1;
-      display: flex;
       flex-direction: column;
       max-height: none !important;
       padding: 0 8px;
@@ -197,7 +207,7 @@ html body.glass-mode {
             background: rgba(var(--glass-primary-rgb), 0.16) !important;
 
             i {
-              color: var(--glass-primary) !important;
+              color: var(--glass-text-accent) !important;
             }
           }
         }
@@ -206,6 +216,17 @@ html body.glass-mode {
 
     &.expanded {
       width: 220px;
+    }
+
+    // Desktop only: on a phone the component's own rules hide the closed menu
+    @media (min-width: 768px) {
+      .header {
+        display: block !important;
+      }
+
+      .link-wrapper {
+        display: flex;
+      }
     }
 
     @media (max-width: 767px) {
@@ -219,6 +240,10 @@ html body.glass-mode {
         width: 220px;
         padding: 10px 0;
         border-width: 1px !important;
+
+        .link-wrapper {
+          display: flex;
+        }
       }
 
       .header {
@@ -246,7 +271,7 @@ html body.glass-mode {
     }
 
     .hb-logo-text-mobile {
-      color: var(--glass-primary);
+      color: var(--glass-text-accent);
     }
 
     .hamburger-icon span {
@@ -263,6 +288,26 @@ html body.glass-mode {
     }
   }
 
+  // Inline code: Bootstrap's pink is 3.95:1 on the light glass base and 4.3:1
+  // on the dark one
+  code {
+    color: #b0246a;
+  }
+
+  &.dark-mode code {
+    color: #e685b5;
+  }
+
+  // ── Keyboard focus ──────────────────────────────────────
+
+  // Hover and focus look the same on the glass buttons, so a keyboard user gets
+  // a ring as well. Programmatic focus targets (tabindex -1) and the editors,
+  // which draw their own cursor, are left alone.
+  :focus-visible:not([tabindex='-1']):not(.xterm-helper-textarea):not(.monaco-editor *) {
+    outline: 2px solid var(--glass-text-accent) !important;
+    outline-offset: 2px;
+  }
+
   // ── Round glass header actions ──────────────────────────
 
   .btn-elegant,
@@ -275,7 +320,7 @@ html body.glass-mode {
     &:hover,
     &:focus,
     &.show {
-      color: var(--glass-primary) !important;
+      color: var(--glass-text-accent) !important;
       background: var(--glass-surface-hover) !important;
       border-color: var(--glass-border) !important;
     }
@@ -769,7 +814,7 @@ html body.glass-mode {
     }
 
     &.active {
-      color: var(--glass-primary);
+      color: var(--glass-text-accent);
     }
   }
 
@@ -784,7 +829,7 @@ html body.glass-mode {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    color: var(--glass-primary) !important;
+    color: var(--glass-text-accent) !important;
     background: rgba(var(--glass-primary-rgb), 0.12) !important;
     border: 1px solid rgba(var(--glass-primary-rgb), 0.25) !important;
     box-shadow: none !important;
@@ -798,6 +843,17 @@ html body.glass-mode {
 
     i::before {
       content: '\f054'; // chevron-right
+    }
+
+    // A finger-sized hit area on phones without growing the round button
+    @media (max-width: 767px) {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -5px;
+      }
     }
   }
 
@@ -843,11 +899,12 @@ html body.glass-mode {
     #log-output,
     #docker-terminal,
     gridster-item:has(.widget-container-dark) {
-      background: linear-gradient(
-        135deg,
-        rgba(var(--glass-primary-rgb), 0.28) 0%,
-        rgba(20, 18, 30, 0.9) 45%
-      ) !important;
+      // The tint is layered over a uniform dark fill: a single gradient that
+      // started out translucent let the light page through as a white sheen
+      // across the top-left of the log text
+      background:
+        linear-gradient(135deg, rgba(var(--glass-primary-rgb), 0.28) 0%, rgba(var(--glass-primary-rgb), 0) 45%),
+        rgba(20, 18, 30, 0.92) !important;
       border-color: rgba(255, 255, 255, 0.18) !important;
     }
 
@@ -899,6 +956,7 @@ html body.glass-mode {
   // Footer credit sits quietly under the grid
   .status-container ~ .row small,
   .row.mb-auto small {
-    opacity: 0.8;
+    // 0.9 keeps the muted grey above 4.5:1 on the light base (0.8 was 4.2:1)
+    opacity: 0.9;
   }
 }

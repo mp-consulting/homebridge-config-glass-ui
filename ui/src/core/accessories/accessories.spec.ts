@@ -691,6 +691,29 @@ describe('accessoriesService', () => {
     })
   })
 
+  describe('live updates', () => {
+    it('replaces only the updated service and the room holding it', async () => {
+      await start({
+        layout: [
+          { name: 'Kitchen', isDefault: true, services: [layoutEntry({ uniqueId: 'hap-1' })] },
+          { name: 'Office', services: [layoutEntry({ uniqueId: 'hap-2', name: 'Desk', serial: 'SERIAL-2', aid: 2 })] },
+        ],
+      })
+      sendData(rawHap(), rawHap({ uniqueId: 'hap-2', aid: 2, serviceName: 'Desk', accessoryInformation: { 'Name': 'Desk', 'Serial Number': 'SERIAL-2' } }))
+      const [kitchen, office] = service.rooms()
+      const desk = office.services[0]
+
+      const update = rawHap({ serviceCharacteristics: [rawCharacteristic('On', true, 11)] })
+      sendData(update)
+
+      const [nextKitchen, nextOffice] = service.rooms()
+      expect(nextKitchen).not.toBe(kitchen)
+      expect(nextKitchen.services[0]).toBe(update)
+      expect(nextOffice).toBe(office)
+      expect(nextOffice.services[0]).toBe(desk)
+    })
+  })
+
   describe('combining related services', () => {
     function accessory(name: string, serial: string, type: string, uniqueId: string, iid: number) {
       return rawHap({
@@ -713,6 +736,23 @@ describe('accessoriesService', () => {
       expect((heaterCooler as any).linkedServices[11]).toBe(fan)
       expect(roomsHolding('hap-fan')).toEqual([])
       expect(roomsHolding('hap-hc')).toHaveLength(1)
+    })
+
+    it('replaces the heater cooler when only its fan changes, so its memoised tile re-renders', async () => {
+      await start()
+
+      const heaterCooler = accessory('Aircon', 'AC-1', 'HeaterCooler', 'hap-hc', 10)
+      const fan = accessory('Aircon', 'AC-1', 'Fanv2', 'hap-fan', 11)
+      sendData(heaterCooler, fan)
+      const before = room('Default Room')!.services.find(s => s.uniqueId === 'hap-hc')!
+
+      const nextFan = accessory('Aircon', 'AC-1', 'Fanv2', 'hap-fan', 11)
+      sendData(nextFan)
+
+      const after = room('Default Room')!.services.find(s => s.uniqueId === 'hap-hc')!
+      expect(after).not.toBe(before)
+      expect((after as any).linkedServices[11]).toBe(nextFan)
+      expect(roomsHolding('hap-fan')).toEqual([])
     })
 
     it('folds a lone fan into a humidifier on the same accessory', async () => {

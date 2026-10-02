@@ -138,7 +138,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
   }
 
   const errorBox = (headline: string) => (
-    <div className="input-group no-border mb-4">
+    <div className="input-group no-border mb-4" role="alert">
       <div className="input-group-text custom-input">
         <i className="fas fa-exclamation-triangle pink-text fa-lg" aria-hidden="true"></i>
       </div>
@@ -180,6 +180,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
                       tabIndex={0}
                       className={`form-control custom-input${usernameDirty && !username ? ' is-invalid' : ''}`}
                       required
+                      aria-label={t('users.label_username')}
                       placeholder={t('users.label_username')}
                       value={username}
                       onChange={(e) => {
@@ -199,6 +200,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
                       tabIndex={0}
                       className={`form-control custom-input${passwordDirty && !password ? ' is-invalid' : ''}`}
                       required
+                      aria-label={t('users.label_password')}
                       placeholder={t('users.label_password')}
                       value={password}
                       onChange={(e) => {
@@ -222,6 +224,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
                     pattern="[0-9]*"
                     tabIndex={0}
                     className="form-control custom-input"
+                    aria-label={t('login.label_2fa_code')}
                     placeholder={t('login.label_2fa_code')}
                     value={otp}
                     onChange={(e) => {

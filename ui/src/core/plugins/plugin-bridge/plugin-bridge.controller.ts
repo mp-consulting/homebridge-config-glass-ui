@@ -166,9 +166,10 @@ export class PluginBridgeController {
   // meaningful when isMatterDisableIpv4Enabled is true and Matter is enabled.
   public readonly matterDisableIpv4Blocks = this.signal<Record<number, boolean>>({})
   public readonly defaultIcon = 'assets/hb-icon.png'
-  public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
-  public readonly linkDebug = '<a href="https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Debug-Common-Values" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
-  public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
+  /** Icon-only links out, named for screen readers by `label`. */
+  public readonly linkChildBridges = (label: string) => externalIconLink('https://github.com/homebridge/homebridge/wiki/Child-Bridges', label)
+  public readonly linkDebug = (label: string) => externalIconLink('https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Debug-Common-Values', label)
+  public readonly linkCron = (label: string) => externalIconLink('https://crontab.guru/', label)
 
   constructor(data: PluginBridgeModalData, deps: PluginBridgeControllerDeps) {
     this.activeModal = deps.activeModal
@@ -306,7 +307,7 @@ export class PluginBridgeController {
       this.originalHideChildBridgeSetup = initialHideSetup
     } catch (error) {
       console.error('Failed to initialize:', error)
-      const message = error instanceof Error ? error.message : 'Failed to initialize component'
+      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
       toast.error(message, t('toast.title_error'))
     } finally {
       this.loading.set(false)
@@ -326,7 +327,7 @@ export class PluginBridgeController {
       this.isPlatform.set(alias.pluginType === 'platform')
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to load plugin type'
+      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
       toast.error(message, t('toast.title_error'))
       this.activeModal.close()
     }
@@ -1543,7 +1544,7 @@ export class PluginBridgeController {
       }
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to save configuration'
+      const message = error instanceof Error ? error.message : t('config.failed_to_save_config')
       toast.error(message, t('toast.title_error'))
     } finally {
       this.saveInProgress.set(false)
@@ -1926,4 +1927,10 @@ export class PluginBridgeController {
       throw error
     }
   }
+}
+
+/** An icon-only link markup for a translation's `{{ link }}` slot, with an accessible name. */
+function externalIconLink(href: string, label: string): string {
+  const name = label.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${name}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
 }

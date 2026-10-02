@@ -46,3 +46,14 @@
     background-position: 0 50%;
   }
 }
+
+// Phone-sized touch targets for the fields and the submit button
+@media (max-width: 767px) {
+  .login-container .login-card {
+    .input-group > .form-control,
+    .input-group > .input-group-text,
+    #submit-button {
+      min-height: 44px;
+    }
+  }
+}

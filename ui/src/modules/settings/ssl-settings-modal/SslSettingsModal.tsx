@@ -187,7 +187,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
       activeModal.close(config.mode)
     } catch (error: any) {
       console.error(error)
-      const errorMessage = error?.error?.message || error?.message || 'Unknown error'
+      const errorMessage = error?.error?.message || error?.message || t('toast.api_error_generic')
       toast.error(errorMessage, i18n.t('toast.title_error'))
     } finally {
       setIsSaving(false)

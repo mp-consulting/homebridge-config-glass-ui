@@ -163,9 +163,18 @@ export interface SettingsPageDeps {
 export const fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 export const fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
 
-export const linkDebug = '<a href="https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
-export const linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
-export const linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
+/**
+ * An icon-only link out of the ui, named for screen readers by `label` (the
+ * icon alone says nothing). Markup for the `{{ link }}` slot of a translation.
+ */
+export function externalIconLink(href: string, label: string): string {
+  const name = label.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${name}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
+}
+
+export const linkDebug = (label: string) => externalIconLink('https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Debug-Common-Values', label)
+export const linkRaspbianSsl = (label: string) => externalIconLink('https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access', label)
+export const linkCron = (label: string) => externalIconLink('https://crontab.guru/', label)
 
 const UI_FLUSH_COALESCE_MS = 150
 
@@ -1747,7 +1756,7 @@ export function createSettingsPage(deps: SettingsPageDeps) {
       // Check for reserved ports
       if ([5353, 8080, 8443].includes(value)) {
         setInvalid('matterPort', true)
-        toast.error('Port 5353, 8080, and 8443 are reserved and cannot be used', t('toast.title_error'))
+        toast.error(t('settings.matter.port_reserved', { ports: '5353, 8080, 8443' }), t('toast.title_error'))
         return
       }
 

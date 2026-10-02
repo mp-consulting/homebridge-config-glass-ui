@@ -56,6 +56,8 @@ function readPlainTextPreference(): boolean {
  * that keep a broken config off disk, loading a backup into a diff view, and
  * the restart prompt the save calls for.
  */
+const NARROW_QUERY = '(max-width: 767px)'
+
 export function ConfigEditor() {
   const { t: translate } = useTranslation()
   // Read once: the route does not revalidate while the page is open (see
@@ -124,12 +126,26 @@ export function ConfigEditor() {
     schema: createConfigSchema(i18n.t, flags),
   }), [flags])
 
+  // A phone-width window: the minimap would take a quarter of the editor
+  const [narrow, setNarrow] = useState(() => window.matchMedia?.(NARROW_QUERY).matches ?? false)
+  useEffect(() => {
+    const query = window.matchMedia?.(NARROW_QUERY)
+    if (!query) {
+      return undefined
+    }
+    const onChange = (event: MediaQueryListEvent) => setNarrow(event.matches)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
+  }, [])
+
   const editorOptions = useMemo(() => ({
     renderSideBySide,
     renderIndicators: true,
     ignoreTrimWhitespace: false,
     glyphMargin: true,
-  }), [renderSideBySide])
+    // The rest of the minimap defaults (DEFAULT_EDITOR_OPTIONS) are restated: the option is replaced whole
+    minimap: { enabled: !narrow, showSlider: 'mouseover' as const, scale: 2 },
+  }), [renderSideBySide, narrow])
 
   useEffect(() => {
     // Page title - using "JSON Config" from menu
@@ -550,10 +566,10 @@ export function ConfigEditor() {
   return (
     <div className="flex-column d-flex align-items-stretch h-100">
       <div className="row">
-        <div className="col-6">
+        <div className="col-6 hb-config-editor-title">
           <h3 className="primary-text m-0">{translate('menu.config_json_editor')}</h3>
         </div>
-        <div className="col-6 text-end">
+        <div className="col-6 text-end hb-config-editor-actions">
           <Dropdown align="end" className="d-none d-sm-inline-block me-2">
             <HoverTooltip text={translate('config.editor_mode')} placement="bottom">
               <Dropdown.Toggle

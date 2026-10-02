@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from 'react'
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
@@ -19,11 +20,12 @@ import './toast.scss'
  * drives the announcement, so the toast is now read exactly once.
  */
 export function AppToast({ toast }: ToastComponentProps) {
+  const { t } = useTranslation()
   const { options, title, message } = toast
   return (
     <ToastFrame toast={toast} onClick={toast.tapToast}>
       {options.closeButton && (
-        <button type="button" className="toast-close-button" aria-label="Close" onClick={toast.remove}>
+        <button type="button" className="toast-close-button" aria-label={t('form.button_close')} onClick={toast.remove}>
           <span aria-hidden="true">&times;</span>
         </button>
       )}

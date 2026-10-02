@@ -202,6 +202,20 @@ describe('sidebar', () => {
 
       expect(screen.getByRole('navigation', { name: 'menu.sidebar.aria_menu' })).toBe(sidebar())
     })
+
+    it('keeps a closed phone menu out of the tab order', () => {
+      render({ narrow: true })
+
+      expect(sidebar()).toHaveAttribute('inert')
+      toggle()
+      expect(sidebar()).not.toHaveAttribute('inert')
+    })
+
+    it('never makes the desktop menu inert', () => {
+      render()
+
+      expect(sidebar()).not.toHaveAttribute('inert')
+    })
   })
 
   describe('signing out', () => {

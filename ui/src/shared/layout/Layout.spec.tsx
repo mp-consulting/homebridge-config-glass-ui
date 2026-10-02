@@ -1,7 +1,7 @@
 import type { FakeApi, FakeIoNamespace, FakeOpenModal, FakeWs } from '@/testing'
 import type { MockInstance } from 'vitest'
 
-import { act, screen } from '@testing-library/react'
+import { act, fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { authActions, useAuthStore } from '@/core/auth'
@@ -309,6 +309,23 @@ describe('layout', () => {
       const content = document.querySelector('.hb-layout > .content')
       expect(content).toHaveClass('px-3', 'p-md-4')
       expect(content).not.toHaveClass('sidebarExpanded')
+    })
+
+    it('is the main landmark', async () => {
+      await open()
+
+      const main = screen.getByRole('main')
+      expect(main).toHaveAttribute('id', 'main-content')
+      expect(main).toHaveClass('content')
+    })
+
+    it('offers a skip link as the first stop, which moves focus to the page', async () => {
+      await open()
+
+      const skip = screen.getByRole('link', { name: 'layout.skip_to_content' })
+      expect(document.querySelector('.hb-layout')!.firstElementChild).toBe(skip)
+      fireEvent.click(skip)
+      expect(document.activeElement).toBe(screen.getByRole('main'))
     })
   })
 })

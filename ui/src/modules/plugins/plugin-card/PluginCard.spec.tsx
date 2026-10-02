@@ -703,5 +703,28 @@ describe('pluginCard', () => {
 
       expect(element.querySelector('.card-text.grey-text')!.textContent).toContain('v2.0.0 (2024-03-05)')
     })
+
+    it('gives the package name its full text as a title, for when it is cut short', () => {
+      const element = render({ name: 'homebridge-a-very-long-package-name' })
+
+      expect(element.querySelector('.card-text.text-truncate .card-link')).toHaveAttribute('title', 'homebridge-a-very-long-package-name')
+    })
+
+    it('shows the author line only when there is an author', () => {
+      expect(render({ author: 'someone' }).textContent).toContain('@someone')
+    })
+
+    it('does not show a bare @ when the author is empty', () => {
+      const element = render({ author: '' })
+
+      expect(element.querySelector('.heart-muted')).toBeNull()
+      expect(element.textContent).not.toContain('@')
+    })
+  })
+
+  describe('rendering', () => {
+    it('is memoised, so the same props do not render it again', () => {
+      expect((PluginCard as unknown as { $$typeof: symbol }).$$typeof).toBe(Symbol.for('react.memo'))
+    })
   })
 })

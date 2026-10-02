@@ -13,7 +13,7 @@ import * as modalModule from '@/core/ui/modal'
 import * as toastModule from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
-import { fakeApi, makeSettingsState } from '@/testing'
+import { fakeApi, makeSettingsState, setMatchMedia } from '@/testing'
 
 import { ConfigRestore } from './config-restore/ConfigRestore'
 import { Component, shouldRevalidate } from './route'
@@ -746,6 +746,23 @@ describe('config editor', () => {
       await save()
 
       expect(screen.queryByRole('button', { name: 'form.button_cancel' })).toBeNull()
+    })
+  })
+
+  describe('the minimap', () => {
+    afterEach(() => setMatchMedia(false))
+
+    it('is shown on a desktop-width window', async () => {
+      await open(validConfig, { mobile: false })
+
+      expect(monacoFake.editorProps.options.minimap).toMatchObject({ enabled: true })
+    })
+
+    it('is turned off on a phone-width window, where it would take a quarter of the editor', async () => {
+      setMatchMedia(true)
+      await open(validConfig, { mobile: false })
+
+      expect(monacoFake.editorProps.options.minimap).toMatchObject({ enabled: false })
     })
   })
 

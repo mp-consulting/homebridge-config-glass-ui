@@ -27,13 +27,24 @@ const KNOWN: Record<string, string> = knownDifferences
  * counts and visible labels. Split into shards so vitest runs them in
  * parallel.
  *
- * Skips when the corpus has not been fetched/recorded. Env:
+ * Skips when the corpus has not been fetched/recorded - except on CI
+ * (`process.env.CI` set), where an empty corpus fails so a broken fetch step
+ * cannot turn the parity check into a silent no-op. Env:
  * - `GOLDEN_ONLY=<substring>[,<substring>...]` limits the run to matching plugins;
  * - a JSON report per shard is written to `$TMPDIR/schema-form-golden-report.<shard>.json`.
  */
 export function defineGoldenSuite(shard: number) {
   const only = process.env.GOLDEN_ONLY?.split(',').filter(Boolean)
-  const corpus = loadCorpus()
+  const fullCorpus = loadCorpus()
+  if (process.env.CI && fullCorpus.length === 0) {
+    describe(`schemaForm golden parity (shard ${shard + 1}/${GOLDEN_SHARDS})`, () => {
+      it('has a corpus to replay', () => {
+        throw new Error('The schema-form golden corpus is empty on CI: run `node scripts/schema-corpus/fetch.mjs --from-manifest` before the UI tests.')
+      })
+    })
+    return
+  }
+  const corpus = fullCorpus
     .filter((_, i) => i % GOLDEN_SHARDS === shard)
     .filter(({ golden }) => !only || only.some(part => golden.plugin.includes(part)))
   const report: Record<string, Entry> = {}

@@ -1,3 +1,5 @@
+import type { MouseEvent as ReactMouseEvent } from 'react'
+
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate } from 'react-router'
@@ -106,10 +108,17 @@ export function Layout() {
     // eslint-disable-next-line react/exhaustive-deps
   }, [])
 
+  // A hash link would go through the router: move focus to the page instead
+  const skipToContent = (e: ReactMouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    document.getElementById('main-content')?.focus()
+  }
+
   return (
     <div className="hb-layout">
+      <a className="skip-link" href="#main-content" onClick={skipToContent}>{t('layout.skip_to_content')}</a>
       <Sidebar initialIsExpanded={sidebarExpanded} />
-      <div className={`content px-3 p-md-4${sidebarExpanded ? ' sidebarExpanded' : ''}`}>
+      <main id="main-content" tabIndex={-1} className={`content px-3 p-md-4${sidebarExpanded ? ' sidebarExpanded' : ''}`}>
         {sslStartupError && (
           <div className="alert alert-warning" role="alert">
             <i className="fas fa-fw fa-triangle-exclamation me-1"></i>
@@ -117,7 +126,7 @@ export function Layout() {
           </div>
         )}
         <Outlet />
-      </div>
+      </main>
     </div>
   )
 }

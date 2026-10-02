@@ -344,6 +344,8 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
         id="sidebar"
         role={isMobile ? undefined : 'navigation'}
         aria-label={isMobile ? undefined : t('menu.sidebar.aria_menu')}
+        // A closed phone menu is off screen: keep its links out of the tab order
+        inert={isMobile && !isExpanded}
       >
         <div className="header">
           <a tabIndex={-1} aria-hidden="true" href="./" onClick={goHome}>
