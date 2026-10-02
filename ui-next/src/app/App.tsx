@@ -1,32 +1,92 @@
-import { lazy, Suspense } from 'react'
+import type { createBrowserRouter } from 'react-router'
 
-// TEMPORARY (Phase 0): dev-only spike pages, selected with `?spike=<name>`.
-// Production builds drop them entirely, unless built with VITE_SPIKES=1 (used
-// to check them against `vite preview` output from a scratch outDir).
-const SPIKES_ENABLED = import.meta.env.DEV || import.meta.env.VITE_SPIKES === '1'
+import { useEffect, useState } from 'react'
+import { I18nextProvider } from 'react-i18next'
+import { RouterProvider } from 'react-router'
 
-const MonacoSpikeDemo = SPIKES_ENABLED && lazy(() => import('@/core/monaco/spike/MonacoSpikeDemo').then(m => ({ default: m.MonacoSpikeDemo })))
+import { getAppRouter } from '@/app/routes'
+import { authActions } from '@/core/auth'
+import { RestartChildBridges } from '@/core/components/restart-child-bridges/RestartChildBridges'
+import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
+import { RestartToast } from '@/core/components/restart-toast/RestartToast'
+import { ServerUnreachable } from '@/core/components/server-unreachable/ServerUnreachable'
+import { chooseStartupLanguage } from '@/core/locales'
+import { settingsActions, useSettingsStore } from '@/core/settings'
+import { i18n, isRtl } from '@/core/ui/i18n'
+import { childBridges } from '@/core/utilities/child-bridges'
 
-function spikeName(): string | null {
-  if (!SPIKES_ENABLED) {
-    return null
-  }
-  return new URLSearchParams(window.location.search).get('spike')
+import './app.scss'
+
+// The components core code opens without importing them (it would be a cycle)
+settingsActions.setRestartToastComponent(RestartToast)
+childBridges.registerRestartModals({ childBridges: RestartChildBridges, homebridge: RestartHomebridge })
+
+/** The browser language as ngx-translate's `getBrowserLang()` gave it (`pt` for `pt-BR`). */
+function browserLang(): string | undefined {
+  return navigator.language?.split('-')[0]?.split('_')[0]
 }
 
-export function App() {
-  if (MonacoSpikeDemo && spikeName() === 'monaco') {
-    return (
-      <Suspense fallback={null}>
-        <MonacoSpikeDemo />
-      </Suspense>
-    )
-  }
+/** The full browser language (`getBrowserCultureLang()`), e.g. `pt-BR`. */
+function browserCultureLang(): string | undefined {
+  return navigator.languages?.[0] ?? navigator.language
+}
+
+export interface AppProps {
+  /** The router to render; the app's own one unless a spec passes another. */
+  router?: ReturnType<typeof createBrowserRouter>
+}
+
+/** The app shell (AppComponent). */
+export function App({ router }: AppProps) {
+  const serverUnreachable = useSettingsStore(s => s.serverUnreachable)
+  const [appRouter] = useState(() => router ?? getAppRouter())
+
+  // Restore the session (and start the settings load). Idempotent.
+  useEffect(() => {
+    void authActions.init()
+  }, [])
+
+  // Follow the browser's dark mode preference
+  useEffect(() => {
+    const colorSchemeQueryList = window.matchMedia('(prefers-color-scheme: dark)')
+    const setLightingMode = (event: MediaQueryList | MediaQueryListEvent) => {
+      settingsActions.setBrowserLightingMode(event.matches ? 'dark' : 'light')
+    }
+    setLightingMode(colorSchemeQueryList)
+    colorSchemeQueryList.addEventListener('change', setLightingMode)
+    return () => {
+      colorSchemeQueryList.removeEventListener('change', setLightingMode)
+    }
+  }, [])
+
+  // Which languages use RTL
+  useEffect(() => {
+    const onLanguageChanged = (lang: string) => {
+      settingsActions.setItem('rtl', isRtl(lang))
+    }
+    i18n.on('languageChanged', onLanguageChanged)
+    return () => {
+      i18n.off('languageChanged', onLanguageChanged)
+    }
+  }, [])
+
+  // Prefer the last user-selected language (persisted in localStorage) so
+  // bootstrap renders in the chosen locale before the server settings arrive;
+  // fall back to the browser-detected language. The same decision decides which
+  // locale dates and numbers are formatted with, so it is made in one place -
+  // see chooseStartupLanguage. Don't override a language the settings store
+  // already set from the server.
+  useEffect(() => {
+    const lang = chooseStartupLanguage(browserLang(), browserCultureLang())
+    if (lang && !useSettingsStore.getState().settingsLoaded) {
+      void i18n.changeLanguage(lang)
+    }
+  }, [])
 
   return (
-    <div className="container py-5">
-      <h1 className="h3">Homebridge Glass UI</h1>
-      <p className="text-muted">React migration in progress (ui-next).</p>
-    </div>
+    <I18nextProvider i18n={i18n}>
+      {serverUnreachable && <ServerUnreachable />}
+      <RouterProvider router={appRouter} />
+    </I18nextProvider>
   )
 }

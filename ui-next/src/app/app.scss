@@ -1,0 +1,6 @@
+// Angular's <app-root> and the page hosts were inline elements, so the pages'
+// `height` / `min-height: 100%` resolved against <body>. #root is a block, so
+// it has to carry the height down itself.
+#root {
+  height: 100%;
+}

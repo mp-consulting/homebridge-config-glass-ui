@@ -254,7 +254,7 @@ html body.glass-mode {
     }
   }
 
-  app-layout > .content {
+  .hb-layout > .content {
     margin-left: $glass-sidebar-width + $glass-gutter;
 
     @media (max-width: 767px) {

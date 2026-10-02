@@ -18,6 +18,13 @@ export default antfu(
     },
   },
   {
+    // A react-router route module exports the page plus what lazy() reads from it
+    files: ['ui-next/src/**/route.tsx'],
+    rules: {
+      'react-refresh/only-export-components': ['error', { allowExportNames: ['loader', 'action', 'shouldRevalidate', 'children', 'handle', 'ErrorBoundary'] }],
+    },
+  },
+  {
     // JS/TS-specific rules (these crash on non-JS SourceCode objects like markdown)
     files: ['**/*.?([cm])[jt]s?(x)'],
     rules: {

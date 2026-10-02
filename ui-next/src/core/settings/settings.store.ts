@@ -465,6 +465,24 @@ export const settingsActions = {
   },
 
   /**
+   * Take the restart toast off the screen, if one is showing (what the settings
+   * page did with `$toastr.clear($settings.restartToastRef.toastId)` before it
+   * navigated to the restart page itself, so no second Restart button is left
+   * over a restart already under way).
+   */
+  clearRestartToast(): void {
+    if (restartToastRef) {
+      toast.clear(restartToastRef.toastId)
+      restartToastRef = null
+    }
+  },
+
+  /** Whether the restart toast is showing (`$settings.restartToastRef !== null`). */
+  hasRestartToast(): boolean {
+    return restartToastRef !== null
+  },
+
+  /**
    * The component the restart toast renders (RestartToastComponent: the
    * Restart and Close buttons). Registered by the app shell so this store does
    * not import a component.

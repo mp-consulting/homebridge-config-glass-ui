@@ -13,7 +13,7 @@ export interface GuardArgs {
 export type Guard = (args: GuardArgs) => Promise<Response | null>
 
 /** The path part of `<base href>`, without a trailing slash ('' at the root). */
-function basePath(): string {
+export function basePath(): string {
   const href = document.querySelector('base')?.getAttribute('href') || '/'
   const path = new URL(href, window.location.origin).pathname
   return path.replace(/\/+$/, '')

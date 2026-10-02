@@ -36,7 +36,8 @@ export function makeAuthState(overrides: { token?: string | null, user?: Partial
   const { user, ...rest } = overrides
   return {
     token: 'test-access-token' as string | null,
-    user: user === null ? null : makeUser(user),
+    // `null` is the signed-out case some specs seed on purpose
+    user: (user === null ? null : makeUser(user)) as FakeUser,
     ...rest,
   }
 }
