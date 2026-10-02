@@ -31,6 +31,12 @@ const ignoreKeys = [
   'update_all.reason_disabled', // key built dynamically in ui/src/app/core/update-all/update-all-modal.component.html
   'update_all.reason_engines', // key built dynamically in ui/src/app/core/update-all/update-all-modal.component.html
   'update_all.line_major', // key built dynamically in update-all-modal.component.ts; only a spec literal keeps it "used"
+  // Service type → `accessories.core.<snake_case>` in serviceToTranslationString (accessory info modal)
+  'accessories.core.cooler',
+  'accessories.core.dehumidifier',
+  'accessories.core.on_off_light',
+  'accessories.core.on_off_light_switch',
+  'accessories.core.on_off_plug_in_unit',
 ]
 
 async function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): Promise<string[]> {

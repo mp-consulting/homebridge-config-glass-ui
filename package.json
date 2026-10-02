@@ -58,7 +58,7 @@
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
     "watch:ui": "npm run start --prefix ui",
-    "build:ui-next": "npm run build --prefix ui-next && node scripts/verify-monaco-assets.mjs",
+    "build:ui-next": "npm run build --prefix ui-next && node scripts/verify-monaco-assets.mjs && node scripts/check-bundle-size.mjs",
     "test:ui-next": "npm run test --prefix ui-next",
     "watch:next": "concurrently \"npm run start --prefix ui-next\" \"npm run watch:server\""
   },

@@ -7,26 +7,28 @@ import { i18n } from '@/core/ui/i18n'
 import { swaggerUrl } from './swagger-url'
 
 interface SupportLink {
-  /** i18n key of the label; `<key>_sub` is the line under it */
+  /** i18n key of the label */
   key: string
+  /** i18n key of the line under it (written out, so lang-sync sees it used) */
+  sub: string
   href: string
 }
 
 const generalLinks: SupportLink[] = [
-  { key: 'support.links.documentation', href: 'https://github.com/homebridge/homebridge/wiki' },
-  { key: 'support.links.issue', href: 'https://github.com/mp-consulting/homebridge-config-glass-ui/issues/new/choose' },
-  { key: 'support.links.discord', href: 'https://discord.gg/C87Pvq3' },
-  { key: 'support.links.reddit', href: 'https://www.reddit.com/r/homebridge/' },
+  { key: 'support.links.documentation', sub: 'support.links.documentation_sub', href: 'https://github.com/homebridge/homebridge/wiki' },
+  { key: 'support.links.issue', sub: 'support.links.issue_sub', href: 'https://github.com/mp-consulting/homebridge-config-glass-ui/issues/new/choose' },
+  { key: 'support.links.discord', sub: 'support.links.discord_sub', href: 'https://discord.gg/C87Pvq3' },
+  { key: 'support.links.reddit', sub: 'support.links.reddit_sub', href: 'https://www.reddit.com/r/homebridge/' },
 ]
 
 function devLinks(): SupportLink[] {
   return [
-    { key: 'support.dev.item_swagger', href: swaggerUrl() },
-    { key: 'support.dev.api', href: 'https://developers.homebridge.io/#/' },
-    { key: 'support.dev.api_hap', href: 'https://developers.homebridge.io/HAP-NodeJS/' },
-    { key: 'support.dev.template', href: 'https://github.com/homebridge/homebridge-plugin-template' },
-    { key: 'support.dev.verified', href: 'https://github.com/homebridge/homebridge/wiki/Verified-Plugins' },
-    { key: 'support.dev.unmaintained', href: 'https://github.com/homebridge/plugins/wiki/Unmaintained-Plugins#%E2%80%8D%EF%B8%8F-want-to-help-maintain-a-plugin' },
+    { key: 'support.dev.item_swagger', sub: 'support.dev.item_swagger_sub', href: swaggerUrl() },
+    { key: 'support.dev.api', sub: 'support.dev.api_sub', href: 'https://developers.homebridge.io/#/' },
+    { key: 'support.dev.api_hap', sub: 'support.dev.api_hap_sub', href: 'https://developers.homebridge.io/HAP-NodeJS/' },
+    { key: 'support.dev.template', sub: 'support.dev.template_sub', href: 'https://github.com/homebridge/homebridge-plugin-template' },
+    { key: 'support.dev.verified', sub: 'support.dev.verified_sub', href: 'https://github.com/homebridge/homebridge/wiki/Verified-Plugins' },
+    { key: 'support.dev.unmaintained', sub: 'support.dev.unmaintained_sub', href: 'https://github.com/homebridge/plugins/wiki/Unmaintained-Plugins#%E2%80%8D%EF%B8%8F-want-to-help-maintain-a-plugin' },
   ]
 }
 
@@ -41,7 +43,7 @@ function LinkList({ id, links }: { id: string, links: SupportLink[] }) {
           <span className="pe-2">
             {t(link.key)}
             <br />
-            <small className="grey-text pe-2">{t(`${link.key}_sub`)}</small>
+            <small className="grey-text pe-2">{t(link.sub)}</small>
           </span>
           <a
             className="btn btn-primary waves-effect m-0 min-w-50"
