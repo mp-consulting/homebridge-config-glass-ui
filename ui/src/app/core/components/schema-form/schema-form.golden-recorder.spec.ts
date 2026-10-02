@@ -35,11 +35,12 @@ type Step
     | { op: 'select', index: number, value: string }
     | { op: 'radio', index: number }
     | { op: 'add', index: number }
-    // `list` and `item` say which array item the button removes: the array's
-    // position among the form's `.cdk-drop-list`s and the item's among that
-    // list's `.cdk-drag` children. A replayer clicks that item's button rather
-    // than the nth one: ng-formworks shows the remove button of an array's
-    // initial items only once the array changes, so the nth button differs.
+    // `list` and `item` say which array item the button removes. The item is
+    // the button's nearest `select-framework-widget`; `list` is the position of
+    // its parent among the parents of every such widget (DOM order, each once),
+    // `item` its position among that parent's widget children. A replayer clicks
+    // that item's button rather than the nth one: ng-formworks shows the remove
+    // button of an array's initial items only once the array changes.
     | { op: 'remove', index: number, list?: number, item?: number }
 
 interface Snapshot {
@@ -143,16 +144,21 @@ const selects = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLSele
 const addButtons = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLButtonElement>(ADD_SELECTOR))
 const removeButtons = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLButtonElement>(REMOVE_SELECTOR))
 
+/** The containers of the form's widgets: each `select-framework-widget`'s parent, in DOM order */
+function widgetContainers(root: HTMLElement): Element[] {
+  return [...new Set(Array.from(root.querySelectorAll('select-framework-widget'), widget => widget.parentElement!))]
+}
+
 /** Which array item a remove button belongs to (see the `remove` step) */
 function removeTarget(root: HTMLElement, button: HTMLButtonElement): { list?: number, item?: number } {
-  const item = button.closest('.cdk-drag')
+  const item = button.closest('select-framework-widget')
   const list = item?.parentElement
-  if (!item || !list?.classList.contains('cdk-drop-list')) {
+  if (!item || !list) {
     return {}
   }
   return {
-    list: Array.from(root.querySelectorAll('.cdk-drop-list')).indexOf(list),
-    item: Array.from(list.children).filter(child => child.classList.contains('cdk-drag')).indexOf(item),
+    list: widgetContainers(root).indexOf(list),
+    item: Array.from(list.children).filter(child => child.tagName === 'SELECT-FRAMEWORK-WIDGET').indexOf(item),
   }
 }
 

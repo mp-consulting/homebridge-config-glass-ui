@@ -151,11 +151,11 @@ const selects = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLSele
 const addButtons = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLButtonElement>(ADD_SELECTOR))
 const removeButtons = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLButtonElement>(REMOVE_SELECTOR))
 
-/** The remove button of item `item` in the form's `list`th array (the recorder's `removeTarget`) */
+/** The remove button of widget `item` in the form's `list`th widget container (the recorder's `removeTarget`) */
 function removeButtonOf(root: HTMLElement, list: number, item: number): HTMLButtonElement | undefined {
-  const items = Array.from(root.querySelectorAll('.cdk-drop-list')[list]?.children ?? [])
-    .filter(child => child.classList.contains('cdk-drag'))
-  return removeButtons(root).find(button => button.closest('.cdk-drag') === items[item])
+  const containers = [...new Set(Array.from(root.querySelectorAll('select-framework-widget'), widget => widget.parentElement!))]
+  const widget = Array.from(containers[list]?.children ?? []).filter(child => child.tagName === 'SELECT-FRAMEWORK-WIDGET')[item]
+  return removeButtons(root).find(button => button.closest('select-framework-widget') === widget)
 }
 
 function countControls(root: HTMLElement): Snapshot['controls'] {

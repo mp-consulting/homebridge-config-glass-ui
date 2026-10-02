@@ -48,7 +48,10 @@ Rules shared by recorder and replayer:
 - Step policy (recorder, deterministic, max 12 steps): type `"golden"` (or `7` for number) into the first
   text and first number control; toggle each checkbox once (first 4); select the second option of each
   select (first 2); click each add button once (first 3), then each remove button that appeared (first 3).
-- A `remove` step also records which array item it removed: `list` is the array's position among the
-  form's `.cdk-drop-list` elements and `item` the item's position among that list's `.cdk-drag`
-  children. Replay clicks that item's button. `index` alone is not enough: ng-formworks shows the
-  remove button of an array's initial items only once the array changes, so the nth button differs.
+- A `remove` step also records which array item it removed. The item is the button's nearest
+  `select-framework-widget`; `list` is the position of that widget's parent among the parents of every
+  `select-framework-widget` in the form (DOM order, each counted once), and `item` the widget's position
+  among that parent's `select-framework-widget` children. This covers list arrays (one `.cdk-drag` per
+  item) and tab arrays (one tab pane per item) alike. Replay clicks that item's button. `index` alone is
+  not enough: ng-formworks shows the remove button of an array's initial items only once the array
+  changes, so the nth button differs.
