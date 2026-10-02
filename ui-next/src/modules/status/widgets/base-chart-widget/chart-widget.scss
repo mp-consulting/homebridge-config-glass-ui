@@ -1,0 +1,7 @@
+// The chart sits behind the values (Angular: cpu/memory/network-widget.component.scss)
+.hb-chart-widget {
+  .widget-chart {
+    position: absolute;
+    z-index: -1;
+  }
+}

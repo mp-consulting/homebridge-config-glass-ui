@@ -1,4 +1,6 @@
-/** `status` placeholder until its phase ports the page. */
+import { Status } from './Status'
+
+/** `/` index (inside the `requireAuth` layout, owned by the router). */
 export function Component() {
-  return <div className="hb-placeholder" />
+  return <Status />
 }
