@@ -1,4 +1,6 @@
-/** `accessories` placeholder until its phase ports the page. */
+import { Accessories } from './Accessories'
+
+/** `/accessories` (guard: `requireAuth`, owned by the router). */
 export function Component() {
-  return <div className="hb-placeholder" />
+  return <Accessories />
 }

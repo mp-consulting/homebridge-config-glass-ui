@@ -1,0 +1,22 @@
+// Keyframe names are prefixed: Angular scoped them to the component
+.hb-leak-sensor {
+  &.accessory-on {
+    svg {
+      .red-outline {
+        stroke: #d32f2f;
+        animation: hb-leak-sensor-flash 1s infinite;
+      }
+
+      @keyframes hb-leak-sensor-flash {
+        0%,
+        100% {
+          stroke-opacity: 0.8;
+        }
+
+        50% {
+          stroke-opacity: 0.2;
+        }
+      }
+    }
+  }
+}

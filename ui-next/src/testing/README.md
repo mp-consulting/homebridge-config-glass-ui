@@ -22,4 +22,6 @@ Fakes and helpers for ui-next specs, ported from `ui/src/testing`. Import everyt
 - **`cacheStub()` / `cachedAccessoriesStub()` / `ttlCacheStub()`** stand in for the caches.
 - **`installBrowserStubs()` / `resetBrowserStubs()`** cover the browser APIs jsdom lacks or refuses to run: `matchMedia`, `location.reload`, `scrollTo`, `scrollIntoView`, canvas, `requestAnimationFrame`. `setup.ts` should call them, and the spies are exported (`locationReload`, `windowOpen`, …).
 
-The Angular fixtures (`makePlugin`, `hapService`, `makeWidget`) are not here yet. They will come with the interfaces of their phase.
+- **`hapService()` / `characteristic()` / `matterService()`** (`fixtures/accessory.fixture.ts`) build accessory services as the accessories page sees them; `matterService().writes` records every cluster write and `failWrites(cluster, error)` makes them reject.
+
+`makeWidget` comes with the dashboard interfaces (Phase 6).

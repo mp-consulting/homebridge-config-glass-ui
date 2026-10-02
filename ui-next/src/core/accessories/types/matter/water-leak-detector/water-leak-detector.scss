@@ -1,0 +1,19 @@
+.hb-matter-water-leak-detector.accessory-on {
+  svg {
+    .red-outline {
+      stroke: #d32f2f;
+      animation: hb-matter-water-leak-detector-flash 1s infinite;
+    }
+  }
+}
+
+@keyframes hb-matter-water-leak-detector-flash {
+  0%,
+  100% {
+    stroke-opacity: 0.8;
+  }
+
+  50% {
+    stroke-opacity: 0.2;
+  }
+}

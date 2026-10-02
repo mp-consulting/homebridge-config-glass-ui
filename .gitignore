@@ -90,3 +90,4 @@ ui-next/spikes/**/screenshots/
 e2e/.run/
 test-results/
 playwright-report/
+e2e/specs/__screenshots__/

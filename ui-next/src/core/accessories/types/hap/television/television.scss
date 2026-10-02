@@ -1,0 +1,25 @@
+// Keyframe names are prefixed: Angular scoped them to the component
+.hb-television {
+  &.accessory-on {
+    svg {
+      .screen {
+        animation: hb-television-color-change 3s infinite alternate; // Apply color animation
+      }
+
+      .stand {
+        stroke: #7f7f7f;
+        stroke-opacity: 1;
+      }
+    }
+  }
+
+  @keyframes hb-television-color-change {
+    0% {
+      fill: #4fc3f7; // Light blue
+    }
+
+    100% {
+      fill: #0288d1; // Dark blue
+    }
+  }
+}

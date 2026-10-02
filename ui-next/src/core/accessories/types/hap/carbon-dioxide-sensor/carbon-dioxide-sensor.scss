@@ -1,0 +1,27 @@
+// Keyframe names are prefixed: Angular scoped them to the component
+.hb-carbon-dioxide-sensor {
+  &.accessory-on {
+    svg {
+      .air-line {
+        stroke: #d32f2f;
+        animation: hb-carbon-dioxide-sensor-flash 1s infinite;
+      }
+
+      .type {
+        fill: #d32f2f;
+        animation: hb-carbon-dioxide-sensor-flash 1s infinite;
+      }
+
+      @keyframes hb-carbon-dioxide-sensor-flash {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.2;
+        }
+      }
+    }
+  }
+}
