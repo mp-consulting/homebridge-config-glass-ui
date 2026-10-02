@@ -14,6 +14,7 @@ import { Injectable } from '@nestjs/common'
 import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
 import { satisfies } from 'semver'
 
+import { revalidateWsClients } from '../auth/guards/ws-auth.js'
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
 
 @Injectable()
@@ -149,7 +150,13 @@ export class ConfigService {
 
     // Off by default: the log has always been readable by any signed-in user,
     // and turning that off for everyone on upgrade would be a surprise.
+    const logsWereRestricted = this.restrictLogsToAdmins
     this.restrictLogsToAdmins = Boolean(this.ui.restrictLogsToAdmins)
+    // Restricting the log takes it away from non-admins already tailing it,
+    // not only from those who open it next (once this parse has finished)
+    if (this.restrictLogsToAdmins && !logsWereRestricted) {
+      queueMicrotask(() => void revalidateWsClients())
+    }
 
     this.secrets = this.getSecrets()
     this.instanceId = this.getInstanceId()
@@ -167,22 +174,16 @@ export class ConfigService {
 
   public uiSettings(authorized: boolean = false) {
     const toReturn = {
+      // Only what the login and setup pages need before anyone has signed in
+      // (instance check, title, wallpaper, language, wizard state). Versions,
+      // platform, port and paths help an attacker fingerprint the host and are
+      // sent to authorised requests only, below.
       env: {
-        canShutdownRestartHost: this.canShutdownRestartHost,
         customWallpaperHash: this.customWallpaperHash,
-        dockerOfflineUpdate: this.dockerOfflineUpdate,
-        featureFlags: this.getFeatureFlags(),
-        homebridgeVersion: this.homebridgeVersion || null,
         homebridgeInstanceName: this.homebridgeConfig.bridge.name,
         instanceId: this.instanceId,
         lang: this.ui.lang === 'auto' ? null : this.ui.lang,
-        packageName: this.package.name,
-        packageVersion: this.package.version,
-        platform: platform(),
-        port: this.ui.port,
         setupWizardComplete: this.setupWizardComplete,
-        scheduledBackupDisable: Boolean(this.ui.scheduledBackupDisable),
-        scheduledBackupPath: this.ui.scheduledBackupPath || this.instanceBackupPath,
         // Deliberately in the unauthenticated block: a per-instance display
         // preference (not personal data) that plugins may read without a
         // session to match the UI's temperature unit
@@ -206,6 +207,18 @@ export class ConfigService {
       ...toReturn,
       env: {
         ...toReturn.env,
+        canShutdownRestartHost: this.canShutdownRestartHost,
+        dockerOfflineUpdate: this.dockerOfflineUpdate,
+        featureFlags: this.getFeatureFlags(),
+        homebridgeVersion: this.homebridgeVersion || null,
+        packageName: this.package.name,
+        packageVersion: this.package.version,
+        platform: platform(),
+        port: this.ui.port,
+        scheduledBackupDisable: Boolean(this.ui.scheduledBackupDisable),
+        scheduledBackupPath: this.ui.scheduledBackupPath || this.instanceBackupPath,
+        // /swagger is only mounted in development (see main.ts)
+        swaggerEnabled: process.env.UIX_DEVELOPMENT === '1',
         disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
         enableAccessories: this.homebridgeInsecureMode,
         enableTerminalAccess: this.enableTerminalAccess,

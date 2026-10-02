@@ -1,11 +1,11 @@
 import { fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { settingsActions } from '@/core/settings'
+import { settingsActions, useSettingsStore } from '@/core/settings'
 import { environment } from '@/environments/environment'
 import { Support } from '@/modules/support/Support'
 import { swaggerUrl } from '@/modules/support/swagger-url'
-import { renderWithProviders } from '@/testing'
+import { makeSettingsState, renderWithProviders } from '@/testing'
 
 /**
  * The support page. Mostly a list of links out to documentation, Discord and
@@ -147,8 +147,19 @@ describe('the support page', () => {
 
     it('points at the backend when running the dev server', () => {
       // The dev server serves the UI on another port, so a relative path 404s
+      useSettingsStore.setState(makeSettingsState({ env: { swaggerEnabled: true } as never }))
       expect(swaggerUrl()).toBe(`${environment.api.origin}/swagger`)
       expect(createPage().container.querySelector('#fieldsDev a')?.getAttribute('href')).toBe(`${environment.api.origin}/swagger`)
+    })
+
+    it('is not offered when the server does not serve the docs', () => {
+      // Production servers do not mount /swagger: unauthenticated api docs
+      // map the whole api for anyone who can reach the port
+      useSettingsStore.setState(makeSettingsState({ env: { swaggerEnabled: false } as never }))
+      const hrefs = [...createPage().container.querySelectorAll('#fieldsDev a')].map(a => a.getAttribute('href'))
+
+      expect(hrefs.some(href => href?.endsWith('/swagger'))).toBe(false)
+      expect(hrefs.length).toBeGreaterThan(0)
     })
   })
 })

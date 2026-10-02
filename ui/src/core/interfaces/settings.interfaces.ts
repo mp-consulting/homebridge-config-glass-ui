@@ -44,6 +44,8 @@ export interface EnvInterface {
   recommendChildBridges: boolean
   scheduledBackupDisable: boolean
   scheduledBackupPath: string
+  /** Whether the server mounts the api docs at /swagger (development only) */
+  swaggerEnabled?: boolean
   log?: {
     maxSize?: number
     truncateSize?: number

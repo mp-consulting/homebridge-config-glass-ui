@@ -4,7 +4,7 @@ import { WsException } from '@nestjs/websockets'
 
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
-import { rememberWsUser, verifyWsClient } from './ws-auth.js'
+import { authorizeWsGuardClient } from './ws-auth.js'
 
 /**
  * Guards the log stream.
@@ -33,8 +33,7 @@ export class WsLogGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const payload = await verifyWsClient(client, this.configService, this.authService)
-      rememberWsUser(client, payload, () => verifyWsClient(client, this.configService, this.authService, { ignoreExpiration: true }))
+      const payload = await authorizeWsGuardClient(client, this.configService, this.authService, { admin: () => this.configService.restrictLogsToAdmins })
 
       return this.configService.restrictLogsToAdmins ? Boolean(payload.admin) : true
     } catch (e) {

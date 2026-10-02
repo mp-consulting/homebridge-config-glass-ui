@@ -107,6 +107,29 @@ describe('settings store', () => {
       expect(loaded).toHaveBeenCalledTimes(1)
     })
 
+    it('loads the reduced pre-login settings, then the full set once signed in', async () => {
+      // What GET /auth/settings answers before anyone has signed in
+      resetSettingsStore()
+      api = fakeApi().respond('get', '/auth/settings', {
+        ...appSettings(),
+        env: { homebridgeInstanceName: 'Front Room', instanceId: 'abc', lang: 'en', setupWizardComplete: true },
+      })
+
+      await settingsActions.getAppSettings()
+
+      expect(state().settingsLoaded).toBe(true)
+      expect(state().env.instanceId).toBe('abc')
+      expect(state().env).not.toHaveProperty('packageVersion')
+      expect(state().uiVersion).toBeUndefined()
+
+      // The authorised fetch after sign-in fills in the rest
+      api.respond('get', '/auth/settings', appSettings({ env: { packageVersion: '5.28.1', port: 8581 } }))
+      await settingsActions.getAppSettings()
+
+      expect(state().uiVersion).toBe('5.28.1')
+      expect(state().env.port).toBe(8581)
+    })
+
     it('applies the language the server has', async () => {
       create({ env: { lang: 'de' } })
 
@@ -546,6 +569,38 @@ describe('settings store', () => {
 
       expect(options.theme).toMatchObject({ background: '#00000000', foreground: '#2b2b2b' })
       expect(options.allowTransparency).toBe(true)
+    })
+
+    it('uses ANSI red and yellow that pass WCAG AA (4.5:1) in a light terminal', () => {
+      useSettingsStore.setState({ actualLightingMode: 'light', env: { terminal: { lightingMode: 'light' } } as any })
+      const luminance = (hex: string) => {
+        const [r, g, b] = [1, 3, 5].map((i) => {
+          const c = Number.parseInt(hex.slice(i, i + 2), 16) / 255
+          return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+        })
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+      }
+      const contrast = (a: string, b: string) => {
+        const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+        return (hi + 0.05) / (lo + 0.05)
+      }
+      // xterm's own red fails on the light pane, which is what this guards against
+      expect(contrast('#cd3131', '#e0e0e0')).toBeLessThan(4.6)
+
+      const { theme } = settingsActions.getTerminalOptions()
+
+      for (const key of ['red', 'brightRed', 'yellow', 'brightYellow'] as const) {
+        expect(theme?.[key]).toMatch(/^#[0-9a-f]{6}$/)
+        // the light terminal sits on white (.terminal-light-bg), or a light grey glass pane
+        expect(contrast(theme![key]!, '#ffffff')).toBeGreaterThanOrEqual(4.5)
+        expect(contrast(theme![key]!, '#e0e0e0')).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+
+    it('keeps xterm\'s own palette in a dark terminal', () => {
+      useSettingsStore.setState({ glassMode: false })
+
+      expect(settingsActions.getTerminalOptions().theme).not.toHaveProperty('red')
     })
 
     it('applies the default font settings', () => {

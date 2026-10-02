@@ -965,6 +965,21 @@ describe('the custom plugin ui', () => {
       expect(api.callsTo('post', /session\/revoke$/)).toHaveLength(1)
     })
 
+    it('revokes this plugin\'s asset session with credentials when destroyed', async () => {
+      // Destroy (unmount) is the one path every close shares - the cookie-backed asset session
+      // must not outlive the modal
+      await open()
+      await ready()
+      expect(api.callsTo('post', /session\/revoke$/)).toHaveLength(0)
+
+      view.unmount()
+      await settle()
+
+      const revoke = api.lastCall('post', /session\/revoke$/)
+      expect(revoke?.url).toBe('/plugins/settings-ui/homebridge-example/session/revoke')
+      expect(revoke?.options).toEqual({ withCredentials: true })
+    })
+
     it('closes anyway when the session cannot be revoked', async () => {
       await open({ arrange: () => api.fail('post', /session\/revoke$/, new Error('server gone')) })
       await ready()

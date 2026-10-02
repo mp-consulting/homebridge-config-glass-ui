@@ -113,7 +113,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       HOMEBRIDGE_KEEP_ORPHANS: true,
       HOMEBRIDGE_INSECURE: false,
       ENV_DEBUG: '*',
-      ENV_NODE_OPTIONS: '--inspect',
+      ENV_NODE_OPTIONS: '--max-old-space-size=512',
     }
 
     const res = await app.inject({
@@ -132,7 +132,7 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(envFile.keepOrphans).toBe(true)
     expect(envFile.insecureMode).toBe(false)
     expect(envFile.env.DEBUG).toBe('*')
-    expect(envFile.env.NODE_OPTIONS).toBe('--inspect')
+    expect(envFile.env.NODE_OPTIONS).toBe('--max-old-space-size=512')
 
     // The restart flag should be set
     expect(configService.hbServiceUiRestartRequired).toBe(true)

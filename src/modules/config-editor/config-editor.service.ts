@@ -18,11 +18,12 @@ import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { MatterConfig } from '../../core/matter/matter.interfaces.js'
-import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_SAFE_RESTART_CMD, RE_USERNAME } from '../../core/regex.constants.js'
+import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { BackupService } from '../backup/backup.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
+import { findUnsafeUiValues, RESTART_COMMAND_RULE } from './config-safety.js'
 
 export interface ConfigEditorRestartInfo<T> {
   config: T
@@ -116,7 +117,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   /**
    * Throw a BadRequestException if a *new* value for `ui.restart`,
    * `ui.linux.restart`, or `ui.linux.shutdown` doesn't match the
-   * allowlist regex. Pre-existing values from earlier installs are
+   * allowlist regex, or a new `ui.log.command` / `ui.log.path` fails the
+   * checks in `config-safety.ts` (the log command needs terminal access or
+   * the log-command allowlist). Pre-existing values from earlier installs are
    * grandfathered — comparing the incoming value to the in-memory
    * `configService.ui` snapshot lets users with custom legacy commands
    * keep saving unrelated config changes, while still blocking any
@@ -124,26 +127,17 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * settings UI or the full-config JSON editor.
    */
   private assertRestartCommandsSafe(config: HomebridgeConfig): void {
-    const newUi = config.platforms?.find(p => p?.platform === 'config') as any
-    if (!newUi) {
-      return
-    }
-    const oldUi = this.configService.ui as any
-    const checks: Array<{ path: string, newValue: unknown, oldValue: unknown }> = [
-      { path: 'restart', newValue: newUi.restart, oldValue: oldUi?.restart },
-      { path: 'linux.restart', newValue: newUi.linux?.restart, oldValue: oldUi?.linux?.restart },
-      { path: 'linux.shutdown', newValue: newUi.linux?.shutdown, oldValue: oldUi?.linux?.shutdown },
-    ]
-    for (const { path, newValue, oldValue } of checks) {
-      if (newValue === oldValue) {
-        continue
+    const newUi = config.platforms?.find(p => p?.platform === 'config')
+    const unsafe = findUnsafeUiValues(newUi, this.configService.ui, {
+      terminalEnabled: this.configService.enableTerminalAccess,
+    })
+    if (unsafe.length) {
+      const { path, reason } = unsafe[0]
+      this.logger.warn(`Refused to save config.json: "${path}" is not allowed.`)
+      if (path.endsWith('restart') || path.endsWith('shutdown')) {
+        throw new BadRequestException(`Refusing to save unsafe restart/shutdown command for "${path}". ${RESTART_COMMAND_RULE}`)
       }
-      if (newValue === undefined || newValue === null || newValue === '') {
-        continue
-      }
-      if (typeof newValue !== 'string' || !RE_SAFE_RESTART_CMD.test(newValue)) {
-        throw new BadRequestException(`Refusing to save unsafe restart/shutdown command for "${path}". The command must use systemctl, service, shutdown, reboot, poweroff, halt, or init, optionally prefixed with sudo, and may not contain shell metacharacters.`)
-      }
+      throw new BadRequestException(`Refusing to save "${path}". ${reason}`)
     }
   }
 

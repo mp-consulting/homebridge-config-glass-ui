@@ -9,6 +9,7 @@ import { pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
 import { RE_ANSI_COLOUR } from '../../../core/regex.constants.js'
+import { findUnsafeNodeOption, NODE_OPTIONS_RULE } from '../../config-editor/config-safety.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 
 @Injectable()
@@ -51,6 +52,14 @@ export class HbServiceService {
    * Sets the Homebridge startup settings
    */
   async setHomebridgeStartupSettings(data: HbServiceStartupSettings) {
+    // NODE_OPTIONS reaches the Homebridge process: refuse flags that load
+    // code or open a debugger (hb-service drops them again at start-up)
+    const unsafeNodeOption = findUnsafeNodeOption(data.ENV_NODE_OPTIONS)
+    if (unsafeNodeOption) {
+      this.logger.warn(`Refused to save the Homebridge startup settings: NODE_OPTIONS flag "${unsafeNodeOption}" is not allowed.`)
+      throw new BadRequestException(`Refusing to save NODE_OPTIONS: "${unsafeNodeOption}" is not allowed. ${NODE_OPTIONS_RULE}`)
+    }
+
     // Restart ui on next restart
     this.configService.hbServiceUiRestartRequired = true
 

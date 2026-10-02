@@ -142,6 +142,13 @@ const TERMINAL_COLORS = {
     FOREGROUND: '#2b2b2b',
     CURSOR: '#d2d2d2',
     SELECTION: '#d2d2d2',
+    // xterm's ANSI red / yellow are made for a black background (yellow is
+    // ~1.3:1 on white). These keep >= 4.5:1 (WCAG AA) on the white light
+    // terminal, with margin for a light grey glass pane (#e0e0e0) behind it.
+    RED: '#a40000',
+    BRIGHT_RED: '#b80000',
+    YELLOW: '#664d00',
+    BRIGHT_YELLOW: '#755800',
   },
 } as const
 
@@ -259,7 +266,12 @@ export const settingsActions = {
     settingsActions.setKeepOrphans(data.keepOrphans)
     setTitle(data.env.homebridgeInstanceName)
     checkServerTime(data.serverTimestamp)
-    settingsActions.setUiVersion(data.env.packageVersion)
+    // Versions, platform, port and paths are only sent once signed in (the
+    // pre-login answer carries what the login and setup pages need), so the
+    // version is taken from the authorised fetch that follows sign-in
+    if (data.env.packageVersion) {
+      settingsActions.setUiVersion(data.env.packageVersion)
+    }
     settingsActions.setLang(data.env.lang!)
     set({ settingsLoaded: true, browserLang: browserCultureLang()! })
     loadedResolve()
@@ -544,6 +556,10 @@ export const settingsActions = {
           foreground: TERMINAL_COLORS.LIGHT.FOREGROUND,
           cursor: TERMINAL_COLORS.LIGHT.CURSOR,
           selectionBackground: TERMINAL_COLORS.LIGHT.SELECTION,
+          red: TERMINAL_COLORS.LIGHT.RED,
+          brightRed: TERMINAL_COLORS.LIGHT.BRIGHT_RED,
+          yellow: TERMINAL_COLORS.LIGHT.YELLOW,
+          brightYellow: TERMINAL_COLORS.LIGHT.BRIGHT_YELLOW,
         },
         allowTransparency: true,
       }

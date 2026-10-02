@@ -23,6 +23,7 @@ import { UserDto } from '../../modules/users/users.dto.js'
 import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
+import { revalidateWsClients } from './guards/ws-auth.js'
 
 // OWASP-recommended PBKDF2-HMAC-SHA512 work factor. New and changed passwords
 // are hashed at this strength.
@@ -732,6 +733,11 @@ export class AuthService {
     // that has to drop the token-validation cache. Without it a deletion or
     // demotion would not take effect until the cache expired.
     this.invalidateUserCache()
+    // ...and the one place to cut off open sockets whose user this write
+    // deleted, demoted or revoked. Guards only run when a socket sends a
+    // message, so server-pushed streams (terminal output, the log tail) would
+    // otherwise keep flowing to a revoked user.
+    void revalidateWsClients()
     return result as R
   }
 

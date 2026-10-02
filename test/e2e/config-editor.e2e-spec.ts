@@ -97,8 +97,9 @@ describe('ConfigEditorController (e2e)', () => {
     // global paths would spawn `npm -g prefix`
     ;(app.get(PluginsService, { strict: false }) as any)._paths = [pluginsPath]
 
-    // Wait for initial paths to be setup
-    await new Promise(res => setTimeout(res, 1000))
+    // app.init() already ran onApplicationBootstrap (the backup migration);
+    // this resolves once that start-up work is done
+    await (configEditorService as any).ready
   })
 
   beforeEach(async () => {
@@ -1123,10 +1124,8 @@ describe('ConfigEditorController (e2e)', () => {
       },
     })
 
-    // There is a race condition here whereby we might read the backup file
-    // Path before the deletion has actually happened, causing the test to fail,
-    // So I have added a 1-second delay.
-    await new Promise(r => setTimeout(r, 1000))
+    // The controller returns the deletion promise, so the files are gone by
+    // the time the response arrives
 
     const backups = await readdir(backupFilePath)
     const newBackupCount = backups.length
@@ -1248,6 +1247,96 @@ describe('ConfigEditorController (e2e)', () => {
       } finally {
         spy.mockRestore()
       }
+    })
+  })
+
+  describe('command-like ui values (log command / log path)', () => {
+    let originalTerminal: boolean
+
+    beforeAll(() => {
+      originalTerminal = homebridgeConfigService.enableTerminalAccess
+    })
+
+    afterAll(() => {
+      homebridgeConfigService.enableTerminalAccess = originalTerminal
+    })
+
+    beforeEach(() => {
+      homebridgeConfigService.enableTerminalAccess = false
+    })
+
+    it('PATCH refuses a custom log command that is not on the allowlist when the terminal is disabled', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { 'log.method': 'custom', 'log.command': 'bash -c id' },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('log.command')
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.log?.command).toBeUndefined()
+    })
+
+    it('PATCH accepts an allowlisted log command with the terminal disabled', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { 'log.method': 'custom', 'log.command': 'sudo -n tail -n 100 -f /var/log/homebridge.log' },
+      })
+
+      expect(res.statusCode).toBe(200)
+    })
+
+    it('PATCH accepts any log command when terminal access is enabled', async () => {
+      homebridgeConfigService.enableTerminalAccess = true
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { 'log.method': 'custom', 'log.command': 'my-log-viewer --follow' },
+      })
+
+      expect(res.statusCode).toBe(200)
+    })
+
+    it('POST /config-editor (full save) refuses an unsafe log command and a log path with control characters', async () => {
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.log = { method: 'custom', command: 'node -e process.exit()' }
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('log.command')
+
+      uiBlock.log = { method: 'file', path: 'C:\\homebridge.log\n; calc' }
+      const res2 = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res2.statusCode).toBe(400)
+      expect(res2.body).toContain('log.path')
+    })
+
+    it('PUT /config-editor/ui refuses an unsafe linux.shutdown command', async () => {
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { key: 'linux.shutdown', value: 'shutdown -h now && curl evil' },
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('linux.shutdown')
     })
   })
 

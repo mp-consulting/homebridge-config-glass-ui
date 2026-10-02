@@ -4,7 +4,7 @@ import { WsException } from '@nestjs/websockets'
 
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
-import { rememberWsUser, verifyWsClient } from './ws-auth.js'
+import { authorizeWsGuardClient } from './ws-auth.js'
 
 @Injectable()
 export class WsGuard implements CanActivate {
@@ -32,8 +32,7 @@ export class WsGuard implements CanActivate {
     const client = context.switchToWs().getClient()
     try {
       // A deleted or demoted user's token stops working on sockets as well as on HTTP
-      const payload = await verifyWsClient(client, this.configService, this.authService)
-      rememberWsUser(client, payload, () => verifyWsClient(client, this.configService, this.authService, { ignoreExpiration: true }))
+      await authorizeWsGuardClient(client, this.configService, this.authService)
       return true
     } catch (e) {
       client.disconnect()

@@ -272,7 +272,8 @@ describe('ServerController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()._setupCode).toBeDefined()
+    // pincode 874-99-441, category 2 (bridge), setupID 1FAP from the mock AccessoryInfo
+    expect(res.json()._setupCode).toBe('X-HM://0024X0Z3L1FAP')
     expect(res.json()._isPaired).toBe(false)
     expect(res.json()._username).toBe('67:E4:1F:0E:A0:5D')
   })
@@ -331,12 +332,13 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     const external = res.json().find((d: any) => d._id === externalDeviceId)
-    expect(external).toBeDefined()
+    expect(external).toMatchObject({ _id: externalDeviceId, _username: externalUsername })
     expect(external._plugin).toBe('homebridge-camera-ffmpeg')
     expect(external._isExternal).toBe(true)
     expect(external._port).toBe(externalPort)
     expect(external._couldBeStale).toBe(false)
-    expect(external._setupCode).toBeDefined()
+    // pincode 874-99-441, category 17 (camera), setupID ABCD
+    expect(external._setupCode).toBe('X-HM://00GXNDDWXABCD')
   })
 
   it('exposes Matter commissioning QR data on Matter externals', async () => {
@@ -353,7 +355,7 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     const matterExternal = res.json().find((d: any) => d._matterOnly === true)
-    expect(matterExternal).toBeDefined()
+    expect(matterExternal).toMatchObject({ _matterOnly: true })
     expect(matterExternal._isExternal).toBe(true)
     expect(matterExternal._setupCode).toBe('MT:Y.K90-C80B00000000')
     expect(matterExternal.pincode).toBe('8765-432-1098')
@@ -705,9 +707,8 @@ describe('ServerController (e2e)', () => {
       payload,
     })
 
+    // the upload is saved before the response is sent
     expect(res.statusCode).toBe(201)
-
-    await new Promise(r => setTimeout(r, 100))
 
     // Two things to ensure:
     // 1. The wallpaper was saved to the correct location
@@ -734,9 +735,8 @@ describe('ServerController (e2e)', () => {
       payload,
     })
 
+    // the upload is saved before the response is sent
     expect(res.statusCode).toBe(201)
-
-    await new Promise(r => setTimeout(r, 100))
 
     // Now delete the wallpaper
     const deleteRes = await app.inject({
@@ -1145,7 +1145,7 @@ describe('ServerController (e2e)', () => {
   it('DELETE /server/cached-accessories (bulk - rejects unsafe cacheFile)', async () => {
     const authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
     const authBefore = await readJson(authFilePath)
-    expect(authBefore).toBeDefined()
+    expect(authBefore).toStrictEqual(expect.arrayContaining([expect.objectContaining({ username: 'admin' })]))
 
     for (const cacheFile of ['../../auth.json', 'auth.json', 'cachedAccessories.NOTHEX']) {
       const res = await app.inject({
@@ -1382,8 +1382,11 @@ describe('ServerController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().type).toBe('generated')
     expect(res.json().mode).toBe('keycert')
-    expect(res.json().keyPath).toBeDefined()
-    expect(res.json().certPath).toBeDefined()
+    const sslDir = resolve(configService.storagePath, 'ssl-certs')
+    expect(res.json().keyPath).toBe(resolve(sslDir, 'private-key.pem'))
+    expect(res.json().certPath).toBe(resolve(sslDir, 'certificate.pem'))
+    expect(await pathExists(res.json().keyPath)).toBe(true)
+    expect(await pathExists(res.json().certPath)).toBe(true)
   })
 
   it('POST /server/ssl/selfsigned/generate (selfsigned mode)', async () => {

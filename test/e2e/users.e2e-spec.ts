@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from '../../src/modules/users/users.dto.js'
 
+import { EventEmitter } from 'node:events'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -11,8 +12,11 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, readJson, writeJson } from 'fs-extra'
 import { generate } from 'otplib'
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuthService } from '../../src/core/auth/auth.service.js'
+import { authorizeWsGuardClient } from '../../src/core/auth/guards/ws-auth.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 import { UsersModule } from '../../src/modules/users/users.module.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -509,5 +513,72 @@ describe('UsersController (e2e)', () => {
 
   afterAll(async () => {
     await app.close()
+  })
+
+  describe('open sockets of a changed user', () => {
+    const sockets: EventEmitter[] = []
+
+    async function openSocket(token: string) {
+      const client = Object.assign(new EventEmitter(), {
+        handshake: { auth: { token } },
+        data: {} as any,
+        disconnect: vi.fn(),
+      })
+      sockets.push(client)
+      await authorizeWsGuardClient(client, app.get(ConfigService), app.get(AuthService))
+      return client
+    }
+
+    async function createUser(admin: boolean) {
+      const user: UserDto = (await app.inject({
+        method: 'POST',
+        path: '/users',
+        headers: { authorization },
+        payload: { name: 'Tester', username: 'test', password: 'test', admin },
+      })).json()
+      const token = (await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'test', password: 'test' },
+      })).json().access_token
+      return { user, socket: await openSocket(token) }
+    }
+
+    afterEach(() => {
+      for (const client of sockets.splice(0)) {
+        client.emit('disconnect')
+      }
+    })
+
+    it('disconnects a deleted user\'s socket straight away', async () => {
+      const { user, socket } = await createUser(false)
+      const admin = await openSocket(authorization.split(' ')[1])
+
+      await app.inject({ method: 'DELETE', path: `/users/${user.id}`, headers: { authorization } })
+
+      await vi.waitFor(() => expect(socket.disconnect).toHaveBeenCalledWith(true))
+      expect(admin.disconnect).not.toHaveBeenCalled()
+    })
+
+    it('disconnects a demoted administrator\'s socket straight away', async () => {
+      const { user, socket } = await createUser(true)
+
+      await app.inject({ method: 'PATCH', path: `/users/${user.id}`, headers: { authorization }, payload: { name: user.name, username: user.username, admin: false } })
+
+      await vi.waitFor(() => expect(socket.disconnect).toHaveBeenCalledWith(true))
+    })
+
+    it('disconnects the sockets opened with the old password', async () => {
+      const socket = await openSocket(authorization.split(' ')[1])
+
+      await app.inject({
+        method: 'POST',
+        path: '/users/change-password',
+        headers: { authorization },
+        payload: { currentPassword: 'admin', newPassword: 'newpassword' },
+      })
+
+      await vi.waitFor(() => expect(socket.disconnect).toHaveBeenCalledWith(true))
+    })
   })
 })

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { settingsActions } from '@/core/settings'
+import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 
 import { swaggerUrl } from './swagger-url'
@@ -21,9 +21,13 @@ const generalLinks: SupportLink[] = [
   { key: 'support.links.reddit', sub: 'support.links.reddit_sub', href: 'https://www.reddit.com/r/homebridge/' },
 ]
 
-function devLinks(): SupportLink[] {
+/**
+ * @param swaggerEnabled - whether the server serves /swagger. It only does in
+ * development: unauthenticated api docs map the whole api for anyone.
+ */
+function devLinks(swaggerEnabled: boolean): SupportLink[] {
   return [
-    { key: 'support.dev.item_swagger', sub: 'support.dev.item_swagger_sub', href: swaggerUrl() },
+    ...(swaggerEnabled ? [{ key: 'support.dev.item_swagger', sub: 'support.dev.item_swagger_sub', href: swaggerUrl() }] : []),
     { key: 'support.dev.api', sub: 'support.dev.api_sub', href: 'https://developers.homebridge.io/#/' },
     { key: 'support.dev.api_hap', sub: 'support.dev.api_hap_sub', href: 'https://developers.homebridge.io/HAP-NodeJS/' },
     { key: 'support.dev.template', sub: 'support.dev.template_sub', href: 'https://github.com/homebridge/homebridge-plugin-template' },
@@ -82,6 +86,7 @@ function DisclosureToggle({ open, controls, label, onToggle }: { open: boolean, 
 export function Support() {
   const { t } = useTranslation()
   const [showFields, setShowFields] = useState<Record<Section, boolean>>({ general: true, dev: true })
+  const swaggerEnabled = useSettingsStore(s => s.env.swaggerEnabled === true)
 
   useEffect(() => {
     // Set page title
@@ -104,7 +109,7 @@ export function Support() {
       </div>
       <div className="pb-3">
         <DisclosureToggle open={showFields.dev} controls="fieldsDev" label={t('support.dev.title')} onToggle={() => toggleSection('dev')} />
-        {showFields.dev && <LinkList id="fieldsDev" links={devLinks()} />}
+        {showFields.dev && <LinkList id="fieldsDev" links={devLinks(swaggerEnabled)} />}
       </div>
     </>
   )

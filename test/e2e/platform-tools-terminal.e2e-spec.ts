@@ -112,17 +112,13 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session', async () => {
     terminalGateway.startTerminalSession(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(nodePtyService.spawn).toHaveBeenCalled()
+    await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
   })
 
   it('ON /platform-tools/terminal/start-session (cleanup)', async () => {
     terminalGateway.startTerminalSession(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(nodePtyService.spawn).toHaveBeenCalled()
+    await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
 
     // check initial listeners
     expect(client.listenerCount('stdin')).toBe(1)
@@ -147,9 +143,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (stdin)', async () => {
     terminalGateway.startTerminalSession(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(nodePtyService.spawn).toHaveBeenCalled()
+    await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
 
     // Send stdin
     client.emit('stdin', 'help')
@@ -159,9 +153,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (resize)', async () => {
     terminalGateway.startTerminalSession(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(nodePtyService.spawn).toHaveBeenCalled()
+    await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
 
     // Send stdin
     client.emit('resize', { cols: 20, rows: 25 })
@@ -171,9 +163,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
   it('ON /platform-tools/terminal/start-session (resize failure is tolerated)', async () => {
     terminalGateway.startTerminalSession(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(nodePtyService.spawn).toHaveBeenCalled()
+    await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
 
     // A resize on a terminal that has already exited must not crash the session
     vi.mocked(mockTerm.resize).mockImplementationOnce(() => {
@@ -278,9 +268,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
       terminalGateway.startTerminalSession(client, size)
 
-      await new Promise(res => setTimeout(res, 100))
-
-      expect(nodePtyService.spawn).toHaveBeenCalled()
+      await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
       expect(terminalService.hasPersistentSession()).toBe(true)
     })
 
@@ -291,7 +279,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
       terminalGateway.startTerminalSession(client, size)
 
-      await new Promise(res => setTimeout(res, 100))
+      await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
 
       // Disconnect client
       client.emit('disconnect')
@@ -308,9 +296,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
       terminalGateway.startTerminalSession(client, size)
 
-      await new Promise(res => setTimeout(res, 100))
-
-      expect(terminalService.hasPersistentSession()).toBe(true)
+      await vi.waitFor(() => expect(terminalService.hasPersistentSession()).toBe(true))
 
       terminalService.destroyPersistentSession()
 
@@ -348,15 +334,14 @@ describe('PlatformToolsTerminal (e2e)', () => {
         .mockReturnValueOnce(newShell.term)
 
       terminalGateway.startTerminalSession(client, size)
-      await new Promise(res => setTimeout(res, 100))
+      await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalledTimes(1))
 
       terminalService.destroyPersistentSession()
 
       const nextClient = authorizeWsClient(new MockWsEventEmitter())
       vi.spyOn(nextClient, 'emit')
       terminalGateway.startTerminalSession(nextClient, size)
-      await new Promise(res => setTimeout(res, 100))
-      expect(nodePtyService.spawn).toHaveBeenCalledTimes(2)
+      await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalledTimes(2))
 
       // the killed shell exits (and flushes some output) only now
       oldShell.handlers.data?.('stale output')
@@ -368,8 +353,69 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
       // and the new shell still reaches its client
       nextClient.emit('stdin', 'ls')
-      await new Promise(res => setTimeout(res, 50))
-      expect(newShell.term.write).toHaveBeenCalledWith('ls')
+      await vi.waitFor(() => expect(newShell.term.write).toHaveBeenCalledWith('ls'))
+    })
+  })
+
+  describe('re-checking the user before sending output', () => {
+    afterEach(() => {
+      terminalService.destroyPersistentSession()
+    })
+
+    function shell() {
+      const handlers: { data?: (d: string) => void } = {}
+      const term = {
+        onData: vi.fn((cb) => {
+          handlers.data = cb
+        }),
+        onExit: vi.fn(),
+        kill: vi.fn(),
+        write: vi.fn(),
+        resize: vi.fn(),
+      } as unknown as IPty
+      return { term, handlers }
+    }
+
+    it('stops a revoked viewer of the shared shell, and only that viewer', async () => {
+      configService.ui.terminal = { persistence: true, bufferSize: 10000 }
+      const { term, handlers } = shell()
+      vi.mocked(nodePtyService.spawn).mockReset()
+      vi.mocked(nodePtyService.spawn).mockReturnValue(term)
+
+      const revoked = authorizeWsClient(new MockWsEventEmitter())
+      vi.spyOn(revoked, 'emit')
+      terminalGateway.startTerminalSession(client, size)
+      await vi.waitFor(() => expect(terminalService.hasPersistentSession()).toBe(true))
+      terminalGateway.startTerminalSession(revoked, size)
+      await vi.waitFor(() => expect(revoked.listenerCount('stdin')).toBe(1))
+
+      // The admin is demoted (or deleted) while the socket stays open
+      revoked.data.verifiedAt = 0
+      revoked.data.revalidateUser.mockRejectedValue(new Error('User no longer valid'))
+      handlers.data?.('secret output')
+
+      await vi.waitFor(() => expect(revoked.disconnect).toHaveBeenCalledWith(true))
+      expect(revoked.emit).not.toHaveBeenCalledWith('stdout', 'secret output')
+      expect(client.emit).toHaveBeenCalledWith('stdout', 'secret output')
+    })
+
+    it('stops output of a private shell once its user is revoked', async () => {
+      configService.ui.terminal = { persistence: false }
+      const { term, handlers } = shell()
+      vi.mocked(nodePtyService.spawn).mockReset()
+      vi.mocked(nodePtyService.spawn).mockReturnValue(term)
+
+      terminalGateway.startTerminalSession(client, size)
+      await vi.waitFor(() => expect(nodePtyService.spawn).toHaveBeenCalled())
+      handlers.data?.('before')
+      expect(client.emit).toHaveBeenCalledWith('stdout', 'before')
+
+      ;(client as any).data.verifiedAt = 0
+      ;(client as any).data.revalidateUser.mockRejectedValue(new Error('User no longer valid'))
+      handlers.data?.('after')
+
+      await vi.waitFor(() => expect(client.disconnect).toHaveBeenCalledWith(true))
+      expect(client.emit).not.toHaveBeenCalledWith('stdout', 'after')
     })
   })
 

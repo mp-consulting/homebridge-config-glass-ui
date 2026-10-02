@@ -97,7 +97,23 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
           </div>
         )}
 
-        {/* The sandbox is part of the plugin-ui-utils contract: plugin pages rely on each of these */}
+        {/*
+          The sandbox is part of the plugin-ui-utils contract: plugin pages rely on each of these.
+
+          ⚠️ Accepted risk: `allow-same-origin` + `allow-scripts` on a page served from the UI's own
+          origin means a plugin's settings page is not isolated from the UI - it can script this
+          window, read its DOM and call the api as the signed-in admin. That is the long-standing
+          trust model (installing a plugin already runs its code on the server, as the Homebridge
+          user), and dropping `allow-same-origin` breaks custom UIs outright:
+          - the plugin's own scripts, styles and images load with the `hb-plugin-ui` asset-session
+            cookie (SameSite=Strict, plugins-settings-ui.controller.ts); an opaque-origin frame's
+            subresource requests are cross-site, so the cookie is never sent and every asset 401s
+          - plugin pages commonly use localStorage/sessionStorage, which throw in an opaque origin
+          - the message channel is origin-pinned both ways (custom-plugins.controller.ts posts to
+            environment.api.origin and only accepts events from it), and an opaque frame is "null"
+          - the theme and glass styles are applied through iframe.contentDocument (settings.store.ts)
+          Isolating plugin UIs needs a separate origin for them, not a sandbox flag. See CHANGELOG.
+        */}
         <iframe
           ref={iframeRef}
           width="100%"

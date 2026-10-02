@@ -1,9 +1,10 @@
 import type { FakeSocket } from '@/core/ws/socket.fake'
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { useAuthStore } from '@/core/auth/auth.store'
 import { fakeSocket } from '@/core/ws/socket.fake'
-import { WsService } from '@/core/ws/ws'
+import { ws, WsService } from '@/core/ws/ws'
 import { environment } from '@/environments/environment'
 
 const io = vi.fn()
@@ -217,6 +218,86 @@ describe('wsService', () => {
 
       expect(sockets[0].payloadsFor('end')).toHaveLength(1)
       expect(sockets[1].payloadsFor('end')).toHaveLength(0)
+    })
+  })
+
+  describe('a rotated token', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('is handed to every open socket, which then stays connected', () => {
+      service.connectToNamespace('status')
+      service.connectToNamespace('log')
+      for (const socket of sockets) {
+        socket.connected = true
+        socket.respondTo('reauth', { ok: true })
+      }
+
+      service.handleTokenChange('refreshed-token')
+
+      for (const socket of sockets) {
+        expect(socket.payloadsFor('reauth')).toEqual([{ token: 'refreshed-token' }])
+        expect(socket.disconnect).not.toHaveBeenCalled()
+      }
+    })
+
+    it('is left to the next handshake for a socket that is not connected', () => {
+      service.connectToNamespace('status')
+
+      service.handleTokenChange('refreshed-token')
+
+      expect(sockets[0].payloadsFor('reauth')).toEqual([])
+    })
+
+    it('reconnects a socket the server refuses it for, so the handshake carries it', () => {
+      service.connectToNamespace('status')
+      sockets[0].connected = true
+      sockets[0].respondTo('reauth', { error: 'Unauthorized' })
+
+      service.handleTokenChange('refreshed-token')
+
+      expect(sockets[0].disconnect).toHaveBeenCalled()
+      expect(sockets[0].connect).toHaveBeenCalled()
+    })
+
+    it('reconnects a socket the server does not answer', () => {
+      vi.useFakeTimers()
+      service.connectToNamespace('status')
+      sockets[0].connected = true
+      // no responder: the acknowledgement never comes
+      sockets[0].emit.mockImplementation(() => sockets[0])
+
+      service.handleTokenChange('refreshed-token')
+      expect(sockets[0].connect).not.toHaveBeenCalled()
+
+      vi.advanceTimersByTime(10000)
+      expect(sockets[0].connect).toHaveBeenCalledOnce()
+    })
+
+    it('reaches the app\'s sockets whenever the signed-in token changes', () => {
+      const handle = vi.spyOn(ws, 'handleTokenChange').mockImplementation(() => {})
+      try {
+        useAuthStore.setState({ token: 'refreshed-token' })
+        useAuthStore.setState({ token: 'refreshed-token' })
+        useAuthStore.setState({ token: null })
+
+        expect(handle.mock.calls).toEqual([['refreshed-token'], [null]])
+      } finally {
+        handle.mockRestore()
+      }
+    })
+
+    it('closes every socket on logout', () => {
+      service.connectToNamespace('status')
+      service.connectToNamespace('log')
+
+      service.handleTokenChange(null)
+
+      for (const socket of sockets) {
+        expect(socket.disconnect).toHaveBeenCalled()
+        expect(socket.connect).not.toHaveBeenCalled()
+      }
     })
   })
 })

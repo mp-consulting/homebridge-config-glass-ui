@@ -18,6 +18,7 @@ import { LogGateway } from '../../src/modules/log/log.gateway.js'
 import { LogModule } from '../../src/modules/log/log.module.js'
 import { LogService } from '../../src/modules/log/log.service.js'
 import { testStoragePath } from '../storage-path.js'
+import { authorizeWsClient } from '../ws-client.js'
 
 describe('LogGateway (e2e)', () => {
   let app: NestFastifyApplication
@@ -93,7 +94,7 @@ describe('LogGateway (e2e)', () => {
     await writeFile(logFilePath, sampleLogData)
 
     // create client
-    client = new EventEmitter()
+    client = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
 
     vi.spyOn(client, 'emit')
     vi.spyOn(client, 'on')
@@ -196,7 +197,8 @@ describe('LogGateway (e2e)', () => {
 
     // check the log command is correct
     expect((logService as any).useNative).toBe(false)
-    expect((logService as any).command).toEqual(['powershell.exe', '-command', `Get-Content -Path '${logFilePath}' -Wait -Tail 200`])
+    expect((logService as any).command).toEqual(['powershell.exe', '-NoProfile', '-Command', 'Get-Content -LiteralPath $env:UIX_LOG_PATH -Wait -Tail 200'])
+    expect((logService as any).commandEnv).toEqual({ UIX_LOG_PATH: logFilePath })
 
     logGateway.connect(client, size)
 
@@ -210,25 +212,24 @@ describe('LogGateway (e2e)', () => {
 
     logGateway.connect(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    // Ensure the log is working
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'))
-
-    // Initial listeners
-    expect((logService as any).nativeTail.listenerCount('line')).toBe(1)
+    await vi.waitFor(() => {
+      // Ensure the log is working
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'))
+      // Initial listeners (the tail attaches after the initial read)
+      expect((logService as any).nativeTail?.listenerCount('line')).toBe(1)
+    })
     expect(client.listenerCount('disconnect')).toBe(1)
     expect(client.listenerCount('end')).toBe(1)
 
     // Emit disconnect
     client.emit('disconnect')
 
-    await new Promise(res => setTimeout(res, 100))
-
     // Ensure listeners have been removed
-    expect((logService as any).nativeTail.listenerCount('line')).toBe(0)
-    expect(client.listenerCount('disconnect')).toBe(0)
-    expect(client.listenerCount('end')).toBe(0)
+    await vi.waitFor(() => {
+      expect((logService as any).nativeTail.listenerCount('line')).toBe(0)
+      expect(client.listenerCount('disconnect')).toBe(0)
+      expect(client.listenerCount('end')).toBe(0)
+    })
   })
 
   it('ON /log/tail-log (native - disconnect before the tail attaches)', async () => {
@@ -240,11 +241,15 @@ describe('LogGateway (e2e)', () => {
 
     const linesBefore = (logService as any).nativeTail?.listenerCount('line') ?? 0
 
+    // connect() does not return the tail's promise, so take it from a spy
+    const tailing = vi.spyOn(logService as any, 'tailLogFromFileNative')
     logGateway.connect(client, size)
     // still inside the stat() await
     client.emit('disconnect')
 
-    await new Promise(res => setTimeout(res, 100))
+    // let the tail set-up run to completion after the client left
+    await tailing.mock.results[0].value
+    tailing.mockRestore()
 
     expect((logService as any).nativeTail?.listenerCount('line') ?? 0).toBe(linesBefore)
     expect(client.listenerCount('disconnect')).toBe(0)
@@ -252,12 +257,54 @@ describe('LogGateway (e2e)', () => {
     expect((logService as any).activeClients.has(client)).toBe(false)
   })
 
+  describe('custom log command', () => {
+    let originalTerminal: boolean
+
+    beforeAll(() => {
+      originalTerminal = configService.enableTerminalAccess
+    })
+
+    afterAll(() => {
+      configService.enableTerminalAccess = originalTerminal
+    })
+
+    it('refuses a command off the allowlist when terminal access is disabled', async () => {
+      configService.enableTerminalAccess = false
+      configService.ui.log = { method: 'custom', command: 'bash -c id' }
+      logService.setLogMethod()
+
+      expect((logService as any).command).toBeNull()
+      const ptySpawn = vi.spyOn(nodePtyService, 'spawn')
+
+      logGateway.connect(client, size)
+
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Refusing to run the custom log command "bash -c id"'))
+      expect(ptySpawn).not.toHaveBeenCalled()
+      // The guard is released so a later tail-log on this socket still works
+      expect((logService as any).activeClients.has(client)).toBe(false)
+    })
+
+    it('allows an allowlisted command when terminal access is disabled', () => {
+      configService.enableTerminalAccess = false
+      configService.ui.log = { method: 'custom', command: `tail -n 100 -f ${logFilePath}` }
+      logService.setLogMethod()
+
+      expect((logService as any).command).toEqual(['tail', '-n', '100', '-f', logFilePath])
+    })
+
+    it('allows any command when terminal access is enabled', () => {
+      configService.enableTerminalAccess = true
+      configService.ui.log = { method: 'custom', command: 'my-viewer --follow' }
+      logService.setLogMethod()
+
+      expect((logService as any).command).toEqual(['my-viewer', '--follow'])
+    })
+  })
+
   it('ON /log/tail-log (not configured)', async () => {
     logGateway.connect(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot show logs.'))
+    await vi.waitFor(() => expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot show logs.')))
   })
 
   it('one client disconnect does not suppress another client\'s tail-exit message', async () => {
@@ -290,8 +337,8 @@ describe('LogGateway (e2e)', () => {
       .mockReturnValueOnce(mockPtyA)
       .mockReturnValueOnce(mockPtyB)
 
-    const clientA = new EventEmitter()
-    const clientB = new EventEmitter()
+    const clientA = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
+    const clientB = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
     vi.spyOn(clientB, 'emit')
 
     logGateway.connect(clientA, size)
@@ -330,7 +377,7 @@ describe('LogGateway (e2e)', () => {
     })
 
     function emitted(msg: string): string[] {
-      const target = new EventEmitter()
+      const target = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
       const chunks: string[] = []
       target.on('stdout', (data: string) => chunks.push(data))
       ;(logService as any).emitMessage(target, msg)
@@ -392,7 +439,7 @@ describe('LogGateway (e2e)', () => {
     })
 
     it('suppresses a supervisor DEBUG line split across two chunks', () => {
-      const target = new EventEmitter()
+      const target = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
       const chunks: string[] = []
       target.on('stdout', (data: string) => chunks.push(data))
       const service = logService as any
@@ -410,7 +457,7 @@ describe('LogGateway (e2e)', () => {
     })
 
     it('strips the tag from a supervisor line split across two chunks', () => {
-      const target = new EventEmitter()
+      const target = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
       const chunks: string[] = []
       target.on('stdout', (data: string) => chunks.push(data))
       const service = logService as any
@@ -424,7 +471,7 @@ describe('LogGateway (e2e)', () => {
     })
 
     it('emits complete lines immediately while holding the partial remainder', () => {
-      const target = new EventEmitter()
+      const target = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
       const chunks: string[] = []
       target.on('stdout', (data: string) => chunks.push(data))
       const service = logService as any
@@ -441,20 +488,68 @@ describe('LogGateway (e2e)', () => {
     })
 
     it('flushes a held partial line after a short idle timeout', async () => {
-      const target = new EventEmitter()
+      const target = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
       const chunks: string[] = []
       target.on('stdout', (data: string) => chunks.push(data))
       const service = logService as any
 
-      service.emitMessage(target, `${supervisor} [INFO] no trailing newline`)
+      vi.useFakeTimers()
+      try {
+        service.emitMessage(target, `${supervisor} [INFO] no trailing newline`)
 
-      expect(chunks).toHaveLength(0)
+        expect(chunks).toHaveLength(0)
 
-      await new Promise(res => setTimeout(res, 150))
+        // PARTIAL_LINE_FLUSH_MS (50ms) of idle time
+        vi.advanceTimersByTime(49)
+        expect(chunks).toHaveLength(0)
+        vi.advanceTimersByTime(1)
+      } finally {
+        vi.useRealTimers()
+      }
 
       expect(chunks).toHaveLength(1)
       expect(chunks[0]).toContain('no trailing newline')
       expect(chunks[0]).not.toContain('[INFO]')
+    })
+  })
+
+  describe('re-checking the user before streaming', () => {
+    function streamTo(target: any, msg: string) {
+      const chunks: string[] = []
+      target.on('stdout', (data: string) => chunks.push(data))
+      ;(logService as any).emitMessage(target, `${msg}\n`)
+      return chunks
+    }
+
+    it('stops streaming to a user revoked since the last check', async () => {
+      const target = authorizeWsClient(new EventEmitter(), { username: 'admin', admin: true })
+      target.data.verifiedAt = 0
+      target.data.revalidateUser.mockRejectedValue(new Error('User no longer valid'))
+
+      const chunks = streamTo(target, 'secret line')
+      await vi.waitFor(() => expect(target.disconnect).toHaveBeenCalledWith(true))
+
+      expect(chunks).toEqual([])
+    })
+
+    it('stops streaming to a non-admin once restrictLogsToAdmins is on', async () => {
+      const target = authorizeWsClient(new EventEmitter(), { username: 'bob', admin: false })
+      configService.restrictLogsToAdmins = true
+      try {
+        const chunks = streamTo(target, 'secret line')
+        await vi.waitFor(() => expect(target.disconnect).toHaveBeenCalledWith(true))
+
+        expect(chunks).toEqual([])
+      } finally {
+        configService.restrictLogsToAdmins = false
+      }
+    })
+
+    it('keeps streaming to a non-admin while the log is unrestricted', () => {
+      const target = authorizeWsClient(new EventEmitter(), { username: 'bob', admin: false })
+
+      expect(streamTo(target, 'a line').join('')).toContain('a line')
+      expect(target.disconnect).not.toHaveBeenCalled()
     })
   })
 

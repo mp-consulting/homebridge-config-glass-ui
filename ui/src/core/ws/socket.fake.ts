@@ -41,6 +41,7 @@ export interface FakeSocket {
   emit: Mock<(event: string, ...args: any[]) => FakeSocket>
   removeAllListeners: Mock<(event?: string) => FakeSocket>
   disconnect: Mock<() => FakeSocket>
+  connect: Mock<() => FakeSocket>
 
   /** Everything the code under test has emitted, in order. */
   emitted: Array<{ event: string, args: any[] }>
@@ -136,6 +137,10 @@ export function fakeSocket(connected = true): FakeSocket {
     }),
     disconnect: vi.fn(() => {
       socket.connected = false
+      return socket
+    }),
+    connect: vi.fn(() => {
+      socket.connected = true
       return socket
     }),
     emit: vi.fn((event: string, ...args: any[]) => {

@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
+import { EventEmitter } from 'node:events'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -18,6 +19,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
+import { authorizeWsGuardClient } from '../../src/core/auth/guards/ws-auth.js'
 import { WsLogGuard } from '../../src/core/auth/guards/ws-log.guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
@@ -223,7 +225,7 @@ describe('AuthController (e2e)', () => {
     const header = login.headers['set-cookie']
     const setCookies = (Array.isArray(header) ? header : [header]) as string[]
     const refreshCookie = setCookies.find(c => c.startsWith('hb-refresh='))!
-    expect(refreshCookie).toBeDefined()
+    expect(refreshCookie).toMatch(/^hb-refresh=[^;]+;/)
     // The token must not be reachable from JavaScript, which is the whole point
     // of moving it out of localStorage.
     expect(refreshCookie).toContain('HttpOnly')
@@ -631,6 +633,36 @@ describe('AuthController (e2e)', () => {
     expect(replayed.statusCode).toBe(401)
   })
 
+  it('ends this browser\'s sockets on a local logout, and only those', async () => {
+    const signIn = async () => (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })).json().access_token
+    const socket = async (token: string) => {
+      const client = Object.assign(new EventEmitter(), { handshake: { auth: { token } }, data: {} as any, disconnect: vi.fn() })
+      await authorizeWsGuardClient(client, app.get(ConfigService), app.get(AuthService))
+      return client
+    }
+    const token = await signIn()
+    const here = await socket(token)
+    // Signed a second later, so it is a distinct token for the same account
+    await new Promise(resolve => setTimeout(resolve, 1100))
+    const elsewhere = await socket(await signIn())
+
+    await app.inject({
+      method: 'POST',
+      path: '/auth/logout',
+      payload: { scope: 'local' },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect(here.disconnect).toHaveBeenCalledWith(true)
+    expect(elsewhere.disconnect).not.toHaveBeenCalled()
+    here.emit('disconnect')
+    elsewhere.emit('disconnect')
+  })
+
   it('clears session cookies when logout receives an invalid bearer token', async () => {
     const loggedOut = await app.inject({
       method: 'POST',
@@ -832,6 +864,36 @@ describe('AuthController (e2e)', () => {
     expect(authorised.statusCode).toBe(200)
     for (const key of authorisedOnly) {
       expect(authorised.json().env).toHaveProperty(key)
+    }
+  })
+
+  it('GET /auth/settings (unauthenticated - only what the login and setup pages need)', async () => {
+    const anonymous = (await app.inject({ method: 'GET', path: '/auth/settings' })).json()
+
+    expect(Object.keys(anonymous.env).sort()).toEqual([
+      'customWallpaperHash',
+      'homebridgeInstanceName',
+      'instanceId',
+      'lang',
+      'setupWizardComplete',
+      'temperatureUnits',
+    ].filter(key => key in anonymous.env).sort())
+    for (const key of ['packageVersion', 'packageName', 'homebridgeVersion', 'platform', 'port', 'scheduledBackupPath', 'canShutdownRestartHost', 'dockerOfflineUpdate', 'featureFlags', 'swaggerEnabled']) {
+      expect(anonymous.env).not.toHaveProperty(key)
+    }
+
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })).json().access_token
+    const authorised = (await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+      headers: { authorization: `bearer ${accessToken}` },
+    })).json()
+    for (const key of ['packageVersion', 'platform', 'port', 'scheduledBackupPath', 'featureFlags', 'swaggerEnabled']) {
+      expect(authorised.env).toHaveProperty(key)
     }
   })
 
@@ -1300,8 +1362,8 @@ describe('AuthController (e2e)', () => {
 
     const after = await authService.getUsers()
     expect(after.length).toBe(baseline + 2)
-    expect(after.find(u => u.username === 'race-add-a')).toBeDefined()
-    expect(after.find(u => u.username === 'race-add-b')).toBeDefined()
+    expect(after.find(u => u.username === 'race-add-a')).toMatchObject({ id: results.find(r => r.username === 'race-add-a')!.id, name: 'Race A', admin: false })
+    expect(after.find(u => u.username === 'race-add-b')).toMatchObject({ id: results.find(r => r.username === 'race-add-b')!.id, name: 'Race B', admin: false })
     const ids = after.map(u => u.id)
     expect(new Set(ids).size).toBe(ids.length)
   })

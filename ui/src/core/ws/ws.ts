@@ -58,6 +58,12 @@ export class ReplayOne {
   }
 }
 
+/** The message carrying a refreshed token to an open socket (`WS_REAUTH_EVENT` on the server). */
+const REAUTH_EVENT = 'reauth'
+
+/** How long to wait for the server to accept a refreshed token before reconnecting instead. */
+const REAUTH_TIMEOUT_MS = 10000
+
 export type RequestPayload = string | Record<string, any> | Array<any>
 
 /** One namespace. `end` is there on a handle from `connectToNamespace` and missing on a borrowed one. */
@@ -156,12 +162,52 @@ export class WsService {
     }
   }
 
-  // There is deliberately no "push the rotated token onto cached sockets" step.
-  // The `auth` callback in establishConnectionToNamespace is re-evaluated by
-  // socket.io on every (re)connect, so a rotated token is picked up on its own.
-  // Forcing open sockets to reconnect on rotation is not needed either: WsGuard
-  // re-verifies the JWT and re-reads the user record on every message, so an
-  // expired or revoked token stops working on an already-open socket regardless.
+  /**
+   * Hand a rotated token to the open sockets, or close them when it is gone.
+   *
+   * The `auth` callback in establishConnectionToNamespace covers a socket that
+   * (re)connects, but an open one keeps the token of its last handshake, and
+   * the server closes a socket a few minutes after that token expires (see
+   * `ws-auth.ts`). So every refresh is pushed onto the open sockets with a
+   * `reauth` message - which is what keeps a long-lived dashboard connected.
+   * Should the server refuse it, or not answer, the socket reconnects instead,
+   * and the handshake carries the new token.
+   *
+   * A cleared token is a logout: this browser's sockets end with it.
+   * @param token - the new access token, or null
+   */
+  public handleTokenChange(token: string | null): void {
+    for (const { socket } of Object.values(this.namespaceConnectionCache)) {
+      if (!token) {
+        socket.disconnect()
+        continue
+      }
+      if (!socket.connected) {
+        continue
+      }
+      let answered = false
+      const reconnect = () => {
+        socket.disconnect()
+        socket.connect()
+      }
+      const fallback = setTimeout(() => {
+        if (!answered) {
+          answered = true
+          reconnect()
+        }
+      }, REAUTH_TIMEOUT_MS)
+      socket.emit(REAUTH_EVENT, { token }, (resp: any) => {
+        if (answered) {
+          return
+        }
+        answered = true
+        clearTimeout(fallback)
+        if (!resp?.ok) {
+          reconnect()
+        }
+      })
+    }
+  }
 
   /**
    * Borrow a namespace some other consumer has already opened, without taking
@@ -257,3 +303,10 @@ export class WsService {
 
 /** The app's one WsService. */
 export const ws = new WsService()
+
+// Every token change - a refresh, a sign-in, a logout - reaches the open sockets
+useAuthStore.subscribe((state, previous) => {
+  if (state.token !== previous.token) {
+    ws.handleTokenChange(state.token)
+  }
+})
