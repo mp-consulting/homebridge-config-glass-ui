@@ -23,12 +23,14 @@ async function login(page: Page) {
   await expect(page).not.toHaveURL(/\/login/)
 }
 
-const masks = (page: Page) => [
-  page.locator('canvas'),
-  page.locator('.xterm'),
-  page.locator('.monaco-editor'),
-  page.locator('time, .clock, [class*="clock"], [class*="uptime"]'),
-]
+function masks(page: Page) {
+  return [
+    page.locator('canvas'),
+    page.locator('.xterm'),
+    page.locator('.monaco-editor'),
+    page.locator('time, .clock, [class*="clock"], [class*="uptime"]'),
+  ]
+}
 
 for (const path of PAGES) {
   test(`${path} looks the same`, async ({ page }) => {
