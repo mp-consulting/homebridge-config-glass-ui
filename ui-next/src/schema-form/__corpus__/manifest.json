@@ -1,0 +1,802 @@
+[
+  {
+    "plugin": "@0modfather0/homebridge-lg-thinq",
+    "version": "2.2.1"
+  },
+  {
+    "plugin": "@0x5e/homebridge-tuya-platform",
+    "version": "1.7.0-beta.58"
+  },
+  {
+    "plugin": "@350d/homebridge-seam",
+    "version": "2.13.1"
+  },
+  {
+    "plugin": "@atdr/homebridge-philipsair-platform",
+    "version": "1.3.1"
+  },
+  {
+    "plugin": "@bcourbage/homebridge-ambient-weather-sensors",
+    "version": "1.7.3"
+  },
+  {
+    "plugin": "@c-yril/homebridge-ct200",
+    "version": "3.1.0"
+  },
+  {
+    "plugin": "@cecnic1989/homebridge-roborock-mower",
+    "version": "0.6.1"
+  },
+  {
+    "plugin": "@ecopoesis/homebridge-dmx",
+    "version": "0.6.1"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-camera-ffmpeg",
+    "version": "4.1.0"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-controlmyspa",
+    "version": "1.2.1"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-ecovacs",
+    "version": "8.2.3"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-ewelink",
+    "version": "12.18.3"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-govee",
+    "version": "11.39.0"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-meross",
+    "version": "10.20.0"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-pura",
+    "version": "1.8.1"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-resideo",
+    "version": "3.2.3"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-smarthq",
+    "version": "0.8.1"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-tado",
+    "version": "10.0.0"
+  },
+  {
+    "plugin": "@homebridge-plugins/homebridge-tuya",
+    "version": "2.7.0"
+  },
+  {
+    "plugin": "@jabrown93/homebridge-smartrent",
+    "version": "2.4.2"
+  },
+  {
+    "plugin": "@jackietreeh0rn/homebridge-blink-security",
+    "version": "2.0.0"
+  },
+  {
+    "plugin": "@jhead/homebridge-litter-robot-4",
+    "version": "0.1.1"
+  },
+  {
+    "plugin": "@mdjhnson/homebridge-yoto",
+    "version": "0.1.7"
+  },
+  {
+    "plugin": "@mgcrea/homebridge-unifi-protect",
+    "version": "0.3.1"
+  },
+  {
+    "plugin": "@mgcrea/homebridge-zigbee",
+    "version": "0.2.0"
+  },
+  {
+    "plugin": "@mp-consulting/homebridge-daikin-cloud",
+    "version": "1.5.2"
+  },
+  {
+    "plugin": "@mp-consulting/homebridge-dyson-pure-cool",
+    "version": "1.2.4"
+  },
+  {
+    "plugin": "@mp-consulting/homebridge-lg-thinq",
+    "version": "1.0.39"
+  },
+  {
+    "plugin": "@mp-consulting/homebridge-philips-ambilight-tv",
+    "version": "1.7.0"
+  },
+  {
+    "plugin": "@mp-consulting/homebridge-unifi-access",
+    "version": "1.2.0"
+  },
+  {
+    "plugin": "@nubisco/homebridge-tuya-local-platform",
+    "version": "1.7.1"
+  },
+  {
+    "plugin": "@nzws/homebridge-switchbot",
+    "version": "4.3.14"
+  },
+  {
+    "plugin": "@o-lukas/homebridge-smartthings-tv",
+    "version": "3.0.24"
+  },
+  {
+    "plugin": "@orenasher/homebridge-denon-soundmode",
+    "version": "1.4.4"
+  },
+  {
+    "plugin": "@petro-kushchak/homebridge-homepod-radio",
+    "version": "3.2.6"
+  },
+  {
+    "plugin": "@ruicout0/homebridge-tuya",
+    "version": "4.0.11"
+  },
+  {
+    "plugin": "@sealad886/homebridge-blink-cameras-new-api",
+    "version": "0.9.1"
+  },
+  {
+    "plugin": "@smarterhomeapp/homebridge-vantage",
+    "version": "1.0.8"
+  },
+  {
+    "plugin": "@switchbot/homebridge-switchbot",
+    "version": "5.1.0"
+  },
+  {
+    "plugin": "@thecloudseeker/homebridge-homekit-ble-matter",
+    "version": "0.1.0"
+  },
+  {
+    "plugin": "@thecloudseeker/homebridge-hygrothermograph-cgdk2",
+    "version": "5.8.1"
+  },
+  {
+    "plugin": "@toharush/homebridge-redalert",
+    "version": "2.2.0"
+  },
+  {
+    "plugin": "@viguza/homebridge-ezviz",
+    "version": "2.2.0"
+  },
+  {
+    "plugin": "homebridge-adt-pulse",
+    "version": "3.5.0"
+  },
+  {
+    "plugin": "homebridge-alexa",
+    "version": "0.9.3"
+  },
+  {
+    "plugin": "homebridge-alfen-charger",
+    "version": "1.2.0"
+  },
+  {
+    "plugin": "homebridge-amazondash-mac",
+    "version": "4.0.0-beta.4"
+  },
+  {
+    "plugin": "homebridge-anthemreceiver-plus",
+    "version": "1.2.2"
+  },
+  {
+    "plugin": "homebridge-appletv-enhanced",
+    "version": "1.15.1"
+  },
+  {
+    "plugin": "homebridge-aquadaemon",
+    "version": "1.0.4"
+  },
+  {
+    "plugin": "homebridge-atlas",
+    "version": "1.0.3"
+  },
+  {
+    "plugin": "homebridge-balboa-spa",
+    "version": "3.0.1"
+  },
+  {
+    "plugin": "homebridge-bambu-print-status",
+    "version": "1.39.0"
+  },
+  {
+    "plugin": "homebridge-bigassfans-2",
+    "version": "1.1.42"
+  },
+  {
+    "plugin": "homebridge-blueair-purifier",
+    "version": "1.2.1"
+  },
+  {
+    "plugin": "homebridge-bluos",
+    "version": "2.0.3"
+  },
+  {
+    "plugin": "homebridge-bond",
+    "version": "3.3.0"
+  },
+  {
+    "plugin": "homebridge-broadlink-rm-blaster",
+    "version": "1.11.6"
+  },
+  {
+    "plugin": "homebridge-camera-ffmpeg",
+    "version": "3.1.4"
+  },
+  {
+    "plugin": "homebridge-camera-ui",
+    "version": "5.0.27"
+  },
+  {
+    "plugin": "homebridge-centsys",
+    "version": "1.1.3"
+  },
+  {
+    "plugin": "homebridge-cielo",
+    "version": "2.2.1"
+  },
+  {
+    "plugin": "homebridge-cycle-light-switches",
+    "version": "1.1.0"
+  },
+  {
+    "plugin": "homebridge-cync-app",
+    "version": "0.7.5"
+  },
+  {
+    "plugin": "homebridge-daikin-oneplus",
+    "version": "4.2.0"
+  },
+  {
+    "plugin": "homebridge-deconz",
+    "version": "1.3.5"
+  },
+  {
+    "plugin": "homebridge-denon-tv",
+    "version": "6.6.1"
+  },
+  {
+    "plugin": "homebridge-doorbell-telegram-photo",
+    "version": "3.0.1"
+  },
+  {
+    "plugin": "homebridge-dummy",
+    "version": "2.1.2"
+  },
+  {
+    "plugin": "homebridge-dyson-pure-cool",
+    "version": "2.9.5"
+  },
+  {
+    "plugin": "homebridge-dyson-solarcycle-morph",
+    "version": "1.7.5"
+  },
+  {
+    "plugin": "homebridge-dyson-vis-nav",
+    "version": "1.4.5"
+  },
+  {
+    "plugin": "homebridge-easy-mqtt",
+    "version": "2.1.2"
+  },
+  {
+    "plugin": "homebridge-econet-rheem",
+    "version": "1.7.12"
+  },
+  {
+    "plugin": "homebridge-ecowitt-weather-sensors",
+    "version": "2.13.0"
+  },
+  {
+    "plugin": "homebridge-edomoticz",
+    "version": "3.0.5"
+  },
+  {
+    "plugin": "homebridge-eliot-smart-control",
+    "version": "1.15.2"
+  },
+  {
+    "plugin": "homebridge-emporia-vue-log",
+    "version": "0.2.1"
+  },
+  {
+    "plugin": "homebridge-enphase-envoy",
+    "version": "10.8.1"
+  },
+  {
+    "plugin": "homebridge-evohome",
+    "version": "1.0.2"
+  },
+  {
+    "plugin": "homebridge-ewelink",
+    "version": "12.3.3"
+  },
+  {
+    "plugin": "homebridge-f-and-p",
+    "version": "1.0.5"
+  },
+  {
+    "plugin": "homebridge-fibaro-home-center",
+    "version": "3.2.2"
+  },
+  {
+    "plugin": "homebridge-flume",
+    "version": "3.1.25"
+  },
+  {
+    "plugin": "homebridge-freeathome-local-api-add",
+    "version": "9.7.3"
+  },
+  {
+    "plugin": "homebridge-freebox-player-delta-hb2",
+    "version": "1.4.1"
+  },
+  {
+    "plugin": "homebridge-fritz-platform",
+    "version": "6.0.19"
+  },
+  {
+    "plugin": "homebridge-giv-iog-local",
+    "version": "4.0.0"
+  },
+  {
+    "plugin": "homebridge-google-tv",
+    "version": "1.1.4"
+  },
+  {
+    "plugin": "homebridge-govee",
+    "version": "10.15.0"
+  },
+  {
+    "plugin": "homebridge-gsh",
+    "version": "4.1.0"
+  },
+  {
+    "plugin": "homebridge-gsh-kazari",
+    "version": "2.2.2"
+  },
+  {
+    "plugin": "homebridge-harmony",
+    "version": "2.0.6"
+  },
+  {
+    "plugin": "homebridge-hatch-baby-rest",
+    "version": "6.2.2"
+  },
+  {
+    "plugin": "homebridge-hikvision-doorbell",
+    "version": "0.1.10"
+  },
+  {
+    "plugin": "homebridge-hilo",
+    "version": "7.0.2"
+  },
+  {
+    "plugin": "homebridge-homematicip",
+    "version": "2.9.0"
+  },
+  {
+    "plugin": "homebridge-homeworks-alt",
+    "version": "1.2.0"
+  },
+  {
+    "plugin": "homebridge-hubspace-platform",
+    "version": "2.1.7"
+  },
+  {
+    "plugin": "homebridge-hue",
+    "version": "0.15.10"
+  },
+  {
+    "plugin": "homebridge-iaqualink-matter",
+    "version": "1.0.6"
+  },
+  {
+    "plugin": "homebridge-inteo-somfy-blinds",
+    "version": "1.1.6"
+  },
+  {
+    "plugin": "homebridge-ir-amplifier",
+    "version": "1.1.45"
+  },
+  {
+    "plugin": "homebridge-kasa-python",
+    "version": "3.2.0"
+  },
+  {
+    "plugin": "homebridge-levoit-humidifiers",
+    "version": "1.23.2"
+  },
+  {
+    "plugin": "homebridge-lg-thinq",
+    "version": "1.8.11"
+  },
+  {
+    "plugin": "homebridge-lgwebos-tv",
+    "version": "4.9.1"
+  },
+  {
+    "plugin": "homebridge-loxone-proxy",
+    "version": "1.13.0"
+  },
+  {
+    "plugin": "homebridge-m2m",
+    "version": "0.3.3"
+  },
+  {
+    "plugin": "homebridge-melcloud-control",
+    "version": "4.13.1"
+  },
+  {
+    "plugin": "homebridge-meraki-control",
+    "version": "1.7.0"
+  },
+  {
+    "plugin": "homebridge-mercedes-lock",
+    "version": "1.2.1"
+  },
+  {
+    "plugin": "homebridge-meross",
+    "version": "10.8.1"
+  },
+  {
+    "plugin": "homebridge-mg-saic",
+    "version": "0.9.10"
+  },
+  {
+    "plugin": "homebridge-midea-platform",
+    "version": "1.3.4"
+  },
+  {
+    "plugin": "homebridge-mijia-thermometer-v2",
+    "version": "0.0.3"
+  },
+  {
+    "plugin": "homebridge-mijia-v3",
+    "version": "0.1.15"
+  },
+  {
+    "plugin": "homebridge-miot",
+    "version": "2.0.0"
+  },
+  {
+    "plugin": "homebridge-mitsubishi-comfort",
+    "version": "1.10.4"
+  },
+  {
+    "plugin": "homebridge-mq77-customizer",
+    "version": "2.1.1"
+  },
+  {
+    "plugin": "homebridge-mqttthing",
+    "version": "1.1.49"
+  },
+  {
+    "plugin": "homebridge-my-tadiran",
+    "version": "0.1.7"
+  },
+  {
+    "plugin": "homebridge-myalarmcom",
+    "version": "2.1.0"
+  },
+  {
+    "plugin": "homebridge-myleviton",
+    "version": "4.0.2"
+  },
+  {
+    "plugin": "homebridge-myresideo",
+    "version": "2.0.2"
+  },
+  {
+    "plugin": "homebridge-nad-amplifier",
+    "version": "0.8.1"
+  },
+  {
+    "plugin": "homebridge-navilink",
+    "version": "1.0.3"
+  },
+  {
+    "plugin": "homebridge-nb",
+    "version": "1.5.17"
+  },
+  {
+    "plugin": "homebridge-ness-d16x-cg",
+    "version": "2.1.4"
+  },
+  {
+    "plugin": "homebridge-nest",
+    "version": "4.6.10"
+  },
+  {
+    "plugin": "homebridge-nest-accfactory",
+    "version": "0.4.3"
+  },
+  {
+    "plugin": "homebridge-nibe-s1156",
+    "version": "3.0.0"
+  },
+  {
+    "plugin": "homebridge-notify-switch",
+    "version": "1.3.2"
+  },
+  {
+    "plugin": "homebridge-omnilink-platform",
+    "version": "1.6.2"
+  },
+  {
+    "plugin": "homebridge-openwebif-tv",
+    "version": "5.5.2"
+  },
+  {
+    "plugin": "homebridge-openwrt-control",
+    "version": "0.4.2"
+  },
+  {
+    "plugin": "homebridge-otgw",
+    "version": "2.1.47"
+  },
+  {
+    "plugin": "homebridge-p1",
+    "version": "2.0.6"
+  },
+  {
+    "plugin": "homebridge-panasonic-ac-platform",
+    "version": "6.8.1"
+  },
+  {
+    "plugin": "homebridge-pentair-intellicenter-ai",
+    "version": "2.12.0"
+  },
+  {
+    "plugin": "homebridge-philips-hue-sync-box",
+    "version": "3.1.2"
+  },
+  {
+    "plugin": "homebridge-pichler-pkom4",
+    "version": "1.1.11"
+  },
+  {
+    "plugin": "homebridge-plugin-klares4",
+    "version": "2.1.4"
+  },
+  {
+    "plugin": "homebridge-rachio-irrigation",
+    "version": "1.5.7"
+  },
+  {
+    "plugin": "homebridge-rainmachine-zones",
+    "version": "0.0.4"
+  },
+  {
+    "plugin": "homebridge-rainpoint-irrigation-control",
+    "version": "1.1.0"
+  },
+  {
+    "plugin": "homebridge-reolink-hksv-doorbell",
+    "version": "1.7.2"
+  },
+  {
+    "plugin": "homebridge-ring",
+    "version": "14.3.0"
+  },
+  {
+    "plugin": "homebridge-rinnai-touch-platform",
+    "version": "3.5.0"
+  },
+  {
+    "plugin": "homebridge-roborock-map-camera",
+    "version": "2.0.12"
+  },
+  {
+    "plugin": "homebridge-roborock-matter",
+    "version": "3.34.0"
+  },
+  {
+    "plugin": "homebridge-roborock-vacuum",
+    "version": "2.2.9"
+  },
+  {
+    "plugin": "homebridge-rpc3control",
+    "version": "0.1.3"
+  },
+  {
+    "plugin": "homebridge-rpi",
+    "version": "2.0.9"
+  },
+  {
+    "plugin": "homebridge-salus-it600-gateway-v2",
+    "version": "1.1.25"
+  },
+  {
+    "plugin": "homebridge-samsung-rac",
+    "version": "0.4.1"
+  },
+  {
+    "plugin": "homebridge-samsung-tizen",
+    "version": "5.3.5"
+  },
+  {
+    "plugin": "homebridge-script2",
+    "version": "1.0.3"
+  },
+  {
+    "plugin": "homebridge-securitysystem",
+    "version": "12.0.0"
+  },
+  {
+    "plugin": "homebridge-shelly-matter",
+    "version": "0.9.1"
+  },
+  {
+    "plugin": "homebridge-slwf-01pro",
+    "version": "1.1.2"
+  },
+  {
+    "plugin": "homebridge-smarthq-client",
+    "version": "1.3.1"
+  },
+  {
+    "plugin": "homebridge-smartthings-km81",
+    "version": "2.16.1"
+  },
+  {
+    "plugin": "homebridge-snapshot-sensors",
+    "version": "1.0.11"
+  },
+  {
+    "plugin": "homebridge-sofabaton-x1s",
+    "version": "0.1.4"
+  },
+  {
+    "plugin": "homebridge-solax-local",
+    "version": "1.3.1"
+  },
+  {
+    "plugin": "homebridge-solis-new",
+    "version": "1.0.13"
+  },
+  {
+    "plugin": "homebridge-sonos-control-pro",
+    "version": "3.7.0"
+  },
+  {
+    "plugin": "homebridge-spacelogic",
+    "version": "1.0.7"
+  },
+  {
+    "plugin": "homebridge-tahoma",
+    "version": "2.2.64"
+  },
+  {
+    "plugin": "homebridge-tapo-camera",
+    "version": "2.9.6"
+  },
+  {
+    "plugin": "homebridge-tapo-camera-enhanced",
+    "version": "1.0.2"
+  },
+  {
+    "plugin": "homebridge-tasmota-control",
+    "version": "1.8.12"
+  },
+  {
+    "plugin": "homebridge-thermo-reset",
+    "version": "0.4.3"
+  },
+  {
+    "plugin": "homebridge-tplink-smarthome",
+    "version": "8.0.4"
+  },
+  {
+    "plugin": "homebridge-tuya-plus",
+    "version": "4.1.0"
+  },
+  {
+    "plugin": "homebridge-tuya-without-developer-account",
+    "version": "1.0.57"
+  },
+  {
+    "plugin": "homebridge-tydom",
+    "version": "0.32.1"
+  },
+  {
+    "plugin": "homebridge-unifi-access",
+    "version": "2.0.1"
+  },
+  {
+    "plugin": "homebridge-unifi-protect",
+    "version": "8.1.0"
+  },
+  {
+    "plugin": "homebridge-ups-monitor",
+    "version": "1.19.0"
+  },
+  {
+    "plugin": "homebridge-vallox-redux",
+    "version": "0.2.1"
+  },
+  {
+    "plugin": "homebridge-viessmann-vicare",
+    "version": "2.0.81"
+  },
+  {
+    "plugin": "homebridge-virtual-accessories",
+    "version": "3.16.2"
+  },
+  {
+    "plugin": "homebridge-vthermo",
+    "version": "2.3.2"
+  },
+  {
+    "plugin": "homebridge-warmup4ie-v2",
+    "version": "3.13.2"
+  },
+  {
+    "plugin": "homebridge-weather-noaa",
+    "version": "1.11.1"
+  },
+  {
+    "plugin": "homebridge-webos-tv",
+    "version": "2.5.0"
+  },
+  {
+    "plugin": "homebridge-whisker-ting",
+    "version": "1.1.0"
+  },
+  {
+    "plugin": "homebridge-winix-purifiers",
+    "version": "2.2.6"
+  },
+  {
+    "plugin": "homebridge-winpc-tv",
+    "version": "1.1.1"
+  },
+  {
+    "plugin": "homebridge-withings-environment-data",
+    "version": "1.6.7"
+  },
+  {
+    "plugin": "homebridge-wiz-lan",
+    "version": "3.4.2"
+  },
+  {
+    "plugin": "homebridge-ws",
+    "version": "2.8.3"
+  },
+  {
+    "plugin": "homebridge-xbox-tv",
+    "version": "4.3.3"
+  },
+  {
+    "plugin": "homebridge-xiaomi-go2rtc",
+    "version": "0.9.0"
+  },
+  {
+    "plugin": "homebridge-xiaomi-km81",
+    "version": "2.4.2"
+  },
+  {
+    "plugin": "homebridge-xiaomi-roborock-vacuum",
+    "version": "0.36.0"
+  },
+  {
+    "plugin": "homebridge-z2m",
+    "version": "1.11.0"
+  },
+  {
+    "plugin": "homebridge-zp",
+    "version": "1.4.71"
+  }
+]

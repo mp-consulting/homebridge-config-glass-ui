@@ -18,27 +18,28 @@ Parity tests between the Angular `@ng-formworks` form (`ui/`) and the React port
 {
   "plugin": "homebridge-foo",
   "version": "1.2.3",
-  "initialData": {},           // data passed to the form
-  "steps": [                   // replayed in order by the React test
-    { "op": "type",   "index": 0, "value": "golden" },   // nth <input type=text|email|url|password|number> / <textarea>, in DOM order
-    { "op": "toggle", "index": 2 },                      // nth <input type=checkbox>
+  "initialData": {}, // data passed to the form
+  "steps": [ // replayed in order by the React test
+    { "op": "type", "index": 0, "value": "golden" }, // nth <input type=text|email|url|password|number> / <textarea>, in DOM order
+    { "op": "toggle", "index": 2 }, // nth <input type=checkbox>
     { "op": "select", "index": 0, "value": "<option value attr>" }, // nth <select>
-    { "op": "radio",  "index": 1 },                      // nth <input type=radio>
-    { "op": "add",    "index": 0 },                      // nth "add item" button
-    { "op": "remove", "index": 0 }                       // nth array-item remove button
+    { "op": "radio", "index": 1 }, // nth <input type=radio>
+    { "op": "add", "index": 0 }, // nth "add item" button
+    { "op": "remove", "index": 0, "list": 2, "item": 1 } // nth remove button; list/item: see below
   ],
-  "snapshots": [               // snapshots[0] = after init; snapshots[i+1] = after steps[i]
+  "snapshots": [ // snapshots[0] = after init; snapshots[i+1] = after steps[i]
     {
-      "data": {},              // last value emitted on dataChange (uuid-looking strings replaced by "<uuid>")
+      "data": {}, // last value emitted on dataChange (uuid-looking strings replaced by "<uuid>")
       "isValid": true,
       "controls": { "text": 1, "number": 0, "textarea": 0, "checkbox": 2, "radio": 0, "select": 1, "add": 1, "remove": 0 },
-      "labels": ["Name", "Enabled"]   // trimmed textContent of visible <label>/<legend>, DOM order, required "*" stripped
+      "labels": ["Name", "Enabled"] // trimmed textContent of visible <label>/<legend>, DOM order, required "*" stripped
     }
   ]
 }
 ```
 
 Rules shared by recorder and replayer:
+
 - Render through the app's own wrapper (Angular `SchemaFormComponent`, React `<SchemaForm>`),
   with the plugin schema wrapped the way `plugin-config` passes it:
   `{ schema: s.schema, layout: s.layout, form: s.form, uiSchema: s.uiSchema, fixArrays: s.fixArrays }`.
@@ -47,3 +48,7 @@ Rules shared by recorder and replayer:
 - Step policy (recorder, deterministic, max 12 steps): type `"golden"` (or `7` for number) into the first
   text and first number control; toggle each checkbox once (first 4); select the second option of each
   select (first 2); click each add button once (first 3), then each remove button that appeared (first 3).
+- A `remove` step also records which array item it removed: `list` is the array's position among the
+  form's `.cdk-drop-list` elements and `item` the item's position among that list's `.cdk-drag`
+  children. Replay clicks that item's button. `index` alone is not enough: ng-formworks shows the
+  remove button of an array's initial items only once the array changes, so the nth button differs.
