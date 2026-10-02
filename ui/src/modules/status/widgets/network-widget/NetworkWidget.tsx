@@ -18,8 +18,8 @@ export function NetworkWidget(props: WidgetProps) {
   const [receivedPerSec, setReceivedPerSec] = useState<number | undefined>(undefined)
   const [sentPerSec, setSentPerSec] = useState<number | undefined>(undefined)
 
-  const { backgroundRef, chartData, chartOptions } = useChartWidget(props, (io, series) => {
-    void io.request<NetworkWidgetData>('get-server-network-info', { netInterfaces: [widget.networkInterface] }).then((data) => {
+  const { backgroundRef, chartData, chartOptions } = useChartWidget(props, (io, series, refreshInterval) => {
+    void io.request<NetworkWidgetData>('get-server-network-info', { netInterfaces: [widget.networkInterface], interval: refreshInterval }).then((data) => {
       // If no param given, the backend will return the default network interface
       // Clear the current chart if the network interface has changed
       if (interfaceRef.current !== data.net.iface) {

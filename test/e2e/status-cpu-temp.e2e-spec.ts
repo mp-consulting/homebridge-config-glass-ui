@@ -24,6 +24,12 @@ vi.mock('systeminformation', async (importOriginal) => {
   }
 })
 
+// On Linux, getCpuTemp() reads sysfs itself before falling back to
+// systeminformation; with no reading the fallback runs on every platform
+vi.mock('../../src/modules/status/linux-cpu-temperature.js', () => ({
+  readLinuxCpuTemperature: vi.fn(async () => null),
+}))
+
 describe('StatusService - getCpuTemp', () => {
   let statusService: StatusService
   let configService: ConfigService

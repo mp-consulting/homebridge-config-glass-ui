@@ -43,7 +43,7 @@
     "build": "npm run build:server && npm run build:ui",
     "build:server": "rimraf dist && tsc -p tsconfig.build.json",
     "build:ui": "npm run build --prefix ui",
-    "postbuild:ui": "node scripts/verify-monaco-assets.mjs && node scripts/check-bundle-size.mjs",
+    "postbuild:ui": "node scripts/verify-monaco-assets.mjs && node scripts/check-bundle-size.mjs && node scripts/precompress.mjs",
     "check": "npm run check:server && npm run check:ui",
     "check:server": "npm install && npm outdated",
     "check:ui": "npm install --prefix ui && npm outdated --prefix ui",
@@ -55,6 +55,7 @@
     "test": "vitest run",
     "test-coverage": "npm run test -- --coverage",
     "test:ui": "npm run test --prefix ui",
+    "typecheck:test": "tsc -p tsconfig.test.json",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
     "watch:ui": "npm run start --prefix ui"

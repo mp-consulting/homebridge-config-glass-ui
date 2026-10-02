@@ -59,6 +59,12 @@ describe('the memory widget', () => {
     expect(container.querySelectorAll('.widget-value .fa-circle-notch')).toHaveLength(2)
   })
 
+  it('sends its refresh interval with the request', async () => {
+    await open()
+
+    expect(io.requests[0]).toEqual({ resource: 'get-server-memory-info', payload: { interval: 10 } })
+  })
+
   it('reports the memory in gigabytes', async () => {
     const { container } = await open({ response: { mem: { total: 8 * gb, available: 2.5 * gb }, memoryUsageHistory: [70, 75] } })
 

@@ -134,28 +134,30 @@ export class StatusGateway {
     }
   }
 
+  // The metric requests may carry the widget's refresh interval (seconds), so
+  // the shared sampler ticks at least that often; older clients send none
   @SubscribeMessage('get-server-cpu-info')
-  async getServerCpuInfo() {
+  async getServerCpuInfo(client?, payload?: { interval?: number }) {
     try {
-      return await this.statusService.getServerCpuInfo()
+      return await this.statusService.getServerCpuInfo(payload?.interval)
     } catch (e) {
       return new WsException(e.message)
     }
   }
 
   @SubscribeMessage('get-server-memory-info')
-  async getServerMemoryInfo() {
+  async getServerMemoryInfo(client?, payload?: { interval?: number }) {
     try {
-      return await this.statusService.getServerMemoryInfo()
+      return await this.statusService.getServerMemoryInfo(payload?.interval)
     } catch (e) {
       return new WsException(e.message)
     }
   }
 
   @SubscribeMessage('get-server-network-info')
-  async getServerNetworkInfo(client, payload?: { netInterfaces: string[] }) {
+  async getServerNetworkInfo(client, payload?: { netInterfaces: string[], interval?: number }) {
     try {
-      return await this.statusService.getCurrentNetworkUsage(payload.netInterfaces || [])
+      return await this.statusService.getCurrentNetworkUsage(payload.netInterfaces || [], payload.interval)
     } catch (e) {
       return new WsException(e.message)
     }

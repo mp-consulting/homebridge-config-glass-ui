@@ -20,11 +20,11 @@ export function CpuWidget(props: WidgetProps) {
   const [cpuTemperature, setCpuTemperature] = useState<CpuWidgetData['cpuTemperature']>({})
   const [currentLoad, setCurrentLoad] = useState<number | undefined>(undefined)
 
-  const { backgroundRef, chartData, chartOptions } = useChartWidget(props, (io, series) => {
+  const { backgroundRef, chartData, chartOptions } = useChartWidget(props, (io, series, refreshInterval) => {
     if (metricsDisabled) {
       return
     }
-    void io.request<CpuWidgetData>('get-server-cpu-info').then((data) => {
+    void io.request<CpuWidgetData>('get-server-cpu-info', { interval: refreshInterval }).then((data) => {
       setCpuTemperature(data.cpuTemperature)
       setCurrentLoad(data.currentLoad)
       if (series.isEmpty()) {

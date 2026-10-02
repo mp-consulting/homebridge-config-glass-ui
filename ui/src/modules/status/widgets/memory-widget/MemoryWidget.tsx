@@ -21,11 +21,11 @@ export function MemoryWidget(props: WidgetProps) {
   const [totalMemory, setTotalMemory] = useState<number | undefined>(undefined)
   const [freeMemory, setFreeMemory] = useState<number | undefined>(undefined)
 
-  const { backgroundRef, chartData, chartOptions } = useChartWidget(props, (io, series) => {
+  const { backgroundRef, chartData, chartOptions } = useChartWidget(props, (io, series, refreshInterval) => {
     if (metricsDisabled) {
       return
     }
-    void io.request<MemoryWidgetData>('get-server-memory-info').then((data) => {
+    void io.request<MemoryWidgetData>('get-server-memory-info', { interval: refreshInterval }).then((data) => {
       if (!data.mem) {
         return
       }

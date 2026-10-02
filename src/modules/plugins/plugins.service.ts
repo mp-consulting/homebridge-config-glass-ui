@@ -237,8 +237,14 @@ export class PluginsService implements OnModuleDestroy {
   private verifiedPlugins: string[] = []
   private verifiedPlusPlugins: string[] = []
 
-  // Create a cache for storing plugin package.json from npm
-  private npmPluginCache = new NodeCache({ stdTTL: 300 })
+  // Create a cache for storing plugin package.json from npm. The registry
+  // documents run to megabytes for long-lived plugins, so they are cached by
+  // reference (`useClones: false`) rather than deep-cloned on every read:
+  // callers must treat them as read-only. Each kind of document has its own
+  // key prefix - `versions-` (abbreviated install-v1 doc), `package-` (full
+  // packument) and the bare plugin name (the `/latest` manifest) - since they
+  // hold different fields for the same plugin.
+  private npmPluginCache = new NodeCache({ stdTTL: 300, useClones: false })
 
   // Create a cache for storing plugin alias
   private pluginAliasCache = new NodeCache({ stdTTL: 86400 })
@@ -426,7 +432,7 @@ export class PluginsService implements OnModuleDestroy {
     }
 
     try {
-      const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`)
+      const fromCache = this.npmPluginCache.get<INpmRegistryModule>(`versions-${pluginName}`)
 
       const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`, {
@@ -437,7 +443,7 @@ export class PluginsService implements OnModuleDestroy {
       )).data
 
       if (!fromCache) {
-        this.npmPluginCache.set(`lookup-${pluginName}`, pkg, 60)
+        this.npmPluginCache.set(`versions-${pluginName}`, pkg, 60)
       }
 
       return {
@@ -679,14 +685,14 @@ export class PluginsService implements OnModuleDestroy {
    */
   async searchNpmRegistrySingle(query: string): Promise<HomebridgePlugin[]> {
     try {
-      const fromCache = this.npmPluginCache.get(`lookup-${query}`)
+      const fromCache = this.npmPluginCache.get<INpmRegistryModule>(`package-${query}`)
 
       const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace(RE_ENCODED_AT, '@')}`)),
       )).data
 
       if (!fromCache) {
-        this.npmPluginCache.set(`lookup-${query}`, pkg, 60)
+        this.npmPluginCache.set(`package-${query}`, pkg, 60)
       }
 
       if (!pkg.keywords || !pkg.keywords.includes('homebridge-plugin')) {

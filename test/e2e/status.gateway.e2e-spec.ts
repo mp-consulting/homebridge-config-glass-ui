@@ -8,6 +8,7 @@ import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, pathExists, readFile, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
@@ -105,8 +106,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return layout from cache after being set', async () => {
       // The layout was set in the previous test and cached in memory
       const result = await statusGateway.getDashboardLayout()
-      expect(result).toBeDefined()
-      expect(Array.isArray(result)).toBe(true)
+      expect(result).toEqual([{ widget: 'cpu', order: 1 }, { widget: 'memory', order: 2 }])
     })
   })
 
@@ -537,18 +537,15 @@ describe('StatusGateway (e2e)', () => {
     it('should start watching stats and emit initial status', async () => {
       await statusGateway.serverStatus(client)
 
-      // watchStats is async internally - wait for it to emit
-      await new Promise(res => setTimeout(res, 100))
-
-      expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
+      // the gateway does not await watchStats, which gathers the status first
+      await vi.waitFor(() => expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
         status: expect.any(String),
         pin: expect.any(String),
-      }))
+      })))
     })
 
     it('should emit updated status when homebridge status changes', async () => {
-      await statusGateway.serverStatus(client)
-      await new Promise(res => setTimeout(res, 100))
+      await statusService.watchStats(client)
 
       // Clear initial emit calls
       vi.mocked(client.emit).mockClear()
@@ -556,27 +553,27 @@ describe('StatusGateway (e2e)', () => {
       // Simulate status change
       ipcService.emit('serverStatusUpdate', { status: 'up' })
 
-      await new Promise(res => setTimeout(res, 100))
-
-      expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
+      await vi.waitFor(() => expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
         status: 'up',
-      }))
+      })))
     })
 
     it('should clean up on client disconnect', async () => {
-      await statusGateway.serverStatus(client)
-      await new Promise(res => setTimeout(res, 100))
+      await statusService.watchStats(client)
 
       // Disconnect
       client.emit('disconnect')
 
       // Clear emit calls
       vi.mocked(client.emit).mockClear()
+      const getStats = vi.spyOn(statusService as any, 'getHomebridgeStats')
 
-      // Emit another status change - should NOT reach client
+      // Emit another status change - should NOT reach client. A live
+      // subscription would call getHomebridgeStats synchronously on the emit,
+      // so this shows it was dropped without waiting for anything
       ipcService.emit('serverStatusUpdate', { status: 'down' })
-
-      await new Promise(res => setTimeout(res, 100))
+      expect(getStats).not.toHaveBeenCalled()
+      getStats.mockRestore()
 
       // The 'homebridge-status' event should not have been emitted after disconnect
       const homebridgeStatusCalls = vi.mocked(client.emit).mock.calls.filter(
@@ -598,9 +595,12 @@ describe('StatusGateway (e2e)', () => {
       expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'homebridge-status')).toHaveLength(2)
 
       vi.mocked(client.emit).mockClear()
+      const getStats = vi.spyOn(statusService as any, 'getHomebridgeStats')
       ipcService.emit('serverStatusUpdate', { status: 'up' })
-      await new Promise(res => setTimeout(res, 100))
-      expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'homebridge-status')).toHaveLength(1)
+      // one subscription, so one (synchronously started) stats lookup
+      expect(getStats).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'homebridge-status')).toHaveLength(1))
+      getStats.mockRestore()
 
       // and after a disconnect the socket may subscribe afresh
       client.emit('disconnect')
@@ -650,7 +650,8 @@ describe('StatusGateway (e2e)', () => {
 
       const result = await statusGateway.getRaspberryPiThrottledStatus()
       // Not running on a Raspberry Pi in test, so should return WsException
-      expect((result as any).message).toBeDefined()
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).message).toBe('This command is only available on Raspberry Pi')
     })
   })
 

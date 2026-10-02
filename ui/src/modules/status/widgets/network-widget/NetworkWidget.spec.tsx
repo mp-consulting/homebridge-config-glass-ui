@@ -75,8 +75,14 @@ describe('the network widget', () => {
 
     expect(io.requests[0]).toEqual({
       resource: 'get-server-network-info',
-      payload: { netInterfaces: ['wlan0'] },
+      payload: { netInterfaces: ['wlan0'], interval: 1 },
     })
+  })
+
+  it('tells the server how often it polls, so the sampler keeps up', async () => {
+    await open({ refreshInterval: 3 })
+
+    expect(io.requests[0].payload).toEqual({ netInterfaces: [undefined], interval: 3 })
   })
 
   it('reports the rates in megabits per second', async () => {

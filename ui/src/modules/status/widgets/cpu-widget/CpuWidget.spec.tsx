@@ -219,6 +219,13 @@ describe('the cpu widget', () => {
       expect(io.requests.length).toBe(before + 1)
     })
 
+    it('sends its refresh interval with every request', async () => {
+      await openWithHistory(60, [1], 5)
+      await tick(5)
+
+      expect(io.requests.map(r => r.payload)).toEqual([{ interval: 5 }, { interval: 5 }])
+    })
+
     it('polls on the interval it was given', async () => {
       await openWithHistory(60, [1], 5)
       const before = io.requests.length

@@ -37,6 +37,8 @@ import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '..
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
+import { readLinuxCpuTemperature } from './linux-cpu-temperature.js'
+import { MIN_SAMPLE_MS, SharedSampler } from './shared-sampler.js'
 import {
   HomebridgeStatsResponse,
   HomebridgeStatus,
@@ -44,6 +46,21 @@ import {
 } from './status.interfaces.js'
 
 const execAsync = promisify(exec)
+
+// CPU temperature and network stats are sampled on a shared timer while any
+// widget polls for them (see SharedSampler); cpu load and memory are sampled
+// in the background all the time, so their history is there when a dashboard
+// opens. 10 s is the widgets' default refresh and the period whenever no
+// widget polls faster; the on-demand samplers stop once no widget has asked
+// for longer than the slowest widget refresh (60 s).
+const METRIC_SAMPLE_MS = 10_000
+// A widget's refresh interval is 1-60 s
+const MAX_REQUESTED_INTERVAL_MS = 60_000
+const METRIC_IDLE_MS = 75_000
+// Network samplers are per interface, and the interface comes from the client
+const MAX_NETWORK_SAMPLERS = 8
+
+export interface NetworkUsage { net: Systeminformation.NetworkStatsData, point: number }
 
 /**
  * Drop the pairing codes (HomeKit PIN and setup URI, and their Matter
@@ -70,6 +87,18 @@ export function withoutPairingCodes<T extends { pin?: unknown, setupUri?: unknow
   return redacted
 }
 
+/**
+ * A widget's refresh interval (seconds, from the request payload) as a sampler
+ * period: undefined - the sampler default - when absent or not a number, else
+ * clamped to the 1-60 s a widget can be set to.
+ */
+export function requestedIntervalMs(interval: unknown): number | undefined {
+  if (typeof interval !== 'number' || !Number.isFinite(interval) || interval <= 0) {
+    return undefined
+  }
+  return Math.min(MAX_REQUESTED_INTERVAL_MS, Math.max(MIN_SAMPLE_MS, Math.round(interval * 1000)))
+}
+
 /** The verified user on a socket (set by the WS guards) is an administrator */
 function isAdminClient(client: any): boolean {
   return client?.data?.user?.admin === true
@@ -89,6 +118,37 @@ export class StatusService {
   private memoryUsageHistory: number[] = []
 
   private memoryInfo: Systeminformation.MemData
+
+  private cpuTempSampler = new SharedSampler(() => this.getCpuTemp(), {
+    intervalMs: METRIC_SAMPLE_MS,
+    idleMs: METRIC_IDLE_MS,
+    onError: e => this.logger.debug(`Failed to sample cpu temperature as ${e.message}.`),
+  })
+
+  private networkSamplers = new Map<string, SharedSampler<NetworkUsage>>()
+
+  // Background samplers for the cpu load / memory history; the value is unused
+  private cpuLoadSampler = new SharedSampler(async () => {
+    await this.getCpuLoadPoint()
+    return true
+  }, {
+    intervalMs: METRIC_SAMPLE_MS,
+    idleMs: Infinity,
+    onError: e => this.logger.debug(`Failed to sample cpu load as ${e.message}.`),
+  })
+
+  private memorySampler = new SharedSampler(async () => {
+    await this.getMemoryUsagePoint()
+    return true
+  }, {
+    intervalMs: METRIC_SAMPLE_MS,
+    idleMs: Infinity,
+    onError: e => this.logger.debug(`Failed to sample memory usage as ${e.message}.`),
+  })
+
+  // Set once systeminformation has also found no temperature sensor, so the
+  // Linux reader stops falling back to its blocking shell calls every sample
+  private noLinuxTempSensor = false
   // Sockets already receiving server stats, as LogService.activeClients
   private statsClients = new WeakSet<object>()
 
@@ -120,15 +180,10 @@ export class StatusService {
     if (this.configService.ui.disableServerMetricsMonitoring !== true) {
       // Neither sample may reject unhandled: there is no global
       // unhandledRejection handler, so one failed systeminformation call
-      // would take the whole UI process down. A missed sample is harmless.
-      setInterval(() => {
-        this.getCpuLoadPoint().catch((e) => {
-          this.logger.debug(`Failed to sample cpu load as ${e.message}.`)
-        })
-        this.getMemoryUsagePoint().catch((e) => {
-          this.logger.debug(`Failed to sample memory usage as ${e.message}.`)
-        })
-      }, 10000)
+      // would take the whole UI process down. A missed sample is harmless
+      // (the samplers log it through onError).
+      this.cpuLoadSampler.start()
+      this.memorySampler.start()
     } else {
       this.logger.debug('Server metrics monitoring disabled.')
     }
@@ -198,7 +253,31 @@ export class StatusService {
       return this.getCpuTempLegacy()
     }
 
+    if (platform() === 'linux') {
+      return this.getCpuTempLinux()
+    }
+
     return cpuTemperature()
+  }
+
+  /**
+   * systeminformation's cpuTemperature() on Linux starts with an execSync that
+   * blocks the event loop, so read the same sysfs files with async fs, and only
+   * fall back to it for the sources the reader does not cover (vcgencmd).
+   */
+  private async getCpuTempLinux(): Promise<Systeminformation.CpuTemperatureData> {
+    const reading = await readLinuxCpuTemperature()
+    if (reading) {
+      return reading
+    }
+    if (this.noLinuxTempSensor) {
+      return { main: null, cores: [], max: null, socket: [], chipset: null }
+    }
+    const fallback = await cpuTemperature()
+    if (fallback.main === null) {
+      this.noLinuxTempSensor = true
+    }
+    return fallback
   }
 
   /**
@@ -244,12 +323,28 @@ export class StatusService {
   /**
    * Returns the current network usage
    */
-  public async getCurrentNetworkUsage(netInterfaces?: string[]): Promise<{ net: Systeminformation.NetworkStatsData, point: number }> {
-    if (!netInterfaces || !netInterfaces.length) {
-      netInterfaces = [await networkInterfaceDefault()]
-    }
+  public async getCurrentNetworkUsage(netInterfaces?: string[], interval?: number): Promise<NetworkUsage> {
+    // Only the first interface's stats are returned, so only it is sampled
+    const iface = netInterfaces?.find(Boolean) ?? ''
 
-    const net = await networkStats(netInterfaces.join(','))
+    let sampler = this.networkSamplers.get(iface)
+    if (!sampler) {
+      if (this.networkSamplers.size >= MAX_NETWORK_SAMPLERS) {
+        return this.sampleNetworkUsage(iface)
+      }
+      sampler = new SharedSampler(() => this.sampleNetworkUsage(iface), {
+        intervalMs: METRIC_SAMPLE_MS,
+        idleMs: METRIC_IDLE_MS,
+        onError: e => this.logger.debug(`Failed to sample network usage as ${e.message}.`),
+        onStop: () => this.networkSamplers.delete(iface),
+      })
+      this.networkSamplers.set(iface, sampler)
+    }
+    return sampler.get(requestedIntervalMs(interval))
+  }
+
+  private async sampleNetworkUsage(iface: string): Promise<NetworkUsage> {
+    const net = await networkStats(iface || await networkInterfaceDefault())
 
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
     const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024
@@ -309,7 +404,7 @@ export class StatusService {
   /**
    * Returns server CPU Load and temperature information
    */
-  public async getServerCpuInfo() {
+  public async getServerCpuInfo(interval?: number) {
     // When metrics monitoring is disabled, return an empty result rather than
     // collecting on demand - the dashboard widgets poll this endpoint, which
     // previously kept the metrics alive even with the monitoring turned off (#2934)
@@ -321,12 +416,11 @@ export class StatusService {
       }
     }
 
-    if (!this.cpuLoadHistory.length) {
-      await this.getCpuLoadPoint()
-    }
+    const intervalMs = requestedIntervalMs(interval)
+    await this.cpuLoadSampler.get(intervalMs)
 
     return {
-      cpuTemperature: await this.getCpuTemp(),
+      cpuTemperature: await this.cpuTempSampler.get(intervalMs),
       currentLoad: this.cpuLoadHistory.slice(-1)[0],
       cpuLoadHistory: this.cpuLoadHistory,
     }
@@ -335,7 +429,7 @@ export class StatusService {
   /**
    * Returns server Memory usage information
    */
-  public async getServerMemoryInfo() {
+  public async getServerMemoryInfo(interval?: number) {
     // See getServerCpuInfo - no on-demand collection when monitoring is disabled (#2934)
     if (this.configService.ui.disableServerMetricsMonitoring === true) {
       return {
@@ -344,9 +438,7 @@ export class StatusService {
       }
     }
 
-    if (!this.memoryUsageHistory.length) {
-      await this.getMemoryUsagePoint()
-    }
+    await this.memorySampler.get(requestedIntervalMs(interval))
 
     return {
       mem: this.memoryInfo,
