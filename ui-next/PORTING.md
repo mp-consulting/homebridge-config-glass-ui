@@ -62,3 +62,39 @@ src/
 | Pipes | functions in `@/core/pipes` | `convertTemp(value, unit)`, `prettify`, `duration`, … |
 | Router | `react-router` v8 (`createBrowserRouter`, basename from `<base href>`) | Guards → `loader`s that `redirect()`; `CanDeactivate` → `useBlocker`. |
 | `ng-bootstrap` widgets | `react-bootstrap` | Keep the Bootstrap markup/classes the templates produced. |
+
+## Routed modules
+
+Each routed page lives in `src/modules/<dir>/` (same dir names as `ui/src/app/modules`) and has a
+`route.tsx` exporting what a react-router v8 `lazy()` route takes: `export function Component()`
+(the page) and, if the Angular route had a resolver, `export async function loader()`. The router
+(`src/app/routes.tsx`, Phase 2) owns the paths and the guards; the page owns its own
+`canDeactivate` (via `useBlocker`, see `useCanDeactivate` in `@/core/utilities/terminal`).
+
+| path | dir | guard |
+|---|---|---|
+| `/login` | `login` | `requireLoggedOut` |
+| `/setup` | `setup-wizard` | `setupWizardGuard` |
+| `/` (layout) | — | `requireAuth` |
+| `/` index | `status` | |
+| `/restart` | `restart` | `requireAdmin` |
+| `/plugins` | `plugins` | `requireAuth` |
+| `/config` | `config-editor` | `requireAdmin` + resolver |
+| `/accessories` | `accessories` | `requireAuth` |
+| `/logs` | `logs` | `logsGuard` |
+| `/users` | `users` | `requireAdmin` + resolver |
+| `/settings` | `settings` | `requireAdmin` |
+| `/support` | `support` | `requireAuth` |
+| `/power-options` | `power-options` | `requireAdmin` |
+| `/platform-tools/*` | `platform-tools` (its own child routes in `route.tsx` as `export const children`) | `requireAdmin` |
+
+## Shared code that moves while porting
+
+- `modules/settings/backup/backup.service.ts` → `src/core/backup/backup.service.ts`, exported as
+  `backupService` with the Angular method names (owner: Phase 4; used by Phase 3 manage-plugin).
+- `modules/status/widgets/update-info-widget/hb-v2-modal` → `src/core/components/hb-v2-modal/`
+  (owner: Phase 3; used by Phase 6).
+- `core/plugins/manage-plugins.service.ts` → `src/core/plugins/manage-plugins.ts`, exported as
+  `managePlugins` with the Angular method names (owner: Phase 3a; used by 3b, 4, 6).
+- A service that only exists to hold state for one page becomes a hook or a Zustand store in that
+  module; a service several modules use goes in `src/core/`.
