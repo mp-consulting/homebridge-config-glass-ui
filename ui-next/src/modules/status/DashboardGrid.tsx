@@ -161,13 +161,14 @@ export function DashboardGrid({ store, hidden }: DashboardGridProps) {
   let content: ReactNode = null
   if (mounted && mobile) {
     // gridster's mobile layout: no grid, every item full width in list order,
-    // its height keeping the grid's aspect ratio (overridden per widget in status.scss)
+    // its height keeping the grid's aspect ratio (overridden per widget in status.scss).
+    // gridster used the grid's clientWidth, padding included; `width` here is the content width
     content = visible.map(item => (
       <gridster-item
         key={item.component}
         className="widget-item"
         id={item.component}
-        style={{ height: `${(item.rows * width) / item.cols}px`, marginBottom: `${margin}px` }}
+        style={{ height: `${(item.rows * (width + 2 * margin)) / item.cols}px`, marginBottom: `${margin}px` }}
       >
         <ItemBody store={store} widget={item} showSettings={showSettingsFor(item)} isUnlocked={isUnlocked} />
       </gridster-item>
@@ -225,9 +226,10 @@ export function DashboardGrid({ store, hidden }: DashboardGridProps) {
   }
 
   return (
-    // gridster wrote its own padding inline (the outer margin, which
-    // containerPadding gives here), so the `.row > *` gutter never applied
-    <div ref={containerRef} className={className} hidden={hidden} style={{ paddingLeft: 0, paddingRight: 0 }}>
+    // gridster wrote its padding inline, so the `.row > *` gutter never
+    // applied: the outer margin (containerPadding gives it on the desktop
+    // grid; the stacked mobile items sit inside it)
+    <div ref={containerRef} className={className} hidden={hidden} style={mobile ? { paddingLeft: margin, paddingRight: margin } : { paddingLeft: 0, paddingRight: 0 }}>
       {content}
     </div>
   )

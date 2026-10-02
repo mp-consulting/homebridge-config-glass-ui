@@ -74,8 +74,10 @@ export function ChildBridgeStatusIcons({ bridge, serverRestarting = false }: {
   const hapColoured = !hapDisabled && !hapExternalsOnly
   const matterColoured = !matterExternalsOnly && matterEnabled
 
+  // An inline wrapper, like Angular's <app-child-bridge-status-icons> host: its
+  // line box (the parent's line-height) sets the height of the row it sits in
   return (
-    <>
+    <span className="hb-child-bridge-status-icons">
       <WithTooltip text={t(hapTooltipKey)}>
         <i
           aria-hidden="true"
@@ -106,6 +108,6 @@ export function ChildBridgeStatusIcons({ bridge, serverRestarting = false }: {
           </i>
         </WithTooltip>
       )}
-    </>
+    </span>
   )
 }

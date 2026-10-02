@@ -52,3 +52,53 @@ for (const path of PAGES) {
     })
   })
 }
+
+/**
+ * The same comparison under other settings: each variant writes its UI
+ * settings through the API the settings page uses, on this UI's own server.
+ */
+const VARIANTS: { name: string, settings: Record<string, unknown>, viewport?: { width: number, height: number } }[] = [
+  { name: 'dark', settings: { lightingMode: 'dark' } },
+  { name: 'flat', settings: { glassMode: false } },
+  { name: 'flat-dark', settings: { glassMode: false, lightingMode: 'dark' } },
+  { name: 'hebrew', settings: { lang: 'he' } },
+  { name: 'mobile', settings: {}, viewport: { width: 390, height: 844 } },
+]
+const VARIANT_PAGES = ['/', '/plugins', '/settings']
+
+for (const variant of VARIANTS) {
+  test.describe(`${variant.name} variant`, () => {
+    test.describe.configure({ mode: 'serial' })
+
+    test.beforeAll(async ({ request }) => {
+      const { access_token: token } = await (await request.post('/api/auth/login', { data: { username: 'admin', password: 'admin' } })).json()
+      // Back to the defaults, then this variant's settings
+      const settings = { lightingMode: 'auto', glassMode: true, lang: 'auto', ...variant.settings }
+      const response = await request.patch('/api/config-editor/ui', { data: settings, headers: { authorization: `Bearer ${token}` } })
+      expect(response.ok()).toBe(true)
+    })
+
+    for (const path of VARIANT_PAGES) {
+      test(`${path} looks the same`, async ({ page }) => {
+        await page.setViewportSize(variant.viewport ?? { width: 1280, height: 900 })
+        await login(page)
+        await page.goto(path)
+        await page.waitForLoadState('networkidle')
+        await page.waitForTimeout(1500)
+        const name = `${variant.name}-${path === '/' ? 'status' : path.slice(1)}.png`
+        await expect(page).toHaveScreenshot(name, {
+          fullPage: true,
+          animations: 'disabled',
+          caret: 'hide',
+          mask: masks(page),
+          maxDiffPixelRatio: 0.02,
+        })
+      })
+    }
+  })
+}
+
+test.afterAll(async ({ request }) => {
+  const { access_token: token } = await (await request.post('/api/auth/login', { data: { username: 'admin', password: 'admin' } })).json()
+  await request.patch('/api/config-editor/ui', { data: { lightingMode: 'auto', glassMode: true, lang: 'auto' }, headers: { authorization: `Bearer ${token}` } })
+})
