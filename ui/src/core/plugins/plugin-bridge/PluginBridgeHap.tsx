@@ -1,22 +1,32 @@
-import type { PluginBridgeController } from '@/core/plugins/plugin-bridge/plugin-bridge.controller'
+import type { PluginBridgeStore } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 
 import { useTranslation } from 'react-i18next'
+import { useStore } from 'zustand'
 
 import { QrCode } from '@/core/components/qrcode/QrCode'
-import { numberValue } from '@/core/plugins/plugin-bridge/plugin-bridge.controller'
+import { isUnpairingHidden } from '@/core/plugins/plugin-bridge/plugin-bridge.bridge-list'
+import { getHapPortValidationError } from '@/core/plugins/plugin-bridge/plugin-bridge.hap'
+import { numberValue } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 
 /** The HomeKit (HAP) section of the selected child bridge: toggles, QR code and port. */
-export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
+export function PluginBridgeHap({ store }: { store: PluginBridgeStore }) {
   const { t } = useTranslation()
-  const sel = ctrl.selectedBlock()
+  const actions = store.getState()
+  const sel = useStore(store, s => s.selectedBlock)
   const idx = Number(sel)
-  const block = ctrl.configBlocks()[idx]
+  const block = useStore(store, s => s.configBlocks)[idx]
   const username: string | undefined = block._bridge?.username
-  const hapEnabled = ctrl.hapEnabledBlocks()[idx]
+  const hapEnabled = useStore(store, s => s.hapEnabledBlocks[idx])
+  const hapExternalsOnly = useStore(store, s => !!s.hapExternalsOnlyBlocks[idx])
+  const hapDisableIdentifyingMaterial = useStore(store, s => !!s.hapDisableIdentifyingMaterialBlocks[idx])
+  const justInstalled = useStore(store, s => s.justInstalled)
+  const isProtocolExternalsOnlyEnabled = useStore(store, s => s.isProtocolExternalsOnlyEnabled)
+  const isHapDisableIdentifyingMaterialEnabled = useStore(store, s => s.isHapDisableIdentifyingMaterialEnabled)
+  const unpairingHidden = useStore(store, s => !!username && isUnpairingHidden(s, username, 'hap'))
   const isAccessory = !!block.accessory
-  const info = username ? ctrl.deviceInfo().get(username) : undefined
+  const info = useStore(store, s => (username ? s.deviceInfo.get(username) : undefined))
   const pairing = info || undefined
-  const portError = ctrl.getHapPortValidationError(sel)
+  const portError = useStore(store, s => getHapPortValidationError(s, sel))
 
   return (
     <ul className="list-group list-group-box mt-3 mb-0">
@@ -40,7 +50,7 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
             id={`toggleHapInput_${sel}`}
             checked={!!hapEnabled}
             disabled={isAccessory}
-            onChange={event => void ctrl.toggleHapBridge(block, !hapEnabled, sel, event)}
+            onChange={event => void actions.toggleHapBridge(block, !hapEnabled, sel, event)}
           />
           <label
             className={`rendux-label${isAccessory ? ' cursor-not-allowed' : ''}`}
@@ -58,12 +68,12 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
         setup — externals-only is an advanced post-setup tweak, not a step in
         the initial pairing flow.
       */}
-      {!ctrl.justInstalled && ctrl.isProtocolExternalsOnlyEnabled && !hapEnabled && !isAccessory && (
+      {!justInstalled && isProtocolExternalsOnlyEnabled && !hapEnabled && !isAccessory && (
         <li className="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
           <span className="text-start d-flex align-items-center flex-grow-1 me-3">
             <i
               aria-hidden="true"
-              className={`fas fa-xl fa-hap protocol-icon my-2${ctrl.hapExternalsOnlyBlocks()[idx] ? ' text-info' : ' grey-text'}`}
+              className={`fas fa-xl fa-hap protocol-icon my-2${hapExternalsOnly ? ' text-info' : ' grey-text'}`}
             >
             </i>
             <span>
@@ -80,8 +90,8 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
               type="checkbox"
               className="rendux-input"
               id={`toggleHapExternalsOnlyInput_${sel}`}
-              checked={!!ctrl.hapExternalsOnlyBlocks()[idx]}
-              onChange={event => ctrl.toggleHapExternalsOnly(event, idx)}
+              checked={hapExternalsOnly}
+              onChange={event => actions.toggleHapExternalsOnly(event, idx)}
             />
             <label className="rendux-label" aria-hidden="true" htmlFor={`toggleHapExternalsOnlyInput_${sel}`}></label>
           </div>
@@ -94,12 +104,12 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
         It remains available while HAP is disabled so the preference is
         preserved independently of protocol enablement.
       */}
-      {ctrl.isHapDisableIdentifyingMaterialEnabled && (
+      {isHapDisableIdentifyingMaterialEnabled && (
         <li className="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
           <span className="text-start d-flex align-items-center flex-grow-1 me-3">
             <i
               aria-hidden="true"
-              className={`fas fa-xl fa-hap protocol-icon my-2${ctrl.hapDisableIdentifyingMaterialBlocks()[idx] ? ' text-warning' : ' grey-text'}`}
+              className={`fas fa-xl fa-hap protocol-icon my-2${hapDisableIdentifyingMaterial ? ' text-warning' : ' grey-text'}`}
             >
             </i>
             <span>
@@ -116,9 +126,9 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
               type="checkbox"
               className="rendux-input"
               id={`toggleHapDisableIdentifyingMaterialInput_${sel}`}
-              checked={!!ctrl.hapDisableIdentifyingMaterialBlocks()[idx]}
+              checked={hapDisableIdentifyingMaterial}
               aria-label={t('settings.hap.disable_identifying_material')}
-              onChange={event => ctrl.toggleHapDisableIdentifyingMaterial(event, idx)}
+              onChange={event => actions.toggleHapDisableIdentifyingMaterial(event, idx)}
             />
             <label className="rendux-label" aria-hidden="true" htmlFor={`toggleHapDisableIdentifyingMaterialInput_${sel}`}></label>
           </div>
@@ -169,9 +179,9 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
                       type="checkbox"
                       className="rendux-input"
                       id={`toggleHideHapUnpairing_${sel}`}
-                      checked={ctrl.isUnpairingHidden(username!, 'hap')}
+                      checked={unpairingHidden}
                       aria-label={t('child_bridge.config.hide_pairing_alert')}
-                      onChange={() => ctrl.toggleHideUnpairing(username!, 'hap')}
+                      onChange={() => actions.toggleHideUnpairing(username!, 'hap')}
                     />
                     <label className="rendux-label" aria-hidden="true" htmlFor={`toggleHideHapUnpairing_${sel}`}></label>
                   </div>
@@ -197,7 +207,7 @@ export function PluginBridgeHap({ ctrl }: { ctrl: PluginBridgeController }) {
                 value={block._bridge.port ?? ''}
                 onChange={(event) => {
                   block._bridge.port = numberValue(event.target.value)
-                  ctrl.notify()
+                  actions.touch()
                 }}
               />
               {portError && (

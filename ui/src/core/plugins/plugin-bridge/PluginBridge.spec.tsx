@@ -1,4 +1,4 @@
-import type { CheckboxEvent } from '@/core/plugins/plugin-bridge/plugin-bridge.controller'
+import type { CheckboxEvent, PluginBridgeStore } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 import type { FakeApi, FakeOpenModal } from '@/testing'
 import type { MockInstance } from 'vitest'
 
@@ -7,7 +7,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
 import { managePlugins as managePluginsModule } from '@/core/plugins/manage-plugins'
-import { PluginBridgeController } from '@/core/plugins/plugin-bridge/plugin-bridge.controller'
+import { isUnpairingHidden } from '@/core/plugins/plugin-bridge/plugin-bridge.bridge-list'
+import { getHapNameValidationError, getHapPortValidationError, selectHasValidationErrors, selectValidationErrorBridgeName } from '@/core/plugins/plugin-bridge/plugin-bridge.hap'
+import { getMatterFabricLabel, getMatterPortValidationError } from '@/core/plugins/plugin-bridge/plugin-bridge.matter'
+import { getScheduledRestartCron } from '@/core/plugins/plugin-bridge/plugin-bridge.schedule'
+import { createPluginBridgeStore } from '@/core/plugins/plugin-bridge/plugin-bridge.store'
 import { PluginBridge } from '@/core/plugins/plugin-bridge/PluginBridge'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import * as modalModule from '@/core/ui/modal'
@@ -42,9 +46,10 @@ const childBridges = childBridgesModule as unknown as { getAll: MockInstance }
  * the "HAP disabled" flag has two different spellings depending on the running
  * Homebridge version.
  *
- * The rules live in PluginBridgeController (the Angular component's class), so
- * most of these drive it directly, as the Angular specs drove the component
- * instance; the last block renders the modal itself.
+ * The rules live in the modal's store (the Angular component's class, split
+ * into HAP, Matter, schedule and bridge-list slices), so most of these drive
+ * its actions and read its state and selectors directly, as the Angular specs
+ * drove the component instance; the last block renders the modal itself.
  */
 describe('pluginBridge', () => {
   let api: FakeApi
@@ -101,7 +106,7 @@ describe('pluginBridge', () => {
   }
 
   /**
-   * Build the modal's controller and run its init.
+   * Build the modal's store and run its init.
    * @param config - the plugin's saved config blocks
    * @param options - feature flags and modal data overrides
    * @param options.featureFlags - the settings feature flags to enable
@@ -109,16 +114,16 @@ describe('pluginBridge', () => {
    * @param options.data - overrides for the modal data
    * @param options.env - extra settings environment, for the saved bridge list
    * @param options.arrange - runs after the default responses are registered
-   * but before the controller is created
+   * but before the store is created
    */
-  async function open(config: any[], options: OpenOptions = {}): Promise<PluginBridgeController> {
+  async function open(config: any[], options: OpenOptions = {}): Promise<PluginBridgeStore> {
     const data = arrange(config, options)
-    const ctrl = new PluginBridgeController(data, { activeModal, navigate })
-    await ctrl.init()
+    const store = createPluginBridgeStore(data, { activeModal, navigate })
+    await store.getState().init()
     for (let tick = 0; tick < 15; tick += 1) {
       await Promise.resolve()
     }
-    return ctrl
+    return store
   }
 
   /**
@@ -142,8 +147,8 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', name: 'Two' },
       ])
 
-      expect(modal.enabledBlocks()).toEqual({ 0: true })
-      expect(modal.isPlatform()).toBe(true)
+      expect(modal.getState().enabledBlocks).toEqual({ 0: true })
+      expect(modal.getState().isPlatform).toBe(true)
     })
 
     it('treats hap as enabled unless the config says otherwise', async () => {
@@ -151,7 +156,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
       ])
 
-      expect(modal.hapEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(true)
     })
 
     it('reads the legacy boolean form of a disabled hap bridge', async () => {
@@ -161,7 +166,7 @@ describe('pluginBridge', () => {
 
       // What older Homebridge versions wrote, and what is still in plenty of
       // config files
-      expect(modal.hapEnabledBlocks()[0]).toBe(false)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(false)
     })
 
     it('reads the nested object form of a disabled hap bridge', async () => {
@@ -169,7 +174,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false } } },
       ])
 
-      expect(modal.hapEnabledBlocks()[0]).toBe(false)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(false)
     })
 
     it('surfaces the externals-only flag when the runtime supports it', async () => {
@@ -178,7 +183,7 @@ describe('pluginBridge', () => {
         { featureFlags: { protocolExternalsOnly: true } },
       )
 
-      expect(modal.hapExternalsOnlyBlocks()[0]).toBe(true)
+      expect(modal.getState().hapExternalsOnlyBlocks[0]).toBe(true)
     })
 
     it('ignores the externals-only flag when the runtime does not support it', async () => {
@@ -188,7 +193,7 @@ describe('pluginBridge', () => {
 
       // Showing a toggle the running Homebridge would reject is worse than not
       // showing the setting at all
-      expect(modal.hapExternalsOnlyBlocks()).toEqual({})
+      expect(modal.getState().hapExternalsOnlyBlocks).toEqual({})
     })
 
     it('never reads an accessory bridge as having hap disabled', async () => {
@@ -199,7 +204,7 @@ describe('pluginBridge', () => {
 
       // An accessory has no Matter alternative, so a disabled HAP would leave it
       // unreachable - the setting is ignored rather than honoured
-      expect(modal.hapEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(true)
     })
 
     it('closes itself when the plugin type cannot be read', async () => {
@@ -221,7 +226,7 @@ describe('pluginBridge', () => {
       ])
 
       // HAP's own check, which Homebridge applies when it starts the bridge
-      expect(modal.getHapNameValidationError('0')).toBe(true)
+      expect(getHapNameValidationError(modal.getState(), '0')).toBe(true)
     })
 
     it('rejects a name containing punctuation', async () => {
@@ -229,7 +234,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen - Lights' } },
       ])
 
-      expect(modal.getHapNameValidationError('0')).toBe(true)
+      expect(getHapNameValidationError(modal.getState(), '0')).toBe(true)
     })
 
     it('accepts letters, numbers, spaces and apostrophes', async () => {
@@ -237,7 +242,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', name: `Bob's Kitchen 2` } },
       ])
 
-      expect(modal.getHapNameValidationError('0')).toBe(false)
+      expect(getHapNameValidationError(modal.getState(), '0')).toBe(false)
     })
 
     it('treats an empty name as fine', async () => {
@@ -246,22 +251,22 @@ describe('pluginBridge', () => {
       ])
 
       // Homebridge falls back to the plugin name, so this is not an error
-      expect(modal.getHapNameValidationError('0')).toBe(false)
+      expect(getHapNameValidationError(modal.getState(), '0')).toBe(false)
     })
 
     it('cleans up the plugin name when generating one', async () => {
       const modal = await open([{ platform: 'TestPlatform' }], {
         data: { plugin: makePlugin({ displayName: '  Test - Plugin!  ' }) },
       })
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       // Plugin display names routinely contain dashes and brackets, none of
       // which HAP allows, so the generated name is sanitised rather than
       // failing validation the moment the modal opens
       expect(block._bridge.name).toBe('Test  Plugin')
-      expect(modal.getHapNameValidationError('0')).toBe(false)
+      expect(getHapNameValidationError(modal.getState(), '0')).toBe(false)
     })
   })
 
@@ -272,7 +277,7 @@ describe('pluginBridge', () => {
       ])
 
       // Homebridge allocates one, which is the normal case
-      expect(modal.getHapPortValidationError('0')).toBe(false)
+      expect(getHapPortValidationError(modal.getState(), '0')).toBe(false)
     })
 
     it('rejects a port below the allowed range', async () => {
@@ -280,7 +285,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 80 } },
       ])
 
-      expect(modal.getHapPortValidationError('0')).toBe(true)
+      expect(getHapPortValidationError(modal.getState(), '0')).toBe(true)
     })
 
     it('rejects a port above the allowed range', async () => {
@@ -288,7 +293,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 65534 } },
       ])
 
-      expect(modal.getHapPortValidationError('0')).toBe(true)
+      expect(getHapPortValidationError(modal.getState(), '0')).toBe(true)
     })
 
     it('rejects a port two enabled bridges both want', async () => {
@@ -299,8 +304,8 @@ describe('pluginBridge', () => {
 
       // Two bridges on one port start, then fight, and the symptom is one of
       // them randomly going unresponsive
-      expect(modal.getHapPortValidationError('0')).toBe(true)
-      expect(modal.getHapPortValidationError('1')).toBe(true)
+      expect(getHapPortValidationError(modal.getState(), '0')).toBe(true)
+      expect(getHapPortValidationError(modal.getState(), '1')).toBe(true)
     })
 
     it('ignores a clash with a bridge that is switched off', async () => {
@@ -309,9 +314,9 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', name: 'Two' },
       ])
       // A disabled block's old port is not in use, so it cannot conflict
-      modal.configBlocks()[1]._bridge = { username: '0E:22:22:22:22:22', port: 51001 }
+      modal.getState().configBlocks[1]._bridge = { username: '0E:22:22:22:22:22', port: 51001 }
 
-      expect(modal.getHapPortValidationError('0')).toBe(false)
+      expect(getHapPortValidationError(modal.getState(), '0')).toBe(false)
     })
 
     it('rejects a hap port that clashes with matter on the same bridge', async () => {
@@ -322,7 +327,7 @@ describe('pluginBridge', () => {
         },
       ])
 
-      expect(modal.getHapPortValidationError('0')).toBe(true)
+      expect(getHapPortValidationError(modal.getState(), '0')).toBe(true)
     })
   })
 
@@ -333,7 +338,7 @@ describe('pluginBridge', () => {
         { featureFlags: { matterSupport: true } },
       )
 
-      expect(modal.getMatterPortValidationError('0')).toBe(false)
+      expect(getMatterPortValidationError(modal.getState(), '0')).toBe(false)
     })
 
     it('rejects a privileged port', async () => {
@@ -342,7 +347,7 @@ describe('pluginBridge', () => {
         { featureFlags: { matterSupport: true } },
       )
 
-      expect(modal.getMatterPortValidationError('0')).toBe(true)
+      expect(getMatterPortValidationError(modal.getState(), '0')).toBe(true)
     })
 
     it('rejects the ports other services already own', async () => {
@@ -354,7 +359,7 @@ describe('pluginBridge', () => {
 
         // 5353 is mDNS, which Homebridge's own discovery needs; the other two
         // are the UI's usual ports
-        expect(modal.getMatterPortValidationError('0')).toBe(true)
+        expect(getMatterPortValidationError(modal.getState(), '0')).toBe(true)
       }
     })
 
@@ -364,7 +369,7 @@ describe('pluginBridge', () => {
         { featureFlags: { matterSupport: true } },
       )
 
-      expect(modal.getMatterPortValidationError('0')).toBe(true)
+      expect(getMatterPortValidationError(modal.getState(), '0')).toBe(true)
     })
   })
 
@@ -374,8 +379,8 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' } },
       ])
 
-      expect(modal.hasValidationErrors).toBe(false)
-      expect(modal.validationErrorBridgeName).toBeNull()
+      expect(selectHasValidationErrors(modal.getState())).toBe(false)
+      expect(selectValidationErrorBridgeName(modal.getState())).toBeNull()
     })
 
     it('names the offending bridge even when it is not the one on screen', async () => {
@@ -386,8 +391,8 @@ describe('pluginBridge', () => {
 
       // The save button is disabled with no explanation otherwise, and the user
       // is looking at a bridge that is perfectly fine (#2892)
-      expect(modal.hasValidationErrors).toBe(true)
-      expect(modal.validationErrorBridgeName).toBe('Bad - Name')
+      expect(selectHasValidationErrors(modal.getState())).toBe(true)
+      expect(selectValidationErrorBridgeName(modal.getState())).toBe('Bad - Name')
     })
 
     it('falls back through the names it has when the bridge is unnamed', async () => {
@@ -395,7 +400,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', name: 'Block Name', _bridge: { username: '0E:11:11:11:11:11', port: 80 } },
       ])
 
-      expect(modal.validationErrorBridgeName).toBe('Block Name')
+      expect(selectValidationErrorBridgeName(modal.getState())).toBe('Block Name')
     })
 
     it('ignores a problem on a bridge that is switched off', async () => {
@@ -403,13 +408,13 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', name: 'One', _bridge: { username: '0E:11:11:11:11:11', name: 'Kitchen' } },
         { platform: 'TestPlatform', name: 'Two' },
       ])
-      modal.configBlocks()[1]._bridge = { username: '0E:22:22:22:22:22', name: 'Bad - Name' }
+      modal.getState().configBlocks[1]._bridge = { username: '0E:22:22:22:22:22', name: 'Bad - Name' }
 
       // Nothing is written for a disabled block, so its stale settings cannot
       // stop the save. Both the check and the message it drives have to agree,
       // or the save button is enabled while claiming a bridge is broken
-      expect(modal.hasValidationErrors).toBe(false)
-      expect(modal.validationErrorBridgeName).toBeNull()
+      expect(selectHasValidationErrors(modal.getState())).toBe(false)
+      expect(selectValidationErrorBridgeName(modal.getState())).toBeNull()
     })
   })
 
@@ -419,12 +424,12 @@ describe('pluginBridge', () => {
         [{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11' } }],
         { pluginType: 'accessory' },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
       const event = checkboxEvent(false)
 
-      await modal.toggleHapBridge(block, false, '0', event)
+      await modal.getState().toggleHapBridge(block, false, '0', event)
 
-      expect(modal.hapEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(true)
       // The checkbox is a one-way binding, so writing the same value back would
       // leave the tick where the browser put it
       expect((event.target as HTMLInputElement).checked).toBe(true)
@@ -436,14 +441,14 @@ describe('pluginBridge', () => {
         [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
         { featureFlags: { matterSupport: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
       const event = checkboxEvent(false)
 
-      await modal.toggleHapBridge(block, false, '0', event)
+      await modal.getState().toggleHapBridge(block, false, '0', event)
 
       // Turning both protocols off would leave the accessories with no way to
       // be reached at all
-      expect(modal.hapEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(true)
       expect((event.target as HTMLInputElement).checked).toBe(true)
       expect(toast.current!.at('info')[0].message).toBe('child_bridge.config.disable_hap_requires_matter')
     })
@@ -453,11 +458,11 @@ describe('pluginBridge', () => {
         [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
         { featureFlags: { matterSupport: true, disableAllProtocols: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, false, '0', checkboxEvent(false))
+      await modal.getState().toggleHapBridge(block, false, '0', checkboxEvent(false))
 
-      expect(modal.hapEnabledBlocks()[0]).toBe(false)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(false)
     })
 
     it('writes the legacy boolean for an older homebridge', async () => {
@@ -465,9 +470,9 @@ describe('pluginBridge', () => {
         [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
         { featureFlags: { disableAllProtocols: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, false, '0', checkboxEvent(false))
+      await modal.getState().toggleHapBridge(block, false, '0', checkboxEvent(false))
 
       expect(block._bridge.hap).toBe(false)
     })
@@ -477,9 +482,9 @@ describe('pluginBridge', () => {
         [{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } }],
         { featureFlags: { disableAllProtocols: true, protocolExternalsOnly: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, false, '0', checkboxEvent(false))
+      await modal.getState().toggleHapBridge(block, false, '0', checkboxEvent(false))
 
       // The two forms are not interchangeable: the newer runtime rejects the
       // boolean and the older one ignores the object
@@ -494,9 +499,9 @@ describe('pluginBridge', () => {
         }],
         { featureFlags: { disableAllProtocols: true, hapDisableIdentifyingMaterial: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, false, '0', checkboxEvent(false))
+      await modal.getState().toggleHapBridge(block, false, '0', checkboxEvent(false))
 
       // It is a separate preference from whether HAP is on, so switching HAP off
       // must not quietly discard it
@@ -507,9 +512,9 @@ describe('pluginBridge', () => {
   describe('switching hap back on', () => {
     it('fills in the details a matter-only bridge is missing', async () => {
       const modal = await open([{ platform: 'TestPlatform' }])
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       expect(block._bridge.username).toMatch(/^0E(:[0-9A-F]{2}){5}$/)
       expect(block._bridge.port).toBe(51234)
@@ -519,9 +524,9 @@ describe('pluginBridge', () => {
     it('falls back to a random port when the server cannot allocate one', async () => {
       const modal = await open([{ platform: 'TestPlatform' }])
       api.fail('get', '/server/port/new', new Error('offline'))
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       // A bridge with no port cannot start, so a guess in the usual range beats
       // leaving it blank
@@ -533,9 +538,9 @@ describe('pluginBridge', () => {
       const modal = await open([
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 51999, hap: false } },
       ])
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       expect(block._bridge.port).toBe(51999)
       expect(block._bridge.username).toBe('0E:11:11:11:11:11')
@@ -545,9 +550,9 @@ describe('pluginBridge', () => {
       const modal = await open([
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: { enabled: false } } },
       ])
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       expect(block._bridge.hap).toBeUndefined()
     })
@@ -560,13 +565,13 @@ describe('pluginBridge', () => {
         }],
         { featureFlags: { protocolExternalsOnly: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       // The newer runtime's rule is that externalsOnly requires enabled: false,
       // so leaving it behind makes the whole block invalid
-      expect(modal.hapExternalsOnlyBlocks()[0]).toBe(false)
+      expect(modal.getState().hapExternalsOnlyBlocks[0]).toBe(false)
       expect(block._bridge.hap).toBeUndefined()
     })
 
@@ -578,9 +583,9 @@ describe('pluginBridge', () => {
         }],
         { featureFlags: { hapDisableIdentifyingMaterial: true } },
       )
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleHapBridge(block, true, '0')
+      await modal.getState().toggleHapBridge(block, true, '0')
 
       expect(block._bridge.hap).toEqual({ disableIdentifyingMaterial: true })
     })
@@ -593,9 +598,9 @@ describe('pluginBridge', () => {
         { featureFlags: { protocolExternalsOnly: true } },
       )
 
-      modal.toggleHapExternalsOnly(checkboxEvent(true), 0)
+      modal.getState().toggleHapExternalsOnly(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap).toEqual({ enabled: false, externalsOnly: true })
+      expect(modal.getState().configBlocks[0]._bridge.hap).toEqual({ enabled: false, externalsOnly: true })
     })
 
     it('removes the flag rather than writing false', async () => {
@@ -607,11 +612,11 @@ describe('pluginBridge', () => {
         { featureFlags: { protocolExternalsOnly: true } },
       )
 
-      modal.toggleHapExternalsOnly(checkboxEvent(false), 0)
+      modal.getState().toggleHapExternalsOnly(checkboxEvent(false), 0)
 
       // Homebridge treats absence and false the same way, and the config stays
       // readable without keys set to their defaults
-      expect(modal.configBlocks()[0]._bridge.hap).toEqual({ enabled: false })
+      expect(modal.getState().configBlocks[0]._bridge.hap).toEqual({ enabled: false })
     })
 
     it('does nothing while hap is still enabled', async () => {
@@ -620,10 +625,10 @@ describe('pluginBridge', () => {
         { featureFlags: { protocolExternalsOnly: true } },
       )
 
-      modal.toggleHapExternalsOnly(checkboxEvent(true), 0)
+      modal.getState().toggleHapExternalsOnly(checkboxEvent(true), 0)
 
       // The combination is invalid, and the toggle is hidden in this state
-      expect(modal.configBlocks()[0]._bridge.hap).toBeUndefined()
+      expect(modal.getState().configBlocks[0]._bridge.hap).toBeUndefined()
     })
 
     it('does nothing at all when the runtime does not support it', async () => {
@@ -631,10 +636,10 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', hap: false } },
       ])
 
-      modal.toggleHapExternalsOnly(checkboxEvent(true), 0)
+      modal.getState().toggleHapExternalsOnly(checkboxEvent(true), 0)
 
-      expect(modal.hapExternalsOnlyBlocks()).toEqual({})
-      expect(modal.configBlocks()[0]._bridge.hap).toBe(false)
+      expect(modal.getState().hapExternalsOnlyBlocks).toEqual({})
+      expect(modal.getState().configBlocks[0]._bridge.hap).toBe(false)
     })
   })
 
@@ -644,7 +649,7 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
       ])
 
-      expect(modal.isUnpairingHidden('0E:11:11:11:11:11', 'hap')).toBe(false)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:11:11:11:11', 'hap')).toBe(false)
     })
 
     it('remembers the choice per protocol', async () => {
@@ -652,12 +657,12 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
       ])
 
-      modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
+      modal.getState().toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
 
       // HAP and Matter each have their own warning, so hiding one must not hide
       // the other
-      expect(modal.isUnpairingHidden('0E:11:11:11:11:11', 'hap')).toBe(true)
-      expect(modal.isUnpairingHidden('0E:11:11:11:11:11', 'matter')).toBe(false)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:11:11:11:11', 'hap')).toBe(true)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:11:11:11:11', 'matter')).toBe(false)
     })
 
     it('matches the bridge id whatever case it is written in', async () => {
@@ -665,10 +670,10 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
       ])
 
-      modal.toggleHideUnpairing('0e:11:11:11:11:11', 'hap')
+      modal.getState().toggleHideUnpairing('0e:11:11:11:11:11', 'hap')
 
       // The id is a MAC address that appears in the config in either case
-      expect(modal.isUnpairingHidden('0E:11:11:11:11:11', 'hap')).toBe(true)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:11:11:11:11', 'hap')).toBe(true)
     })
 
     it('switches the choice back off again', async () => {
@@ -676,41 +681,41 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11' } },
       ])
 
-      modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
-      modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
+      modal.getState().toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
+      modal.getState().toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
 
-      expect(modal.isUnpairingHidden('0E:11:11:11:11:11', 'hap')).toBe(false)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:11:11:11:11', 'hap')).toBe(false)
     })
   })
 
   describe('naming a matter fabric', () => {
     it('names the controllers it recognises', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
 
-      expect(modal.getMatterFabricLabel({ vendorId: 0x1349 })).toBe('Apple Home')
-      expect(modal.getMatterFabricLabel({ vendorId: 0x6006 })).toBe('Google Home')
-      expect(modal.getMatterFabricLabel({ vendorId: 0x1217 })).toBe('Amazon Alexa')
+      expect(getMatterFabricLabel({ vendorId: 0x1349 })).toBe('Apple Home')
+      expect(getMatterFabricLabel({ vendorId: 0x6006 })).toBe('Google Home')
+      expect(getMatterFabricLabel({ vendorId: 0x1217 })).toBe('Amazon Alexa')
     })
 
     it('reads the raw field name the child bridge metadata uses', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
 
       // Two paths supply this: one maps the field to vendorId, the other passes
       // matter.js's own rootVendorId straight through
-      expect(modal.getMatterFabricLabel({ rootVendorId: 0x1349 })).toBe('Apple Home')
+      expect(getMatterFabricLabel({ rootVendorId: 0x1349 })).toBe('Apple Home')
     })
 
     it('adds the home name when the fabric carries one', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
 
-      expect(modal.getMatterFabricLabel({ vendorId: 0x1349, label: 'Our House' })).toBe('Apple Home · Our House')
+      expect(getMatterFabricLabel({ vendorId: 0x1349, label: 'Our House' })).toBe('Apple Home · Our House')
     })
 
     it('shows the raw id for a controller it does not know', async () => {
-      const modal = await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
+      await open([{ platform: 'TestPlatform' }], { featureFlags: { matterSupport: true } })
 
-      expect(modal.getMatterFabricLabel({ vendorId: 0xABCD })).toBe('0xABCD')
-      expect(modal.getMatterFabricLabel({})).toBe('0x0')
+      expect(getMatterFabricLabel({ vendorId: 0xABCD })).toBe('0xABCD')
+      expect(getMatterFabricLabel({})).toBe('0x0')
     })
   })
 
@@ -718,7 +723,7 @@ describe('pluginBridge', () => {
     it('sends the user to the full config editor', async () => {
       const modal = await open([{ platform: 'TestPlatform' }])
 
-      modal.openFullConfigEditor()
+      modal.getState().openFullConfigEditor()
 
       expect(navigate).toHaveBeenCalledWith('/config')
       expect(activeModal.close).toHaveBeenCalled()
@@ -727,7 +732,7 @@ describe('pluginBridge', () => {
     it('dismisses without saving', async () => {
       const modal = await open([{ platform: 'TestPlatform' }])
 
-      modal.dismissModal()
+      modal.getState().dismissModal()
 
       expect(activeModal.dismiss).toHaveBeenCalledWith('Dismiss')
     })
@@ -761,91 +766,91 @@ describe('pluginBridge', () => {
 
     it('refuses on an accessory block, because matter is platform-only', async () => {
       const modal = await open([{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11', port: 51001 } }], { pluginType: 'accessory' })
-      const block = modal.configBlocks()[0]
+      const block = modal.getState().configBlocks[0]
 
-      await modal.toggleMatterBridge(block, true, '0')
+      await modal.getState().toggleMatterBridge(block, true, '0')
 
-      expect(modal.matterEnabledBlocks()[0]).toBe(false)
+      expect(modal.getState().matterEnabledBlocks[0]).toBe(false)
       expect(block._bridge.matter).toBeUndefined()
     })
 
     it('refuses to switch matter off when hap is not on to take over', async () => {
       const modal = await open([matterBlock()])
-      modal.hapEnabledBlocks.set({ 0: false })
+      modal.setState({ hapEnabledBlocks: { 0: false } })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.matterEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().matterEnabledBlocks[0]).toBe(true)
       expect(toast.current!.info).toHaveBeenCalledWith('child_bridge.config.disable_matter_requires_hap', 'toast.title_notice')
     })
 
     it('allows it when the running homebridge supports no protocols at all', async () => {
       const modal = await open([matterBlock()], { featureFlags: { disableAllProtocols: true } })
-      modal.hapEnabledBlocks.set({ 0: false })
+      modal.setState({ hapEnabledBlocks: { 0: false } })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.matterEnabledBlocks()[0]).toBe(false)
+      expect(modal.getState().matterEnabledBlocks[0]).toBe(false)
       expect(toast.current!.info).not.toHaveBeenCalled()
     })
 
     it('allocates a matter port the first time it is switched on', async () => {
       const modal = await open([{ platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {} } }])
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], true, '0')
 
-      expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 5540 })
+      expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 5540 })
     })
 
     it('builds a bridge block for a matter-only plugin that has none', async () => {
       const modal = await open([{ platform: 'TestPlatform' }])
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], true, '0')
 
-      expect(modal.configBlocks()[0]._bridge).toEqual({ env: {}, matter: { port: 5540 } })
+      expect(modal.getState().configBlocks[0]._bridge).toEqual({ env: {}, matter: { port: 5540 } })
     })
 
     it('keeps the commissioning by marking it disabled in place on a newer homebridge', async () => {
       // Tearing the block out would force the user to re-pair from scratch
       const modal = await open([matterBlock()], { featureFlags: { matterDisableInPlace: true } })
-      modal.hapEnabledBlocks.set({ 0: true })
+      modal.setState({ hapEnabledBlocks: { 0: true } })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 5541, enabled: false })
-      expect(modal.deleteMatterBridges()).toEqual([])
+      expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 5541, enabled: false })
+      expect(modal.getState().deleteMatterBridges).toEqual([])
     })
 
     it('tears the block out on an older homebridge', async () => {
       const modal = await open([matterBlock()])
-      modal.hapEnabledBlocks.set({ 0: true })
+      modal.setState({ hapEnabledBlocks: { 0: true } })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.configBlocks()[0]._bridge.matter).toBeUndefined()
+      expect(modal.getState().configBlocks[0]._bridge.matter).toBeUndefined()
     })
 
     it('restores the port it had rather than allocating a new one', async () => {
       const modal = await open([matterBlock()])
-      modal.hapEnabledBlocks.set({ 0: true })
+      modal.setState({ hapEnabledBlocks: { 0: true } })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
-      await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], true, '0')
 
-      expect(modal.configBlocks()[0]._bridge.matter.port).toBe(5541)
+      expect(modal.getState().configBlocks[0]._bridge.matter.port).toBe(5541)
     })
 
     it('carries the ipv4 preference across a disable and re-enable', async () => {
       const modal = await open([matterBlock({ matter: { port: 5541, disableIpv4: true } })], {
         featureFlags: { matterDisableIpv4: true },
       })
-      modal.hapEnabledBlocks.set({ 0: true })
+      modal.setState({ hapEnabledBlocks: { 0: true } })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
-      await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], true, '0')
 
-      expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 5541, disableIpv4: true })
-      expect(modal.matterDisableIpv4Blocks()[0]).toBe(true)
+      expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 5541, disableIpv4: true })
+      expect(modal.getState().matterDisableIpv4Blocks[0]).toBe(true)
     })
 
     it('clears a lingering externals-only flag when matter comes back on', async () => {
@@ -854,10 +859,10 @@ describe('pluginBridge', () => {
         featureFlags: { protocolExternalsOnly: true },
       })
 
-      await modal.toggleMatterBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], true, '0')
 
-      expect(modal.configBlocks()[0]._bridge.matter.externalsOnly).toBeUndefined()
-      expect(modal.matterExternalsOnlyBlocks()[0]).toBe(false)
+      expect(modal.getState().configBlocks[0]._bridge.matter.externalsOnly).toBeUndefined()
+      expect(modal.getState().matterExternalsOnlyBlocks[0]).toBe(false)
     })
   })
 
@@ -876,12 +881,12 @@ describe('pluginBridge', () => {
         arrange: () => api.respond('get', /^\/server\/pairings\//, { name: 'Test Bridge', _isPaired: false }),
       })
 
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.deleteBridges()).toEqual([
+      expect(modal.getState().deleteBridges).toEqual([
         { id: '0E:11:11:11:11:11', bridgeName: 'Test Bridge', paired: false },
       ])
-      expect(modal.configBlocks()[0]._bridge).toBeUndefined()
+      expect(modal.getState().configBlocks[0]._bridge).toBeUndefined()
     })
 
     it('flags that a paired bridge is about to go, so the user can be warned', async () => {
@@ -889,41 +894,41 @@ describe('pluginBridge', () => {
         arrange: () => api.respond('get', /^\/server\/pairings\//, { name: 'Test Bridge', _isPaired: true }),
       })
 
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.deleteBridges()[0].paired).toBe(true)
-      expect(modal.deletingPairedBridge()).toBe(true)
+      expect(modal.getState().deleteBridges[0].paired).toBe(true)
+      expect(modal.getState().deletingPairedBridge).toBe(true)
     })
 
     it('takes the bridge back off the deletion list when it is switched on again', async () => {
       const modal = await open([existingBridge()])
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
-      await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], true, '0')
 
-      expect(modal.deleteBridges()).toEqual([])
-      expect(modal.deletingPairedBridge()).toBe(false)
+      expect(modal.getState().deleteBridges).toEqual([])
+      expect(modal.getState().deletingPairedBridge).toBe(false)
     })
 
     it('queues it only once across an off, on, off cycle', async () => {
       const modal = await open([existingBridge()])
 
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
-      await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], true, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.deleteBridges()).toHaveLength(1)
+      expect(modal.getState().deleteBridges).toHaveLength(1)
     })
 
     it('does not queue a bridge the server never had', async () => {
       // A bridge created and then switched off again in the same sitting has
       // nothing on disk to clean up
       const modal = await open([{ platform: 'TestPlatform' }])
-      await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], true, '0')
 
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
-      expect(modal.deleteBridges()).toEqual([])
+      expect(modal.getState().deleteBridges).toEqual([])
     })
   })
 
@@ -945,10 +950,10 @@ describe('pluginBridge', () => {
         { accessory: 'TestAccessory', name: 'Second', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Shared Bridge' } },
       ], { pluginType: 'accessory' })
 
-      expect(modal.accessoryBridgeLinks()).toEqual([
+      expect(modal.getState().accessoryBridgeLinks).toEqual([
         expect.objectContaining({ index: '1', usesIndex: '0', username: '0E:11:11:11:11:11' }),
       ])
-      expect(modal.originalBridges()).toHaveLength(1)
+      expect(modal.getState().originalBridges).toHaveLength(1)
     })
 
     it('gives the linked block no environment of its own', async () => {
@@ -959,7 +964,7 @@ describe('pluginBridge', () => {
         { accessory: 'TestAccessory', name: 'Second', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: { DEBUG: 'b' } } },
       ], { pluginType: 'accessory' })
 
-      expect(modal.configBlocks()[1]._bridge.env).toEqual({})
+      expect(modal.getState().configBlocks[1]._bridge.env).toEqual({})
     })
 
     it('strips a matter block from an accessory, because matter is platform-only', async () => {
@@ -969,24 +974,24 @@ describe('pluginBridge', () => {
         { accessory: 'TestAccessory', name: 'First', _bridge: { username: '0E:11:11:11:11:11', port: 51001, env: {}, matter: { port: 5551 } } },
       ], { pluginType: 'accessory', featureFlags: { matterSupport: true } })
 
-      expect(modal.configBlocks()[0]._bridge.matter).toBeUndefined()
+      expect(modal.getState().configBlocks[0]._bridge.matter).toBeUndefined()
     })
 
     it('offers only the earlier accessory bridges', async () => {
       // A block can only join a bridge defined above it in the config
       const modal = await open(twoAccessories(), { pluginType: 'accessory' })
 
-      modal.onBlockChange('1')
+      modal.getState().onBlockChange('1')
 
-      expect(modal.bridgesAvailableForLink().map(bridge => bridge.username)).toEqual(['0E:11:11:11:11:11'])
+      expect(modal.getState().bridgesAvailableForLink.map(bridge => bridge.username)).toEqual(['0E:11:11:11:11:11'])
     })
 
     it('offers nothing to the first block', async () => {
       const modal = await open(twoAccessories(), { pluginType: 'accessory' })
 
-      modal.onBlockChange('0')
+      modal.getState().onBlockChange('0')
 
-      expect(modal.bridgesAvailableForLink()).toEqual([])
+      expect(modal.getState().bridgesAvailableForLink).toEqual([])
     })
 
     it('offers nothing on a platform block', async () => {
@@ -995,46 +1000,46 @@ describe('pluginBridge', () => {
         { platform: 'TestPlatform' },
       ])
 
-      modal.onBlockChange('1')
+      modal.getState().onBlockChange('1')
 
-      expect(modal.bridgesAvailableForLink()).toEqual([])
+      expect(modal.getState().bridgesAvailableForLink).toEqual([])
     })
 
     it('does not offer a bridge that is about to be deleted', async () => {
       const modal = await open(twoAccessories(), { pluginType: 'accessory' })
-      await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
-      modal.onBlockChange('1')
+      modal.getState().onBlockChange('1')
 
-      expect(modal.bridgesAvailableForLink()).toEqual([])
+      expect(modal.getState().bridgesAvailableForLink).toEqual([])
     })
 
     it('points the block at the shared bridge and marks hap on', async () => {
       // Linked accessory blocks always ride HAP on the shared bridge, so
       // without this the save-time at-least-one-protocol guard rejects them
       const modal = await open(twoAccessories(), { pluginType: 'accessory' })
-      modal.onBlockChange('1')
+      modal.getState().onBlockChange('1')
 
-      modal.onLinkBridgeChange('0E:11:11:11:11:11')
+      modal.getState().onLinkBridgeChange('0E:11:11:11:11:11')
 
-      expect(modal.configBlocks()[1]._bridge).toEqual({ username: '0E:11:11:11:11:11' })
-      expect(modal.enabledBlocks()[1]).toBe(true)
-      expect(modal.hapEnabledBlocks()[1]).toBe(true)
-      expect(modal.currentlySelectedLink()?.username).toBe('0E:11:11:11:11:11')
+      expect(modal.getState().configBlocks[1]._bridge).toEqual({ username: '0E:11:11:11:11:11' })
+      expect(modal.getState().enabledBlocks[1]).toBe(true)
+      expect(modal.getState().hapEnabledBlocks[1]).toBe(true)
+      expect(modal.getState().currentlySelectedLink?.username).toBe('0E:11:11:11:11:11')
     })
 
     it('drops the link rather than queueing a deletion when the block is switched off', async () => {
       // The bridge still belongs to the block above, so deleting it would take
       // that one down too
       const modal = await open(twoAccessories(), { pluginType: 'accessory' })
-      modal.onBlockChange('1')
-      modal.onLinkBridgeChange('0E:11:11:11:11:11')
+      modal.getState().onBlockChange('1')
+      modal.getState().onLinkBridgeChange('0E:11:11:11:11:11')
 
-      await modal.toggleExternalBridge(modal.configBlocks()[1], false, '1')
+      await modal.getState().toggleExternalBridge(modal.getState().configBlocks[1], false, '1')
 
-      expect(modal.accessoryBridgeLinks()).toEqual([])
-      expect(modal.deleteBridges()).toEqual([])
-      expect(modal.currentlySelectedLink()).toBeNull()
+      expect(modal.getState().accessoryBridgeLinks).toEqual([])
+      expect(modal.getState().deleteBridges).toEqual([])
+      expect(modal.getState().currentlySelectedLink).toBeNull()
     })
   })
 
@@ -1046,8 +1051,8 @@ describe('pluginBridge', () => {
       }
     }
 
-    async function save(modal: PluginBridgeController) {
-      await modal.save()
+    async function save(modal: PluginBridgeStore) {
+      await modal.getState().save()
       for (let tick = 0; tick < 10; tick += 1) {
         await Promise.resolve()
       }
@@ -1056,20 +1061,20 @@ describe('pluginBridge', () => {
     describe('what it refuses to write', () => {
       it('refuses a bridge with no protocol at all', async () => {
         const modal = await open([bridgeBlock()])
-        modal.hapEnabledBlocks.set({ 0: false })
-        modal.matterEnabledBlocks.set({ 0: false })
+        modal.setState({ hapEnabledBlocks: { 0: false } })
+        modal.setState({ matterEnabledBlocks: { 0: false } })
 
         await save(modal)
 
         expect(api.callsTo('post')).toEqual([])
         expect(toast.current!.error).toHaveBeenCalledWith('child_bridge.config.at_least_one_protocol', 'toast.title_error')
-        expect(modal.saveInProgress()).toBe(false)
+        expect(modal.getState().saveInProgress).toBe(false)
       })
 
       it('allows no protocol at all on a homebridge that supports it', async () => {
         const modal = await open([bridgeBlock()], { featureFlags: { disableAllProtocols: true } })
-        modal.hapEnabledBlocks.set({ 0: false })
-        modal.matterEnabledBlocks.set({ 0: false })
+        modal.setState({ hapEnabledBlocks: { 0: false } })
+        modal.setState({ matterEnabledBlocks: { 0: false } })
 
         await save(modal)
 
@@ -1079,8 +1084,8 @@ describe('pluginBridge', () => {
       it('treats an accessory block as having hap on even when nothing set the flag', async () => {
         // A linked accessory block never gets its own hap flag set
         const modal = await open([{ accessory: 'TestAccessory', _bridge: { username: '0E:11:11:11:11:11', port: 51001, name: 'Test Bridge', env: {} } }], { pluginType: 'accessory' })
-        modal.hapEnabledBlocks.set({})
-        modal.matterEnabledBlocks.set({ 0: false })
+        modal.setState({ hapEnabledBlocks: {} })
+        modal.setState({ matterEnabledBlocks: { 0: false } })
 
         await save(modal)
 
@@ -1108,7 +1113,7 @@ describe('pluginBridge', () => {
 
       it('refuses an invalid matter port', async () => {
         const modal = await open([bridgeBlock({ matter: { port: 80 } })])
-        modal.matterEnabledBlocks.set({ 0: true })
+        modal.setState({ matterEnabledBlocks: { 0: true } })
 
         await save(modal)
 
@@ -1119,8 +1124,8 @@ describe('pluginBridge', () => {
       it('skips the hap checks entirely when hap is switched off', async () => {
         // An invalid port on a disabled protocol must not block the save
         const modal = await open([bridgeBlock({ port: 80, matter: { port: 5541 } })])
-        modal.hapEnabledBlocks.set({ 0: false })
-        modal.matterEnabledBlocks.set({ 0: true })
+        modal.setState({ hapEnabledBlocks: { 0: false } })
+        modal.setState({ matterEnabledBlocks: { 0: true } })
 
         await save(modal)
 
@@ -1129,8 +1134,8 @@ describe('pluginBridge', () => {
 
       it('ignores a problem on a bridge that is switched off', async () => {
         const modal = await open([bridgeBlock(), bridgeBlock({ username: '0E:22:22:22:22:22', port: 80 })])
-        modal.enabledBlocks.set({ 0: true, 1: false })
-        modal.hapEnabledBlocks.set({ 0: true, 1: false })
+        modal.setState({ enabledBlocks: { 0: true, 1: false } })
+        modal.setState({ hapEnabledBlocks: { 0: true, 1: false } })
 
         await save(modal)
 
@@ -1146,7 +1151,7 @@ describe('pluginBridge', () => {
 
         const call = api.lastCall('post', /config-editor\/plugin/)
         expect(call?.url).toBe('/config-editor/plugin/homebridge-test')
-        expect(call?.body).toBe(modal.configBlocks())
+        expect(call?.body).toBe(modal.getState().configBlocks)
       })
 
       it('drops a matter block with no port rather than writing an empty one', async () => {
@@ -1154,46 +1159,46 @@ describe('pluginBridge', () => {
 
         await save(modal)
 
-        expect(modal.configBlocks()[0]._bridge.matter).toBeUndefined()
+        expect(modal.getState().configBlocks[0]._bridge.matter).toBeUndefined()
       })
 
       it('keeps a matter port of zero, which is a real request for any port', async () => {
         const modal = await open([bridgeBlock({ matter: { port: 0 } })])
-        modal.matterEnabledBlocks.set({ 0: false })
+        modal.setState({ matterEnabledBlocks: { 0: false } })
 
         await save(modal)
 
-        expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 0 })
+        expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 0 })
       })
 
       it('writes the externals-only flag only while hap is off', async () => {
         const modal = await open([bridgeBlock({ matter: { port: 5541 } })], {
           featureFlags: { protocolExternalsOnly: true },
         })
-        modal.hapEnabledBlocks.set({ 0: false })
-        modal.matterEnabledBlocks.set({ 0: true })
-        modal.hapExternalsOnlyBlocks.set({ 0: true })
+        modal.setState({ hapEnabledBlocks: { 0: false } })
+        modal.setState({ matterEnabledBlocks: { 0: true } })
+        modal.setState({ hapExternalsOnlyBlocks: { 0: true } })
 
         await save(modal)
 
-        expect(modal.configBlocks()[0]._bridge.hap).toEqual({ enabled: false, externalsOnly: true })
+        expect(modal.getState().configBlocks[0]._bridge.hap).toEqual({ enabled: false, externalsOnly: true })
       })
 
       it('does not write externals-only while hap is still on', async () => {
         const modal = await open([bridgeBlock()], { featureFlags: { protocolExternalsOnly: true } })
-        modal.hapEnabledBlocks.set({ 0: true })
-        modal.hapExternalsOnlyBlocks.set({ 0: true })
+        modal.setState({ hapEnabledBlocks: { 0: true } })
+        modal.setState({ hapExternalsOnlyBlocks: { 0: true } })
 
         await save(modal)
 
-        expect(modal.configBlocks()[0]._bridge.hap).toBeUndefined()
+        expect(modal.getState().configBlocks[0]._bridge.hap).toBeUndefined()
       })
     })
 
     describe('cleaning up afterwards', () => {
       it('deletes the pairing of a bridge the user switched off', async () => {
         const modal = await open([bridgeBlock()])
-        await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+        await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
         await save(modal)
 
@@ -1205,7 +1210,7 @@ describe('pluginBridge', () => {
         const modal = await open([bridgeBlock()], {
           arrange: () => api.fail('delete', /^\/server\/pairings\//, new Error('not found')),
         })
-        await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+        await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
         await save(modal)
 
@@ -1218,10 +1223,10 @@ describe('pluginBridge', () => {
         // The pairing endpoint removes the matter commissioning too, so a
         // second delete would just 404
         const modal = await open([bridgeBlock({ matter: { port: 5541 } })])
-        modal.originalMatterBridges.set([{ username: '0E:11:11:11:11:11', port: 5541 } as any])
-        modal.hapEnabledBlocks.set({ 0: true })
-        modal.matterEnabledBlocks.set({ 0: true })
-        await modal.toggleExternalBridge(modal.configBlocks()[0], false, '0')
+        modal.setState({ originalMatterBridges: [{ username: '0E:11:11:11:11:11', port: 5541 } as any] })
+        modal.setState({ hapEnabledBlocks: { 0: true } })
+        modal.setState({ matterEnabledBlocks: { 0: true } })
+        await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], false, '0')
 
         await save(modal)
 
@@ -1230,10 +1235,10 @@ describe('pluginBridge', () => {
 
       it('deletes only the matter storage when just matter was switched off', async () => {
         const modal = await open([bridgeBlock({ matter: { port: 5541 } })])
-        modal.originalMatterBridges.set([{ username: '0E:11:11:11:11:11', port: 5541 } as any])
-        modal.hapEnabledBlocks.set({ 0: true })
-        modal.matterEnabledBlocks.set({ 0: true })
-        await modal.toggleMatterBridge(modal.configBlocks()[0], false, '0')
+        modal.setState({ originalMatterBridges: [{ username: '0E:11:11:11:11:11', port: 5541 } as any] })
+        modal.setState({ hapEnabledBlocks: { 0: true } })
+        modal.setState({ matterEnabledBlocks: { 0: true } })
+        await modal.getState().toggleMatterBridge(modal.getState().configBlocks[0], false, '0')
 
         await save(modal)
 
@@ -1244,7 +1249,7 @@ describe('pluginBridge', () => {
     describe('which exit it takes', () => {
       it('offers a restart when the bridge config changed', async () => {
         const modal = await open([{ platform: 'TestPlatform' }])
-        await modal.toggleExternalBridge(modal.configBlocks()[0], true, '0')
+        await modal.getState().toggleExternalBridge(modal.getState().configBlocks[0], true, '0')
 
         await save(modal)
 
@@ -1264,7 +1269,7 @@ describe('pluginBridge', () => {
       it('closes asking for a refresh when only an alert preference changed', async () => {
         // No restart is needed for a purely cosmetic preference
         const modal = await open([bridgeBlock()])
-        modal.toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
+        modal.getState().toggleHideUnpairing('0E:11:11:11:11:11', 'hap')
 
         await save(modal)
 
@@ -1292,7 +1297,7 @@ describe('pluginBridge', () => {
 
         expect(toast.current!.error).toHaveBeenCalledWith('config.json is not writable', 'toast.title_error')
         expect(activeModal.close).not.toHaveBeenCalled()
-        expect(modal.saveInProgress()).toBe(false)
+        expect(modal.getState().saveInProgress).toBe(false)
       })
     })
   })
@@ -1318,11 +1323,11 @@ describe('pluginBridge', () => {
       const modal = await open([plain()])
       const block: any = plain()
 
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
       expect(block._bridge).toMatchObject({ port: 51234, name: 'Test Plugin' })
       expect(block._bridge.username).toMatch(/^[0-9A-F]{2}(:[0-9A-F]{2}){5}$/)
-      expect(modal.enabledBlocks()[0]).toBe(true)
+      expect(modal.getState().enabledBlocks[0]).toBe(true)
     })
 
     it('turns hap on with it', async () => {
@@ -1330,9 +1335,9 @@ describe('pluginBridge', () => {
       const modal = await open([plain()])
       const block: any = plain()
 
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
-      expect(modal.hapEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().hapEnabledBlocks[0]).toBe(true)
     })
 
     it('gives the username back when it is re-enabled', async () => {
@@ -1340,8 +1345,8 @@ describe('pluginBridge', () => {
       const modal = await open([{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }])
       const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }
 
-      await modal.toggleExternalBridge(block, false, '0')
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, false, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
       expect(block._bridge.username).toBe('0E:11:22:33:44:55')
     })
@@ -1350,8 +1355,8 @@ describe('pluginBridge', () => {
       const modal = await open([{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820, name: 'My Bridge' } }])
       const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820, name: 'My Bridge' } }
 
-      await modal.toggleExternalBridge(block, false, '0')
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, false, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
       expect(block._bridge.name).toBe('My Bridge')
     })
@@ -1363,9 +1368,9 @@ describe('pluginBridge', () => {
       )
       const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }
 
-      await modal.toggleExternalBridge(block, false, '0')
+      await modal.getState().toggleExternalBridge(block, false, '0')
 
-      expect(modal.deleteBridges().map(b => b.id)).toContain('0E:11:22:33:44:55')
+      expect(modal.getState().deleteBridges.map(b => b.id)).toContain('0E:11:22:33:44:55')
     })
 
     it('takes it off the deletion list when switched back on', async () => {
@@ -1375,10 +1380,10 @@ describe('pluginBridge', () => {
       )
       const block: any = { platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }
 
-      await modal.toggleExternalBridge(block, false, '0')
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, false, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
-      expect(modal.deleteBridges()).toEqual([])
+      expect(modal.getState().deleteBridges).toEqual([])
     })
 
     it('remembers the matter port while the child bridge is off', async () => {
@@ -1390,19 +1395,19 @@ describe('pluginBridge', () => {
       const modal = await open([withMatter], { featureFlags: { matterSupport: true } })
       const block: any = JSON.parse(JSON.stringify(withMatter))
 
-      await modal.toggleExternalBridge(block, false, '0')
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, false, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
       expect(block._bridge.matter).toMatchObject({ port: 5551 })
-      expect(modal.matterEnabledBlocks()[0]).toBe(true)
+      expect(modal.getState().matterEnabledBlocks[0]).toBe(true)
     })
 
     it('does nothing at all without a plugin', async () => {
       const modal = await open([plain()])
-      ;(modal as any).plugin = undefined
+      modal.setState({ plugin: undefined })
       const block: any = plain()
 
-      await modal.toggleExternalBridge(block, true, '0')
+      await modal.getState().toggleExternalBridge(block, true, '0')
 
       expect(block._bridge).toBeUndefined()
     })
@@ -1427,10 +1432,10 @@ describe('pluginBridge', () => {
     it('writes the flag into the block', async () => {
       const modal = await open([bridged()], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap).toEqual({ disableIdentifyingMaterial: true })
-      expect(modal.hapDisableIdentifyingMaterialBlocks()[0]).toBe(true)
+      expect(modal.getState().configBlocks[0]._bridge.hap).toEqual({ disableIdentifyingMaterial: true })
+      expect(modal.getState().hapDisableIdentifyingMaterialBlocks[0]).toBe(true)
     })
 
     it('takes the whole hap object away again when nothing else is in it', async () => {
@@ -1438,10 +1443,10 @@ describe('pluginBridge', () => {
       // and homebridge reads a present object differently from an absent one
       const modal = await open([bridged()], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(false), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(false), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap).toBeUndefined()
+      expect(modal.getState().configBlocks[0]._bridge.hap).toBeUndefined()
     })
 
     it('keeps hap switched off while the flag is added', async () => {
@@ -1449,18 +1454,18 @@ describe('pluginBridge', () => {
       // would quietly switch the bridge's hap back on
       const modal = await open([bridged({ enabled: false })], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap)
+      expect(modal.getState().configBlocks[0]._bridge.hap)
         .toEqual({ enabled: false, disableIdentifyingMaterial: true })
     })
 
     it('keeps hap switched off after the flag is taken away', async () => {
       const modal = await open([bridged({ enabled: false })], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(false), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(false), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap).toEqual({ enabled: false })
+      expect(modal.getState().configBlocks[0]._bridge.hap).toEqual({ enabled: false })
     })
 
     it('turns the legacy boolean form into an object', async () => {
@@ -1468,29 +1473,29 @@ describe('pluginBridge', () => {
       // live until it becomes an object
       const modal = await open([bridged(false)], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap)
+      expect(modal.getState().configBlocks[0]._bridge.hap)
         .toEqual({ enabled: false, disableIdentifyingMaterial: true })
     })
 
     it('writes enabled false for a bridge the user just switched off', async () => {
       // The block still says nothing about hap, but the screen does
       const modal = await open([bridged()], { featureFlags: { ...flags, matterSupport: true } })
-      modal.hapEnabledBlocks.set({ 0: false })
+      modal.setState({ hapEnabledBlocks: { 0: false } })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap)
+      expect(modal.getState().configBlocks[0]._bridge.hap)
         .toEqual({ enabled: false, disableIdentifyingMaterial: true })
     })
 
     it('keeps the other hap settings it finds', async () => {
       const modal = await open([bridged({ enabled: false, externalsOnly: true })], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap)
+      expect(modal.getState().configBlocks[0]._bridge.hap)
         .toEqual({ enabled: false, externalsOnly: true, disableIdentifyingMaterial: true })
     })
 
@@ -1499,18 +1504,18 @@ describe('pluginBridge', () => {
       // has to survive until it is
       const modal = await open([{ platform: 'TestPlatform', name: 'Test' }], { featureFlags: flags })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.hapDisableIdentifyingMaterialBlocks()[0]).toBe(true)
+      expect(modal.getState().hapDisableIdentifyingMaterialBlocks[0]).toBe(true)
     })
 
     it('does nothing while the runtime does not support it', async () => {
       const modal = await open([bridged()], { featureFlags: { hapDisableIdentifyingMaterial: false } })
 
-      modal.toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
+      modal.getState().toggleHapDisableIdentifyingMaterial(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.hap).toBeUndefined()
-      expect(modal.hapDisableIdentifyingMaterialBlocks()[0]).toBeFalsy()
+      expect(modal.getState().configBlocks[0]._bridge.hap).toBeUndefined()
+      expect(modal.getState().hapDisableIdentifyingMaterialBlocks[0]).toBeFalsy()
     })
   })
 
@@ -1529,10 +1534,10 @@ describe('pluginBridge', () => {
     it('writes the flag into the matter block', async () => {
       const modal = await open([bridged({ port: 5551 })], { featureFlags: flags })
 
-      modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
+      modal.getState().toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 5551, disableIpv4: true })
-      expect(modal.matterDisableIpv4Blocks()[0]).toBe(true)
+      expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 5551, disableIpv4: true })
+      expect(modal.getState().matterDisableIpv4Blocks[0]).toBe(true)
     })
 
     it('removes the flag rather than writing it false', async () => {
@@ -1540,18 +1545,18 @@ describe('pluginBridge', () => {
       // but only the missing key keeps the config file clean
       const modal = await open([bridged({ port: 5551, disableIpv4: true })], { featureFlags: flags })
 
-      modal.toggleMatterDisableIpv4(checkboxEvent(false), 0)
+      modal.getState().toggleMatterDisableIpv4(checkboxEvent(false), 0)
 
-      expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 5551 })
+      expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 5551 })
     })
 
     it('remembers the tick for a bridge with no matter block yet', async () => {
       const modal = await open([bridged()], { featureFlags: flags })
 
-      modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
+      modal.getState().toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
-      expect(modal.matterDisableIpv4Blocks()[0]).toBe(true)
-      expect(modal.configBlocks()[0]._bridge.matter).toBeUndefined()
+      expect(modal.getState().matterDisableIpv4Blocks[0]).toBe(true)
+      expect(modal.getState().configBlocks[0]._bridge.matter).toBeUndefined()
     })
 
     it('keeps the flag across switching matter off and on again', async () => {
@@ -1559,9 +1564,9 @@ describe('pluginBridge', () => {
       // without this the preference is lost on the round trip
       const modal = await open([bridged({ port: 5551 })], { featureFlags: flags })
 
-      modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
+      modal.getState().toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
-      expect(modal.matterBridgeCache().get(0)).toMatchObject({ disableIpv4: true })
+      expect(modal.getState().matterBridgeCache.get(0)).toMatchObject({ disableIpv4: true })
     })
 
     it('does nothing while the runtime does not support it', async () => {
@@ -1569,10 +1574,10 @@ describe('pluginBridge', () => {
         featureFlags: { matterSupport: true, matterDisableIpv4: false },
       })
 
-      modal.toggleMatterDisableIpv4(checkboxEvent(true), 0)
+      modal.getState().toggleMatterDisableIpv4(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.matter).toEqual({ port: 5551 })
-      expect(modal.matterDisableIpv4Blocks()[0]).toBeFalsy()
+      expect(modal.getState().configBlocks[0]._bridge.matter).toEqual({ port: 5551 })
+      expect(modal.getState().matterDisableIpv4Blocks[0]).toBeFalsy()
     })
   })
 
@@ -1592,44 +1597,44 @@ describe('pluginBridge', () => {
     ])('hides the %s notice', async (protocol, key) => {
       const modal = await open([bridged()])
 
-      modal.toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
+      modal.getState().toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
 
-      expect(modal.isUnpairingHidden('0E:11:22:33:44:55', protocol as 'hap' | 'matter')).toBe(true)
-      expect((modal as any).bridgeConfigs.get('0E:11:22:33:44:55')[key]).toBe(true)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:22:33:44:55', protocol as 'hap' | 'matter')).toBe(true)
+      expect((modal.getState().bridgeConfigs.get('0E:11:22:33:44:55') as any)[key]).toBe(true)
     })
 
     it.each(['hap', 'matter'])('shows the %s notice again on a second click', async (protocol) => {
       const modal = await open([bridged()])
 
-      modal.toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
-      modal.toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
+      modal.getState().toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
+      modal.getState().toggleHideUnpairing('0E:11:22:33:44:55', protocol as 'hap' | 'matter')
 
-      expect(modal.isUnpairingHidden('0E:11:22:33:44:55', protocol as 'hap' | 'matter')).toBe(false)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:22:33:44:55', protocol as 'hap' | 'matter')).toBe(false)
     })
 
     it('keeps the two protocols apart', async () => {
       // They are separate notices about separate pairings
       const modal = await open([bridged()], { featureFlags: { matterSupport: true } })
 
-      modal.toggleHideUnpairing('0E:11:22:33:44:55', 'hap')
+      modal.getState().toggleHideUnpairing('0E:11:22:33:44:55', 'hap')
 
-      expect(modal.isUnpairingHidden('0E:11:22:33:44:55', 'matter')).toBe(false)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:22:33:44:55', 'matter')).toBe(false)
     })
 
     it('finds the bridge whatever case was passed in', async () => {
       const modal = await open([bridged()])
 
-      modal.toggleHideUnpairing('0e:11:22:33:44:55', 'hap')
+      modal.getState().toggleHideUnpairing('0e:11:22:33:44:55', 'hap')
 
-      expect(modal.isUnpairingHidden('0E:11:22:33:44:55', 'hap')).toBe(true)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:22:33:44:55', 'hap')).toBe(true)
     })
 
     it('records it for a bridge the settings never listed', async () => {
       const modal = await open([bridged()])
 
-      modal.toggleHideUnpairing('0E:11:22:33:44:66', 'hap')
+      modal.getState().toggleHideUnpairing('0E:11:22:33:44:66', 'hap')
 
-      expect(modal.isUnpairingHidden('0E:11:22:33:44:66', 'hap')).toBe(true)
+      expect(isUnpairingHidden(modal.getState(), '0E:11:22:33:44:66', 'hap')).toBe(true)
     })
 
     it('saves it as a refresh rather than a restart', async () => {
@@ -1639,8 +1644,8 @@ describe('pluginBridge', () => {
         env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
       })
 
-      modal.toggleHideUnpairing('0E:11:22:33:44:55', 'hap')
-      await modal.save()
+      modal.getState().toggleHideUnpairing('0E:11:22:33:44:55', 'hap')
+      await modal.getState().save()
 
       expect(api.lastCall('put', /hide-hap-alert/)?.body).toBeDefined()
       expect(activeModal.close).toHaveBeenCalledWith('refresh')
@@ -1680,9 +1685,9 @@ describe('pluginBridge', () => {
       // ⚠️ Set after opening: `originalBridges` is filled from the config the modal
       // was given, so a difference has to be introduced here rather than in the
       // fixture, or there would be nothing to compare against
-      modal.originalBridges.set([saved] as any)
+      modal.setState({ originalBridges: [saved] as any })
 
-      await modal.save()
+      await modal.getState().save()
 
       return modal
     }
@@ -1708,11 +1713,11 @@ describe('pluginBridge', () => {
       // `hap` that the screen disagrees with is rewritten before the comparison
       const { config, env, saved } = withBridge()
       const modal = await open(config, { env, featureFlags: { matterSupport: true } })
-      modal.originalBridges.set([saved] as any)
-      modal.hapEnabledBlocks.set({ 0: false })
-      modal.matterEnabledBlocks.set({ 0: true })
+      modal.setState({ originalBridges: [saved] as any })
+      modal.setState({ hapEnabledBlocks: { 0: false } })
+      modal.setState({ matterEnabledBlocks: { 0: true } })
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(modalService.lastOpened()!.component).toBe(RestartHomebridge)
     })
@@ -1723,12 +1728,12 @@ describe('pluginBridge', () => {
         env,
         featureFlags: { matterSupport: true, protocolExternalsOnly: true },
       })
-      modal.originalBridges.set([{ ...saved, hap: { enabled: false } }] as any)
-      modal.hapEnabledBlocks.set({ 0: false })
-      modal.matterEnabledBlocks.set({ 0: true })
-      modal.hapExternalsOnlyBlocks.set({ 0: true })
+      modal.setState({ originalBridges: [{ ...saved, hap: { enabled: false } }] as any })
+      modal.setState({ hapEnabledBlocks: { 0: false } })
+      modal.setState({ matterEnabledBlocks: { 0: true } })
+      modal.setState({ hapExternalsOnlyBlocks: { 0: true } })
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(modalService.lastOpened()!.component).toBe(RestartHomebridge)
     })
@@ -1772,7 +1777,7 @@ describe('pluginBridge', () => {
       // one underneath saves whatever it was holding when the top one closes
       const modal = await open([bridged()])
 
-      modal.openPluginConfig()
+      modal.getState().openPluginConfig()
 
       expect(activeModal.close).toHaveBeenCalled()
       expect(managePlugins.settings).toHaveBeenCalledWith(
@@ -1782,9 +1787,9 @@ describe('pluginBridge', () => {
 
     it('does nothing without a plugin', async () => {
       const modal = await open([bridged()])
-      ;(modal as any).plugin = undefined
+      modal.setState({ plugin: undefined })
 
-      modal.openPluginConfig()
+      modal.getState().openPluginConfig()
 
       expect(managePlugins.settings).not.toHaveBeenCalled()
       expect(activeModal.close).not.toHaveBeenCalled()
@@ -1813,24 +1818,24 @@ describe('pluginBridge', () => {
       const modal = await open([bridged()], {
         env: { bridges: [{ username, name: 'Test' }] },
       })
-      modal.deleteBridges.set([{ id: username, name: 'Test' }] as any)
+      modal.setState({ deleteBridges: [{ id: username, name: 'Test' }] as any })
       return modal
     }
 
     it('writes no alert preference for it', async () => {
       const modal = await withDeletedBridge()
-      modal.toggleHideUnpairing(username, 'hap')
+      modal.getState().toggleHideUnpairing(username, 'hap')
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(api.callsTo('put').filter(call => call.url.includes('hide-hap-alert'))).toEqual([])
     })
 
     it('writes no restart schedule for it', async () => {
       const modal = await withDeletedBridge()
-      modal.onScheduledRestartCronChange('0 4 * * *', username)
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', username)
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(api.callsTo('put').filter(call => call.url.includes('scheduled-restart-cron'))).toEqual([])
     })
@@ -1841,10 +1846,10 @@ describe('pluginBridge', () => {
       const modal = await open([bridged()], {
         env: { bridges: [{ username, name: 'Test' }] },
       })
-      modal.toggleHideUnpairing(username, 'hap')
-      modal.onScheduledRestartCronChange('0 4 * * *', username)
+      modal.getState().toggleHideUnpairing(username, 'hap')
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', username)
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(api.callsTo('put').filter(call => call.url.includes('hide-hap-alert'))).toHaveLength(1)
       expect(api.callsTo('put').filter(call => call.url.includes('scheduled-restart-cron'))).toHaveLength(1)
@@ -1868,8 +1873,8 @@ describe('pluginBridge', () => {
         featureFlags: { matterSupport: true },
       })
 
-      modal.toggleHideUnpairing(username, 'matter')
-      await modal.save()
+      modal.getState().toggleHideUnpairing(username, 'matter')
+      await modal.getState().save()
 
       expect(api.callsTo('put').filter(call => call.url.includes('hide-matter-alert'))).toHaveLength(1)
       expect(api.callsTo('put').filter(call => call.url.includes('hide-hap-alert'))).toEqual([])
@@ -1883,8 +1888,8 @@ describe('pluginBridge', () => {
         arrange: () => api.fail('put', /hide-matter-alert/, new Error('config not writable')),
       })
 
-      modal.toggleHideUnpairing(username, 'matter')
-      await modal.save()
+      modal.getState().toggleHideUnpairing(username, 'matter')
+      await modal.getState().save()
 
       expect(api.callsTo('post', '/config-editor/plugin/homebridge-test')).toHaveLength(1)
     })
@@ -1914,13 +1919,13 @@ describe('pluginBridge', () => {
     it('shows the schedule a bridge already has', async () => {
       const modal = await open([bridged()], { env: withCron('0 4 * * *') })
 
-      expect(modal.getScheduledRestartCron('0E:11:22:33:44:55')).toBe('0 4 * * *')
+      expect(getScheduledRestartCron(modal.getState(), '0E:11:22:33:44:55')).toBe('0 4 * * *')
     })
 
     it('finds it however the username is cased', async () => {
       const modal = await open([bridged()], { env: withCron('0 4 * * *') })
 
-      expect(modal.getScheduledRestartCron('0e:11:22:33:44:55')).toBe('0 4 * * *')
+      expect(getScheduledRestartCron(modal.getState(), '0e:11:22:33:44:55')).toBe('0 4 * * *')
     })
 
     it.each([
@@ -1929,20 +1934,20 @@ describe('pluginBridge', () => {
     ])('shows nothing for %s', async (_case, username) => {
       const modal = await open([bridged()], { env: withCron() })
 
-      expect(modal.getScheduledRestartCron(username)).toBe('')
+      expect(getScheduledRestartCron(modal.getState(), username)).toBe('')
     })
 
     it('shows nothing when there is no username to look up', async () => {
       const modal = await open([bridged()])
 
-      expect(modal.getScheduledRestartCron(undefined)).toBe('')
+      expect(getScheduledRestartCron(modal.getState(), undefined)).toBe('')
     })
 
     it('writes a new schedule to the bridge endpoint on save', async () => {
       const modal = await open([bridged()], { env: withCron() })
 
-      modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
-      await modal.save()
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
+      await modal.getState().save()
 
       expect(api.lastCall('put', CRON_URL)?.body).toEqual({ value: '0 4 * * *' })
     })
@@ -1950,16 +1955,16 @@ describe('pluginBridge', () => {
     it('records it against the bridge whatever case was typed', async () => {
       const modal = await open([bridged()], { env: withCron() })
 
-      modal.onScheduledRestartCronChange('0 4 * * *', '0e:11:22:33:44:55')
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', '0e:11:22:33:44:55')
 
-      expect(modal.getScheduledRestartCron('0E:11:22:33:44:55')).toBe('0 4 * * *')
+      expect(getScheduledRestartCron(modal.getState(), '0E:11:22:33:44:55')).toBe('0 4 * * *')
     })
 
     it('clears the schedule when the box is emptied', async () => {
       const modal = await open([bridged()], { env: withCron('0 4 * * *') })
 
-      modal.onScheduledRestartCronChange('', '0E:11:22:33:44:55')
-      await modal.save()
+      modal.getState().onScheduledRestartCronChange('', '0E:11:22:33:44:55')
+      await modal.getState().save()
 
       expect(api.lastCall('put', CRON_URL)?.body).toEqual({ value: null })
     })
@@ -1967,26 +1972,26 @@ describe('pluginBridge', () => {
     it('treats a box of spaces as empty', async () => {
       const modal = await open([bridged()], { env: withCron('0 4 * * *') })
 
-      modal.onScheduledRestartCronChange('   ', '0E:11:22:33:44:55')
+      modal.getState().onScheduledRestartCronChange('   ', '0E:11:22:33:44:55')
 
-      expect(modal.getScheduledRestartCron('0E:11:22:33:44:55')).toBe('')
+      expect(getScheduledRestartCron(modal.getState(), '0E:11:22:33:44:55')).toBe('')
     })
 
     it('keeps a schedule for a bridge the settings did not list', async () => {
       // A bridge added in this very modal has no saved entry to update
       const modal = await open([bridged()])
 
-      modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:66')
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:66')
 
-      expect(modal.getScheduledRestartCron('0E:11:22:33:44:66')).toBe('0 4 * * *')
+      expect(getScheduledRestartCron(modal.getState(), '0E:11:22:33:44:66')).toBe('0 4 * * *')
     })
 
     it('ignores a change with no bridge to attach it to', async () => {
       const modal = await open([bridged()], { env: withCron() })
 
-      expect(() => modal.onScheduledRestartCronChange('0 4 * * *', '')).not.toThrow()
+      expect(() => modal.getState().onScheduledRestartCronChange('0 4 * * *', '')).not.toThrow()
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(api.callsTo('put', CRON_URL)).toEqual([])
     })
@@ -1994,7 +1999,7 @@ describe('pluginBridge', () => {
     it('writes nothing when the schedule was not changed', async () => {
       const modal = await open([bridged()], { env: withCron('0 4 * * *') })
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(api.callsTo('put', CRON_URL)).toEqual([])
     })
@@ -2002,8 +2007,8 @@ describe('pluginBridge', () => {
     it('asks for a full service restart, because the schedule lives outside homebridge', async () => {
       const modal = await open([bridged()], { env: withCron() })
 
-      modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
-      await modal.save()
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
+      await modal.getState().save()
 
       expect(api.callsTo('put', '/platform-tools/hb-service/set-full-service-restart-flag')).toHaveLength(1)
     })
@@ -2016,8 +2021,8 @@ describe('pluginBridge', () => {
         arrange: () => api.fail('put', CRON_URL, new Error('config not writable')),
       })
 
-      modal.onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
-      await modal.save()
+      modal.getState().onScheduledRestartCronChange('0 4 * * *', '0E:11:22:33:44:55')
+      await modal.getState().save()
 
       expect(modalService.lastOpened()!.component).toBe(RestartHomebridge)
     })
@@ -2040,7 +2045,7 @@ describe('pluginBridge', () => {
         env: { plugins: { hideChildBridgeSetupFor: ['homebridge-test'] } },
       })
 
-      expect(modal.hideChildBridgeSetup()).toBe(true)
+      expect(modal.getState().hideChildBridgeSetup).toBe(true)
     })
 
     it('adds the plugin to the list', async () => {
@@ -2051,8 +2056,8 @@ describe('pluginBridge', () => {
         },
       })
 
-      modal.toggleHideChildBridgeSetup()
-      await modal.save()
+      modal.getState().toggleHideChildBridgeSetup()
+      await modal.getState().save()
 
       // ⚠️ Sorted, and sent whole: the endpoint replaces the list, so an unsorted
       // or partial one silently reorders or drops other people's plugins
@@ -2067,8 +2072,8 @@ describe('pluginBridge', () => {
         },
       })
 
-      modal.toggleHideChildBridgeSetup()
-      await modal.save()
+      modal.getState().toggleHideChildBridgeSetup()
+      await modal.getState().save()
 
       expect(api.lastCall('put', HIDE_URL)?.body).toEqual({ body: ['homebridge-other'] })
     })
@@ -2078,8 +2083,8 @@ describe('pluginBridge', () => {
         env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
       })
 
-      modal.toggleHideChildBridgeSetup()
-      await modal.save()
+      modal.getState().toggleHideChildBridgeSetup()
+      await modal.getState().save()
 
       expect(settings.setEnvItem).toHaveBeenCalledWith('plugins.hideChildBridgeSetupFor', ['homebridge-test'])
     })
@@ -2091,8 +2096,8 @@ describe('pluginBridge', () => {
         env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
       })
 
-      modal.toggleHideChildBridgeSetup()
-      await modal.save()
+      modal.getState().toggleHideChildBridgeSetup()
+      await modal.getState().save()
 
       expect(activeModal.close).toHaveBeenCalledWith('refresh')
       expect(modalService.opened).toEqual([])
@@ -2103,7 +2108,7 @@ describe('pluginBridge', () => {
         env: { bridges: [{ username: '0E:11:22:33:44:55', name: 'Test' }] },
       })
 
-      await modal.save()
+      await modal.getState().save()
 
       expect(api.callsTo('put', HIDE_URL)).toEqual([])
     })
@@ -2115,8 +2120,8 @@ describe('pluginBridge', () => {
         arrange: () => api.fail('put', HIDE_URL, new Error('config not writable')),
       })
 
-      modal.toggleHideChildBridgeSetup()
-      await modal.save()
+      modal.getState().toggleHideChildBridgeSetup()
+      await modal.getState().save()
 
       expect(api.callsTo('post', '/config-editor/plugin/homebridge-test')).toHaveLength(1)
     })
@@ -2139,20 +2144,20 @@ describe('pluginBridge', () => {
     it('marks the block when it is ticked', async () => {
       const modal = await open([bridged()], { featureFlags: { matterSupport: true, protocolExternalsOnly: true } })
 
-      await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
-      expect(modal.matterExternalsOnlyBlocks()[0]).toBe(true)
-      expect(modal.configBlocks()[0]._bridge.matter.externalsOnly).toBe(true)
+      expect(modal.getState().matterExternalsOnlyBlocks[0]).toBe(true)
+      expect(modal.getState().configBlocks[0]._bridge.matter.externalsOnly).toBe(true)
     })
 
     it('clears it again when unticked', async () => {
       const modal = await open([bridged()], { featureFlags: { matterSupport: true, protocolExternalsOnly: true } })
-      await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
-      await modal.toggleMatterExternalsOnly(checkboxEvent(false), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(false), 0)
 
-      expect(modal.matterExternalsOnlyBlocks()[0]).toBe(false)
-      expect(modal.configBlocks()[0]._bridge.matter?.externalsOnly).toBeUndefined()
+      expect(modal.getState().matterExternalsOnlyBlocks[0]).toBe(false)
+      expect(modal.getState().configBlocks[0]._bridge.matter?.externalsOnly).toBeUndefined()
     })
 
     it('builds a matter block for a bridge that has none', async () => {
@@ -2162,9 +2167,9 @@ describe('pluginBridge', () => {
         { featureFlags: { matterSupport: true, protocolExternalsOnly: true } },
       )
 
-      await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
-      expect(modal.configBlocks()[0]._bridge.matter).toMatchObject({ port: 5540, enabled: false, externalsOnly: true })
+      expect(modal.getState().configBlocks[0]._bridge.matter).toMatchObject({ port: 5540, enabled: false, externalsOnly: true })
     })
 
     it('tears that block out again rather than leaving an orphan', async () => {
@@ -2174,11 +2179,11 @@ describe('pluginBridge', () => {
         [{ platform: 'TestPlatform', name: 'Test', _bridge: { username: '0E:11:22:33:44:55', port: 51820 } }],
         { featureFlags: { matterSupport: true, protocolExternalsOnly: true } },
       )
-      await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
-      await modal.toggleMatterExternalsOnly(checkboxEvent(false), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(false), 0)
 
-      expect(modal.configBlocks()[0]._bridge.matter).toBeUndefined()
+      expect(modal.getState().configBlocks[0]._bridge.matter).toBeUndefined()
     })
 
     it('does nothing on an accessory block', async () => {
@@ -2188,17 +2193,17 @@ describe('pluginBridge', () => {
         featureFlags: { matterSupport: true, protocolExternalsOnly: true },
       })
 
-      await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
-      expect(modal.matterExternalsOnlyBlocks()[0]).toBe(false)
+      expect(modal.getState().matterExternalsOnlyBlocks[0]).toBe(false)
     })
 
     it('does nothing while the runtime does not support it', async () => {
       const modal = await open([bridged()], { featureFlags: { matterSupport: true, protocolExternalsOnly: false } })
 
-      await modal.toggleMatterExternalsOnly(checkboxEvent(true), 0)
+      await modal.getState().toggleMatterExternalsOnly(checkboxEvent(true), 0)
 
-      expect(modal.matterExternalsOnlyBlocks()[0]).toBeFalsy()
+      expect(modal.getState().matterExternalsOnlyBlocks[0]).toBeFalsy()
     })
   })
 

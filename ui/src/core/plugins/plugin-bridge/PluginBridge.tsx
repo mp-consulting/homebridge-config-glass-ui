@@ -2,10 +2,13 @@ import type { ModalComponentProps } from '@/core/ui/modal'
 import type { PluginBridgeModalData } from '@/core/ui/modal-data'
 
 import { useTranslation } from 'react-i18next'
+import { useStore } from 'zustand'
 
+import { getHapNameValidationError, selectHasValidationErrors, selectValidationErrorBridgeName } from '@/core/plugins/plugin-bridge/plugin-bridge.hap'
+import { linkChildBridges } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
+import { PluginBridgeAdvanced } from '@/core/plugins/plugin-bridge/PluginBridgeAdvanced'
 import { PluginBridgeHap } from '@/core/plugins/plugin-bridge/PluginBridgeHap'
 import { PluginBridgeMatter } from '@/core/plugins/plugin-bridge/PluginBridgeMatter'
-import { PluginBridgeSchedule } from '@/core/plugins/plugin-bridge/PluginBridgeSchedule'
 import { usePluginBridge } from '@/core/plugins/plugin-bridge/usePluginBridge'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
@@ -19,39 +22,40 @@ export type PluginBridgeProps = PluginBridgeModalData & ModalComponentProps
  */
 export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
   const { t } = useTranslation()
-  const ctrl = usePluginBridge(data, activeModal)
+  const store = usePluginBridge(data, activeModal)
+  const actions = store.getState()
 
-  const plugin = ctrl.plugin
-  const justInstalled = ctrl.justInstalled
-  const loading = ctrl.loading()
-  const canConfigure = ctrl.canConfigure()
-  const saveInProgress = ctrl.saveInProgress()
-  const configBlocks = ctrl.configBlocks()
-  const sel = ctrl.selectedBlock()
+  const plugin = useStore(store, s => s.plugin)
+  const justInstalled = useStore(store, s => s.justInstalled)
+  const loading = useStore(store, s => s.loading)
+  const canConfigure = useStore(store, s => s.canConfigure)
+  const saveInProgress = useStore(store, s => s.saveInProgress)
+  const configBlocks = useStore(store, s => s.configBlocks)
+  const sel = useStore(store, s => s.selectedBlock)
   const idx = Number(sel)
   const block = configBlocks[idx]
   const bridge = block?._bridge
-  const enabled = ctrl.enabledBlocks()[idx]
-  const link = ctrl.currentlySelectedLink()
-  const hasLinks = ctrl.currentBridgeHasLinks()
-  const showAdvanced = ctrl.showAdvanced()
-  const deleteBridges = ctrl.deleteBridges()
-  const deleteMatterBridges = ctrl.deleteMatterBridges()
-  const invalidBridge = canConfigure && !justInstalled && ctrl.validationErrorBridgeName
-  const hasValidationErrors = ctrl.hasValidationErrors
+  const enabled = useStore(store, s => s.enabledBlocks[idx])
+  const hapEnabled = useStore(store, s => s.hapEnabledBlocks[idx])
+  const link = useStore(store, s => s.currentlySelectedLink)
+  const hasLinks = useStore(store, s => s.currentBridgeHasLinks)
+  const showAdvanced = useStore(store, s => s.showAdvanced)
+  const deleteBridges = useStore(store, s => s.deleteBridges)
+  const deleteMatterBridges = useStore(store, s => s.deleteMatterBridges)
+  const deletingPairedBridge = useStore(store, s => s.deletingPairedBridge)
+  const deviceInfo = useStore(store, s => s.deviceInfo)
+  const originalBridgesCount = useStore(store, s => s.originalBridges.length)
+  const availableForLink = useStore(store, s => s.bridgesAvailableForLink)
+  const hideChildBridgeSetup = useStore(store, s => s.hideChildBridgeSetup)
+  const isMatterOnlyPlugin = useStore(store, s => s.isMatterOnlyPlugin)
+  const isMatterSupported = useStore(store, s => s.isMatterSupported)
+  const nameError = useStore(store, s => !!s.configBlocks[Number(s.selectedBlock)]?._bridge?.name && getHapNameValidationError(s, s.selectedBlock))
+  const validationErrorBridgeName = useStore(store, selectValidationErrorBridgeName)
+  const hasValidationErrors = useStore(store, selectHasValidationErrors)
+  const invalidBridge = canConfigure && !justInstalled && validationErrorBridgeName
 
-  const toggleAdvanced = () => ctrl.showAdvanced.set(!showAdvanced)
-
-  /** Write one field of the selected block's bridge, as `[(ngModel)]` did. */
-  const setBridgeField = (field: string, value: unknown) => {
-    bridge[field] = value
-    ctrl.notify()
-  }
-  const setBridgeEnv = (field: 'DEBUG' | 'NODE_OPTIONS', value: string) => {
-    bridge.env ??= {}
-    bridge.env[field] = value
-    ctrl.notify()
-  }
+  const toggleAdvanced = () => actions.toggleAdvanced()
+  const setBridgeField = actions.setBridgeField
 
   return (
     <div className="modal-content hb-plugin-bridge">
@@ -64,7 +68,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
             data-bs-dismiss="modal"
             aria-label={t('form.button_close')}
             disabled={saveInProgress}
-            onClick={() => ctrl.closeModal()}
+            onClick={() => actions.closeModal()}
           >
           </button>
         )}
@@ -84,17 +88,17 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                     aria-hidden="true"
                     className="mb-3 plugin-icon-card"
                     src={plugin.icon}
-                    onError={() => ctrl.handleIconError()}
+                    onError={() => actions.handleIconError()}
                   />
                 </div>
                 <ul className="mb-3">
-                  <SafeHtml as="li" html={t('child_bridge.about', { link: ctrl.linkChildBridges(t('child_bridge.link_wiki')) })} />
+                  <SafeHtml as="li" html={t('child_bridge.about', { link: linkChildBridges(t('child_bridge.link_wiki')) })} />
                   {!!configBlocks.length && (
                     <>
                       <li>{t('child_bridge.bridges_paired')}</li>
                       {configBlocks.length === 1
-                        && !ctrl.deviceInfo().get(configBlocks[0]._bridge?.username)
-                        && ctrl.originalBridges().length === 0
+                        && !deviceInfo.get(configBlocks[0]._bridge?.username)
+                        && originalBridgesCount === 0
                         && <li>{t('child_bridge.bridges_paired_2')}</li>}
                     </>
                   )}
@@ -114,8 +118,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                               id="bridgeSelect"
                               value={sel}
                               onChange={(event) => {
-                                ctrl.selectedBlock.set(event.target.value)
-                                ctrl.onBlockChange(event.target.value)
+                                actions.onBlockChange(event.target.value)
                               }}
                             >
                               {configBlocks.map((b, i) => (
@@ -130,7 +133,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                     {/* CHILD BRIDGE SECTION */}
                     <ul className="list-group list-group-box mt-3 mb-0">
                       {/* Link Bridge Option */}
-                      {!bridge?.username && !!ctrl.bridgesAvailableForLink().length && !hasLinks && (
+                      {!bridge?.username && !!availableForLink.length && !hasLinks && (
                         <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
                           <label htmlFor="bridgeLink" className="mb-2 mb-md-0 w-100 w-md-50">
                             {t('child_bridge.config.or_link')}
@@ -140,10 +143,10 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                               className="custom-select"
                               id="bridgeLink"
                               defaultValue=""
-                              onChange={event => ctrl.onLinkBridgeChange(event.target.value)}
+                              onChange={event => actions.onLinkBridgeChange(event.target.value)}
                             >
                               <option value="">{t('child_bridge.config.select_existing')}</option>
-                              {ctrl.bridgesAvailableForLink().map(available => (
+                              {availableForLink.map(available => (
                                 <option key={available.username} value={available.username}>
                                   {available.name ? `${available.name} · ${available.username}` : available.username}
                                 </option>
@@ -175,7 +178,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                                     className="rendux-input"
                                     id={`toggleExternalBridgeInput_${sel}`}
                                     checked={!!enabled}
-                                    onChange={() => void ctrl.toggleExternalBridge(block, !enabled, sel)}
+                                    onChange={() => void actions.toggleExternalBridge(block, !enabled, sel)}
                                   />
                                   <label className="rendux-label" aria-hidden="true" htmlFor={`toggleExternalBridgeInput_${sel}`}></label>
                                 </div>
@@ -190,8 +193,8 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                                       type="checkbox"
                                       className="rendux-input"
                                       id="toggleHideChildBridgeSetupInput"
-                                      checked={ctrl.hideChildBridgeSetup()}
-                                      onChange={() => ctrl.toggleHideChildBridgeSetup()}
+                                      checked={hideChildBridgeSetup}
+                                      onChange={() => actions.toggleHideChildBridgeSetup()}
                                     />
                                     <label className="rendux-label" aria-hidden="true" htmlFor="toggleHideChildBridgeSetupInput"></label>
                                   </div>
@@ -237,11 +240,11 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                               <input
                                 id="bridge-name"
                                 type="text"
-                                className={`form-control custom-input${ctrl.getHapNameValidationError(sel) ? ' is-invalid' : ''}`}
+                                className={`form-control custom-input${nameError ? ' is-invalid' : ''}`}
                                 value={bridge.name ?? ''}
                                 onChange={event => setBridgeField('name', event.target.value)}
                               />
-                              {ctrl.getHapNameValidationError(sel) && (
+                              {nameError && (
                                 <div className="invalid-feedback d-block">
                                   {t('child_bridge.config.name_invalid')}
                                 </div>
@@ -263,127 +266,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                             <span className="text-start">{t('common.labels.advanced')}</span>
                             <i aria-hidden="true" className={`fa grey-text${showAdvanced ? ' fa-chevron-down' : ' fa-chevron-left'}`}></i>
                           </li>
-                          {showAdvanced && (
-                            <>
-                              <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
-                                <label htmlFor="bridge-manufacturer" className="mb-2 mb-md-0 w-100 w-md-50">
-                                  {t('child_bridge.config.manufacturer')}
-                                </label>
-                                <div className="text-start text-md-end w-100 w-md-50">
-                                  <input
-                                    id="bridge-manufacturer"
-                                    type="text"
-                                    className="form-control custom-input"
-                                    placeholder={t('form.optional')}
-                                    value={bridge.manufacturer ?? ''}
-                                    onChange={event => setBridgeField('manufacturer', event.target.value)}
-                                  />
-                                </div>
-                              </li>
-                              <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
-                                <label htmlFor="bridge-model" className="mb-2 mb-md-0 w-100 w-md-50">
-                                  {t('child_bridge.config.model')}
-                                </label>
-                                <div className="text-start text-md-end w-100 w-md-50">
-                                  <input
-                                    id="bridge-model"
-                                    type="text"
-                                    className="form-control custom-input"
-                                    placeholder={t('form.optional')}
-                                    value={bridge.model ?? ''}
-                                    onChange={event => setBridgeField('model', event.target.value)}
-                                  />
-                                </div>
-                              </li>
-                              <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
-                                <label htmlFor="bridge-firmware" className="mb-2 mb-md-0 w-100 w-md-50">
-                                  {t('child_bridge.config.firmware')}
-                                </label>
-                                <div className="text-start text-md-end w-100 w-md-50">
-                                  <input
-                                    id="bridge-firmware"
-                                    type="text"
-                                    className={`form-control custom-input${bridge.firmwareRevision ? ' font-monospace' : ''}`}
-                                    placeholder={t('form.optional')}
-                                    value={bridge.firmwareRevision ?? ''}
-                                    onChange={event => setBridgeField('firmwareRevision', event.target.value)}
-                                  />
-                                </div>
-                              </li>
-                              {!justInstalled && (
-                                <>
-                                  <PluginBridgeSchedule ctrl={ctrl} />
-                                  {ctrl.canShowBridgeDebug() && (
-                                    <li className="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                                      <span className="text-start">
-                                        {t('child_bridge.config.debug')}
-                                        {' '}
-                                        <code>-D</code>
-                                        <br />
-                                        <small className="grey-text">{t('child_bridge.config.debug_desc')}</small>
-                                      </span>
-                                      <div className="text-end grey-text d-flex align-items-center">
-                                        <input
-                                          type="checkbox"
-                                          className="rendux-input"
-                                          id={`homebridgeDebugMode_${sel}`}
-                                          aria-label={t('settings.startup.debug')}
-                                          checked={!!bridge.debugModeEnabled}
-                                          onChange={event => setBridgeField('debugModeEnabled', event.target.checked)}
-                                        />
-                                        <label className="rendux-label" aria-hidden="true" htmlFor={`homebridgeDebugMode_${sel}`}></label>
-                                      </div>
-                                    </li>
-                                  )}
-                                  <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
-                                    <label htmlFor="bridge-debug" className="mb-2 mb-md-0 w-100 w-md-50">
-                                      <span className="font-monospace">DEBUG</span>
-                                      <br />
-                                      <SafeHtml as="small" className="grey-text" html={t('settings.service.debug_tooltip_child', { link: ctrl.linkDebug(t('settings.link_debug_values')) })} />
-                                    </label>
-                                    <div className="text-start text-md-end w-100 w-md-50">
-                                      {!!ctrl.globalDebug() && (
-                                        <small className="d-block text-start text-white font-monospace mb-1 global-env-prefix">
-                                          {ctrl.globalDebug()}
-                                          ,
-                                        </small>
-                                      )}
-                                      <input
-                                        id="bridge-debug"
-                                        type="text"
-                                        className="form-control custom-input font-monospace"
-                                        placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-                                        value={bridge.env?.DEBUG ?? ''}
-                                        onChange={event => setBridgeEnv('DEBUG', event.target.value)}
-                                      />
-                                    </div>
-                                  </li>
-                                  <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
-                                    <label htmlFor="bridge-node-options" className="mb-2 mb-md-0 w-100 w-md-50">
-                                      <span className="font-monospace">NODE_OPTIONS</span>
-                                      <br />
-                                      <small className="grey-text">{t('settings.service.node_tooltip_child')}</small>
-                                    </label>
-                                    <div className="text-start text-md-end w-100 w-md-50">
-                                      {!!ctrl.globalNodeOptions() && (
-                                        <small className="d-block text-start text-white font-monospace mb-1 global-env-prefix">
-                                          {ctrl.globalNodeOptions()}
-                                        </small>
-                                      )}
-                                      <input
-                                        id="bridge-node-options"
-                                        type="text"
-                                        className="form-control custom-input font-monospace"
-                                        placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-                                        value={bridge.env?.NODE_OPTIONS ?? ''}
-                                        onChange={event => setBridgeEnv('NODE_OPTIONS', event.target.value)}
-                                      />
-                                    </div>
-                                  </li>
-                                </>
-                              )}
-                            </>
-                          )}
+                          {showAdvanced && <PluginBridgeAdvanced store={store} />}
                         </>
                       )}
                     </ul>
@@ -398,10 +281,10 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                           This condition must wrap only the HAP section — the matter section is a
                           sibling inside the same block, and putting it on the outer condition hid that too.
                         */}
-                        {(!ctrl.isMatterOnlyPlugin || ctrl.hapEnabledBlocks()[idx]) && <PluginBridgeHap ctrl={ctrl} />}
+                        {(!isMatterOnlyPlugin || hapEnabled) && <PluginBridgeHap store={store} />}
 
                         {/* MATTER SECTION - Only shown when child bridge is enabled and plugin is platform-based */}
-                        {ctrl.isMatterSupported && !block.accessory && <PluginBridgeMatter ctrl={ctrl} />}
+                        {isMatterSupported && !block.accessory && <PluginBridgeMatter store={store} />}
                       </>
                     )}
                   </>
@@ -411,7 +294,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                   <div role="alert" className="mt-3 mb-0 alert show alert-error fade">
                     <p>
                       {t('child_bridge.confirm_delete_1')}
-                      {ctrl.deletingPairedBridge() && (
+                      {deletingPairedBridge && (
                         <>
                           {' '}
                           {t('child_bridge.confirm_delete_2')}
@@ -424,7 +307,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                           <li key={`hap-${deleted.id}`}>
                             <i aria-hidden="true" className="fas fa-lg fa-hap me-1"></i>
                             {' '}
-                            {deleted.bridgeName || (ctrl.deviceInfo().get(deleted.id) || undefined)?.displayName}
+                            {deleted.bridgeName || (deviceInfo.get(deleted.id) || undefined)?.displayName}
                             <span className="grey-text"> · </span>
                             <span className="grey-text font-monospace">{deleted.id}</span>
                           </li>
@@ -452,7 +335,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                       {' '}
                       {t('plugins.settings.message_consult_documentation')}
                     </div>
-                    <button className="btn btn-primary mb-0" type="button" onClick={() => ctrl.openFullConfigEditor()}>
+                    <button className="btn btn-primary mb-0" type="button" onClick={() => actions.openFullConfigEditor()}>
                       {t('plugins.settings.label_open_config_editor')}
                     </button>
                   </div>
@@ -474,7 +357,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
               className="btn btn-elegant"
               data-bs-dismiss="modal"
               disabled={saveInProgress}
-              onClick={() => ctrl.closeModal()}
+              onClick={() => actions.closeModal()}
             >
               {t('form.button_close')}
             </button>
@@ -486,7 +369,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
               type="button"
               className="btn btn-primary"
               disabled={saveInProgress || hasValidationErrors}
-              onClick={() => void ctrl.save()}
+              onClick={() => void actions.save()}
             >
               {t('form.button_save')}
               {saveInProgress && (
@@ -498,7 +381,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
             </button>
           )}
           {!canConfigure && (
-            <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={() => ctrl.closeModal()}>
+            <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={() => actions.closeModal()}>
               {t('form.button_close')}
             </button>
           )}
@@ -511,7 +394,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                     type="button"
                     className="btn btn-primary"
                     disabled={saveInProgress || loading || hasValidationErrors}
-                    onClick={() => void ctrl.save()}
+                    onClick={() => void actions.save()}
                   >
                     {!saveInProgress
                       ? t('form.button_save')
@@ -519,7 +402,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                   </button>
                 )
               : (
-                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => ctrl.openPluginConfig()}>
+                  <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => actions.openPluginConfig()}>
                     {t('plugins.button_settings')}
                   </button>
                 )

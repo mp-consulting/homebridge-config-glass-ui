@@ -1,32 +1,29 @@
 import type { ActiveModal } from '@/core/ui/modal'
 import type { PluginBridgeModalData } from '@/core/ui/modal-data'
 
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import type { PluginBridgeStore } from './plugin-bridge.state'
+
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { PluginBridgeController } from '@/core/plugins/plugin-bridge/plugin-bridge.controller'
+import { createPluginBridgeStore } from './plugin-bridge.store'
 
-/**
- * The modal's controller, created once per modal, and a re-render whenever its
- * state changes.
- */
-export function usePluginBridge(data: PluginBridgeModalData, activeModal: ActiveModal): PluginBridgeController {
+/** The modal's store, created once per mounted editor, and loaded on mount. */
+export function usePluginBridge(data: PluginBridgeModalData, activeModal: ActiveModal): PluginBridgeStore {
   const navigate = useNavigate()
   const navigateRef = useRef(navigate)
   useEffect(() => {
     navigateRef.current = navigate
   }, [navigate])
 
-  const [ctrl] = useState(() => new PluginBridgeController(data, {
+  const [store] = useState(() => createPluginBridgeStore(data, {
     activeModal,
     navigate: path => navigateRef.current(path),
   }))
 
-  useSyncExternalStore(ctrl.subscribe, ctrl.getVersion, ctrl.getVersion)
-
   useEffect(() => {
-    void ctrl.init()
-  }, [ctrl])
+    void store.getState().init()
+  }, [store])
 
-  return ctrl
+  return store
 }
