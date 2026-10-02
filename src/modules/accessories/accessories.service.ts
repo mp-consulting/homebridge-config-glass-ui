@@ -26,6 +26,9 @@ import {
   MatterStateUpdate,
 } from '../../core/matter/matter.interfaces.js'
 
+/** Raised when a Matter IPC request gets no reply in time (retryable). */
+class MatterIpcTimeoutError extends Error {}
+
 @Injectable()
 export class AccessoriesService {
   public hapClient: HapClient
@@ -572,10 +575,20 @@ export class AccessoriesService {
   }
 
   /**
-   * Parse a Matter uniqueId into its components
+   * Parse a Matter uniqueId into its components. The format is exactly what
+   * `buildMatterUniqueId` produces: `matter:<uuid>` or `matter:<uuid>:<partId>`,
+   * with non-empty segments. Anything else (no prefix, empty segments, extra
+   * segments, or a doubled `matter:matter:` prefix from building an id out of
+   * an already-built one) is rejected rather than guessed at.
    */
   private parseMatterUniqueId(uniqueId: string): { uuid: string, partId?: string } {
-    const parts = uniqueId.replace('matter:', '').split(':')
+    const prefix = 'matter:'
+    const parts = typeof uniqueId === 'string' && uniqueId.startsWith(prefix)
+      ? uniqueId.slice(prefix.length).split(':')
+      : []
+    if (parts.length < 1 || parts.length > 2 || parts.includes('') || parts[0] === 'matter') {
+      throw new BadRequestException(`Invalid Matter accessory id '${uniqueId}'`)
+    }
     return {
       uuid: parts[0],
       partId: parts[1],
@@ -598,7 +611,13 @@ export class AccessoriesService {
   private async waitForMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void): Promise<T> {
     try {
       return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
-    } catch {
+    } catch (error) {
+      // only a timeout is worth retrying - a send failure (e.g. no Homebridge
+      // process attached) would fail the same way again
+      if (!(error instanceof MatterIpcTimeoutError)) {
+        this.logger.warn(`Matter IPC request '${eventType}' failed: ${error?.message ?? error}`)
+        throw error
+      }
       this.logger.warn(`Matter IPC request '${eventType}' timed out, retrying...`)
       try {
         return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
@@ -624,7 +643,7 @@ export class AccessoriesService {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         if (this.matterRequests.delete(correlationId)) {
-          reject(new Error('The Homebridge service did not respond'))
+          reject(new MatterIpcTimeoutError('The Homebridge service did not respond'))
         }
       }, timeoutMs)
 
@@ -988,7 +1007,9 @@ export class AccessoriesService {
       const { uuid, partId } = this.parseMatterUniqueId(control.uniqueId)
 
       // Find the accessory in the cache to get the bridge username
-      const accessory = this.matterAccessories.find(acc => acc.uuid === uuid)
+      // A part shares its parent's uuid, so match on the part id too
+      // (undefined for the parent itself)
+      const accessory = this.matterAccessories.find(acc => acc.uuid === uuid && acc.partId === partId)
       const bridgeUsername = accessory?.bridge?.username
 
       // Send control command via IPC using unified Matter event channel

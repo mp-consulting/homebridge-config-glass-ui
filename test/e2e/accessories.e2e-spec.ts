@@ -479,13 +479,13 @@ describe('AccessoriesController (e2e)', () => {
     // a malformed payload must be ignored, not crash the process
     client.emit('accessory-control')
     client.emit('accessory-control', 'not-an-object')
-    await new Promise(res => setTimeout(res, 50))
 
-    // and the session still works afterwards: a real refresh still runs
+    // and the session still works afterwards: a real refresh still runs.
+    // The listener is async and not awaited by the emitter, so wait for it;
+    // the two malformed calls above started first and settle before it
     hapClientMock.mockClear()
     client.emit('accessory-control', { refresh: true })
-    await new Promise(res => setTimeout(res, 50))
-    expect(hapClientMock).toHaveBeenCalled()
+    await vi.waitFor(() => expect(hapClientMock).toHaveBeenCalledTimes(1))
 
     client.emit('disconnect')
   })
@@ -554,7 +554,7 @@ describe('AccessoriesController (e2e)', () => {
     const client = authorizeWsClient(new EventEmitter() as any)
     const connecting = accessoriesService.connect(client)
     // still waiting on the monitor
-    await new Promise(res => setTimeout(res, 20))
+    await vi.waitFor(() => expect(accessoriesService.hapClient.monitorCharacteristics).toHaveBeenCalledTimes(1))
     expect(svc.activeClients.has(client)).toBe(true)
 
     client.emit('disconnect')
