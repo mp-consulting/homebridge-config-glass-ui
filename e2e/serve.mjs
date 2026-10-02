@@ -8,7 +8,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -35,14 +35,17 @@ const platform = config.platforms.find(p => p.platform === 'config')
 platform.port = port
 writeFileSync(configPath, JSON.stringify(config, null, 2))
 
+const realPlugins = resolve(repoRoot, 'e2e/.run/plugins/node_modules')
+
 const child = spawn('npx', ['tsx', 'src/bin/standalone.ts', '-U', storage], {
   cwd: repoRoot,
   stdio: 'inherit',
   env: {
     ...process.env,
     UIX_BASE_PATH_OVERRIDE: resolve(repoRoot, 'e2e/.run', ui),
-    // The mock plugins, so the plugin list doesn't depend on what this machine has installed
-    UIX_CUSTOM_PLUGIN_PATH: join(storage, 'plugins'),
+    // The mock plugins (plus the real custom-UI ones, once e2e/install-plugins.mjs
+    // has run), so the plugin list doesn't depend on what this machine has installed
+    UIX_CUSTOM_PLUGIN_PATH: existsSync(realPlugins) ? realPlugins : join(storage, 'plugins'),
     UIX_INSECURE_MODE: '',
     UIX_DEVELOPMENT: '',
   },
