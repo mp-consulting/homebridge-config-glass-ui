@@ -110,8 +110,10 @@ export function TabsWidget(props: WidgetProps) {
           layoutNode: layoutItem,
         }
         return (
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={`${layoutKey(layoutItem)}-${i}`} className={cx(`${(options?.htmlClass || '') + (selectedItem !== i ? ' ngf-hidden' : '')} `)}>
+          // By identity alone, like Angular's `track layoutItem`: keying by index
+          // too remounted every tab after a removed one, and a widget's unmount
+          // clears its value (formworks' ngOnDestroy)
+          <div key={layoutKey(layoutItem)} className={cx(`${(options?.htmlClass || '') + (selectedItem !== i ? ' ngf-hidden' : '')} `)}>
             {options?.tabMode === 'oneOfMode'
               ? selectedItem === i && <SelectFrameworkWidget {...frameworkProps} />
               : <SelectFrameworkWidget {...frameworkProps} />}
