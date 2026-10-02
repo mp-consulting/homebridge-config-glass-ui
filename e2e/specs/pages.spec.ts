@@ -1,6 +1,6 @@
 /**
- * Page behaviour parity: the same interactions on both UIs, through roles,
- * labels and the markup the React port keeps from the Angular templates.
+ * Page behaviour, through roles, labels and the markup the UI kept from the
+ * Angular templates it was ported from (the same specs passed on both).
  */
 
 import type { Page } from '@playwright/test'
@@ -15,7 +15,7 @@ async function login(page: Page) {
   await expect(page).not.toHaveURL(/\/login/)
 }
 
-// What the Angular UI puts on <body> for the mock storage's default settings
+// What the UI puts on <body> for the mock storage's default settings (as Angular did)
 const BODY_CLASSES = ['glass-mode', 'glass-ui-deep-purple', 'terminal-dark']
 
 test.beforeEach(async ({ page }) => {
@@ -38,10 +38,8 @@ test('the plugins page lists the installed plugins', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Homebridge Mock Plugin Two', exact: true, level: 5 })).toBeVisible()
 })
 
-test('a plugin settings form opens from its card', async ({ page }, info) => {
-  // The Angular production build throws NG0201 (no provider) when this modal
-  // opens from a plugin card, and renders no form: an Angular bug, not a spec one
-  test.fail(info.project.name === 'angular', 'NG0201 in the Angular build')
+test('a plugin settings form opens from its card', async ({ page }) => {
+  // The Angular 1.x build rendered no form here (NG0201 when the modal opened)
   await page.goto('/plugins')
   const card = page.locator('.card.card-body').filter({ has: page.getByRole('heading', { name: 'Homebridge Mock Plugin', exact: true }) })
   await card.getByRole('button', { name: 'Set Up' }).click()

@@ -1,4 +1,4 @@
-@import 'ngx-toastr/toastr';
+@import '../vendor/ngx-toastr';
 
 @media (max-width: 575px) {
   #toast-container {

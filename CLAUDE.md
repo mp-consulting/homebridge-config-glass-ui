@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a monorepo with two npm packages that ship together as the `@mp-consulting/homebridge-config-glass-ui` plugin:
 
 - **`/` (root)** — Nest.js backend (TypeScript, ESM, Fastify adapter). Compiles to `dist/`. Requires Node `^22.12.0 || ^24.0.0`.
-- **`/ui`** — Angular 22 frontend (private package). Compiles to `public/` (served as static assets by the backend — `outputPath` in `ui/angular.json` is `../public`).
+- **`/ui`** — React 19 + Vite frontend (private package). Compiles to `public/` (served as static assets by the backend — `build.outDir` in `ui/vite.config.ts` is `../public`).
 
 The UI package has its own `package.json`, `node_modules`, and tsconfig. **You must `npm install` in both root and `ui/` separately.**
 
@@ -22,7 +22,7 @@ npm install && npm install --prefix ui
 # Full build (server + ui)
 npm run build               # ~30s; runs build:server then build:ui
 npm run build:server        # tsc -p tsconfig.build.json → dist/
-npm run build:ui            # ng build production → public/ (prebuild regenerates the Font Awesome subset)
+npm run build:ui            # tsc + vite build → public/ (prebuild regenerates the Font Awesome subset; postbuild checks the Monaco assets and the 1.6 MB initial-bundle budget)
 
 # Dev (live reload, two processes via concurrently)
 npm run watch               # UI dev server on :4200, backend on :8581
@@ -36,6 +36,12 @@ npm run test
 npm run test -- test/e2e/auth.e2e-spec.ts          # single file
 npm run test -- -t "should reject invalid login"   # single test by name
 npm run test-coverage
+
+# UI unit tests (Vitest + React Testing Library, jsdom)
+npm run test:ui
+
+# Browser tests (Playwright, real backend on mock storage)
+node e2e/build.mjs && npx playwright test -c e2e
 
 # Translation key sync (en.json is the master)
 npm run lang-sync
@@ -66,12 +72,14 @@ When standalone or in dev watch mode (`npm run watch`), there's no Homebridge pr
 
 ## Frontend layout
 
-`ui/src/app/` splits into `core/` (singletons, guards, interceptors), `modules/` (routed feature areas), and `shared/`:
+`ui/src/` splits into `app/` (router, root component), `core/` (cross-cutting services, stores and shared components), `modules/` (routed feature areas), `shared/layout/` (layout + sidebar), `schema-form/` and `testing/`:
 
-- **`core/communication/`** — `api.service.ts` (HTTP wrapper for `/api`), `ws.service.ts` (socket.io-client), `notification.service.ts`. JWT handling lives in `core/auth/` (via `@auth0/angular-jwt`).
-- **`modules/`** — mirror the backend feature modules (`config-editor`, `plugins`, `status`, `users`, `platform-tools`, …). When adding a feature, expect to touch a backend module + its UI counterpart.
+- **`core/api`** — `api` (fetch wrapper for `/api`, bearer token, the 401 rule). **`core/ws`** — `ws.connectToNamespace(ns)` (socket.io-client, one socket per namespace, per-handle reference counting: every handle must `end()` exactly once) plus `useNamespace` / `useSocketEvent`. **`core/auth`**, **`core/settings`** — Zustand stores (`useAuthStore`/`authActions`, `useSettingsStore`/`settingsActions`); route guards are loaders in `core/auth/guards`.
+- **`core/ui`** — i18n (i18next on the flat-key JSON files, `keySeparator: false`), the `toast` facade (ngx-toastr markup) and `openModal` (NgbModal-style: `result` resolves on close, rejects on dismiss). `<ToastContainer/>` and `<ModalHost/>` are mounted inside the router.
+- **`modules/`** — mirror the backend feature modules (`config-editor`, `plugins`, `status`, `users`, `platform-tools`, …). Each has a `route.tsx` exporting `Component` (and optionally `loader`, `shouldRevalidate`, `children`) that `app/routes.tsx` lazy-loads. When adding a feature, expect to touch a backend module + its UI counterpart.
+- **`schema-form/`** — the plugin settings form: ng-formworks' engine ported to TypeScript on a small forms shim, with React widgets that render the same DOM and classes. `__corpus__/goldens/` are 200 frozen recordings of what the Angular form did with real plugin schemas; `__tests__/SchemaForm.golden*.test.tsx` replays them (run `node scripts/schema-corpus/fetch.mjs --from-manifest` first).
 - In dev mode, `ui/src/environments/environment.ts` hard-codes the backend at port `8581` on the current hostname — that's why `npm run watch` runs the backend on 8581.
-- Notable UI libs: ng-bootstrap + Bootstrap 5, Monaco editor (`ngx-monaco-editor-v2`) for the config editor, xterm for the terminal, `@ng-formworks/*` for plugin settings forms (JSON schema → form).
+- Notable UI libs: react-bootstrap + Bootstrap 5, Monaco (`@monaco-editor/react`, AMD assets copied by `vite-plugin-static-copy`) for the config editor, xterm for the terminal, react-grid-layout for the dashboard, dnd-kit for drag and drop, react-chartjs-2.
 
 ## Testing
 
@@ -101,14 +109,15 @@ These drive runtime behaviour and are set by `hb-service`, the watch script, or 
 - **Two `node_modules`**: if you change a dep in `ui/package.json`, run `npm install --prefix ui` — root `npm install` won't touch it.
 - **Built UI is gitignored but shipped on publish**: `public/` is the compiled UI. It is in `.gitignore`, so `npm run build:ui` won't show up in `git status` — don't expect (or try to commit) a `public/` diff. It still reaches the npm package: `prepublishOnly` runs `npm run build` to regenerate it, and `.npmignore` (which npm uses in preference to `.gitignore` because it exists) does not exclude `public/`.
 - **Translations**: `ui/src/i18n/en.json` is the source of truth; other locales are synced from it via `npm run lang-sync`. Don't hand-edit non-English files for new keys.
-- **Patched dependencies**: the UI runs `patch-package` on postinstall; patches for `@ng-formworks/*` live in `ui/patches/`. If you bump one of those packages, the patch must be re-created or it will fail to apply.
+- **Markup is a contract**: the UI keeps the DOM, classes, ids and i18n keys the Angular 1.x templates had (the global SCSS, plugin custom UIs and the e2e selectors depend on them). A component's `.scss` is global, so scope it under the component's root class; a few components keep a box-less or inline root where Angular's host element affected layout.
+- **i18n keys are found by substring** (`lang-sync`): write keys out in full rather than building them from parts, or add the built ones to `ignoreKeys` in `scripts/lang-sync.ts`.
 - **WebSocket guards only cover `@SubscribeMessage` handlers**: a raw `client.on(...)` listener bound after a guarded message (terminal `stdin`, custom plugin UI `request`, `accessory-control`) is never re-guarded. Run it through `createAuthorizedRunner` / `isWsClientAuthorized` from `src/core/auth/guards/ws-auth.ts`, or a deleted or demoted user keeps that access while the socket stays open. Take the acting user from `client.data.user` (set by the guards), never from the payload. In specs, give fake sockets that state with `authorizeWsClient` from `test/ws-client.ts`.
-- **CORS is dev-only**: cross-origin requests are allowed only with `UIX_DEVELOPMENT=1` (the Angular dev server on :4200/:8080). Production is same-origin.
+- **CORS is dev-only**: cross-origin requests are allowed only with `UIX_DEVELOPMENT=1` (the Vite dev server on :4200, or :8080). Production is same-origin.
 - **Install-script allow-list**: both `package.json` files have an `allowScripts` block (npm's install-script approval). Approvals are pinned to exact versions, so bumping an approved package (e.g. `esbuild`) makes npm prompt again — re-approve with `npm install-scripts approve <pkg>`.
 
 ## Glass mode
 
-The liquid glass look lives in `ui/src/scss/themes/glass.scss` and is scoped under `body.glass-mode`. Each theme mixin in `themes-light.scss` / `themes-dark.scss` exports `--glass-primary`, `--glass-primary-rgb` and `--glass-primary-dark`, which the glass styles read. `SettingsService.setGlassMode()` toggles the body class from the `glassMode` UI setting (default `true`).
+The liquid glass look lives in `ui/src/scss/themes/glass.scss` and is scoped under `body.glass-mode`. Each theme mixin in `themes-light.scss` / `themes-dark.scss` exports `--glass-primary`, `--glass-primary-rgb` and `--glass-primary-dark`, which the glass styles read. `settingsActions.setGlassMode()` (`ui/src/core/settings/settings.store.ts`) toggles the body class from the `glassMode` UI setting (default `true`).
 
 ## Git conventions
 

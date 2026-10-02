@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0-beta.0] - Unreleased
+
+The browser UI is rewritten in React (from Angular). Pages, themes, glass mode, dark mode, translations, saved dashboard and accessory layouts, and plugin custom settings UIs all carry over unchanged: the new UI keeps the old markup, so it looks and behaves the same. This is a major version because plugin custom UIs run inside a new host page, even though the three tested (Ring, Camera FFmpeg, UniFi Protect) work as before.
+
+### Fixed
+
+- **Plugin settings forms open again** from a plugin's card on the Plugins page, and plugin custom UIs that ask for a settings form (such as Ring's login form) show it. The previous UI showed an empty dialog there.
+- Cancelling an edit in the child bridge setup, or a rename in an accessory's info dialog, no longer leaves the unsaved change on screen.
+- The config editor highlights the invalid entry again when a save is refused.
+- Accessory tiles become controllable as soon as Homebridge reports it is ready, without reopening the page.
+- Dismissing the Homebridge v2 readiness warning closes the update dialog.
+- The manual config editor shows one editor for the open config block, instead of one per block.
+
+### Changed
+
+- On the dashboard, dropping a widget onto another moves the other one aside instead of swapping the two.
+- The terminal font size is saved as a number in the UI config (it was a string).
+- The initial download is slightly smaller (1.1 MB, from 1.18 MB).
+
+### Known differences
+
+- homebridge-switchbot: hiding a device in its settings no longer saves `false` for that device's other (hidden) switches. They are treated as off either way.
+
 ## [1.0.0] - 2026-09-30
 
 ### Added

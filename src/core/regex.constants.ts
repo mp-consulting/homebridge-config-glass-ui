@@ -1,7 +1,6 @@
 // Static assets
-// Content-hashed Angular build output: an 8-char base64url hash before the
-// extension (chunk-B3-qTyJy.js, styles-PEDBJHIE.css, chunk--1gmbzpq.js,
-// media/fa-solid-900-7ICWWULB.woff2). Used to decide which files get
+// Content-hashed UI build output: an 8-char base64url hash before the
+// extension (index-B2nQZ0s0.css, hooks-BpLZVoVQ.js, fa-solid-900-7ICWWULB.woff2). Used to decide which files get
 // immutable long-lived cache headers.
 export const RE_HASHED_ASSET = /-[\w-]{8}\.(?:js|css|woff2?|ttf|eot|svg)$/i
 
@@ -25,7 +24,7 @@ export const RE_NON_NUMERIC_DOT = /[^0-9.]/g
 // CORS
 export const RE_DEV_SERVER_ORIGIN = /^https?:\/\/[^:]+:(?:4200|8080)$/
 
-// The ports `ng serve` listens on. Used to tell a genuine Angular dev server
+// The ports the UI dev server listens on (Vite: 4200). Used to tell a genuine dev server
 // apart from any other origin a caller might supply.
 export const DEV_SERVER_PORTS = new Set(['4200', '8080'])
 

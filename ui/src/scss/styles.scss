@@ -1,4 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+// Font Awesome resolves its fonts relative to its own folder; Vite inlines the
+// partials into this file, so point the font path at an alias instead.
+@use '@fortawesome/fontawesome-free/scss/variables' as fa-vars with (
+  $font-path: '@fa-webfonts'
+);
 
 $image-path: '../../img';
 
@@ -16,7 +20,6 @@ $image-path: '../../img';
 
 @import '@xterm/xterm/css/xterm.css';
 @import 'nouislider/dist/nouislider.min.css';
-@import 'dragula/dist/dragula.min.css';
 
 @import './base/checkbox.scss';
 @import './base/layout.scss';

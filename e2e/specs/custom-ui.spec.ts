@@ -1,9 +1,9 @@
 /**
- * Plugin custom settings UIs (plugin-ui-utils iframes) on real plugins:
- * the iframe loads, receives the parent's theme, and the dialog looks the
- * same on both UIs (the React run compares against the Angular screenshots,
- * see visual.spec.ts). Needs `node e2e/install-plugins.mjs` first; skipped
- * without it.
+ * Plugin custom settings UIs (plugin-ui-utils iframes) on real plugins: the
+ * iframe loads and receives the parent's stylesheets and theme classes, and a
+ * schema form the plugin asks for (`createForm`) renders. Needs
+ * `node e2e/install-plugins.mjs` first; skipped without it. (Before 2.0 the
+ * dialogs were also compared with the Angular UI's, screenshot for screenshot.)
  */
 
 import type { Page } from '@playwright/test'
@@ -16,14 +16,11 @@ import { expect, test } from '@playwright/test'
 
 const installed = existsSync(resolve(dirname(fileURLToPath(import.meta.url)), '../.run/plugins/node_modules/homebridge-ring'))
 
-// `form`: a field the plugin's page asks the parent to render (`createForm`).
-// The Angular build renders no schema form inside a plugin dialog (NG0201,
-// see pages.spec.ts), so such a plugin is checked by its form, not compared
-// against an Angular screenshot.
-const PLUGINS: { name: string, file: string, form?: string }[] = [
-  { name: 'Ring', file: 'ring', form: 'Email' },
-  { name: 'Homebridge Camera FFmpeg', file: 'camera-ffmpeg' },
-  { name: 'UniFi Protect', file: 'unifi-protect' },
+// `form`: a field the plugin's page asks the parent to render (`createForm`)
+const PLUGINS: { name: string, form?: string }[] = [
+  { name: 'Ring', form: 'Email' },
+  { name: 'Homebridge Camera FFmpeg' },
+  { name: 'UniFi Protect' },
 ]
 
 async function login(page: Page) {
@@ -38,8 +35,7 @@ test.describe('plugin custom settings UIs', () => {
   test.skip(!installed, 'run node e2e/install-plugins.mjs first')
 
   for (const plugin of PLUGINS) {
-    test(`${plugin.name} opens themed`, async ({ page }, info) => {
-      test.fail(!!plugin.form && info.project.name === 'angular', 'NG0201 in the Angular build')
+    test(`${plugin.name} opens themed`, async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 900 })
       await login(page)
       await page.goto('/plugins')
@@ -61,14 +57,7 @@ test.describe('plugin custom settings UIs', () => {
 
       if (plugin.form) {
         await expect(dialog.getByRole('textbox', { name: plugin.form })).toBeVisible()
-        return
       }
-      await page.waitForTimeout(2000)
-      await expect(dialog).toHaveScreenshot(`custom-ui-${plugin.file}.png`, {
-        animations: 'disabled',
-        caret: 'hide',
-        maxDiffPixelRatio: 0.02,
-      })
     })
   }
 })

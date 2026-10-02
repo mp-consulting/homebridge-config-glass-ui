@@ -17,6 +17,7 @@
     "node_modules",
     "./dist",
     "ui",
-    "public"
+    "public",
+    "e2e"
   ]
 }

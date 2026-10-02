@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Builds the schema-form golden corpus inputs (see
- * ui-next/src/schema-form/__corpus__/README.md).
+ * ui/src/schema-form/__corpus__/README.md).
  *
  *   node scripts/schema-corpus/fetch.mjs                  # pick the top plugins, write manifest + schemas
  *   node scripts/schema-corpus/fetch.mjs --from-manifest  # re-download exactly the pinned versions
@@ -29,7 +29,7 @@ const CONCURRENCY = 6
 const SCHEMA_ENTRY = /^[^/]+\/config\.schema\.json$/
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
-const corpusDir = join(repoRoot, 'ui-next/src/schema-form/__corpus__')
+const corpusDir = join(repoRoot, 'ui/src/schema-form/__corpus__')
 const schemasDir = join(corpusDir, 'schemas')
 const manifestPath = join(corpusDir, 'manifest.json')
 

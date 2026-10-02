@@ -1,22 +1,20 @@
 /**
- * Parity suite: the same specs run against the Angular UI and the React UI,
- * each built by e2e/build.mjs and served from the real backend by e2e/serve.mjs.
+ * End-to-end suite: the UI built by e2e/build.mjs, served from the real
+ * backend by e2e/serve.mjs on fresh mock storage.
  *
  *   node e2e/build.mjs && npx playwright test -c e2e
- *   npx playwright test -c e2e --project react      (one UI only)
+ *   node e2e/install-plugins.mjs      (once, for the custom settings UI spec)
+ *
+ * Until 2.0 the same specs also ran against the Angular UI, as the parity
+ * check for the React port.
  */
 
 import { defineConfig, devices } from '@playwright/test'
 
-const UIS = [
-  { name: 'angular', port: 18581 },
-  { name: 'react', port: 18582 },
-]
+const PORT = 18581
 
 export default defineConfig({
   testDir: './specs',
-  // No {projectName}: the React project compares against the Angular screenshots
-  snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
@@ -24,17 +22,14 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     ...devices['Desktop Chrome'],
+    baseURL: `http://localhost:${PORT}`,
     trace: 'retain-on-failure',
   },
-  projects: UIS.map(ui => ({
-    name: ui.name,
-    use: { baseURL: `http://localhost:${ui.port}` },
-  })),
-  webServer: UIS.map(ui => ({
-    command: `node e2e/serve.mjs --ui ${ui.name} --port ${ui.port}`,
+  webServer: {
+    command: `node e2e/serve.mjs --port ${PORT}`,
     cwd: '..',
-    url: `http://localhost:${ui.port}/api/auth/settings`,
+    url: `http://localhost:${PORT}/api/auth/settings`,
     reuseExistingServer: false,
     timeout: 120_000,
-  })),
+  },
 })

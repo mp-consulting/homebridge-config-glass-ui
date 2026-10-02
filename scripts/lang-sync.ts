@@ -24,13 +24,13 @@ const ignoreKeys = [
   'plugins.settings.custom.homebridge-gsh.message_about', // used in google-gsh plugin config
   'plugins.settings.custom.homebridge-gsh.message_account_link_required', // used in google-gsh plugin config
   'plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required', // used in google-gsh plugin config
-  'status.widget.update_node_yes', // used in ui/src/app/modules/status/widgets/update-info-widget/node-version-modal
-  'status.widget.update_node_no', // used in ui/src/app/modules/status/widgets/update-info-widget/node-version-modal
-  'status.widget.update_node_unknown', // used in ui/src/app/modules/status/widgets/update-info-widget/node-version-modal
-  'update_all.reason_hidden', // key built dynamically in ui/src/app/core/update-all/update-all-modal.component.html
-  'update_all.reason_disabled', // key built dynamically in ui/src/app/core/update-all/update-all-modal.component.html
-  'update_all.reason_engines', // key built dynamically in ui/src/app/core/update-all/update-all-modal.component.html
-  'update_all.line_major', // key built dynamically in update-all-modal.component.ts; only a spec literal keeps it "used"
+  'status.widget.update_node_yes', // used in ui/src/modules/status/widgets/update-info-widget/node-version-modal
+  'status.widget.update_node_no', // used in ui/src/modules/status/widgets/update-info-widget/node-version-modal
+  'status.widget.update_node_unknown', // used in ui/src/modules/status/widgets/update-info-widget/node-version-modal
+  'update_all.reason_hidden', // key built dynamically in ui/src/core/update-all
+  'update_all.reason_disabled', // key built dynamically in ui/src/core/update-all
+  'update_all.reason_engines', // key built dynamically in ui/src/core/update-all
+  'update_all.line_major', // key built dynamically in ui/src/core/update-all
   // Service type → `accessories.core.<snake_case>` in serviceToTranslationString (accessory info modal)
   'accessories.core.cooler',
   'accessories.core.dehumidifier',

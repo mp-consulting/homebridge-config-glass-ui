@@ -1,4 +1,4 @@
-import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import type { ServiceTypeX } from '@/core/accessories/accessories.interfaces'
 import type { CharacteristicType } from '@homebridge/hap-client'
 
 import { vi } from 'vitest'

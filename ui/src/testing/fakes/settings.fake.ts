@@ -1,17 +1,6 @@
-import type { EnvInterface } from '@/app/core/settings.interfaces'
-import type { SettingsService } from '@/app/core/ui/settings.service'
-
-import { signal } from '@angular/core'
-import { of, Subject } from 'rxjs'
-import { vi } from 'vitest'
+import type { EnvInterface } from '@/core/interfaces/settings.interfaces'
 
 import { TEST_INSTANCE_ID } from '../constants'
-
-export type FakeSettings = SettingsService & { env: EnvInterface }
-
-export interface MakeSettingsOverrides extends Partial<Omit<FakeSettings, 'env'>> {
-  env?: Partial<EnvInterface>
-}
 
 /**
  * A plausible `env` block. Every flag defaults to the plain, non-container,
@@ -50,23 +39,27 @@ export function makeEnv(overrides: Partial<EnvInterface> = {}): EnvInterface {
     scheduledBackupDisable: false,
     scheduledBackupPath: '/var/lib/homebridge/backups',
     ...overrides,
-  }
+  } as EnvInterface
+}
+
+export interface MakeSettingsStateOverrides extends Record<string, unknown> {
+  env?: Partial<EnvInterface>
 }
 
 /**
- * A stand-in for SettingsService - the most injected object in the app.
+ * The data half of the settings store, loaded: seed it with
+ * `useSettingsStore.setState(makeSettingsState({ env: { ... } }))`.
  *
- * Two defaults are mandatory rather than convenient: `settingsLoaded: true`
- * and an `onSettingsLoaded` that emits. The real property is a plain Subject
- * piped through `first()`, so a subscriber that attaches after the event has
- * already fired never hears anything - and every route guard waits on it, so
- * without these a guard spec hangs until the test times out.
+ * `settingsLoaded: true` is the default because every route loader waits for
+ * the settings, so without it a guard spec hangs until it times out. Field
+ * names follow the Angular SettingsService; anything the store names
+ * differently can be passed as an override.
  * @param overrides - fields to change; `env` is merged over the defaults
  */
-export function makeSettings(overrides: MakeSettingsOverrides = {}): FakeSettings {
+export function makeSettingsState(overrides: MakeSettingsStateOverrides = {}) {
   const { env: envOverrides, ...rest } = overrides
 
-  const settings = {
+  return {
     env: makeEnv(envOverrides),
     host: 'localhost',
     proxyHost: 'localhost:8581',
@@ -75,68 +68,19 @@ export function makeSettings(overrides: MakeSettingsOverrides = {}): FakeSetting
     sessionTimeoutInactivityBased: false,
     uiVersion: '5.0.0',
     theme: 'deep-purple',
-    lightingMode: 'auto',
-    currentLightingMode: 'auto',
-    actualLightingMode: 'light',
-    browserLightingMode: 'light',
-    menuMode: 'default',
+    lightingMode: 'auto' as 'auto' | 'light' | 'dark',
+    currentLightingMode: 'auto' as 'auto' | 'light' | 'dark',
+    actualLightingMode: 'light' as 'dark' | 'light',
+    browserLightingMode: 'light' as 'dark' | 'light',
+    glassMode: true,
+    menuMode: 'default' as 'default' | 'freeze',
     keepOrphans: false,
     wallpaper: '',
     serverTimeOffset: 0,
     rtl: false,
     browserLang: 'en',
     settingsLoaded: true,
-    onSettingsLoaded: of(undefined),
-    // The shell reads this every render - a plain `false` would not be callable
-    serverUnreachable: signal(false),
-    restartToastRef: null,
-    terminalSettingsChanged: new Subject(),
-    themeList: [
-      'orange',
-      'red',
-      'pink',
-      'purple',
-      'deep-purple',
-      'indigo',
-      'blue',
-      'blue-grey',
-      'cyan',
-      'green',
-      'teal',
-      'grey',
-      'brown',
-    ],
-
-    getAppSettings: vi.fn(async () => undefined),
-    setBrowserLightingMode: vi.fn(),
-    setLightingMode: vi.fn(),
-    setTheme: vi.fn(),
-    setMenuMode: vi.fn(),
-    setKeepOrphans: vi.fn(),
-    setLang: vi.fn(),
-    setItem: vi.fn(),
-    setPageTitle: vi.fn(),
-    showRestartToast: vi.fn(),
-    getTerminalThemeOptions: vi.fn(() => ({ theme: {}, allowTransparency: false })),
-    getTerminalOptions: vi.fn(() => ({})),
-  } as unknown as FakeSettings
-
-  // Kept real because components read the value straight back after writing it
-  settings.setEnvItem = vi.fn((key: string, value: any) => {
-    const keys = key.split('.')
-    let current = settings.env as Record<string, any>
-    for (const part of keys.slice(0, -1)) {
-      current[part] ??= {}
-      current = current[part]
-    }
-    current[keys.at(-1)!] = value
-  })
-
-  settings.isFeatureEnabled = vi.fn((featureKey: string) => settings.env.featureFlags?.[featureKey] ?? false)
-
-  settings.getEffectiveTerminalLightingMode = vi.fn(() => (
-    settings.actualLightingMode === 'dark' ? 'dark' : settings.env.terminal?.lightingMode || 'dark'
-  ))
-
-  return Object.assign(settings, rest)
+    serverUnreachable: false,
+    ...rest,
+  }
 }

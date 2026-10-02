@@ -81,10 +81,9 @@ info
 # AI agents
 .claude
 
-# ui-next (React migration)
+# React UI
 *.tsbuildinfo
-ui-next/src/schema-form/__corpus__/schemas/
-ui-next/spikes/**/screenshots/
+ui/src/schema-form/__corpus__/schemas/
 
 # Playwright parity suite builds and results
 e2e/.run/

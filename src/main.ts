@@ -66,7 +66,8 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         // because the Monaco editor genuinely needs it. Plugin custom UIs are
         // served with their own, looser policy in plugins-settings-ui.service.
         scriptSrc: ['\'self\'', '\'unsafe-eval\''],
-        // Angular injects component styles as inline <style> blocks.
+        // The Vite dev server injects styles as inline <style> blocks, and
+        // react-bootstrap / the grid set inline style attributes.
         styleSrc: ['\'self\'', '\'unsafe-inline\''],
         imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
         connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {

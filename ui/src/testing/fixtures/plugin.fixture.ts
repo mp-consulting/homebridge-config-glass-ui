@@ -1,4 +1,4 @@
-import type { ChildBridge, DeviceInfo, Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import type { ChildBridge, DeviceInfo, Plugin } from '@/core/plugins/manage-plugins.interfaces'
 
 /**
  * A plugin as the plugins page receives it.

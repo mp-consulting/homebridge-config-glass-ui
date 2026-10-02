@@ -81,7 +81,7 @@ export class PluginsSettingsUiService {
         // Resolved once here so the same value is used in both the CSP header
         // and the HTML body — preventing any mismatch between the two. Empty in
         // every normal case, which leaves the policy as plain 'self'.
-        // The cross-origin asset path is only needed when Angular's development
+        // The cross-origin asset path is only needed when the UI's development
         // server and the API run on different ports. Ignore caller-supplied
         // origins entirely in production.
         const uiOrigin = process.env.UIX_DEVELOPMENT === '1'
@@ -105,7 +105,7 @@ export class PluginsSettingsUiService {
           + `style-src 'self' 'unsafe-inline'${devOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
-          // devOrigin, like script-src/style-src above: with the Angular dev
+          // devOrigin, like script-src/style-src above: with the UI dev
           // server on a different port to the API, a plugin UI's stylesheet
           // resolves its @font-face URLs against that origin, and omitting it
           // here blocked every webfont with a font-src violation. Empty outside
@@ -228,7 +228,7 @@ export class PluginsSettingsUiService {
    * Returns an empty string in every normal case, so the script tag below is
    * written as a relative path and can only ever point back at this server.
    *
-   * The one exception is the Angular dev server: during `npm run dev` the UI is
+   * The one exception is the UI dev server: during `npm run dev` the UI is
    * served from port 4200 while the API answers on 8581, so a relative path
    * would look for the asset on the API and not find it. That case is allowed
    * only when the supplied origin is on the *same host* the request arrived on

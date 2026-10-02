@@ -6,7 +6,7 @@ import { RE_DEV_SERVER_ORIGIN } from './regex.constants.js'
  * Shared CORS configuration for HTTP and WebSocket connections
  *
  * Only in development (UIX_DEVELOPMENT=1) are cross-origin requests from the
- * Angular dev server allowed - on any hostname (localhost, 127.0.0.1, local IP,
+ * UI dev server (Vite) allowed - on any hostname (localhost, 127.0.0.1, local IP,
  * etc.) on port 4200 or 8080. In production the UI is served from the same
  * origin, so every cross-origin request is refused: otherwise any page on
  * those ports (including another service on the same host, which counts as

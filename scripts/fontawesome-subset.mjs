@@ -1,7 +1,7 @@
 /**
  * Subsets the Font Awesome web fonts down to only the icons referenced in the
  * UI source, then overwrites the fonts inside the installed
- * `@fortawesome/fontawesome-free` package so the Angular build bundles the
+ * `@fortawesome/fontawesome-free` package so the UI build bundles the
  * smaller files.
  *
  * Nothing in the Font Awesome SCSS or in any template/component is changed, so
@@ -21,12 +21,8 @@ import process from 'node:process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-// `--ui-dir <name>` picks the UI package to subset for (default `ui`), so the
-// React app in `ui-next` can share this script during the migration.
-const uiDirArg = process.argv.indexOf('--ui-dir')
-const uiDir = uiDirArg === -1 ? 'ui' : process.argv[uiDirArg + 1]
-const uiSrc = resolve(__dirname, '..', uiDir, 'src')
-const uiRequire = createRequire(resolve(__dirname, '..', uiDir, 'package.json'))
+const uiSrc = resolve(__dirname, '..', 'ui', 'src')
+const uiRequire = createRequire(resolve(__dirname, '..', 'ui', 'package.json'))
 
 // pathToFileURL: dynamic import() rejects bare Windows paths (e.g. `D:\...`).
 const { fontawesomeSubset } = await import(
@@ -153,7 +149,7 @@ const before = Object.fromEntries(
 // A font subset to zero glyphs fails to decode ("cmap: No subtables") and
 // blanks every icon, so keep the full fonts until the UI references some.
 if (names.length === 0) {
-  console.log(`[fa-subset] no icon names referenced in ${uiDir}/src — keeping the full fonts`)
+  console.log(`[fa-subset] no icon names referenced in ui/src — keeping the full fonts`)
   process.exit(0)
 }
 
@@ -163,7 +159,7 @@ await fontawesomeSubset(
 )
 
 const kib = n => `${(n / 1024).toFixed(1)} KiB`
-console.log(`[fa-subset] ${names.length} icon names referenced in ${uiDir}/src`)
+console.log(`[fa-subset] ${names.length} icon names referenced in ui/src`)
 for (const f of fonts) {
   const b = before[f]
   const a = fileSize(resolve(faWebfontsDir, f))

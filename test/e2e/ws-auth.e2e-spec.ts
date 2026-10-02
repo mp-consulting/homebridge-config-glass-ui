@@ -86,7 +86,7 @@ describe('cors', () => {
     expect(await allows('http://homebridge.local:4200')).toBe(false)
   })
 
-  it('allows the Angular dev server in development only', async () => {
+  it('allows the UI dev server in development only', async () => {
     process.env.UIX_DEVELOPMENT = '1'
     expect(await allows('http://homebridge.local:4200')).toBe(true)
     expect(await allows('http://homebridge.local:9999')).toBe(false)

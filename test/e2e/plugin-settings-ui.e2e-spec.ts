@@ -737,20 +737,20 @@ describe('PluginsSettingsUiController (e2e)', () => {
   describe('frontend iframe navigation sentinel', () => {
     it('navigates the iframe directly after ticket issuance instead of silently submitting a hidden form', async () => {
       // Regression sentinel for the blank custom-UI failure: a form targeted
-      // at the sandboxed iframe could fail without surfacing an Angular or
+      // at the sandboxed iframe could fail without surfacing a UI or
       // server error. Keep redemption tied to an observable src navigation.
       const component = await readFile(resolve(
         __dirname,
-        '../../ui/src/app/core/plugins/custom-plugins/custom-plugins.component.ts',
+        '../../ui/src/core/plugins/custom-plugins/custom-plugins.controller.ts',
       ), 'utf8')
 
       expect(component).toMatch(/url\.searchParams\.set\('ticket', ticket\)/)
       expect(component).toContain('iframe.src = url.toString()')
       expect(component).not.toContain('form.submit()')
-      expect(component).toContain('e.source === this.iframe?.contentWindow')
+      expect(component).toContain('e.source !== this.iframe?.contentWindow')
       expect(component).toContain('await this.revokeAssetSession()')
       expect(component).toMatch(/this\.basePath\}\/session\/revoke/)
-      expect(component).toMatch(/ngOnDestroy\(\): void \{[\s\S]*void this\.revokeAssetSession\(\)/)
+      expect(component).toMatch(/public destroy\(\): void \{[\s\S]*void this\.revokeAssetSession\(\)/)
     })
   })
 

@@ -1,31 +1,40 @@
-// The file contents for the current environment will overwrite these during build.
-// The build system defaults to the dev environment which uses `environment.ts`, but if you do
-// `ng build --env=prod` then `environment.prod.ts` will be used instead.
-// The list of which env maps to which file can be found in `.angular-cli.json`.
-
 import packageJson from '../../../package.json'
 
-// Use current hostname to avoid CORS issues when accessing from non-localhost (e.g., local IP)
-const backendHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
-const backendUrl = `http://${backendHost}:8581`
+// One file for both modes (replaces Angular's fileReplacements). In dev the UI
+// runs on :4200 and talks to the backend on :8581 of the same host.
 
-export const environment = {
-  serverTarget: packageJson.version,
-  production: false,
-  api: {
-    base: `${backendUrl}/api`,
-    socket: backendUrl,
-    origin: backendUrl,
-  },
-  jwt: {
-    tokenKey: 'access_token',
-    allowedDomains: [`${backendHost}:8581`],
-    disallowedRoutes: [`${backendUrl}/api/auth/login`],
-  },
-  apiHttpOptions: {
-    withCredentials: true,
-  },
-  owm: {
-    appid: 'fec67b55f7f74deaa28df89ba6a60821',
-  },
+function apiBaseFromBaseHref(): string {
+  const baseHref = document.querySelector('base')?.getAttribute('href') || '/'
+  return baseHref.endsWith('/') ? `${baseHref}api` : `${baseHref}/api`
 }
+
+const devHost = window.location.hostname
+const devBackend = `http://${devHost}:8581`
+
+export const environment = import.meta.env.DEV
+  ? {
+      serverTarget: packageJson.version,
+      production: false,
+      api: {
+        base: `${devBackend}/api`,
+        socket: devBackend,
+        origin: devBackend,
+      },
+      apiCredentials: 'include' as const,
+      owm: {
+        appid: 'fec67b55f7f74deaa28df89ba6a60821',
+      },
+    }
+  : {
+      serverTarget: packageJson.version,
+      production: true,
+      api: {
+        base: apiBaseFromBaseHref(),
+        socket: `${window.location.protocol === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
+        origin: window.location.origin,
+      },
+      apiCredentials: 'same-origin' as const,
+      owm: {
+        appid: 'fec67b55f7f74deaa28df89ba6a60821',
+      },
+    }

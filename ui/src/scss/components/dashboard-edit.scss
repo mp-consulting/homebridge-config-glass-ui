@@ -41,7 +41,8 @@ $edit-accent-rgb: var(--glass-primary-rgb, 103, 58, 183);
 }
 
 // ── Widgets while editing ───────────────────────────────────
-gridster.layout-editing {
+gridster.layout-editing,
+.gridster.layout-editing {
   gridster-item {
     outline: 1.5px dashed rgba($edit-accent-rgb, 0.45);
     outline-offset: -1.5px;
@@ -143,7 +144,8 @@ gridster.layout-editing {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  gridster.layout-editing gridster-item {
+  gridster.layout-editing gridster-item,
+  .gridster.layout-editing gridster-item {
     transition: none;
   }
 }

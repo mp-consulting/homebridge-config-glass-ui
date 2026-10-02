@@ -10,12 +10,11 @@ import { vi } from 'vitest'
 /**
  * The spies, kept on `globalThis` rather than in module scope.
  *
- * ⚠️ This module is evaluated more than once: the global setup file loads one
- * copy and a spec importing from `@/testing` can get another, because the
- * unit-test builder compiles the app through its build target. Two copies meant
- * the setup installed one `vi.fn()` on `window.location` while the spec asserted
- * on a different one, so a genuine `reload()` looked like it never happened.
- * Anchoring them to a global makes every copy share the same spies.
+ * ⚠️ Kept from the Angular harness, where the module was evaluated twice (setup
+ * file vs spec graph). Under Vite that should not happen, but a setup file
+ * imported by a relative path and a spec importing `@/testing` can still end up
+ * with two module ids; anchoring the spies to a global makes every copy share
+ * them either way.
  * @param key - a unique name for the spy
  */
 function sharedSpy(key: string) {
@@ -58,8 +57,8 @@ const state = ((globalThis as any).__uiTestBrowserState ??= {
 /**
  * Set what the next `window.matchMedia(...).matches` read returns.
  *
- * Read at construction time by AppComponent (dark mode) and the login page, so
- * call this before `TestBed.createComponent`.
+ * Read on first render by the app shell (dark mode) and the login page, so
+ * call this before rendering.
  * @param matches - what the media query should report
  */
 export function setMatchMedia(matches: boolean): void {
@@ -187,7 +186,7 @@ function installLocation(): void {
 }
 
 /**
- * Install every browser stub. Called once by the global setup file.
+ * Install every browser stub. Call once from the global setup file.
  */
 export function installBrowserStubs(): void {
   define(window, 'matchMedia', vi.fn(createMediaQueryList))
@@ -206,7 +205,7 @@ export function installBrowserStubs(): void {
 }
 
 /**
- * Reset the stubs between tests. Called by the global setup file's `beforeEach`.
+ * Reset the stubs between tests. Call from the global setup file's `beforeEach`.
  */
 export function resetBrowserStubs(): void {
   state.matchMediaMatches = false

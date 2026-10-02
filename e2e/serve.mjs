@@ -1,10 +1,10 @@
 /**
- * Serves one built UI (see e2e/build.mjs) from the real backend, on fresh
+ * Serves the built UI (see e2e/build.mjs) from the real backend, on fresh
  * storage seeded from test/mocks (user admin / admin).
  *
- *   node e2e/serve.mjs --ui angular|react --port 18581
+ *   node e2e/serve.mjs --port 18581
  *
- * Playwright starts one per project (e2e/playwright.config.ts).
+ * Playwright starts it (e2e/playwright.config.ts).
  */
 
 import { spawn } from 'node:child_process'
@@ -24,9 +24,8 @@ function arg(name) {
   return process.argv[i + 1]
 }
 
-const ui = arg('--ui')
 const port = Number(arg('--port'))
-const storage = mkdtempSync(join(tmpdir(), `hb-e2e-${ui}-`))
+const storage = mkdtempSync(join(tmpdir(), 'hb-e2e-'))
 cpSync(resolve(repoRoot, 'test/mocks'), storage, { recursive: true })
 
 const configPath = join(storage, 'config.json')
@@ -42,7 +41,7 @@ const child = spawn('npx', ['tsx', 'src/bin/standalone.ts', '-U', storage], {
   stdio: 'inherit',
   env: {
     ...process.env,
-    UIX_BASE_PATH_OVERRIDE: resolve(repoRoot, 'e2e/.run', ui),
+    UIX_BASE_PATH_OVERRIDE: resolve(repoRoot, 'e2e/.run/ui'),
     // The mock plugins (plus the real custom-UI ones, once e2e/install-plugins.mjs
     // has run), so the plugin list doesn't depend on what this machine has installed
     UIX_CUSTOM_PLUGIN_PATH: existsSync(realPlugins) ? realPlugins : join(storage, 'plugins'),
