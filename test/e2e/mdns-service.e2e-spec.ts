@@ -1,4 +1,5 @@
 /* global NodeJS */
+import { hostname } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -40,15 +41,17 @@ describe('mDNS Service (e2e)', () => {
 
   describe('Bonjour Service Module', () => {
     it('should import bonjour-service without errors', async () => {
-      const { Bonjour } = await import('bonjour-service')
-      expect(Bonjour).toBeDefined()
+      const { Bonjour, Browser, Service } = await import('bonjour-service')
+      expect(Bonjour).toBeTypeOf('function')
+      expect(Browser).toBeTypeOf('function')
+      expect(Service).toBeTypeOf('function')
     })
 
     it('should create a Bonjour instance with required methods', async () => {
       const { Bonjour } = await import('bonjour-service')
       const bonjour = new Bonjour()
 
-      expect(bonjour).toBeDefined()
+      expect(bonjour).toBeInstanceOf(Bonjour)
       expect(typeof bonjour.publish).toBe('function')
       expect(typeof bonjour.unpublishAll).toBe('function')
       expect(typeof bonjour.destroy).toBe('function')
@@ -58,7 +61,7 @@ describe('mDNS Service (e2e)', () => {
     })
 
     it('should publish a test service successfully', async () => {
-      const { Bonjour } = await import('bonjour-service')
+      const { Bonjour, Service } = await import('bonjour-service')
       const bonjour = new Bonjour()
 
       const service = bonjour.publish({
@@ -72,20 +75,24 @@ describe('mDNS Service (e2e)', () => {
         },
       })
 
-      expect(service).toBeDefined()
-      expect(service.name).toBe('Test Homebridge Glass UI')
-      expect(service.type).toBe('_http._tcp')
-      expect(service.port).toBe(8581)
+      expect(service).toBeInstanceOf(Service)
+      expect(service).toMatchObject({
+        name: 'Test Homebridge Glass UI',
+        type: '_http._tcp',
+        protocol: 'tcp',
+        port: 8581,
+        fqdn: 'Test Homebridge Glass UI._http._tcp.local',
+        txt: { path: '/', version: 'test-1.0.0', https: 'false' },
+      })
 
       bonjour.unpublishAll()
       bonjour.destroy()
     })
 
-    it('should discover published services', async () => {
-      const { Bonjour } = await import('bonjour-service')
+    it('should start a browser for the published service type', async () => {
+      const { Bonjour, Browser } = await import('bonjour-service')
       const bonjour = new Bonjour()
 
-      // Publish a test service
       bonjour.publish({
         name: 'Discovery Test UI',
         type: 'http',
@@ -96,29 +103,17 @@ describe('mDNS Service (e2e)', () => {
         },
       })
 
-      // Try to discover the service
+      // Whether the service is actually seen depends on the host's multicast
+      // support, so only the browser itself is asserted - without waiting on
+      // the network for an answer that may never come.
       const browser = bonjour.find({ type: 'http' })
 
-      const discoveryPromise = new Promise((resolve) => {
-        browser.on('up', (service: any) => {
-          if (service.name === 'Discovery Test UI') {
-            resolve(service)
-          }
-        })
-
-        // Timeout after 2 seconds
-        setTimeout(resolve, 2000, null)
-      })
-
-      await discoveryPromise
+      expect(browser).toBeInstanceOf(Browser)
+      expect(Array.isArray(browser.services)).toBe(true)
 
       browser.stop()
       bonjour.unpublishAll()
       bonjour.destroy()
-
-      // Service discovery might not work in all test environments
-      // so we just check that the browser was created
-      expect(browser).toBeDefined()
     })
   })
 
@@ -157,8 +152,7 @@ describe('mDNS Service (e2e)', () => {
       configService = new ConfigService()
       configService.parseConfig(testConfig)
 
-      expect(configService.ui).toBeDefined()
-      expect(configService.ui.enableMdnsAdvertise).toBe(true)
+      expect(configService.ui).toMatchObject({ platform: 'config', name: 'Config', port: 8581, enableMdnsAdvertise: true })
     })
 
     it('should default to false when enableMdnsAdvertise is not set', async () => {
@@ -181,8 +175,8 @@ describe('mDNS Service (e2e)', () => {
       configService = new ConfigService()
       configService.parseConfig(testConfig)
 
-      expect(configService.ui).toBeDefined()
-      expect(configService.ui.enableMdnsAdvertise).toBeUndefined()
+      expect(configService.ui).toMatchObject({ platform: 'config', name: 'Config', port: 8581 })
+      expect(configService.ui).not.toHaveProperty('enableMdnsAdvertise')
     })
 
     it('should use bridge name for mDNS service name', async () => {
@@ -241,9 +235,7 @@ describe('mDNS Service (e2e)', () => {
       configService = new ConfigService()
       configService.parseConfig(testConfig)
 
-      expect(configService.ui.ssl).toBeDefined()
-      expect(configService.ui.ssl.key).toBe('/path/to/key.pem')
-      expect(configService.ui.ssl.cert).toBe('/path/to/cert.pem')
+      expect(configService.ui.ssl).toEqual({ key: '/path/to/key.pem', cert: '/path/to/cert.pem' })
     })
   })
 
@@ -279,7 +271,7 @@ describe('mDNS Service (e2e)', () => {
     })
 
     it('should handle service with special characters in name', async () => {
-      const { Bonjour } = await import('bonjour-service')
+      const { Bonjour, Service } = await import('bonjour-service')
       const bonjour = new Bonjour()
 
       const specialNames = [
@@ -296,8 +288,9 @@ describe('mDNS Service (e2e)', () => {
           port: 8581,
         })
 
-        expect(service).toBeDefined()
+        expect(service).toBeInstanceOf(Service)
         expect(service.name).toBe(name)
+        expect(service.fqdn).toBe(`${name}._http._tcp.local`)
 
         bonjour.unpublishAll()
       }
@@ -306,7 +299,7 @@ describe('mDNS Service (e2e)', () => {
     })
 
     it('should handle network interface binding', async () => {
-      const { Bonjour } = await import('bonjour-service')
+      const { Bonjour, Service } = await import('bonjour-service')
       const bonjour = new Bonjour()
 
       // Test with different host configurations
@@ -324,7 +317,9 @@ describe('mDNS Service (e2e)', () => {
           host: config.host,
         })
 
-        expect(service).toBeDefined()
+        expect(service).toBeInstanceOf(Service)
+        // Without an explicit host the service advertises this machine's name
+        expect(service.host).toBe(config.host ?? hostname())
 
         bonjour.unpublishAll()
       }
@@ -333,7 +328,7 @@ describe('mDNS Service (e2e)', () => {
     })
 
     it('should handle graceful shutdown', async () => {
-      const { Bonjour } = await import('bonjour-service')
+      const { Bonjour, Service } = await import('bonjour-service')
       const bonjour = new Bonjour()
 
       // Publish a service
@@ -343,7 +338,8 @@ describe('mDNS Service (e2e)', () => {
         port: 8581,
       })
 
-      expect(service).toBeDefined()
+      expect(service).toBeInstanceOf(Service)
+      expect(service.name).toBe('Shutdown Test UI')
 
       // Simulate graceful shutdown
       let cleanupCalled = false

@@ -35,6 +35,18 @@ const EXPECTED_ERRORS = [
   /Token does not match instance/,
 ]
 
+/**
+ * 5xx responses a route may get by design, as method + pathname. Everything
+ * else fails the test, /api included.
+ *
+ * Empty: with no Homebridge process attached, the endpoints that need one
+ * answer without a 5xx on this mock storage (child bridges come back empty,
+ * the pairing info is read from test/mocks/persist), and a run of every
+ * route logged none. Add an entry only with the reason it cannot succeed here,
+ * e.g. `{ method: 'GET', path: /^\/api\/server\/pairing$/, why: 'no persist/AccessoryInfo yet' }`.
+ */
+const ALLOWED_5XX: { method: string, path: RegExp, why: string }[] = []
+
 function watchErrors(page: Page) {
   const errors: string[] = []
   page.on('console', (message) => {
@@ -45,9 +57,12 @@ function watchErrors(page: Page) {
   page.on('pageerror', error => errors.push(`pageerror: ${error.message}`))
   page.on('response', (response) => {
     const url = new URL(response.url())
-    // No Homebridge process runs behind the backend, so some status calls fail by design
-    if (url.origin === new URL(page.url() || 'http://x').origin && response.status() >= 500 && !url.pathname.startsWith('/api/')) {
-      errors.push(`http ${response.status()}: ${url.pathname}`)
+    const method = response.request().method()
+    if (url.origin !== new URL(page.url() || 'http://x').origin || response.status() < 500) {
+      return
+    }
+    if (!ALLOWED_5XX.some(allowed => allowed.method === method && allowed.path.test(url.pathname))) {
+      errors.push(`http ${response.status()}: ${method} ${url.pathname}`)
     }
   })
   return errors

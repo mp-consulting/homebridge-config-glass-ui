@@ -34,6 +34,30 @@ const platform = config.platforms.find(p => p.platform === 'config')
 platform.port = port
 writeFileSync(configPath, JSON.stringify(config, null, 2))
 
+// E2E_OTP_USER=1 adds a second user with 2FA on (password `admin`, the TOTP
+// secret below), for the 2FA login in e2e/specs/saves.spec.ts. Off by default:
+// the extra row would change the users page the other specs look at. Keep
+// the values in step with the copies in the spec (importing this file would
+// start a server).
+const OTP_USER = 'otp-user'
+const OTP_SECRET = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP' // base32, 20 bytes
+if (process.env.E2E_OTP_USER === '1') {
+  const authPath = join(storage, 'auth.json')
+  const users = JSON.parse(readFileSync(authPath, 'utf8'))
+  const admin = users.find(u => u.username === 'admin')
+  users.push({
+    id: Math.max(...users.map(u => u.id)) + 1,
+    username: OTP_USER,
+    name: 'OTP User',
+    hashedPassword: admin.hashedPassword,
+    salt: admin.salt,
+    admin: false,
+    otpActive: true,
+    otpSecret: OTP_SECRET,
+  })
+  writeFileSync(authPath, JSON.stringify(users, null, 2))
+}
+
 const realPlugins = resolve(repoRoot, 'e2e/.run/plugins/node_modules')
 
 const child = spawn('npx', ['tsx', 'src/bin/standalone.ts', '-U', storage], {

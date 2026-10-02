@@ -208,8 +208,8 @@ describe('HomebridgeIpcService (e2e)', () => {
       mockProcess.connected = true
       mockProcess.send = vi.fn()
       mockProcess.kill = vi.fn().mockImplementation(() => {
-        // Simulate process closing after kill
-        setTimeout(() => mockProcess.emit('close'), 10)
+        // Simulate the process closing once the signal is delivered
+        queueMicrotask(() => mockProcess.emit('close'))
       })
       mockProcess.pid = 12345
 
@@ -254,16 +254,12 @@ describe('HomebridgeIpcService (e2e)', () => {
     it('should resolve when response event is emitted', async () => {
       const mockProcess = new EventEmitter() as any
       mockProcess.connected = true
-      mockProcess.send = vi.fn()
+      // Homebridge answers the request asynchronously, as over real IPC
+      mockProcess.send = vi.fn(() => queueMicrotask(() => ipcService.emit('testResponse', { result: 'success' })))
       mockProcess.kill = vi.fn()
       mockProcess.pid = 12345
 
       ipcService.setHomebridgeProcess(mockProcess)
-
-      // Schedule the response to come back after a short delay
-      setTimeout(() => {
-        ipcService.emit('testResponse', { result: 'success' })
-      }, 50)
 
       const result = await ipcService.requestResponse('testRequest', 'testResponse')
       expect(result).toEqual({ result: 'success' })

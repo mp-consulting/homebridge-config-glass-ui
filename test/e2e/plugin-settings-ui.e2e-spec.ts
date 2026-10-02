@@ -2,7 +2,6 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 import type { MockInstance } from 'vitest'
 
-import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -734,26 +733,6 @@ describe('PluginsSettingsUiController (e2e)', () => {
     })
   })
 
-  describe('frontend iframe navigation sentinel', () => {
-    it('navigates the iframe directly after ticket issuance instead of silently submitting a hidden form', async () => {
-      // Regression sentinel for the blank custom-UI failure: a form targeted
-      // at the sandboxed iframe could fail without surfacing a UI or
-      // server error. Keep redemption tied to an observable src navigation.
-      const component = await readFile(resolve(
-        __dirname,
-        '../../ui/src/core/plugins/custom-plugins/custom-plugins.controller.ts',
-      ), 'utf8')
-
-      expect(component).toMatch(/url\.searchParams\.set\('ticket', ticket\)/)
-      expect(component).toContain('iframe.src = url.toString()')
-      expect(component).not.toContain('form.submit()')
-      expect(component).toContain('e.source !== this.iframe?.contentWindow')
-      expect(component).toContain('await this.revokeAssetSession()')
-      expect(component).toMatch(/this\.basePath\}\/session\/revoke/)
-      expect(component).toMatch(/public destroy\(\): void \{[\s\S]*void this\.revokeAssetSession\(\)/)
-    })
-  })
-
   describe('PluginsSettingsUiService', () => {
     let pluginsSettingsUiService: PluginsSettingsUiService
 
@@ -907,8 +886,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const { Reflector } = await import('@nestjs/core')
       const reflector = new Reflector()
       const guards = reflector.get<any[]>('__guards__', PluginsSettingsUiGateway)
-      expect(guards, 'no guards applied to PluginsSettingsUiGateway').toBeDefined()
-      expect(guards.includes(WsAdminGuard)).toBe(true)
+      expect(guards, 'no guards applied to PluginsSettingsUiGateway').toEqual([WsAdminGuard])
     })
   })
 

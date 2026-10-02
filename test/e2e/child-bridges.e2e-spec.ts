@@ -7,6 +7,7 @@ import process from 'node:process'
 
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { copy } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -91,8 +92,8 @@ describe('ChildBridges (e2e)', () => {
       vi.spyOn(childBridgesService, 'getChildBridges').mockRejectedValue(new Error('IPC error'))
 
       const result = await childBridgesGateway.getChildBridges()
-      expect(result).toBeDefined()
-      expect((result as any).message).toBe('IPC error')
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toBe('IPC error')
     })
 
     it('should start watching child bridge status', async () => {
@@ -116,8 +117,8 @@ describe('ChildBridges (e2e)', () => {
       })
 
       const result = await childBridgesGateway.restartChildBridge(client, 'bad-id')
-      expect(result).toBeDefined()
-      expect((result as any).message).toBe('restart failed')
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toBe('restart failed')
     })
 
     it('should stop a child bridge', async () => {
@@ -134,8 +135,8 @@ describe('ChildBridges (e2e)', () => {
       })
 
       const result = await childBridgesGateway.stopChildBridge(client, 'bad-id')
-      expect(result).toBeDefined()
-      expect((result as any).message).toBe('stop failed')
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toBe('stop failed')
     })
 
     it('should start a child bridge', async () => {
@@ -152,8 +153,8 @@ describe('ChildBridges (e2e)', () => {
       })
 
       const result = await childBridgesGateway.startChildBridge(client, 'bad-id')
-      expect(result).toBeDefined()
-      expect((result as any).message).toBe('start failed')
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toBe('start failed')
     })
   })
 

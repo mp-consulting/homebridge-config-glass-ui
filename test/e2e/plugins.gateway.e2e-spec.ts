@@ -479,7 +479,10 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
         })
         const errors = await validate(dto)
         const versionError = errors.find(e => e.property === 'version')
-        expect(versionError, `expected version "${version}" to fail validation`).toBeDefined()
+        // Fails on the pattern alone: it is a string, so only @Matches objects
+        expect(versionError?.constraints, `expected version "${version}" to fail validation`).toEqual({
+          matches: expect.stringMatching(/^version must match .+ regular expression$/),
+        })
       }
     })
 

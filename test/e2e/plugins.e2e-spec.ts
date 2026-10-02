@@ -38,6 +38,17 @@ vi.mock('node:child_process', async () => {
   }
 })
 
+/**
+ * `POST /plugins/update/:name` answers first and runs the update from a
+ * setImmediate. Wait for that background update to be started, then for it to
+ * finish, and return its result. Its restart step runs synchronously right
+ * after, so it has happened by the time this resolves.
+ */
+async function settledUpdate(performUpdateSpy: { mock: { results: Array<{ value: any }> } }) {
+  await vi.waitFor(() => expect(performUpdateSpy.mock.results).toHaveLength(1))
+  return performUpdateSpy.mock.results[0].value
+}
+
 describe('PluginController (e2e)', () => {
   let app: NestFastifyApplication
   let httpService: HttpService
@@ -743,6 +754,8 @@ describe('PluginController (e2e)', () => {
 
   it('POST /plugins/update/:pluginName (plugin with specific version)', async () => {
     const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
+    const performUpdateSpy = vi.spyOn(pluginsService, 'performPackageUpdate')
 
     const res = await app.inject({
       method: 'POST',
@@ -757,14 +770,25 @@ describe('PluginController (e2e)', () => {
     expect(res.json().name).toBe('homebridge-mock-plugin')
     expect(res.json().version).toBe('1.0.1')
 
-    // Wait for the setImmediate callback to complete
-    await new Promise(resolve => setTimeout(resolve, 200))
+    // The update itself runs after the response, from a setImmediate
+    expect(await settledUpdate(performUpdateSpy)).toEqual({
+      ok: true,
+      name: 'homebridge-mock-plugin',
+      version: '1.0.1',
+      restart: { homebridge: true, ui: false, childBridgeUsernames: [] },
+    })
+    expect(managePluginSpy).toHaveBeenCalledExactlyOnceWith('install', { name: 'homebridge-mock-plugin', version: '1.0.1' }, expect.any(EventEmitter))
+    expect(restartHomebridgeSpy).toHaveBeenCalledOnce()
 
     managePluginSpy.mockRestore()
+    restartHomebridgeSpy.mockRestore()
+    performUpdateSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (plugin without version - latest)', async () => {
     const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
+    const performUpdateSpy = vi.spyOn(pluginsService, 'performPackageUpdate')
 
     const res = await app.inject({
       method: 'POST',
@@ -780,15 +804,20 @@ describe('PluginController (e2e)', () => {
     expect(res.json()).toHaveProperty('version')
     // Latest version should be resolved from package
 
-    // Wait for the setImmediate callback to complete
-    await new Promise(resolve => setTimeout(resolve, 200))
+    // The background update installs exactly the version the response announced
+    const { version } = res.json()
+    expect(await settledUpdate(performUpdateSpy)).toMatchObject({ ok: true, name: 'homebridge-mock-plugin', version })
+    expect(managePluginSpy).toHaveBeenCalledExactlyOnceWith('install', { name: 'homebridge-mock-plugin', version }, expect.any(EventEmitter))
 
     managePluginSpy.mockRestore()
+    restartHomebridgeSpy.mockRestore()
+    performUpdateSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (homebridge)', async () => {
     const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
-    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
+    const performUpdateSpy = vi.spyOn(pluginsService, 'performPackageUpdate')
 
     const res = await app.inject({
       method: 'POST',
@@ -803,16 +832,25 @@ describe('PluginController (e2e)', () => {
     expect(res.json().name).toBe('homebridge')
     expect(res.json()).toHaveProperty('version')
 
-    // Wait for the setImmediate callback to complete
-    await new Promise(resolve => setTimeout(resolve, 200))
+    const { version } = res.json()
+    expect(await settledUpdate(performUpdateSpy)).toEqual({
+      ok: true,
+      name: 'homebridge',
+      version,
+      restart: { homebridge: true, ui: false, childBridgeUsernames: [] },
+    })
+    expect(updateHomebridgeSpy).toHaveBeenCalledExactlyOnceWith({ version }, expect.any(EventEmitter))
+    expect(restartHomebridgeSpy).toHaveBeenCalledOnce()
 
     updateHomebridgeSpy.mockRestore()
     restartHomebridgeSpy.mockRestore()
+    performUpdateSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (@mp-consulting/homebridge-config-glass-ui)', async () => {
     const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
     const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
+    const performUpdateSpy = vi.spyOn(pluginsService, 'performPackageUpdate')
 
     const res = await app.inject({
       method: 'POST',
@@ -827,15 +865,22 @@ describe('PluginController (e2e)', () => {
     expect(res.json().name).toBe('@mp-consulting/homebridge-config-glass-ui')
     expect(res.json().version).toBe('5.8.0')
 
-    // Wait for the setImmediate callback to complete
-    await new Promise(resolve => setTimeout(resolve, 200))
+    expect(await settledUpdate(performUpdateSpy)).toEqual({
+      ok: true,
+      name: '@mp-consulting/homebridge-config-glass-ui',
+      version: '5.8.0',
+      restart: { homebridge: false, ui: true, childBridgeUsernames: [] },
+    })
+    expect(managePluginSpy).toHaveBeenCalledExactlyOnceWith('install', { name: '@mp-consulting/homebridge-config-glass-ui', version: '5.8.0' }, expect.any(EventEmitter))
+    expect(exitSpy).not.toHaveBeenCalled()
 
     // ⚠️ Kill the fuse before releasing the stub - see the note on the other
-    // update test. 5000ms timer, 200ms wait: restoring process.exit here left a
-    // live timer that fired during a later test and killed the worker.
+    // update test. The restart is on a 5000ms timer: restoring process.exit
+    // here left a live timer that fired during a later test and killed the worker.
     pluginsService.onModuleDestroy()
     managePluginSpy.mockRestore()
     exitSpy.mockRestore()
+    performUpdateSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (not installed)', async () => {
@@ -1097,7 +1142,7 @@ describe('PluginController (e2e)', () => {
         pluginType: 'platform',
       })
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1110,11 +1155,10 @@ describe('PluginController (e2e)', () => {
       expect(res.statusCode).toBe(201)
       expect(res.json().ok).toBe(true)
 
-      // Wait for async operations to complete (setImmediate + file operations)
-      await new Promise(resolve => setTimeout(resolve, 200))
+      // The update runs after the response (setImmediate + file operations)
+      await vi.waitFor(() => expect(restartChildBridgeSpy).toHaveBeenCalledExactlyOnceWith('0E:AA:BB:CC:DD:EE'))
 
       // Verify child bridge restart was called, not main homebridge restart
-      expect(restartChildBridgeSpy).toHaveBeenCalledWith('0E:AA:BB:CC:DD:EE')
       expect(restartHomebridgeSpy).not.toHaveBeenCalled()
 
       managePluginSpy.mockRestore()
@@ -1164,7 +1208,7 @@ describe('PluginController (e2e)', () => {
         pluginType: 'platform',
       })
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1175,10 +1219,9 @@ describe('PluginController (e2e)', () => {
       })
 
       expect(res.statusCode).toBe(201)
-      await new Promise(resolve => setTimeout(resolve, 200))
 
       // Both child bridges should be restarted
-      expect(restartChildBridgeSpy).toHaveBeenCalledTimes(2)
+      await vi.waitFor(() => expect(restartChildBridgeSpy).toHaveBeenCalledTimes(2))
       expect(restartChildBridgeSpy).toHaveBeenCalledWith('0E:AA:BB:CC:DD:EE')
       expect(restartChildBridgeSpy).toHaveBeenCalledWith('0E:FF:FF:FF:FF:FF')
       expect(restartHomebridgeSpy).not.toHaveBeenCalled()
@@ -1213,7 +1256,7 @@ describe('PluginController (e2e)', () => {
 
       const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1224,10 +1267,9 @@ describe('PluginController (e2e)', () => {
       })
 
       expect(res.statusCode).toBe(201)
-      await new Promise(resolve => setTimeout(resolve, 200))
 
       // Main homebridge should be restarted, not child bridges
-      expect(restartHomebridgeSpy).toHaveBeenCalled()
+      await vi.waitFor(() => expect(restartHomebridgeSpy).toHaveBeenCalledOnce())
       expect(restartChildBridgeSpy).not.toHaveBeenCalled()
 
       managePluginSpy.mockRestore()
@@ -1238,7 +1280,7 @@ describe('PluginController (e2e)', () => {
     it('should restart homebridge when updating homebridge itself', async () => {
       const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
       const restartChildBridgeSpy = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
-      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+      const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockReturnValue(true)
 
       const res = await app.inject({
         method: 'POST',
@@ -1249,10 +1291,10 @@ describe('PluginController (e2e)', () => {
       })
 
       expect(res.statusCode).toBe(201)
-      await new Promise(resolve => setTimeout(resolve, 200))
 
       // Homebridge quick restart should be called
-      expect(restartHomebridgeSpy).toHaveBeenCalled()
+      await vi.waitFor(() => expect(restartHomebridgeSpy).toHaveBeenCalledOnce())
+      expect(updateHomebridgeSpy).toHaveBeenCalledExactlyOnceWith({ version: '1.8.0' }, expect.any(EventEmitter))
       expect(restartChildBridgeSpy).not.toHaveBeenCalled()
 
       updateHomebridgeSpy.mockRestore()
@@ -1274,14 +1316,14 @@ describe('PluginController (e2e)', () => {
       })
 
       expect(res.statusCode).toBe(201)
-      await new Promise(resolve => setTimeout(resolve, 200))
 
       // setTimeout should be called to schedule the restart (with 5000ms delay)
       const expectedDelayMs = 5000 // PluginsService.UI_RESTART_DELAY_MS
-      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), expectedDelayMs)
+      await vi.waitFor(() => expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), expectedDelayMs))
+      expect(exitSpy).not.toHaveBeenCalled()
 
       // ⚠️ Kill the fuse before releasing the stub. The restart is armed on a
-      // 5000ms timer but this test only waits 200ms, so restoring process.exit
+      // 5000ms timer but this test stops waiting once it is armed, so restoring process.exit
       // here used to leave a live timer that fired 4.8s later - during whatever
       // test was running by then - and took the whole worker down with it.
       pluginsService.onModuleDestroy()
@@ -2484,5 +2526,61 @@ describe('PluginController (e2e)', () => {
     // pending, so nothing can fire once the spy is gone.
     await app.close()
     exitSpy.mockRestore()
+  })
+
+  describe('npm registry document cache', () => {
+    const name = 'homebridge-cache-collision'
+    const abbreviated = {
+      'name': name,
+      'dist-tags': { latest: '1.0.0' },
+      'versions': { '1.0.0': { version: '1.0.0', engines: { node: '>=22' } } },
+    }
+    const full = {
+      ...abbreviated,
+      keywords: ['homebridge-plugin'],
+      description: 'A cached plugin',
+      time: { modified: '2026-01-01T00:00:00.000Z' },
+      maintainers: [{ name: 'someone' }],
+    }
+
+    beforeEach(() => {
+      ;(pluginsService as any).npmPluginCache.flushAll()
+      ;(pluginsService as any).installedPlugins = []
+      // The abbreviated (install-v1) document lacks keywords, time, maintainers...
+      vi.spyOn(httpService, 'get').mockImplementation(((_url: string, config?: any) => of({
+        data: config?.headers?.accept?.includes('install-v1') ? abbreviated : full,
+      })) as any)
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('a version lookup does not poison a later single-plugin search', async () => {
+      await pluginsService.getAvailablePluginVersions(name)
+      const results = await pluginsService.searchNpmRegistrySingle(name)
+
+      expect(results).toHaveLength(1)
+      expect(results[0].name).toBe(name)
+    })
+
+    it('a single-plugin search does not poison a later version lookup', async () => {
+      await pluginsService.searchNpmRegistrySingle(name)
+      await pluginsService.getAvailablePluginVersions(name)
+
+      expect(httpService.get).toHaveBeenCalledTimes(2)
+      expect(await pluginsService.getAvailablePluginVersions(name)).toEqual({
+        tags: { latest: '1.0.0' },
+        versions: { '1.0.0': { version: '1.0.0', engines: { node: '>=22' } } },
+      })
+      expect(httpService.get).toHaveBeenCalledTimes(2)
+    })
+
+    it('serves cached documents by reference instead of deep-cloning them', async () => {
+      await pluginsService.searchNpmRegistrySingle(name)
+      const cache = (pluginsService as any).npmPluginCache
+
+      expect(cache.get(`package-${name}`)).toBe(cache.get(`package-${name}`))
+    })
   })
 })
