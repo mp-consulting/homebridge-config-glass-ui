@@ -196,6 +196,8 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
                   strictValidation && !state.formIsValid && 'red-text',
                   !strictValidation && !state.formIsValid && 'orange-text',
                 )}
+                role="img"
+                aria-label={t(state.formIsValid ? 'form.label_valid' : strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')}
               >
               </i>
             </HoverTooltip>
