@@ -31,6 +31,20 @@ export class SchedulerService implements OnModuleInit {
   }
 
   /**
+   * node-schedule returns null for an expression it can't parse instead of
+   * throwing, and may leave the named job registered. Throw instead, so the
+   * caller's warning names the bad cron.
+   */
+  private scheduleRestartJob(name: string, cron: string, run: () => void) {
+    if (!this.scheduleJob(name, cron, run)) {
+      if (this.scheduledJobs[name]) {
+        this.cancelJob(name)
+      }
+      throw new Error('invalid cron expression')
+    }
+  }
+
+  /**
    * Cancel all existing restart jobs and reschedule from provided or current config
    */
   public async refreshRestartSchedules(config?: HomebridgeConfig) {
@@ -51,7 +65,7 @@ export class SchedulerService implements OnModuleInit {
     if (mainBridgeCron && mainBridgeCron.trim()) {
       const name = 'restart-homebridge'
       try {
-        this.scheduleJob(name, mainBridgeCron, () => {
+        this.scheduleRestartJob(name, mainBridgeCron, () => {
           this.logger.warn('Running scheduled restart of main Homebridge...')
           try {
             this.homebridgeIpcService.restartHomebridge()
@@ -83,7 +97,7 @@ export class SchedulerService implements OnModuleInit {
           const deviceId = bridge.username.replace(RE_COLON, '').toUpperCase()
           const name = `restart-child-${deviceId}`
           try {
-            this.scheduleJob(name, childBridgeCron, () => {
+            this.scheduleRestartJob(name, childBridgeCron, () => {
               this.logger.warn(`Running scheduled restart of child bridge ${bridge.username}...`)
               try {
                 this.homebridgeIpcService.sendMessage('restartChildBridge', bridge.username)

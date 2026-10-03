@@ -97,16 +97,15 @@ describe('SchedulerService.refreshRestartSchedules (e2e)', () => {
     }
   })
 
-  // node-schedule returns null for an invalid cron rather than throwing, so the
-  // catch with the warning never runs and the debug log claims success.
-  // BUG: an invalid scheduledRestartCron is silently ignored.
-  it.fails('warns when a cron expression is invalid', async () => {
+  // node-schedule returns null for an invalid cron rather than throwing
+  it('warns when a cron expression is invalid, and leaves no job behind', async () => {
     const warn = vi.spyOn(logger, 'warn')
     configService.ui.scheduledRestartCron = 'not a cron'
 
     await scheduler.refreshRestartSchedules(configWithChild())
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('not a cron'))
+    expect(scheduler.scheduledJobs['restart-homebridge']).toBeUndefined()
   })
 
   it('cancels the previous jobs before rescheduling', async () => {
