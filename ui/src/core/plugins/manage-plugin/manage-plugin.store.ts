@@ -18,6 +18,7 @@ import { toast } from '@/core/ui/toast'
 import { childBridges as childBridgesService } from '@/core/utilities/child-bridges'
 import { fileSaver } from '@/core/utilities/file-saver'
 import { toastApiError } from '@/core/utilities/http-error'
+import { WsDisconnectedError } from '@/core/ws/ws'
 
 const RE_STARTS_WITH_DIGIT = /^\d/
 
@@ -406,6 +407,14 @@ export function createManagePluginStore(input: ManagePluginInput) {
             navigate('/plugins')
           }
         }, (error) => {
+          // Updating Glass UI replaces the running server, which restarts onto
+          // the new version, and the connection can drop before the update is
+          // acknowledged. Wait for it on the restart page (it shows progress
+          // and reloads the new UI) rather than leaving the terminal open.
+          if (error instanceof WsDisconnectedError && pluginName === '@mp-consulting/homebridge-config-glass-ui') {
+            window.location.href = 'restart?restarting=true&uiRestarting=true'
+            return
+          }
           speakAction('plugins.a11y.update_failed', 3000)
           set({ actionFailed: true })
           console.error(error)

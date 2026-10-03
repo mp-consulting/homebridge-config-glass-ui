@@ -66,13 +66,29 @@ const REAUTH_TIMEOUT_MS = 10000
 
 export type RequestPayload = string | Record<string, any> | Array<any>
 
+/**
+ * A request whose connection closed before the server acknowledged it. The
+ * acknowledgement can never arrive after that (socket.io drops it with the
+ * connection), so the request fails rather than waiting forever - for example
+ * when the server restarts after updating Glass UI itself.
+ */
+export class WsDisconnectedError extends Error {
+  readonly disconnected = true
+
+  constructor(readonly resource: string, readonly reason?: string) {
+    super(`The connection closed before "${resource}" was acknowledged${reason ? ` (${reason})` : ''}`)
+    this.name = 'WsDisconnectedError'
+  }
+}
+
 /** One namespace. `end` is there on a handle from `connectToNamespace` and missing on a borrowed one. */
 export interface IoNamespace {
   socket: Socket
   connected: ReplayOne
   /**
    * Emit `resource` with an acknowledgement. Resolves with the acknowledgement,
-   * rejects with it when it carries an `error`.
+   * rejects with it when it carries an `error`, and rejects with a
+   * `WsDisconnectedError` when the connection closes first.
    */
   request: <T = any>(resource: string, payload?: RequestPayload) => Promise<T>
   end?: () => void
@@ -282,7 +298,10 @@ export class WsService {
     })
 
     const request = <T = any>(resource: string, payload?: RequestPayload): Promise<T> => new Promise<T>((resolve, reject) => {
+      const onDisconnect = (reason?: string) => reject(new WsDisconnectedError(resource, reason))
+      socket.once('disconnect', onDisconnect)
       socket.emit(resource, payload, (resp: any) => {
+        socket.off('disconnect', onDisconnect)
         // The null check matters: typeof null is 'object', so without it a
         // null acknowledgement would throw reading `.error` inside the callback
         if (resp && typeof resp === 'object' && resp.error) {

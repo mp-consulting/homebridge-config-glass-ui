@@ -19,6 +19,7 @@ import { childBridges } from '@/core/utilities/child-bridges'
 import { fileSaver } from '@/core/utilities/file-saver'
 import { xtermFactory } from '@/core/utilities/terminal/terminal.factory'
 import { ws as realWs } from '@/core/ws'
+import { WsDisconnectedError } from '@/core/ws/ws'
 import { activeModalStub, apiError, fakeApi, makeChildBridge, makePlugin, makeSettingsState, renderWithProviders } from '@/testing'
 
 vi.mock('@/core/ws', async () => ({ ws: (await import('@/testing')).fakeWs() }))
@@ -367,6 +368,30 @@ describe('managePlugin', () => {
       await clickContinue()
 
       expect(window.location.href).toBe('restart')
+    })
+
+    it('waits on the restart page when the ui restarts before acknowledging its update', async () => {
+      await open({ action: 'Update', pluginName: '@mp-consulting/homebridge-config-glass-ui', targetVersion: 'latest' }, () => {
+        io.request.mockImplementationOnce(() => Promise.reject(new WsDisconnectedError('update', 'transport close')))
+      })
+
+      await clickContinue()
+
+      // The server is already going down, so no restart request is sent
+      expect(window.location.href).toBe('restart?restarting=true&uiRestarting=true')
+      expect(api.callsTo('put', '/platform-tools/hb-service/set-full-service-restart-flag')).toHaveLength(0)
+      expect(toast.error).not.toHaveBeenCalled()
+    })
+
+    it('reports a dropped connection while updating any other plugin as a failure', async () => {
+      await open({ action: 'Update', targetVersion: 'latest' }, () => {
+        io.request.mockImplementationOnce(() => Promise.reject(new WsDisconnectedError('update', 'transport close')))
+      })
+
+      await clickContinue()
+
+      expect(screen.getByRole('button', { name: 'form.button_download' })).toBeInTheDocument()
+      expect(toast.error).toHaveBeenCalledTimes(1)
     })
 
     it('does nothing at all when online updates are blocked', async () => {

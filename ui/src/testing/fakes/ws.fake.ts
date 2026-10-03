@@ -124,7 +124,8 @@ function handlerRegistry() {
       if (!handler) {
         handlers.delete(event)
       } else {
-        handlers.set(event, (handlers.get(event) ?? []).filter(existing => existing !== handler))
+        // Like socket.io, `off` also finds a `once` handler by the function it wraps
+        handlers.set(event, (handlers.get(event) ?? []).filter(existing => existing !== handler && (existing as any).listener !== handler))
       }
     },
     clear() {
@@ -184,6 +185,7 @@ export function fakeSocket(connected = true): FakeSocket {
         registry.remove(event, wrapped)
         handler(...args)
       }
+      ;(wrapped as any).listener = handler
       registry.add(event, wrapped)
       return socket
     }),

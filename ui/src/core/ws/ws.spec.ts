@@ -3,7 +3,7 @@ import type { FakeSocket } from '@/testing/fakes/ws.fake'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useAuthStore } from '@/core/auth/auth.store'
-import { ws, WsService } from '@/core/ws/ws'
+import { ws, WsDisconnectedError, WsService } from '@/core/ws/ws'
 import { environment } from '@/environments/environment'
 import { fakeSocket } from '@/testing/fakes/ws.fake'
 
@@ -148,6 +148,28 @@ describe('wsService', () => {
       // typeof null is 'object', so without the null guard this throws inside
       // the acknowledgement callback rather than resolving
       await expect(namespace.request('get-dashboard-init')).resolves.toBeNull()
+    })
+
+    it('fails when the connection closes before the acknowledgement', async () => {
+      const namespace = service.connectToNamespace('plugins')
+      // The server never answers: socket.io drops the acknowledgement with the connection
+      sockets[0].emit.mockImplementation(() => sockets[0] as any)
+
+      const pending = namespace.request('update', { name: '@mp-consulting/homebridge-config-glass-ui' })
+      sockets[0].fire('disconnect', 'transport close')
+
+      const error = await pending.catch(e => e)
+      expect(error).toBeInstanceOf(WsDisconnectedError)
+      expect(error).toMatchObject({ disconnected: true, resource: 'update', reason: 'transport close' })
+    })
+
+    it('stops listening for the disconnect once acknowledged', async () => {
+      const namespace = service.connectToNamespace('status')
+      sockets[0].respondTo('get-server-uptime-info', {})
+
+      await namespace.request('get-server-uptime-info')
+
+      expect(sockets[0].handlers('disconnect')).toHaveLength(0)
     })
   })
 
