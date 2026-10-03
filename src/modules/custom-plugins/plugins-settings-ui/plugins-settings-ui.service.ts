@@ -104,6 +104,12 @@ export class PluginsSettingsUiService {
           + `script-src 'self' 'unsafe-inline' 'unsafe-eval'${devOrigin}${extraDomains}; `
           + `style-src 'self' 'unsafe-inline'${devOrigin}; `
           + `img-src * data:; `
+          // Deliberately open: plugin UIs fetch from their vendor's cloud
+          // API and from devices on the LAN by IP (http://192.168.x.x), and
+          // `customUiCspDomains` (https-only, script/frame sources) was never
+          // a declaration of those. Narrowing this would break them, and with
+          // `img-src *` and inline script allowed it would not stop
+          // exfiltration by a hostile plugin UI anyway.
           + `connect-src *; `
           // devOrigin, like script-src/style-src above: with the UI dev
           // server on a different port to the API, a plugin UI's stylesheet
