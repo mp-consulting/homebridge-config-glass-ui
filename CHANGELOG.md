@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.0.0-beta.0] - Unreleased
+## [2.0.0-beta.0] - 2026-10-03
 
 The browser UI is rewritten in React (from Angular). Pages, themes, glass mode, dark mode, translations, saved dashboard and accessory layouts, and plugin custom settings UIs all carry over unchanged: the new UI keeps the old markup, so it looks and behaves the same. This is a major version because plugin custom UIs run inside a new host page, even though the three tested (Ring, Camera FFmpeg, UniFi Protect) work as before.
 
@@ -27,12 +27,26 @@ The browser UI is rewritten in React (from Angular). Pages, themes, glass mode, 
 - Accessory tiles become controllable as soon as Homebridge reports it is ready, without reopening the page.
 - Dismissing the Homebridge v2 readiness warning closes the update dialog.
 - The manual config editor shows one editor for the open config block, instead of one per block.
+- Matter: controlling one part of a multi-part accessory no longer changes its parent's shown state; malformed accessory ids are refused instead of half-parsed; a command that cannot reach Homebridge is reported as such instead of as a timeout.
+- Mobile: the closed side menu no longer shows through the glass theme or traps keyboard focus, and the logo no longer covers page titles. Plugin cards no longer clip long names or show a bare "@".
+
+### Accessibility
+
+- Text meets 4.5:1 contrast: dark-mode accent text, light-mode grey text, the pairing status pill and inline code.
+- Buttons and links in the glass theme show a focus ring; the login form has labels and announces a failed login; icon-only links and buttons have names; pages have a main landmark and a skip link.
+- Touch targets on phones are at least 44 px, and remaining English-only strings are translated.
+
+### Performance
+
+- Static files are served brotli/gzip compressed: the first load is about 214 kB instead of 1.1 MB.
+- The CPU, memory and network widgets no longer run shell commands per open tab: one sample serves every client, at the fastest refresh interval a widget asks for.
+- Accessory updates re-render only the tile that changed (50 updates on 300 accessories: ~90 ms instead of ~2 s), the dashboard no longer loads the plugin manager up front, the stylesheet is a third smaller, and typing in the plugin search no longer re-renders every card.
 
 ### Changed
 
 - On the dashboard, dropping a widget onto another moves the other one aside instead of swapping the two.
 - The terminal font size is saved as a number in the UI config (it was a string).
-- The initial download is slightly smaller (1.1 MB, from 1.18 MB).
+- Widgets set to refresh faster than every 10 seconds get fresh values at that rate; the server samples once for all of them.
 
 ### Known differences
 

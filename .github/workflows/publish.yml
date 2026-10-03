@@ -37,5 +37,7 @@ jobs:
       - name: Build
         run: npm run build
 
+      # A GitHub prerelease (e.g. v2.0.0-beta.0) goes to the `next` dist-tag,
+      # so `npm install` keeps giving everyone else the latest stable release
       - name: Publish
-        run: npm publish --provenance --access public
+        run: npm publish --provenance --access public ${{ github.event.release.prerelease && '--tag next' || '' }}
