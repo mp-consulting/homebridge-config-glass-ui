@@ -1,0 +1,506 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-camera-ffmpeg",
+  "version": "4.1.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 7,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 45,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "forceMax": false,
+              "audio": false,
+              "debug": false,
+              "debugReturn": false,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "forceMax": false,
+              "audio": false,
+              "debug": false,
+              "debugReturn": false,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": false,
+              "audio": false,
+              "debug": false,
+              "debugReturn": false,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": false,
+              "audio": true,
+              "debug": false,
+              "debugReturn": false,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": true,
+              "audio": true,
+              "debug": false,
+              "debugReturn": false,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": true,
+              "audio": true,
+              "debug": false,
+              "debugReturn": true,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": true,
+              "audio": true,
+              "debug": false,
+              "debugReturn": true,
+              "recording": true,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": true,
+              "audio": true,
+              "debug": false,
+              "debugReturn": true,
+              "recording": true,
+              "prebuffer": false
+            }
+          },
+          {
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "forceMax": false,
+              "audio": false,
+              "debug": false,
+              "debugReturn": false,
+              "recording": false,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 42,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 22,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "Camera FFmpeg",
+        "cameras": [
+          {
+            "name": "golden",
+            "motion": false,
+            "doorbell": false,
+            "switches": false,
+            "motionDoorbell": false,
+            "videoConfig": {
+              "maxStreams": 7,
+              "forceMax": true,
+              "audio": true,
+              "debug": false,
+              "debugReturn": true,
+              "recording": true,
+              "prebuffer": false
+            }
+          }
+        ],
+        "tlsmqtt": false,
+        "localhttp": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 9,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Cameras",
+        "",
+        "Name",
+        "Video Source",
+        "Still Image Source",
+        "Enable Audio",
+        "Branding",
+        "Video Output",
+        "Advanced",
+        "Automation",
+        "Global Automation",
+        "Global Advanced"
+      ]
+    }
+  ]
+}

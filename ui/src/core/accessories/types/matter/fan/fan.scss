@@ -1,0 +1,43 @@
+.hb-matter-fan {
+  .spin {
+    svg {
+      g {
+        .fan-blades {
+          animation: hb-matter-fan-spin 2s infinite linear;
+          transform-origin: 53.5% 50%;
+        }
+      }
+    }
+  }
+
+  .spin-counter {
+    svg {
+      g {
+        .fan-blades {
+          animation: hb-matter-fan-spin-counter 2s infinite linear;
+          transform-origin: 53.5% 50%;
+        }
+      }
+    }
+  }
+}
+
+@keyframes hb-matter-fan-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes hb-matter-fan-spin-counter {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-359deg);
+  }
+}

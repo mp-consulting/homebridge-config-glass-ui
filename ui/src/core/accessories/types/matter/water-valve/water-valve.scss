@@ -1,0 +1,32 @@
+.hb-matter-water-valve.accessory-on {
+  svg {
+    .drop {
+      fill-opacity: 0.5;
+    }
+
+    .drop-top {
+      animation: hb-matter-water-valve-blink 1.5s infinite;
+    }
+
+    .drop-middle {
+      animation: hb-matter-water-valve-blink 1.5s infinite;
+      animation-delay: 0.5s;
+    }
+
+    .drop-bottom {
+      animation: hb-matter-water-valve-blink 1.5s infinite;
+      animation-delay: 1s;
+    }
+  }
+}
+
+@keyframes hb-matter-water-valve-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}

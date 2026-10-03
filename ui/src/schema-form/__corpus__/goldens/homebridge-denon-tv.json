@@ -1,0 +1,745 @@
+{
+  "plugin": "homebridge-denon-tv",
+  "version": "6.6.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 40,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 0,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 1,
+            "zoneControl": -1,
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 1,
+            "zoneControl": 0,
+            "inputs": {
+              "getFromDevice": false,
+              "getFavoritesFromDevice": false,
+              "getQuickSmartSelectFromDevice": false
+            },
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 9,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 1,
+            "zoneControl": 0,
+            "inputs": {
+              "getFromDevice": false,
+              "getFavoritesFromDevice": false,
+              "getQuickSmartSelectFromDevice": false
+            },
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 10,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 1,
+            "zoneControl": 0,
+            "inputs": {
+              "getFromDevice": false,
+              "getFavoritesFromDevice": false,
+              "getQuickSmartSelectFromDevice": false
+            },
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 11,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 1,
+            "zoneControl": 0,
+            "inputs": {
+              "getFromDevice": false,
+              "getFavoritesFromDevice": false,
+              "getQuickSmartSelectFromDevice": false
+            },
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 12,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Denon TV",
+        "devices": [
+          {
+            "name": "golden",
+            "port": 7,
+            "generation": 1,
+            "zoneControl": 0,
+            "inputs": {
+              "getFromDevice": false,
+              "getFavoritesFromDevice": false,
+              "getQuickSmartSelectFromDevice": false
+            },
+            "infoButtonCommand": "MNMEN ON",
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": false,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 11,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Port",
+        "Generation",
+        "Zone/Mode Control",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,412 @@
+{
+  "plugin": "homebridge-tplink-smarthome",
+  "version": "8.0.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: tcp"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 16,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 15,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "TplinkSmarthome",
+        "addCustomCharacteristics": true,
+        "deviceTypes": [
+          "plug",
+          "bulb"
+        ],
+        "devicesUseDiscoveryPort": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": true,
+        "deviceTypes": [
+          "plug",
+          "bulb"
+        ],
+        "devicesUseDiscoveryPort": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": true,
+        "deviceTypes": [
+          "plug",
+          "bulb"
+        ],
+        "devicesUseDiscoveryPort": false,
+        "emeterPollingInterval": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "deviceTypes": [
+          "plug",
+          "bulb"
+        ],
+        "devicesUseDiscoveryPort": false,
+        "emeterPollingInterval": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "deviceTypes": [
+          "bulb"
+        ],
+        "devicesUseDiscoveryPort": false,
+        "emeterPollingInterval": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": false,
+        "emeterPollingInterval": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7,
+        "transport": "tcp"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7,
+        "transport": "tcp"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7,
+        "transport": "tcp"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 9,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7,
+        "transport": "tcp"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 10,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7,
+        "transport": "tcp"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 9,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "addCustomCharacteristics": false,
+        "devicesUseDiscoveryPort": true,
+        "emeterPollingInterval": 7,
+        "transport": "tcp"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "HomeKit (Optional)",
+        "Device Discovery (Optional)",
+        "Advanced Settings (Optional)"
+      ]
+    }
+  ]
+}

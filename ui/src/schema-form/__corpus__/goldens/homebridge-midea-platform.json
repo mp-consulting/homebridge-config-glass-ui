@@ -1,0 +1,526 @@
+{
+  "plugin": "homebridge-midea-platform",
+  "version": "1.3.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 3,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 0,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: Dehumidifier"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: Leak Sensor"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 27,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "devices": [
+          {
+            "advanced_options": {
+              "verbose": false,
+              "logRecoverableErrors": false,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "advanced_options": {
+              "verbose": false,
+              "logRecoverableErrors": false,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "advanced_options": {
+              "verbose": false,
+              "logRecoverableErrors": false,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": false,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "advanced_options": {
+              "verbose": false,
+              "logRecoverableErrors": false,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": false,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": true,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": true,
+              "logRefreshStatusErrors": true
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "type": "Dehumidifier",
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": true,
+              "logRefreshStatusErrors": true
+            },
+            "A1_options": {
+              "temperatureSensor": false,
+              "fanAccessory": false,
+              "humiditySensor": false,
+              "pumpSwitch": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings",
+        "Dehumidifier Options"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "type": "Dehumidifier",
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": true,
+              "logRefreshStatusErrors": true
+            },
+            "A1_options": {
+              "temperatureSensor": false,
+              "fanAccessory": false,
+              "humiditySensor": false,
+              "pumpSwitch": false,
+              "waterTankSensor": "Leak Sensor"
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings",
+        "Dehumidifier Options"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "type": "Dehumidifier",
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": true,
+              "logRefreshStatusErrors": true
+            },
+            "A1_options": {
+              "temperatureSensor": false,
+              "fanAccessory": false,
+              "humiditySensor": false,
+              "pumpSwitch": false,
+              "waterTankSensor": "Leak Sensor"
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          },
+          {
+            "advanced_options": {
+              "verbose": false,
+              "logRecoverableErrors": false,
+              "logRefreshStatusErrors": false
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings",
+        "Dehumidifier Options"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "type": "Dehumidifier",
+            "name": "golden",
+            "advanced_options": {
+              "verbose": true,
+              "logRecoverableErrors": true,
+              "logRefreshStatusErrors": true
+            },
+            "A1_options": {
+              "temperatureSensor": false,
+              "fanAccessory": false,
+              "humiditySensor": false,
+              "pumpSwitch": false,
+              "waterTankSensor": "Leak Sensor"
+            },
+            "AC_options": {
+              "serviceType": "HeaterCooler"
+            }
+          }
+        ],
+        "uiDebug": true,
+        "refreshInterval": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Optional Settings",
+        "",
+        "Device Type",
+        "Device Identifier",
+        "Device Name",
+        "Advanced Settings",
+        "Dehumidifier Options"
+      ]
+    }
+  ]
+}

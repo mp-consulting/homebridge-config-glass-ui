@@ -1,0 +1,285 @@
+{
+  "plugin": "homebridge-zp",
+  "version": "1.4.71",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: light"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Sonos",
+        "mdns": true,
+        "service": "switch",
+        "alarms": false,
+        "brightness": false,
+        "excludeAirPlay": false,
+        "leds": false,
+        "speakers": false,
+        "tv": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "switch",
+        "alarms": false,
+        "brightness": false,
+        "excludeAirPlay": false,
+        "leds": false,
+        "speakers": false,
+        "tv": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "switch",
+        "alarms": false,
+        "brightness": false,
+        "excludeAirPlay": false,
+        "leds": false,
+        "speakers": false,
+        "tv": false,
+        "resetTimeout": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "switch",
+        "alarms": false,
+        "brightness": false,
+        "excludeAirPlay": false,
+        "leds": false,
+        "speakers": true,
+        "tv": false,
+        "resetTimeout": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "switch",
+        "alarms": true,
+        "brightness": false,
+        "excludeAirPlay": false,
+        "leds": false,
+        "speakers": true,
+        "tv": false,
+        "resetTimeout": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "switch",
+        "alarms": true,
+        "brightness": false,
+        "excludeAirPlay": false,
+        "leds": true,
+        "speakers": true,
+        "tv": false,
+        "resetTimeout": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "switch",
+        "alarms": true,
+        "brightness": false,
+        "excludeAirPlay": true,
+        "leds": true,
+        "speakers": true,
+        "tv": false,
+        "resetTimeout": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "mdns": true,
+        "service": "light",
+        "alarms": true,
+        "excludeAirPlay": true,
+        "leds": true,
+        "speakers": true,
+        "tv": false,
+        "resetTimeout": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 2,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "What",
+        "How",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

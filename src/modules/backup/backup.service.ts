@@ -5,7 +5,7 @@ import type { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
 
 import { EventEmitter } from 'node:events'
 import { constants, createReadStream, createWriteStream, statSync } from 'node:fs'
-import { access, lstat, mkdir, mkdtemp, readdir, realpath } from 'node:fs/promises'
+import { access, chmod, lstat, mkdir, mkdtemp, readdir, realpath } from 'node:fs/promises'
 import { platform, tmpdir } from 'node:os'
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
@@ -35,7 +35,9 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { findUnsafeUiValues, removeUnsafeUiValues } from '../config-editor/config-safety.js'
 import { PluginsService } from '../plugins/plugins.service.js'
+import { BACKUP_DIR_MODE, BACKUP_EXCLUDED_NAMES, BACKUP_FILE_MODE } from './backup.constants.js'
 
 const pump = promisify(pipeline)
 
@@ -280,33 +282,9 @@ export class BackupService {
       // Create a copy of the storage directory in the temp path
       await copy(storagePath, resolve(backupDir, 'storage'), {
         filter: async (filePath) => {
-          // List of files not to include in the archive
-          if (
-            [
-              'instance-backups', // scheduled backups
-              'nssm.exe', // windows hb-service
-              'homebridge.log', // hb-service
-              'logs', // docker
-              'node_modules', // docker
-              'startup.sh', // docker
-              '.docker.env', // docker
-              'docker-compose.yml', // docker
-              'pnpm-lock.yaml', // pnpm
-              'package.json', // npm
-              'package-lock.json', // npm
-              '.npmrc', // npm
-              '.npm', // npm
-              'FFmpeg', // ffmpeg
-              'fdk-aac', // ffmpeg
-              '.git', // git
-              'recordings', // homebridge-camera-ui recordings path
-              '.homebridge.sock', // homebridge ipc socket
-              '#recycle', // synology dsm recycle bin
-              '@eaDir', // synology dsm metadata
-              '.venv', // python venv
-              '.cache', // cache
-            ].includes(basename(filePath))
-          ) {
+          // Files not to include in the archive (secrets, runtime and
+          // packaging files - see BACKUP_EXCLUDED_NAMES)
+          if (BACKUP_EXCLUDED_NAMES.includes(basename(filePath))) {
             return false
           }
 
@@ -337,6 +315,8 @@ export class BackupService {
         portable: true,
         gzip: true,
         file: backupPath,
+        // The archive holds auth.json, HAP pairing keys and any SSL key
+        mode: BACKUP_FILE_MODE,
         cwd: backupDir,
         filter: (filePath, stat) => {
           if (stat.size > globalThis.backup.maxBackupFileSize) {
@@ -383,9 +363,24 @@ export class BackupService {
         throw new Error(`Custom instance backup path is not writable / readable by service: ${e.message}`)
       }
     } else {
-      // When not using a custom backup path, just ensure it exists
-      return await ensureDir(this.configService.instanceBackupPath)
+      // When not using a custom backup path, ensure it exists and only the
+      // service user can read the archives in it
+      await ensureDir(this.configService.instanceBackupPath, { mode: BACKUP_DIR_MODE })
+      await chmod(this.configService.instanceBackupPath, BACKUP_DIR_MODE).catch(() => undefined)
     }
+  }
+
+  /**
+   * Copy a finished archive into the instance backup path, readable by the
+   * service user only (a custom path may be a shared directory).
+   */
+  private async saveToInstanceBackupPath(backupPath: string, instanceId: string): Promise<void> {
+    const target = resolve(
+      this.configService.instanceBackupPath,
+      `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
+    )
+    await copy(backupPath, target)
+    await chmod(target, BACKUP_FILE_MODE).catch(() => undefined)
   }
 
   /**
@@ -403,10 +398,7 @@ export class BackupService {
     // Create the backup
     try {
       const { backupDir, backupPath, instanceId } = await this.createBackup()
-      await copy(backupPath, resolve(
-        this.configService.instanceBackupPath,
-        `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
-      ))
+      await this.saveToInstanceBackupPath(backupPath, instanceId)
       await remove(resolve(backupDir))
     } catch (e) {
       this.logger.warn(`Failed to create scheduled instance backup as ${e.message}.`)
@@ -614,10 +606,7 @@ export class BackupService {
     try {
       const { backupDir, backupPath, instanceId } = await this.createBackup()
 
-      await copy(backupPath, resolve(
-        this.configService.instanceBackupPath,
-        `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
-      ))
+      await this.saveToInstanceBackupPath(backupPath, instanceId)
 
       await remove(resolve(backupDir))
     } catch (error) {
@@ -751,14 +740,6 @@ export class BackupService {
     client.emit('stdout', cyan('\r\nRestoring backup...\r\n\r\n'))
     await new Promise(res => setTimeout(res, 1000))
 
-    // Files that should not be restored (but may exist in older backup archives)
-    const restoreFilter = [
-      join(this.restoreDirectory, 'storage', 'package.json'),
-      join(this.restoreDirectory, 'storage', 'package-lock.json'),
-      join(this.restoreDirectory, 'storage', '.npmrc'),
-      join(this.restoreDirectory, 'storage', 'docker-compose.yml'),
-    ]
-
     // Resolve the real path of the storage directory (in case it's a symbolic link)
     const storagePath = await realpath(this.configService.storagePath)
 
@@ -767,7 +748,10 @@ export class BackupService {
     await new Promise(res => setTimeout(res, 100))
     await copy(resolve(this.restoreDirectory, 'storage'), storagePath, {
       filter: async (filePath) => {
-        if (restoreFilter.includes(filePath)) {
+        // Anything a backup leaves out is refused here too, so a crafted (or
+        // older) archive cannot plant the JWT secret, hb-service startup
+        // options, startup.sh, node_modules, ...
+        if (BACKUP_EXCLUDED_NAMES.includes(basename(filePath))) {
           client.emit('stdout', `Skipping ${basename(filePath)}\r\n`)
           return false
         }
@@ -816,7 +800,7 @@ export class BackupService {
     }
 
     // Check the bridge.bind config contains valid interface names
-    if (restoredConfig.bridge.bind) {
+    if (restoredConfig.bridge?.bind) {
       await this.checkBridgeBindConfig(restoredConfig)
     }
 
@@ -824,6 +808,9 @@ export class BackupService {
     if (!Array.isArray(restoredConfig.platforms)) {
       restoredConfig.platforms = []
     }
+
+    // Apply the same command checks as a config save
+    this.sanitiseRestoredUiConfig(restoredConfig, client)
 
     // Load the ui config block
     const uiConfigBlock = restoredConfig.platforms.find(x => x.platform === 'config')
@@ -943,6 +930,7 @@ export class BackupService {
             'dashboard.json',
             'layout.json',
             'config.json',
+            ...BACKUP_EXCLUDED_NAMES,
           ].includes(basename(filePath))
         ) {
           return false
@@ -998,12 +986,13 @@ export class BackupService {
 
     // Clone elements from the source config that we care about
     const targetConfig: HomebridgeConfig = JSON.parse(JSON.stringify({
-      bridge: sourceConfig.bridge,
+      bridge: sourceConfig.bridge && typeof sourceConfig.bridge === 'object' ? sourceConfig.bridge : {},
       accessories: sourceConfig.accessories?.map((x: any) => {
         delete x.plugin_map
         return x
       }) || [],
-      platforms: sourceConfig.platforms?.map((x: any) => {
+      // The UI block is replaced with this instance's own below
+      platforms: sourceConfig.platforms?.filter((x: any) => x?.platform !== 'config').map((x: any) => {
         if (x.platform === 'google-home') {
           x.platform = 'google-smarthome'
           x.notice = 'Keep your token a secret!'
@@ -1012,6 +1001,11 @@ export class BackupService {
         return x
       }) || [],
     }))
+
+    // An hbfx config without a bridge username keeps this instance's one
+    if (typeof targetConfig.bridge.username !== 'string' || !targetConfig.bridge.username) {
+      targetConfig.bridge.username = this.configService.homebridgeConfig.bridge.username
+    }
 
     // Correct bridge name
     targetConfig.bridge.name = `Homebridge ${targetConfig.bridge.username.substring(targetConfig.bridge.username.length - 5).replace(RE_COLON, '')}`
@@ -1064,6 +1058,27 @@ export class BackupService {
     }, 500)
 
     return { status: 0 }
+  }
+
+  /**
+   * Run the restored UI block(s) through the command checks a config save
+   * uses, dropping any unsafe value so the restore still completes.
+   */
+  private sanitiseRestoredUiConfig(restoredConfig: HomebridgeConfig, client: EventEmitter) {
+    for (const uiBlock of restoredConfig.platforms.filter(x => x?.platform === 'config')) {
+      const unsafe = findUnsafeUiValues(uiBlock, this.configService.ui, {
+        terminalEnabled: this.configService.enableTerminalAccess,
+        storagePath: this.configService.storagePath,
+      })
+      if (!unsafe.length) {
+        continue
+      }
+      removeUnsafeUiValues(uiBlock, unsafe)
+      for (const { path, reason } of unsafe) {
+        this.logger.warn(`Backup restore removed the unsafe "${path}" value from the restored config.json. ${reason}`)
+        client.emit('stdout', red(`Removed unsafe "${path}" from the restored config.json. ${reason}\r\n`))
+      }
+    }
   }
 
   /**

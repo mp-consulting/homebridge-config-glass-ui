@@ -1,0 +1,1041 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-tado",
+  "version": "10.0.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: CELSIUS"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: HOT_WATER"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 53,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "TadoPlatform",
+        "homes": [
+          {
+            "skipAuth": false,
+            "addJitter": false,
+            "polling": 300,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": false,
+        "preferSiriTemperature": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": false,
+            "addJitter": false,
+            "polling": 300,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": false,
+        "preferSiriTemperature": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": false,
+            "addJitter": false,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": false,
+        "preferSiriTemperature": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": false,
+            "addJitter": false,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": false,
+            "addJitter": false,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": false,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false,
+                "type": "HOT_WATER"
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false,
+                "type": "HOT_WATER"
+              },
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                },
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false,
+                "type": "HOT_WATER"
+              },
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                },
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                },
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false,
+                "type": "HOT_WATER"
+              },
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 16,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "homes": [
+          {
+            "skipAuth": true,
+            "addJitter": true,
+            "polling": 7,
+            "nightPolling": 300,
+            "temperatureUnit": "CELSIUS",
+            "presence": {
+              "anyone": false,
+              "user": [
+                {
+                  "active": false
+                },
+                {
+                  "active": false
+                }
+              ]
+            },
+            "weather": {
+              "temperatureSensor": false,
+              "solarIntensity": false
+            },
+            "extras": {
+              "centralSwitch": false,
+              "presenceLock": false,
+              "childLockSwitches": [
+                {
+                  "active": false
+                }
+              ]
+            },
+            "zones": [
+              {
+                "active": false,
+                "type": "HOT_WATER"
+              },
+              {
+                "active": false
+              }
+            ],
+            "telegram": {
+              "active": false
+            }
+          }
+        ],
+        "debug": true,
+        "preferSiriTemperature": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 15,
+        "radio": 0,
+        "select": 6,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Debug",
+        "Prefer Siri Temperature Changes",
+        "",
+        "",
+        "Home Name",
+        "Polling",
+        "Night Polling",
+        "Temperature Unit",
+        "Authentication",
+        "Zones",
+        "Presence",
+        "Weather",
+        "Extras",
+        "Telegram"
+      ]
+    }
+  ]
+}

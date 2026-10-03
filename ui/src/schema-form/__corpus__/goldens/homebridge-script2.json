@@ -1,0 +1,554 @@
+{
+  "plugin": "homebridge-script2",
+  "version": "1.0.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: on"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 44,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 19,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "platform": "Script2Platform",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": false,
+            "polling_interval": 5000,
+            "polling_on_start": true,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": false,
+            "polling_interval": 5000,
+            "polling_on_start": true,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": true,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": true,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": true,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": true,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          },
+          {
+            "on_value": "true",
+            "polling": false,
+            "polling_interval": 5000,
+            "polling_on_start": true,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": true,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          },
+          {
+            "on_value": "true",
+            "polling": false,
+            "polling_interval": 5000,
+            "polling_on_start": true,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          },
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 22,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 2,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": true,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          },
+          {
+            "on_value": "true",
+            "polling": false,
+            "polling_interval": 5000,
+            "polling_on_start": true,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": false,
+            "fail_on_state_exit_code": false,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "Script2",
+        "on_off_switches": [
+          {
+            "on_value": "true",
+            "polling": true,
+            "polling_interval": 5000,
+            "polling_on_start": false,
+            "state_cache_ttl_ms": 1000,
+            "reset_state_cache_on_set": true,
+            "fail_on_state_exit_code": true,
+            "command_timeout": 10000,
+            "homekit_set_ack_timeout_ms": 0
+          }
+        ],
+        "stateless_switches": [
+          {
+            "command_timeout": 10000,
+            "stateless_trigger_on": "on"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "On/Off Switches",
+        "Stateless Switches"
+      ]
+    }
+  ]
+}

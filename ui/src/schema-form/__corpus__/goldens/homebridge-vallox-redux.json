@@ -1,0 +1,286 @@
+{
+  "plugin": "homebridge-vallox-redux",
+  "version": "0.2.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "port": 80,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": true,
+        "enableHumiditySensor": true,
+        "enableEveHistory": false,
+        "enableDailyTimeSync": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    },
+    {
+      "data": {
+        "port": 80,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": true,
+        "enableHumiditySensor": true,
+        "enableEveHistory": false,
+        "enableDailyTimeSync": true,
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": true,
+        "enableHumiditySensor": true,
+        "enableEveHistory": false,
+        "enableDailyTimeSync": true,
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": false,
+        "enableHumiditySensor": true,
+        "enableEveHistory": false,
+        "enableDailyTimeSync": true,
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": false,
+        "enableHumiditySensor": false,
+        "enableEveHistory": false,
+        "enableDailyTimeSync": true,
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": false,
+        "enableHumiditySensor": false,
+        "enableEveHistory": true,
+        "enableDailyTimeSync": true,
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "pollingIntervalSeconds": 30,
+        "filterAlertDays": 14,
+        "co2AlertPpm": 1000,
+        "enableCo2Sensor": false,
+        "enableHumiditySensor": false,
+        "enableEveHistory": true,
+        "enableDailyTimeSync": false,
+        "name": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Host",
+        "Port",
+        "Polling interval (seconds)",
+        "Filter change alert threshold (days)",
+        "CO2 alert threshold (ppm)",
+        "Enable CO2 sensor",
+        "Enable humidity sensor",
+        "Enable Eve app history graphs",
+        "Enable daily clock sync"
+      ]
+    }
+  ]
+}

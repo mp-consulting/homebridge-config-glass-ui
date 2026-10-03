@@ -1,0 +1,50 @@
+// Keyframe names are prefixed: Angular scoped them to the component
+.hb-speaker.accessory-on:not(.paused):not(.muted) {
+  svg {
+    .wave-inner {
+      animation: hb-speaker-pulse-inner 2s infinite;
+    }
+
+    .wave-outer {
+      animation: hb-speaker-pulse-outer 2s infinite;
+    }
+
+    @keyframes hb-speaker-pulse-inner {
+      0% {
+        stroke-opacity: 0.5;
+      }
+
+      50% {
+        stroke-opacity: 1;
+      }
+
+      100% {
+        stroke-opacity: 0.5;
+      }
+    }
+
+    @keyframes hb-speaker-pulse-outer {
+      0% {
+        stroke-opacity: 0.3;
+      }
+
+      50% {
+        stroke-opacity: 0.8;
+      }
+
+      100% {
+        stroke-opacity: 0.3;
+      }
+    }
+  }
+}
+
+body.dark-mode {
+  div.accessory-box.hb-speaker:not(.accessory-on) {
+    svg {
+      .inner {
+        fill: #2b2b2b !important; // Dark mode inner circle color
+      }
+    }
+  }
+}

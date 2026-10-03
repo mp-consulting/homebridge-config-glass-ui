@@ -1,0 +1,762 @@
+{
+  "plugin": "@sealad886/homebridge-blink-cameras-new-api",
+  "version": "0.9.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: prod"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: opus"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 35,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 29,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Blink",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": true,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": false,
+        "enableStreaming": true,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": true,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": true,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": false,
+        "enableStreaming": true,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": true,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": false,
+        "enableStreaming": true,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": true,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": true,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": true,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": true,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          },
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          },
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "deviceId": "homebridge-blink",
+        "tier": "prod",
+        "persistAuth": true,
+        "trustDevice": true,
+        "authLocked": false,
+        "debugAuth": false,
+        "pollInterval": 60,
+        "motionTimeout": 30,
+        "enableMotionPolling": false,
+        "snapshotCacheTTL": 60,
+        "persistSnapshotCache": true,
+        "enableStreaming": false,
+        "ffmpegPath": "ffmpeg",
+        "ffmpegDebug": false,
+        "rtspTransport": "tcp",
+        "maxStreams": 1,
+        "enableAudio": false,
+        "twoWayAudio": false,
+        "audioCodec": "opus",
+        "audioBitrate": 32,
+        "videoEncoder": "auto",
+        "verifyImmisTls": true,
+        "deviceSettingOverrides": [
+          {
+            "enableMotion": false
+          },
+          {
+            "enableMotion": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Platform Settings",
+        "Platform Name",
+        "Blink Region",
+        "Device Identification",
+        "Polling & Snapshots",
+        "Streaming",
+        "Device Customization",
+        "Advanced"
+      ]
+    }
+  ]
+}

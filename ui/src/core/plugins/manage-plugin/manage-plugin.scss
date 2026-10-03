@@ -1,0 +1,27 @@
+.hb-manage-plugin {
+  .plugin-modal-body {
+    .release-notes {
+      box-shadow: none;
+      max-height: 39vh;
+      overflow: auto;
+      border: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    .release-tab {
+      font-size: 1rem;
+      color: lightgrey;
+    }
+
+    .tab-content {
+      border-radius: 0 0 20px 20px;
+    }
+  }
+
+  .nav-tabs {
+    --bs-nav-tabs-border-width: 0;
+  }
+}
+
+// Markdown styles are global - see src/scss/components/markdown.scss

@@ -1,0 +1,384 @@
+{
+  "plugin": "homebridge-withings-environment-data",
+  "version": "1.6.7",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: ISO_8601"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Withings Environment",
+        "co2DetectedThresholdPpm": 1000,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": true,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": false,
+        "mqttRequiresAuth": false,
+        "mqttRetain": false,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 1000,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": true,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": false,
+        "mqttRequiresAuth": false,
+        "mqttRetain": false,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 7,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": true,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": false,
+        "mqttRequiresAuth": false,
+        "mqttRetain": false,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 7,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": true,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": true,
+        "mqttRequiresAuth": false,
+        "mqttRetain": false,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 7,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": true,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": true,
+        "mqttRequiresAuth": true,
+        "mqttRetain": false,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 7,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": true,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": true,
+        "mqttRequiresAuth": true,
+        "mqttRetain": true,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 7,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": false,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": true,
+        "mqttRequiresAuth": true,
+        "mqttRetain": true,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "co2DetectedThresholdPpm": 7,
+        "airQualityExcellentMaxPpm": 800,
+        "airQualityGoodMaxPpm": 1000,
+        "airQualityFairMaxPpm": 1500,
+        "airQualityInferiorMaxPpm": 2000,
+        "pollIntervalMinutes": 30,
+        "exposeAsHomekitAccessories": false,
+        "mqttHost": "localhost:1883",
+        "mqttLastSeen": "ISO_8601",
+        "noResponseAfterMissedPolls": 2,
+        "staleDataWarningThresholdHours": 4,
+        "publishToMqtt": true,
+        "mqttRequiresAuth": true,
+        "mqttRetain": true,
+        "sendStaleDataNotification": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "MQTT",
+        "Air Quality",
+        "Expose sensors as HomeKit Accessories",
+        "Poll Interval (minutes)",
+        "No Response After Missed Polls",
+        "Stale Data Warning Threshold (hours)",
+        "Send Stale Data Notification",
+        "ntfy.sh Notification Topic"
+      ]
+    }
+  ]
+}

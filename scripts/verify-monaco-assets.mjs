@@ -1,7 +1,7 @@
 /**
  * Verifies that the Monaco files copied into the build output are complete.
  *
- * `ui/angular.json` copies Monaco into `assets/monaco` with a list of globs
+ * `ui/vite.config.ts` (vite-plugin-static-copy) copies Monaco into `assets/monaco` with a list of globs
  * rather than taking the whole package, to keep the ~80 languages we never use
  * out of the bundle. The catch is that Monaco content-hashes its chunk
  * filenames, and it renames them: the main bundle was `editor.api-<hash>.js` in
@@ -70,7 +70,7 @@ if (missing.size) {
   for (const [file, requiredBy] of missing) {
     console.error(`  - ${file}  (required by ${requiredBy})`)
   }
-  console.error('\nMonaco has almost certainly renamed or added a chunk. Update the monaco globs in ui/angular.json to match.')
+  console.error('\nMonaco has almost certainly renamed or added a chunk. Update the monaco globs in ui/vite.config.ts to match.')
   process.exit(1)
 }
 

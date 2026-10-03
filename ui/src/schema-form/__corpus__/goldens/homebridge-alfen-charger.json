@@ -1,0 +1,143 @@
+{
+  "plugin": "homebridge-alfen-charger",
+  "version": "1.2.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Alfen Charger",
+        "chargePower": 3.7,
+        "pollInterval": 30,
+        "debug": false,
+        "requestTimeout": 15,
+        "powerThreshold": 100,
+        "nominalVoltage": 230
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Charger IP address",
+        "Charger password",
+        "Charge power (kW)",
+        "Poll interval (seconds)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "chargePower": 3.7,
+        "pollInterval": 30,
+        "debug": false,
+        "requestTimeout": 15,
+        "powerThreshold": 100,
+        "nominalVoltage": 230
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Charger IP address",
+        "Charger password",
+        "Charge power (kW)",
+        "Poll interval (seconds)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "chargePower": 7,
+        "pollInterval": 30,
+        "debug": false,
+        "requestTimeout": 15,
+        "powerThreshold": 100,
+        "nominalVoltage": 230
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Charger IP address",
+        "Charger password",
+        "Charge power (kW)",
+        "Poll interval (seconds)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "chargePower": 7,
+        "pollInterval": 30,
+        "debug": true,
+        "requestTimeout": 15,
+        "powerThreshold": 100,
+        "nominalVoltage": 230
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Charger IP address",
+        "Charger password",
+        "Charge power (kW)",
+        "Poll interval (seconds)",
+        "Advanced"
+      ]
+    }
+  ]
+}

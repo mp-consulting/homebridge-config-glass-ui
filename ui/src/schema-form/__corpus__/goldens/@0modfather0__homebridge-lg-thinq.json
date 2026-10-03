@@ -1,0 +1,194 @@
+{
+  "plugin": "@0modfather0/homebridge-lg-thinq",
+  "version": "2.2.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: thinq_connect"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 12,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "auth_mode": "thinq_connect",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 300
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "",
+        "Country",
+        "Language",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "ThinQ Connect API Device ID",
+        "Device Settings"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "thinq_connect",
+        "country": "golden",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 300
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "",
+        "Country",
+        "Language",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "ThinQ Connect API Device ID",
+        "Device Settings"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "thinq_connect",
+        "country": "golden",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 300
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "",
+        "Country",
+        "Language",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "ThinQ Connect API Device ID",
+        "Device Settings"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "thinq_connect",
+        "country": "golden",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 300
+      },
+      "isValid": true,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "",
+        "Country",
+        "Language",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "ThinQ Connect API Device ID",
+        "Device Settings"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "thinq_connect",
+        "country": "golden",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 300
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "",
+        "Country",
+        "Language",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "ThinQ Connect API Device ID",
+        "Device Settings"
+      ]
+    }
+  ]
+}

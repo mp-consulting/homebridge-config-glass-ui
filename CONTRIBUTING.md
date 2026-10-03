@@ -2,7 +2,7 @@
 
 Pull requests are welcome.
 
-The server is written in [TypeScript](https://www.typescriptlang.org/) with [Nest.js](https://nestjs.com/). The browser UI is an [Angular](https://angular.dev/) app in `ui/`.
+The server is written in [TypeScript](https://www.typescriptlang.org/) with [Nest.js](https://nestjs.com/). The browser UI is a [React](https://react.dev/) app built with [Vite](https://vite.dev/) in `ui/`.
 
 ## Getting set up
 
@@ -22,7 +22,7 @@ npm run build
 npm run watch
 ```
 
-This starts the Angular dev server on port `4200` and the backend on port `8581`. Open `http://localhost:4200`; the page reloads when you change the code.
+This starts the Vite dev server on port `4200` and the backend on port `8581`. Open `http://localhost:4200`; the page reloads when you change the code.
 
 ## Running tests
 

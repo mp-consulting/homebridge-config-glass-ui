@@ -1,0 +1,106 @@
+{
+  "plugin": "homebridge-emporia-vue-log",
+  "version": "0.2.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Emporia-Vue Power Log",
+        "emporiaVueChannelName": "1,2,3",
+        "refreshIntervalSeconds": 60,
+        "printInterval": 10,
+        "powerThreshold": 450
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Emporia Vue Username",
+        "Emporia Vue Password",
+        "Emporia Vue Channel Name (put '1,2,3')",
+        "Refresh Interval (AKA polling interval, best to keep above 15 seconds)",
+        "Print Interval (number of refresh intervals before data is printed to the console)",
+        "Power threshold (threshold for when the switch is activated)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "emporiaVueChannelName": "1,2,3",
+        "refreshIntervalSeconds": 60,
+        "printInterval": 10,
+        "powerThreshold": 450
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Emporia Vue Username",
+        "Emporia Vue Password",
+        "Emporia Vue Channel Name (put '1,2,3')",
+        "Refresh Interval (AKA polling interval, best to keep above 15 seconds)",
+        "Print Interval (number of refresh intervals before data is printed to the console)",
+        "Power threshold (threshold for when the switch is activated)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "emporiaVueChannelName": "1,2,3",
+        "refreshIntervalSeconds": 7,
+        "printInterval": 10,
+        "powerThreshold": 450
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Emporia Vue Username",
+        "Emporia Vue Password",
+        "Emporia Vue Channel Name (put '1,2,3')",
+        "Refresh Interval (AKA polling interval, best to keep above 15 seconds)",
+        "Print Interval (number of refresh intervals before data is printed to the console)",
+        "Power threshold (threshold for when the switch is activated)"
+      ]
+    }
+  ]
+}

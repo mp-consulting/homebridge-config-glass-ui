@@ -1,10 +1,8 @@
-import { randomInt } from 'node:crypto'
-import { copyFile, readdir, readFile, unlink } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { copyFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 
-import { BadRequestException, Inject, Injectable, NotFoundException, OnApplicationBootstrap } from '@nestjs/common'
-import dayjs from 'dayjs'
-import { ensureDir, move, pathExists, readJson, remove } from 'fs-extra/esm'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { readJson } from 'fs-extra/esm'
 import { gte } from 'semver'
 
 import {
@@ -15,14 +13,14 @@ import {
 } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import { MatterConfig } from '../../core/matter/matter.interfaces.js'
-import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_SAFE_RESTART_CMD, RE_USERNAME } from '../../core/regex.constants.js'
-import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
 import { BackupService } from '../backup/backup.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
+import { ConfigBackupService } from './config-backup.service.js'
+import { cleanUpUiConfig, generatePin, generateUsername, normaliseConfig } from './config-normalise.js'
+import { findUnsafeUiValues, RESTART_COMMAND_RULE } from './config-safety.js'
 
 export interface ConfigEditorRestartInfo<T> {
   config: T
@@ -30,63 +28,23 @@ export interface ConfigEditorRestartInfo<T> {
 }
 
 @Injectable()
-export class ConfigEditorService implements OnApplicationBootstrap {
-  // Resolves after start() has finished, so updateConfigFile() can await
-  // it and never race with the in-flight backup migration that
-  // start() runs at boot. Resolves immediately if no save lands.
-  private readonly ready: Promise<void>
-  private resolveReady!: () => void
-
+export class ConfigEditorService {
   constructor(
     @Inject(Logger) private readonly logger: Logger,
     @Inject(ConfigService) private readonly configService: ConfigService,
-    @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
-    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
     @Inject(BackupService) private readonly backupService: BackupService,
     @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
-  ) {
-    this.ready = new Promise((res) => {
-      this.resolveReady = res
-    })
-    this.scheduleConfigBackupCleanup()
-  }
-
-  async onApplicationBootstrap(): Promise<void> {
-    // Run start() through Nest's lifecycle so the migration completes
-    // before any request-driven save can land. Otherwise
-    // updateConfigFile()'s backup-snapshot and migrateConfigBackups()'s
-    // move/remove pass could touch the same files concurrently.
-    await this.start()
-    this.resolveReady()
-  }
+    @Inject(ConfigBackupService) private readonly configBackupService: ConfigBackupService,
+  ) {}
 
   /**
-   * Executed when the UI starts
+   * Resolves once the config backup start-up work (backup directory and
+   * legacy migration) has finished, so saves never race with it.
    */
-  private async start() {
-    await this.ensureBackupPathExists()
-    await this.migrateConfigBackups()
-  }
-
-  /**
-   * Schedule the job to clean up old config.json backup files
-   */
-  private scheduleConfigBackupCleanup() {
-    const scheduleRule = new this.schedulerService.RecurrenceRule()
-    scheduleRule.hour = 1
-    scheduleRule.minute = 10
-    scheduleRule.second = Math.floor(Math.random() * 59) + 1
-
-    this.logger.debug(`Next config.json backup cleanup scheduled for ${scheduleRule.nextInvocationDate(new Date()).toString()}.`)
-
-    this.schedulerService.scheduleJob('cleanup-config-backups', scheduleRule, () => {
-      this.logger.debug('Running job to cleanup config.json backup files older than 60 days...')
-      this.cleanupConfigBackups().catch((e) => {
-        this.logger.error(`config.json backup cleanup failed as ${e?.message || e}.`)
-      })
-    })
+  private get ready(): Promise<void> {
+    return this.configBackupService.ready
   }
 
   /**
@@ -116,7 +74,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   /**
    * Throw a BadRequestException if a *new* value for `ui.restart`,
    * `ui.linux.restart`, or `ui.linux.shutdown` doesn't match the
-   * allowlist regex. Pre-existing values from earlier installs are
+   * allowlist regex, or a new `ui.log.command` / `ui.log.path` fails the
+   * checks in `config-safety.ts` (the log command needs terminal access or
+   * the log-command allowlist). Pre-existing values from earlier installs are
    * grandfathered — comparing the incoming value to the in-memory
    * `configService.ui` snapshot lets users with custom legacy commands
    * keep saving unrelated config changes, while still blocking any
@@ -124,125 +84,26 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * settings UI or the full-config JSON editor.
    */
   private assertRestartCommandsSafe(config: HomebridgeConfig): void {
-    const newUi = config.platforms?.find(p => p?.platform === 'config') as any
-    if (!newUi) {
-      return
-    }
-    const oldUi = this.configService.ui as any
-    const checks: Array<{ path: string, newValue: unknown, oldValue: unknown }> = [
-      { path: 'restart', newValue: newUi.restart, oldValue: oldUi?.restart },
-      { path: 'linux.restart', newValue: newUi.linux?.restart, oldValue: oldUi?.linux?.restart },
-      { path: 'linux.shutdown', newValue: newUi.linux?.shutdown, oldValue: oldUi?.linux?.shutdown },
-    ]
-    for (const { path, newValue, oldValue } of checks) {
-      if (newValue === oldValue) {
-        continue
+    const newUi = config.platforms?.find(p => p?.platform === 'config')
+    const unsafe = findUnsafeUiValues(newUi, this.configService.ui, {
+      terminalEnabled: this.configService.enableTerminalAccess,
+      storagePath: this.configService.storagePath,
+    })
+    if (unsafe.length) {
+      const { path, reason } = unsafe[0]
+      this.logger.warn(`Refused to save config.json: "${path}" is not allowed.`)
+      if (path.endsWith('restart') || path.endsWith('shutdown')) {
+        throw new BadRequestException(`Refusing to save unsafe restart/shutdown command for "${path}". ${RESTART_COMMAND_RULE}`)
       }
-      if (newValue === undefined || newValue === null || newValue === '') {
-        continue
-      }
-      if (typeof newValue !== 'string' || !RE_SAFE_RESTART_CMD.test(newValue)) {
-        throw new BadRequestException(`Refusing to save unsafe restart/shutdown command for "${path}". The command must use systemctl, service, shutdown, reboot, poweroff, halt, or init, optionally prefixed with sudo, and may not contain shell metacharacters.`)
-      }
+      throw new BadRequestException(`Refusing to save "${path}". ${reason}`)
     }
   }
 
   /**
-   * Normalise a config object in place: ensure the bridge block is complete
-   * and valid, the array sections are arrays, and the optional sections are
-   * well-formed. Shared by the full-file save path and the locked
-   * read-modify-write path so both persist the same shape.
+   * Normalise a config object in place (see `normaliseConfig`).
    */
   private normaliseConfig(config: HomebridgeConfig | null): HomebridgeConfig {
-    if (!config) {
-      config = {} as HomebridgeConfig
-    }
-
-    if (!config.bridge) {
-      config.bridge = {} as HomebridgeConfig['bridge']
-    }
-
-    // If bridge.port is a string, try and convert to a number
-    if (typeof config.bridge.port === 'string') {
-      config.bridge.port = Number.parseInt(config.bridge.port, 10)
-    }
-
-    // Ensure the bridge.port is valid
-    if (!config.bridge.port || typeof config.bridge.port !== 'number' || config.bridge.port > 65533 || config.bridge.port < 1025) {
-      config.bridge.port = Math.floor(Math.random() * (52000 - 51000 + 1) + 51000)
-    }
-
-    // Ensure bridge.username exists
-    if (!config.bridge.username) {
-      config.bridge.username = this.generateUsername()
-    }
-
-    // Ensure the username matches the required pattern
-    if (!RE_USERNAME.test(config.bridge.username)) {
-      if (RE_USERNAME.test(this.configService.homebridgeConfig.bridge.username)) {
-        config.bridge.username = this.configService.homebridgeConfig.bridge.username
-      } else {
-        config.bridge.username = this.generateUsername()
-      }
-    }
-
-    // Ensure bridge.pin exists
-    if (!config.bridge.pin) {
-      config.bridge.pin = this.generatePin()
-    }
-
-    // Ensure the pin matches the required pattern
-    if (!RE_PIN.test(config.bridge.pin)) {
-      if (RE_PIN.test(this.configService.homebridgeConfig.bridge.pin)) {
-        config.bridge.pin = this.configService.homebridgeConfig.bridge.pin
-      } else {
-        config.bridge.pin = this.generatePin()
-      }
-    }
-
-    // Ensure the bridge.name exists and is a string
-    if (!config.bridge.name || typeof config.bridge.name !== 'string') {
-      config.bridge.name = `Homebridge ${config.bridge.username.substring(config.bridge.username.length - 5).replace(RE_COLON, '')}`
-    }
-
-    // Ensure accessories is an array
-    if (!config.accessories || !Array.isArray(config.accessories)) {
-      config.accessories = []
-    }
-
-    // Ensure platforms is an array
-    if (!config.platforms || !Array.isArray(config.platforms)) {
-      config.platforms = []
-    }
-
-    // Reject unsafe restart/shutdown commands in the UI platform block.
-    // Both save paths land here — the full-config JSON editor (`POST
-    // /config-editor`) and the patch-style settings UI (`PUT/PATCH
-    // /config-editor/ui` → `setPropertiesForUi`) — so this is the right
-    // chokepoint for the allowlist check. Runs after the array-shape
-    // coercion above so the find() below can't blow up on bad input.
-    this.assertRestartCommandsSafe(config)
-
-    // Ensure config.plugins is an array and not empty
-    if (config.plugins && Array.isArray(config.plugins)) {
-      if (!config.plugins.length) {
-        delete config.plugins
-      }
-    } else if (config.plugins) {
-      delete config.plugins
-    }
-
-    // Ensure config.mdns is valid
-    if (config.mdns && typeof config.mdns !== 'object') {
-      delete config.mdns
-    }
-
-    // Ensure config.disabledPlugins is an array
-    if (config.disabledPlugins && !Array.isArray(config.disabledPlugins)) {
-      delete config.disabledPlugins
-    }
-
-    return config
+    return normaliseConfig(config, this.configService.homebridgeConfig.bridge, c => this.assertRestartCommandsSafe(c))
   }
 
   /**
@@ -267,7 +128,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       await copyFile(this.configService.configPath, resolve(this.configService.configBackupPath, `config.json.${now.getTime().toString()}`))
     } catch (e) {
       if (e.code === 'ENOENT') {
-        await this.ensureBackupPathExists()
+        await this.configBackupService.ensureBackupPathExists()
       } else {
         this.logger.warn(`Could not create a backup of the config.json file to ${this.configService.configBackupPath} as ${e.message}.`)
       }
@@ -532,7 +393,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         for (const [property, value] of entries) {
           this.applyPropertyToPluginConfig(pluginConfig, property, value)
         }
-        config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+        config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = cleanUpUiConfig(pluginConfig)
         // Restart-command allowlist runs on the same chokepoint as the
         // full-config save path so a crafted PATCH can't smuggle an
         // unsafe `ui.restart` value past the runtime guard.
@@ -617,7 +478,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         .map(x => x.trim().toUpperCase())
         .sort((a, b) => a.localeCompare(b))
 
-      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = cleanUpUiConfig(pluginConfig)
     })
   }
 
@@ -647,7 +508,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
         .map(x => x.trim().toLowerCase())
 
-      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = cleanUpUiConfig(pluginConfig)
     })
   }
 
@@ -674,7 +535,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
         .map(x => x.trim().toLowerCase())
 
-      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = cleanUpUiConfig(pluginConfig)
     })
   }
 
@@ -756,7 +617,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         }
       }
 
-      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = cleanUpUiConfig(pluginConfig)
     })
   }
 
@@ -879,506 +740,16 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
-   * List config backups (newest first by timestamp suffix).
-   */
-  public async listConfigBackups() {
-    const dirContents = await readdir(this.configService.configBackupPath)
-
-    return dirContents
-      .filter(x => x.match(RE_CONFIG_BACKUP))
-      .map((x) => {
-        const ext = x.split('.')
-        if (ext.length === 3 && !Number.isNaN(ext[2] as any)) {
-          return {
-            id: ext[2],
-            timestamp: new Date(Number.parseInt(ext[2], 10)),
-            file: x,
-          }
-        } else {
-          return null
-        }
-      })
-      .filter(x => x && !Number.isNaN(x.timestamp.getTime()))
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-  }
-
-  /**
-   * Returns a config backup
-   * @param backupId
-   */
-  public async getConfigBackup(backupId: number) {
-    const requestedBackupPath = resolve(this.configService.configBackupPath, `config.json.${backupId}`)
-
-    // Check backup file exists
-    if (!await pathExists(requestedBackupPath)) {
-      throw new NotFoundException(`Backup ${backupId} Not Found`)
-    }
-
-    // Read source backup
-    return await readFile(requestedBackupPath)
-  }
-
-  /**
-   * Delete a config backup
-   * @param backupId
-   */
-  public async deleteConfigBackup(backupId: number) {
-    const requestedBackupPath = resolve(this.configService.configBackupPath, `config.json.${backupId}`)
-
-    // Check backup file exists
-    if (!await pathExists(requestedBackupPath)) {
-      throw new NotFoundException(`Backup ${backupId} Not Found`)
-    }
-
-    // Delete the backup file
-    await unlink(resolve(this.configService.configBackupPath, `config.json.${backupId}`))
-  }
-
-  /**
-   * Delete all config backups
-   */
-  public async deleteAllConfigBackups() {
-    const backups = await this.listConfigBackups()
-
-    // Delete each backup file
-    for (const backupFile of backups) {
-      await unlink(resolve(this.configService.configBackupPath, backupFile.file))
-    }
-  }
-
-  /**
-   * Ensure the backup file path exists
-   */
-  private async ensureBackupPathExists() {
-    try {
-      await ensureDir(this.configService.configBackupPath)
-    } catch (e) {
-      this.logger.error(`Could not create directory for config backups ${this.configService.configBackupPath} as ${e.message}.`)
-      this.logger.error(`Config backups will continue to use ${this.configService.storagePath}.`)
-      this.configService.configBackupPath = this.configService.storagePath
-    }
-  }
-
-  /**
-   * Remove config.json backup files older than 60 days
-   */
-  public async cleanupConfigBackups() {
-    try {
-      const backups = await this.listConfigBackups()
-
-      for (const backup of backups) {
-        if (dayjs().diff(dayjs(backup.timestamp), 'day') >= 60) {
-          await remove(resolve(this.configService.configBackupPath, backup.file))
-        }
-      }
-    } catch (e) {
-      this.logger.warn(`Failed to cleanup old config.json backup files as ${e.message}`)
-    }
-  }
-
-  /**
-   * This is a one-time script to move config.json.xxxxx backup files to the new location ./backups/config
-   */
-  private async migrateConfigBackups() {
-    try {
-      if (this.configService.configBackupPath === this.configService.storagePath) {
-        this.logger.error('Skipping migration of existing config.json backups...')
-        return
-      }
-
-      const dirContents = await readdir(this.configService.storagePath)
-
-      const backups = dirContents
-        .filter(x => x.match(RE_CONFIG_BACKUP))
-        .sort((a, b) => {
-          const ta = Number.parseInt(a.split('.')[2], 10)
-          const tb = Number.parseInt(b.split('.')[2], 10)
-          return tb - ta
-        })
-
-      // Move the last 100 to the new location
-      for (const backupFileName of backups.splice(0, 100)) {
-        const sourcePath = resolve(this.configService.storagePath, backupFileName)
-        const targetPath = resolve(this.configService.configBackupPath, backupFileName)
-        await move(sourcePath, targetPath, { overwrite: true })
-      }
-
-      // Delete the rest
-      for (const backupFileName of backups) {
-        const sourcePath = resolve(this.configService.storagePath, backupFileName)
-        await remove(sourcePath)
-      }
-    } catch (e) {
-      this.logger.warn(`Migrating config.json backups to new location failed as ${e.message}.`)
-    }
-  }
-
-  /**
    * Generates a new random pin
    */
   public generatePin() {
-    let code: string | Array<any> = `${randomInt(10000000, 100000000)}`
-    code = code.split('')
-    code.splice(3, 0, '-')
-    code.splice(6, 0, '-')
-    code = code.join('')
-    return code
+    return generatePin()
   }
 
   /**
    * Generates a new random username
    */
   public generateUsername() {
-    const hexDigits = '0123456789ABCDEF'
-    let username = '0E:'
-    for (let i = 0; i < 5; i += 1) {
-      username += hexDigits.charAt(randomInt(0, 16))
-      username += hexDigits.charAt(randomInt(0, 16))
-      if (i !== 4) {
-        username += ':'
-      }
-    }
-    return username
-  }
-
-  /**
-   * Removes empty objects and arrays from the provided object
-   * Warning: This will modify the object in place, so use with caution.
-   * @param {Record<string, any>} obj
-   * @return {void}
-   * @private
-   */
-  private removeEmpty(obj: Record<string, any>): void {
-    Object.keys(obj).forEach((key) => {
-      const value = obj[key]
-      if (value === '' || value === null || value === undefined || value === false || (Array.isArray(value) && value.length === 0)) {
-        // Checking for 'false' is okay for the UI as all defaults are false
-        delete obj[key]
-      } else if (typeof value === 'object') {
-        this.removeEmpty(value)
-        if (Object.keys(value).length === 0) {
-          delete obj[key]
-        }
-      }
-    })
-  }
-
-  /**
-   * Cleans up the UI config object
-   * - Removes empty objects and arrays
-   * - Ensures the name key is first and platform key is last
-   * @param {Record<string, any>} uiConfig
-   * @return {Record<string, any>}
-   * @private
-   */
-  private cleanUpUiConfig(uiConfig: Record<string, any>): PlatformConfig {
-    // Name key first, platform key last
-    const { name, platform, ...rest } = uiConfig
-    const cleanedUiConfig: PlatformConfig = {
-      name,
-      platform: platform || 'config',
-      ...rest,
-    }
-
-    // Clean up bridges array - remove entries without a username
-    if (Array.isArray(cleanedUiConfig.bridges)) {
-      cleanedUiConfig.bridges = cleanedUiConfig.bridges.filter(bridge => bridge && bridge.username)
-    }
-
-    this.removeEmpty(cleanedUiConfig)
-    return cleanedUiConfig
-  }
-
-  /**
-   * Get the Matter port range configuration
-   */
-  public async getMatterPortRange(): Promise<{ start?: number, end?: number }> {
-    const config = await this.getConfigFile()
-    return {
-      start: config.matterPorts?.start,
-      end: config.matterPorts?.end,
-    }
-  }
-
-  /**
-   * Set the Matter port range configuration
-   */
-  public async setMatterPortRange(value: { start?: number, end?: number }): Promise<void> {
-    this.validateMatterPortRange(value)
-
-    let config = await this.getConfigFile()
-
-    // Clean null values
-    if (value.start === null || value.start === undefined) {
-      delete value.start
-    }
-    if (value.end === null || value.end === undefined) {
-      delete value.end
-    }
-
-    // Remove matterPorts if neither start nor end is specified
-    if (!value.start && !value.end) {
-      delete config.matterPorts
-    } else {
-      config.matterPorts = {}
-      if (value.start) {
-        config.matterPorts.start = value.start
-      }
-      if (value.end) {
-        config.matterPorts.end = value.end
-      }
-    }
-
-    // Bring matterPorts after ports in config ordering
-    const { bridge, ports, matterPorts, ...rest } = config
-    config = matterPorts
-      ? (ports ? { bridge, ports, matterPorts, ...rest } : { bridge, matterPorts, ...rest })
-      : (ports ? { bridge, ports, ...rest } : { bridge, ...rest })
-
-    await this.updateConfigFile(config)
-  }
-
-  /**
-   * Validate the Matter port range configuration
-   */
-  private validateMatterPortRange(value: { start?: number, end?: number }): void {
-    if (value.start !== null && value.start !== undefined) {
-      if (typeof value.start !== 'number' || value.start < 1025 || value.start > 65533) {
-        throw new BadRequestException('Matter port range start must be a number between 1025 and 65533.')
-      }
-    }
-    if (value.end !== null && value.end !== undefined) {
-      if (typeof value.end !== 'number' || value.end < 1025 || value.end > 65533) {
-        throw new BadRequestException('Matter port range end must be a number between 1025 and 65533.')
-      }
-    }
-    if (value.start && value.end && value.start >= value.end) {
-      throw new BadRequestException('Matter port range start must be less than end.')
-    }
-  }
-
-  /**
-   * Get the Matter configuration from config.bridge.matter.
-   * Returns null when Matter is not configured at all. When configured the
-   * block is returned as-is, including `enabled: false` for the in-place
-   * disabled state (callers check `enabled` to tell disabled from absent).
-   */
-  public async getMatterConfig(): Promise<MatterConfig | null> {
-    const config = await this.getConfigFile()
-    return config.bridge.matter || null
-  }
-
-  /**
-   * Update the Matter configuration in config.bridge.matter
-   */
-  public async updateMatterConfig(matterConfig: MatterConfig): Promise<MatterConfig> {
-    // Validate the configuration
-    this.validateMatterConfig(matterConfig)
-
-    const config = await this.getConfigFile()
-    config.bridge.matter = matterConfig
-    await this.updateConfigFile(config)
-    return matterConfig
-  }
-
-  /**
-   * Enable or disable Matter in place on the main bridge, without tearing down
-   * the config or commissioning storage. Mirrors setHapEnabled: disabling sets
-   * `bridge.matter.enabled = false` (block + storage preserved, so re-enabling
-   * keeps commissioning); enabling clears the flag. Requires Matter to already
-   * be configured — use updateMatterConfig to configure it from scratch, and
-   * deleteMatterConfig to fully remove it (and its storage).
-   */
-  public async setMatterEnabled(
-    enabled: boolean,
-    restart = true,
-    externalsOnly = false,
-  ): Promise<{ enabled: boolean, externalsOnly: boolean }> {
-    const config = await this.getConfigFile()
-    if (!config.bridge?.matter) {
-      throw new BadRequestException('Matter is not configured on the main bridge.')
-    }
-
-    const useExternalsOnly = this.configService.getFeatureFlags().protocolExternalsOnly === true
-    const currentlyEnabled = config.bridge.matter.enabled !== false
-    const currentlyExternalsOnly = config.bridge.matter.externalsOnly === true
-    const targetExternalsOnly = useExternalsOnly && !enabled && externalsOnly
-
-    if (enabled === currentlyEnabled && targetExternalsOnly === currentlyExternalsOnly) {
-      return { enabled, externalsOnly: currentlyExternalsOnly }
-    }
-
-    // Shutdown first so the running server doesn't see a partial config, unless
-    // the caller will trigger a (deferred) restart itself.
-    if (restart) {
-      await this.homebridgeIpcService.restartAndWaitForClose()
-    }
-    if (enabled) {
-      // Re-enable: omit the flag — present-without-`enabled` means enabled.
-      // externalsOnly must be cleared too (validation rejects enabled + externalsOnly).
-      delete config.bridge.matter.enabled
-      delete config.bridge.matter.externalsOnly
-    } else {
-      config.bridge.matter.enabled = false
-      if (targetExternalsOnly) {
-        config.bridge.matter.externalsOnly = true
-      } else {
-        delete config.bridge.matter.externalsOnly
-      }
-    }
-    await this.updateConfigFile(config)
-    return { enabled, externalsOnly: targetExternalsOnly }
-  }
-
-  /**
-   * Delete the Matter configuration from config.bridge.matter
-   */
-  public async deleteMatterConfig(): Promise<void> {
-    const config = await this.getConfigFile()
-    const deviceId = config.bridge.username.replace(RE_COLON, '').toUpperCase()
-
-    // 1. Shutdown first to prevent Homebridge from reacting to partial config
-    await this.homebridgeIpcService.restartAndWaitForClose()
-
-    // 2. Update config
-    delete config.bridge.matter
-    await this.updateConfigFile(config)
-
-    // 3. Delete storage
-    const matterPath = join(this.configService.storagePath, 'matter', deviceId)
-    if (await pathExists(matterPath)) {
-      await remove(matterPath)
-      this.logger.warn(`Bridge ${deviceId} reset: removed Matter bridge storage at ${matterPath}.`)
-    }
-  }
-
-  /**
-   * Get whether HAP is enabled on the main bridge, plus nested HAP options
-   * supported by newer Homebridge versions.
-   *
-   * HAP is enabled by default; users opt out via either the legacy boolean
-   * form (`bridge.hap: false`, older Homebridge) or the nested form
-   * (`bridge.hap: { enabled: false, externalsOnly?: true,
-   * disableIdentifyingMaterial?: true }`, newer Homebridge versions).
-   * Reading tolerates both shapes; writing chooses the appropriate shape
-   * based on the applicable feature flags.
-   */
-  public async getHapEnabled(): Promise<{ enabled: boolean, externalsOnly: boolean, disableIdentifyingMaterial: boolean }> {
-    const config = await this.getConfigFile()
-    const hap = config.bridge?.hap
-    // Legacy: hap === false means disabled.
-    if (hap === false) {
-      return { enabled: false, externalsOnly: false, disableIdentifyingMaterial: false }
-    }
-    // Nested: { enabled: false } means disabled; other options are surfaced
-    // independently of the running version so manually-authored configs remain visible.
-    if (typeof hap === 'object' && hap !== null) {
-      const enabled = hap.enabled !== false
-      const externalsOnly = hap.externalsOnly === true
-      const disableIdentifyingMaterial = hap.disableIdentifyingMaterial === true
-      return { enabled, externalsOnly, disableIdentifyingMaterial }
-    }
-    return { enabled: true, externalsOnly: false, disableIdentifyingMaterial: false }
-  }
-
-  /**
-   * Enable or disable HAP on the main bridge.
-   *
-   * Writes either the boolean form or the nested object form based on the
-   * running Homebridge version. When disabling, the optional `externalsOnly`
-   * flag is honoured only when supported. `disableIdentifyingMaterial` is
-   * preserved when older UI clients omit it from a HAP enablement request.
-   *
-   * @param enabled - Whether HAP should be published.
-   * @param restart - Whether to restart Homebridge after the change (deferred to caller when false).
-   * @param externalsOnly - Optional. When `enabled: false`, additionally suppress the bridge accessory itself (externals still publish).
-   * @param disableIdentifyingMaterial - Optional. Whether HAP-NodeJS should omit username-derived identifying material from published names.
-   */
-  public async setHapEnabled(
-    enabled: boolean,
-    restart = true,
-    externalsOnly = false,
-    disableIdentifyingMaterial?: boolean,
-  ): Promise<{ enabled: boolean, externalsOnly: boolean, disableIdentifyingMaterial: boolean }> {
-    if (disableIdentifyingMaterial !== undefined && typeof disableIdentifyingMaterial !== 'boolean') {
-      throw new BadRequestException('HAP disableIdentifyingMaterial must be a boolean.')
-    }
-
-    const config = await this.getConfigFile()
-    const featureFlags = this.configService.getFeatureFlags()
-    const supportsExternalsOnly = featureFlags.protocolExternalsOnly === true
-    const supportsDisableIdentifyingMaterial = featureFlags.hapDisableIdentifyingMaterial === true
-    const useNestedShape = supportsExternalsOnly || supportsDisableIdentifyingMaterial
-    const currentHap = config.bridge?.hap
-    const currentDisableIdentifyingMaterial = typeof currentHap === 'object'
-      && currentHap !== null
-      && currentHap.disableIdentifyingMaterial === true
-    const targetDisableIdentifyingMaterial = supportsDisableIdentifyingMaterial
-      && (disableIdentifyingMaterial ?? currentDisableIdentifyingMaterial)
-    const targetExternalsOnly = supportsExternalsOnly && !enabled && externalsOnly
-
-    if (!enabled) {
-      // Shutdown first so the running server doesn't see a partial config, unless
-      // the caller will trigger a (deferred) restart itself.
-      if (restart) {
-        await this.homebridgeIpcService.restartAndWaitForClose()
-      }
-      if (useNestedShape) {
-        config.bridge.hap = {
-          enabled: false,
-          ...(targetExternalsOnly ? { externalsOnly: true } : {}),
-          ...(targetDisableIdentifyingMaterial ? { disableIdentifyingMaterial: true } : {}),
-        }
-      } else {
-        // Legacy runtime: externalsOnly is ignored (the runtime would reject the nested form).
-        config.bridge.hap = false
-      }
-      await this.updateConfigFile(config)
-    } else {
-      // Re-enable: clear enabled/externalsOnly while retaining the identifying
-      // material preference. If it is off, drop the property entirely so the
-      // default HAP behavior takes effect.
-      if (targetDisableIdentifyingMaterial) {
-        config.bridge.hap = { disableIdentifyingMaterial: true }
-        await this.updateConfigFile(config)
-      } else if (currentHap === false || (typeof currentHap === 'object' && currentHap !== null)) {
-        delete config.bridge.hap
-        await this.updateConfigFile(config)
-      }
-    }
-    return {
-      enabled,
-      externalsOnly: targetExternalsOnly,
-      disableIdentifyingMaterial: targetDisableIdentifyingMaterial,
-    }
-  }
-
-  /**
-   * Validate Matter configuration
-   * @param matterConfig - The Matter configuration to validate
-   * @throws BadRequestException if configuration is invalid
-   */
-  private validateMatterConfig(matterConfig: MatterConfig): void {
-    // Validate port
-    if (matterConfig.port !== undefined) {
-      if (
-        typeof matterConfig.port !== 'number'
-        || !Number.isInteger(matterConfig.port)
-        || matterConfig.port < 1024
-        || matterConfig.port > 65535
-      ) {
-        throw new BadRequestException('Port must be an integer between 1024 and 65535')
-      }
-
-      // Check for reserved ports
-      if ([5353, 8080, 8443].includes(matterConfig.port)) {
-        throw new BadRequestException('Port 5353, 8080, and 8443 are reserved and cannot be used')
-      }
-    }
-
-    // Validate disableIpv4
-    if (matterConfig.disableIpv4 !== undefined && typeof matterConfig.disableIpv4 !== 'boolean') {
-      throw new BadRequestException('disableIpv4 must be a boolean')
-    }
+    return generateUsername()
   }
 }

@@ -1,0 +1,1169 @@
+{
+  "plugin": "@ecopoesis/homebridge-dmx",
+  "version": "0.6.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: StickDE3"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: linear"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 24,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 10,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "DMX",
+        "controllers": [
+          {
+            "type": "sACN",
+            "refreshMinutes": 30,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": true,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": true
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 4
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "sACN",
+            "refreshMinutes": 30,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": true,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": true
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "sACN",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": true,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": true
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "sACN",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": true
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "sACN",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 8,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          },
+          {
+            "type": "sACN",
+            "refreshMinutes": 30,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 8,
+        "remove": 7
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          },
+          {
+            "type": "sACN",
+            "refreshMinutes": 30,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 8,
+        "remove": 8
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          },
+          {
+            "type": "sACN",
+            "refreshMinutes": 30,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 27,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 9,
+        "remove": 10
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          },
+          {
+            "type": "sACN",
+            "refreshMinutes": 30,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 9,
+        "remove": 8
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllers": [
+          {
+            "type": "StickDE3",
+            "refreshMinutes": 7,
+            "priority": 100,
+            "statePollSeconds": 0
+          }
+        ],
+        "shows": [
+          {
+            "loop": false,
+            "ease": "linear",
+            "onStop": "freeze",
+            "switch": false
+          }
+        ],
+        "patch": [
+          {
+            "universe": "A"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 24,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 9,
+        "remove": 7
+      },
+      "labels": [
+        "Platform Name",
+        "YAML config path (optional)",
+        "DMX Controllers",
+        "",
+        "Controller id",
+        "Controller type",
+        "IP address",
+        "Keepalive refresh (minutes, StickDE3 only)",
+        "sACN priority (sACN only)",
+        "State read-back poll (sACN/Ethergate only)",
+        "Zones",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "",
+        "Zone id",
+        "HomeKit name",
+        "Member fixture ids",
+        "Show groups",
+        "Show palette",
+        "Shows",
+        "",
+        "Show id",
+        "HomeKit name",
+        "Extends show",
+        "Parameters",
+        "Loop",
+        "Default fade",
+        "Default hold",
+        "Default ease",
+        "When switched off",
+        "Expose as HomeKit switch",
+        "Steps",
+        "",
+        "Look",
+        "Fade",
+        "Hold",
+        "Ease",
+        "Fixture Profiles",
+        "",
+        "Profile name",
+        "Color model",
+        "Channel order",
+        "Patch",
+        "",
+        "Fixture id",
+        "HomeKit name",
+        "Profile",
+        "Controller",
+        "DMX universe",
+        "DMX start channel"
+      ]
+    }
+  ]
+}

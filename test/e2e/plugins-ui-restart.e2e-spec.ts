@@ -8,7 +8,7 @@ import { copy } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { UiUpdateService } from '../../src/modules/plugins/ui-update.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 /**
@@ -25,7 +25,7 @@ import { testStoragePath } from '../storage-path.js'
  */
 describe('PluginsService UI self-restart timer', () => {
   let app: TestingModule
-  let pluginsService: PluginsService
+  let uiUpdate: UiUpdateService
   let exitSpy: ReturnType<typeof vi.spyOn>
 
   beforeAll(async () => {
@@ -36,7 +36,7 @@ describe('PluginsService UI self-restart timer', () => {
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
 
     app = await Test.createTestingModule({ imports: [PluginsModule] }).compile()
-    pluginsService = app.get(PluginsService)
+    uiUpdate = app.get(UiUpdateService)
   })
 
   beforeEach(() => {
@@ -55,27 +55,27 @@ describe('PluginsService UI self-restart timer', () => {
   })
 
   it('exits once the delay elapses while the module is still alive', () => {
-    (pluginsService as any).scheduleUiRestart()
+    (uiUpdate as any).scheduleUiRestart()
 
     vi.advanceTimersByTime(5000)
     expect(exitSpy).toHaveBeenCalledWith(0)
   })
 
   it('does not exit if the module is destroyed before the delay elapses', () => {
-    (pluginsService as any).scheduleUiRestart()
+    (uiUpdate as any).scheduleUiRestart()
 
-    pluginsService.onModuleDestroy()
+    uiUpdate.onModuleDestroy()
     vi.advanceTimersByTime(60_000)
 
     expect(exitSpy).not.toHaveBeenCalled()
   })
 
   it('does not hold the process open on its own', () => {
-    (pluginsService as any).scheduleUiRestart()
+    (uiUpdate as any).scheduleUiRestart()
 
-    const timer = (pluginsService as any).uiRestartTimer
+    const timer = (uiUpdate as any).uiRestartTimer
 
     expect(timer.hasRef()).toBe(false)
-    pluginsService.onModuleDestroy()
+    uiUpdate.onModuleDestroy()
   })
 })

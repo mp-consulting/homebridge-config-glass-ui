@@ -1,0 +1,1132 @@
+{
+  "plugin": "homebridge-miot",
+  "version": "2.0.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: cn"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: auto"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 53,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "forceMiCloud": false,
+          "useCachedSession": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "forceMiCloud": false,
+          "useCachedSession": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "forceMiCloud": false,
+          "timeout": 7,
+          "useCachedSession": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": false,
+            "silentLog": false,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": false,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "country": "cn",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "country": "cn",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 26,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 12
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "country": "cn",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 27,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 12,
+        "remove": 13
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "country": "cn",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 30,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 13,
+        "remove": 15
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "country": "cn",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 33,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 14,
+        "remove": 17
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "Miot device",
+            "pollingInterval": 10,
+            "deepDebugLog": true,
+            "silentLog": true,
+            "deviceEnabled": true,
+            "matterEnabled": false,
+            "matterConnection": "auto",
+            "matterHomeKitDockSwitch": false,
+            "matterMode": "hap",
+            "matterRoomDiscovery": "auto",
+            "matterRoomDiscoveryInterval": 6,
+            "micloud": {
+              "forceMiCloud": false,
+              "useCachedSession": false
+            },
+            "customAccessory": false,
+            "onlyMainService": false,
+            "buzzerControl": true,
+            "ledControl": true,
+            "childLockControl": true,
+            "modeControl": true,
+            "swingControl": false,
+            "moveControl": false,
+            "fanLevelControl": false,
+            "ioniserControl": false,
+            "offDelayControl": false,
+            "heatLevelControl": false,
+            "screenControl": false,
+            "motorControl": false,
+            "heaterControl": false,
+            "showTemperature": false
+          }
+        ],
+        "micloud": {
+          "username": "golden",
+          "country": "cn",
+          "forceMiCloud": true,
+          "timeout": 7,
+          "useCachedSession": true
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 32,
+        "number": 12,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 4,
+        "add": 14,
+        "remove": 16
+      },
+      "labels": [
+        "Global MiCloud Settings",
+        "",
+        "Name",
+        "Device ip address",
+        "Device token",
+        "Device id",
+        "Device Settings",
+        "Advanced Settings",
+        "Matter Settings",
+        "MiCloud Settings",
+        "General device settings",
+        "Fan specific settings",
+        "Ceiling Fan specific settings",
+        "Heater specific settings",
+        "Humidifier specific settings",
+        "Dehumidifier specific settings",
+        "Air Purifier specific settings",
+        "Curtain specific settings",
+        "Fresh Air System specific settings",
+        "Outlet specific settings",
+        "Air Conditioner specific settings",
+        "Airer specific settings",
+        "Air Monitor specific settings",
+        "Pet Feeder specific settings"
+      ]
+    }
+  ]
+}

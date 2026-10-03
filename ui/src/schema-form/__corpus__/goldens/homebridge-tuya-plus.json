@@ -1,0 +1,331 @@
+{
+  "plugin": "homebridge-tuya-plus",
+  "version": "4.1.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: eu"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: tuyaSmart"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 13,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Tuya LAN",
+        "discoverTimeout": 60000,
+        "cloud": {
+          "region": "us",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "discoverTimeout": 60000,
+        "cloud": {
+          "region": "us",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "discoverTimeout": 7,
+        "cloud": {
+          "region": "us",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "discoverTimeout": 7,
+        "cloud": {
+          "region": "eu",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "discoverTimeout": 7,
+        "cloud": {
+          "region": "eu",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "discoverTimeout": 7,
+        "cloud": {
+          "region": "eu",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "discoverTimeout": 7,
+        "cloud": {
+          "region": "eu",
+          "schema": "tuyaSmart"
+        },
+        "devices": [
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Device IP auto-discovery timeout",
+        "Tuya Cloud fallback (optional)",
+        "Access ID / Client ID",
+        "Access Secret / Client Secret",
+        "Data center / region",
+        "App account email/phone (Smart Home projects only)",
+        "App account password (Smart Home projects only)",
+        "Country calling code (Smart Home projects only)",
+        "App (Smart Home projects only)",
+        "Devices",
+        "",
+        "Type"
+      ]
+    }
+  ]
+}

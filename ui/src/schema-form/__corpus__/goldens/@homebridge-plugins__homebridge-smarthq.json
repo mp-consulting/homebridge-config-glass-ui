@@ -1,0 +1,592 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-smarthq",
+  "version": "0.8.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: none"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: us"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 15,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": false,
+            "showConvBakeMultiSwitch": false,
+            "showConvRoastSwitch": false,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": false,
+            "showConvBakeMultiSwitch": false,
+            "showConvRoastSwitch": false,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": false,
+            "showConvBakeMultiSwitch": false,
+            "showConvRoastSwitch": false,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": false,
+            "showConvRoastSwitch": false,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": false,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": true,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": true,
+            "showAirFrySwitch": true,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": true,
+            "showAirFrySwitch": true,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "logging": "none",
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": true,
+            "showAirFrySwitch": true,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "logging": "none",
+          "region": "us",
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": true,
+            "showAirFrySwitch": true,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          },
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": false,
+            "showConvBakeMultiSwitch": false,
+            "showConvRoastSwitch": false,
+            "showAirFrySwitch": false,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "logging": "none",
+          "region": "us",
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "SmartHQ",
+        "credentials": {
+          "username": "golden",
+          "notice": "Keep your username and password a secret!"
+        },
+        "devices": [
+          {
+            "hide_device": false,
+            "useMatter": false,
+            "matterOnly": false,
+            "defaultOperationMode": "cool",
+            "createSeparateFanService": false,
+            "showDryModeSwitch": true,
+            "showHeatMode": true,
+            "showModeSwitches": true,
+            "showBakeSwitch": true,
+            "showConvBakeMultiSwitch": true,
+            "showConvRoastSwitch": true,
+            "showAirFrySwitch": true,
+            "showRunningSwitch": false,
+            "showFilterBattery": false
+          }
+        ],
+        "options": {
+          "refreshRate": 7,
+          "logging": "none",
+          "region": "us",
+          "allowInvalidCharacters": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "SmartHQ Account Info",
+        "SmartHQ Device Settings",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

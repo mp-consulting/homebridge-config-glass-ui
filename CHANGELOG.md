@@ -2,6 +2,98 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+
+- **Child bridge pairing codes are admin-only**, as the main bridge's already were. Non-admin users no longer receive a child bridge's HomeKit or Matter setup code or PIN, from the REST endpoint, the status reply or the live updates.
+- **The `wallpaper` setting accepts only an uploaded wallpaper** (`ui-wallpaper.jpg`, `.jpeg`, `.png`, `.webp` or `.gif` in the storage folder). It could be set to any path, which the login page then served without a session (including `.uix-secrets`), and which replacing or removing the wallpaper deleted. Config saves, the settings page and backup restores refuse other values. Uploads take only those five image types. A wallpaper set to another path is no longer shown; upload it again.
+- **The Docker startup script needs terminal access.** It runs as root in the container, so it is now read and saved only when terminal access is enabled, and the settings link is hidden otherwise.
+- **`log.path` cannot point at the UI's own secrets**: `.uix-secrets`, `auth.json`, `config.json`, `persist/`, `ssl-certs/`, backups and the like are refused on save and when tailing, downloading or truncating the log.
+- **Guessing spread across many addresses is slowed.** Besides the per-address limit, a username that collects 50 failed sign-ins from anywhere gets a cooldown that doubles up to 15 minutes. An address that has signed in as that user before is exempt, so an attacker cannot keep the owner out.
+- New `ui.trustProxy` setting (addresses or CIDR ranges): behind a reverse proxy, sign-in limits then apply to the real client address instead of the proxy's.
+- Non-admin users no longer see the server's file paths, service user, network details, machine serial or install paths.
+- The network widget accepts only interface names the system reports.
+
+### Fixed
+
+- A plugin custom UI asking for its cached accessories gets an error back when they cannot be loaded, instead of waiting forever. Plugin log, plugin settings and child bridge errors show the server's message.
+- Restart OS, Restart Container and Shut Down ask for confirmation, and their pages no longer act when reached by a reload, the back button or a typed URL.
+- Deleting a stored backup, and "Delete all" config backups, ask for confirmation. The backup list shows loading, empty and failed states.
+- The weather widget shows an error with a Retry button instead of spinning forever when it cannot load.
+- The Restart button after a restore reports a failure instead of doing nothing.
+
+### Accessibility
+
+- Every dialog is named by its title for screen readers.
+- The page language follows the UI language.
+- Light themes with a pale primary colour (orange, cyan, grey, green, teal, red, pink, blue-grey) use a darker shade for accent text and button backgrounds, to meet WCAG contrast.
+- Accessory animations stop when the system asks for reduced motion.
+- Accessory tiles no longer announce every sensor reading.
+- Labels for the setup wizard, startup, SSL, restore and search fields; tooltips open on keyboard focus; toasts pause while focused; the mobile menu opens with Space and closes with Escape; the current page is marked with `aria-current`; busy buttons keep their name.
+
+### Performance
+
+- Opening the accessories page re-renders only the tiles whose data changed, and the server no longer sends the same accessory list again or reloads once per discovered bridge.
+- Plugin installs and updates no longer empty npm's cache first; it is cleaned only to retry an install that failed on a corrupt cache.
+- The plugins page loads about 660 KB less up front: the settings form, config editor and other plugin dialogs load when opened.
+- The installed-plugin scan checks the npm registry 12 plugins at a time, and plugin search no longer fetches dozens of packages for short search terms.
+- Typing in a plugin settings form re-renders it once per burst rather than per key.
+- Chart widgets stop polling in a background tab and no longer animate each reading.
+- The log viewer keeps at most 2 MB of output and does less work per frame.
+- Identical simultaneous requests to Homebridge share one request.
+
+## [2.0.0-beta.0] - 2026-10-03
+
+The browser UI is rewritten in React (from Angular). Pages, themes, glass mode, dark mode, translations, saved dashboard and accessory layouts, and plugin custom settings UIs all carry over unchanged: the new UI keeps the old markup, so it looks and behaves the same. This is a major version because plugin custom UIs run inside a new host page, even though the three tested (Ring, Camera FFmpeg, UniFi Protect) work as before.
+
+### Security
+
+- **Backups no longer contain the JWT signing secret** (`.uix-secrets`) or the hb-service startup options. A restored instance keeps its own secret, so existing sessions and logins keep working; a fresh install makes a new one on first start. Backups still contain `auth.json` (password hashes, so users can be restored), the HomeKit pairing keys in `persist/`, plugin credentials in `config.json` and any SSL key kept in the storage folder, so backup archives are now written readable by the service user only (`0600`) and the `instance-backups` folder is created `0700`.
+- **Restoring a backup refuses every file a backup leaves out**: `.uix-secrets`, `.uix-hb-service-homebridge-startup.json`, `startup.sh`, `.docker.env`, `node_modules`, `.npm`, `.git`, `package.json` and the rest of the list, even when an older or hand-made archive contains them. The restored `config.json` goes through the same command checks as a config save; an unsafe restart, shutdown or log command is removed (and logged) and the rest of the restore completes.
+- **Custom log command** (`log.method: "custom"`): it runs any program, so it is now allowed only when terminal access is enabled, or when it is `tail`, `journalctl`, `cat`, `docker logs` or `podman logs` (optionally `sudo -n ...`) with plain arguments. Other commands are refused when the config is saved, and refused with an explanation in the log viewer if already in `config.json`.
+- On Windows, the log file path is passed to PowerShell out of band instead of inside a quoted string, so a quote in `log.path` can no longer run PowerShell code. A log path containing control characters is refused on save.
+- **`NODE_OPTIONS` in the Homebridge startup settings** may no longer use `--require`, `--import`, `--loader`, `--inspect` or other flags that load code, open a debugger or read/write files. They are refused on save, and hb-service ignores them (with a warning) if already in the startup settings file.
+- An `.hbfx` backup without a `bridge.username` restores with this instance's username instead of failing.
+- **Open sockets end when their user's access does.** Deleting, demoting or changing the password of a user, turning on 2FA, an account-wide logout, or turning on `restrictLogsToAdmins` now disconnects that user's sockets in every namespace at once. Terminal output and the log tail also re-check the user before every send, so a revoked or demoted user stops receiving them even between checks; one viewer of a shared persistent terminal being revoked leaves the others connected.
+- **A socket no longer outlives its session.** Sockets were re-checked against the user but never against the token's expiry, so one stayed authorised for as long as it stayed open. A socket is now closed five minutes after its token expires; the UI hands every refreshed token to its open sockets (a `reauth` message, falling back to a reconnect), so a dashboard left open keeps working for as long as the session is refreshed. A local (inactivity) logout ends that browser's sockets.
+- **Less is visible before sign-in.** `GET /api/auth/settings` without a session now returns only what the login and setup pages need; the UI version, Homebridge version, platform, port, backup path and feature flags are sent to signed-in users only. The `/swagger` api docs are served only in development (`UIX_DEVELOPMENT=1`), and the support page links to them only then.
+- **Accepted risk: plugin custom UIs are not isolated from the UI.** Their iframe keeps `allow-same-origin allow-scripts` on the UI's own origin, so a plugin's settings page can act as the signed-in user. Dropping `allow-same-origin` breaks every custom UI: the plugin's assets load with a SameSite=Strict session cookie an opaque-origin frame never sends, plugin pages use browser storage, the message channel is origin-pinned and the theme is applied through the frame's document. Installing a plugin already runs its code on the server; isolating its UI would need a separate origin.
+
+### Fixed
+
+- **Plugin settings forms open again** from a plugin's card on the Plugins page, and plugin custom UIs that ask for a settings form (such as Ring's login form) show it. The previous UI showed an empty dialog there.
+- Cancelling an edit in the child bridge setup, or a rename in an accessory's info dialog, no longer leaves the unsaved change on screen.
+- The config editor highlights the invalid entry again when a save is refused.
+- Accessory tiles become controllable as soon as Homebridge reports it is ready, without reopening the page.
+- Dismissing the Homebridge v2 readiness warning closes the update dialog.
+- On a new install, the pairing and cached-accessory lists load (empty) before Homebridge has run once, instead of failing with a server error.
+- The manual config editor shows one editor for the open config block, instead of one per block.
+- Matter: controlling one part of a multi-part accessory no longer changes its parent's shown state; malformed accessory ids are refused instead of half-parsed; a command that cannot reach Homebridge is reported as such instead of as a timeout.
+- Mobile: the closed side menu no longer shows through the glass theme or traps keyboard focus, and the logo no longer covers page titles. Plugin cards no longer clip long names or show a bare "@".
+
+### Accessibility
+
+- Text meets 4.5:1 contrast: dark-mode accent text, light-mode grey text, the pairing status pill and inline code.
+- Buttons and links in the glass theme show a focus ring; the login form has labels and announces a failed login; icon-only links and buttons have names; pages have a main landmark and a skip link.
+- Touch targets on phones are at least 44 px, and remaining English-only strings are translated.
+
+### Performance
+
+- Static files are served brotli/gzip compressed: the first load is about 214 kB instead of 1.1 MB.
+- The CPU, memory and network widgets no longer run shell commands per open tab: one sample serves every client, at the fastest refresh interval a widget asks for.
+- Accessory updates re-render only the tile that changed (50 updates on 300 accessories: ~90 ms instead of ~2 s), the dashboard no longer loads the plugin manager up front, the stylesheet is a third smaller, and typing in the plugin search no longer re-renders every card.
+
+### Changed
+
+- On the dashboard, dropping a widget onto another moves the other one aside instead of swapping the two.
+- The terminal font size is saved as a number in the UI config (it was a string).
+- Widgets set to refresh faster than every 10 seconds get fresh values at that rate; the server samples once for all of them.
+
+### Known differences
+
+- homebridge-switchbot: hiding a device in its settings no longer saves `false` for that device's other (hidden) switches. They are treated as off either way.
+
 ## [1.0.0] - 2026-09-30
 
 ### Added

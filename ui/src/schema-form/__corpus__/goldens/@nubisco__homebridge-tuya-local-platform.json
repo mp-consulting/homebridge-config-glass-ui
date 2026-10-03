@@ -1,0 +1,216 @@
+{
+  "plugin": "@nubisco/homebridge-tuya-local-platform",
+  "version": "1.7.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: Outlet"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 18,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "TuyaLocalPlatform",
+        "devices": [
+          {
+            "type": "null",
+            "disabled": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "type": "null",
+            "disabled": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Devices",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "type": "Outlet",
+            "disabled": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Devices",
+        "",
+        "Type",
+        "Name",
+        "Tuya ID",
+        "Tuya Key",
+        "Disabled",
+        "IP Address",
+        "Manufacturer",
+        "Model",
+        "Volts Id",
+        "Amps Id",
+        "Watts Id",
+        "Volts Divisor",
+        "Amps Divisor",
+        "Watts Divisor",
+        "Dp Power"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "type": "Outlet",
+            "disabled": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "Devices",
+        "",
+        "Type",
+        "Name",
+        "Tuya ID",
+        "Tuya Key",
+        "Disabled",
+        "IP Address",
+        "Manufacturer",
+        "Model",
+        "Volts Id",
+        "Amps Id",
+        "Watts Id",
+        "Volts Divisor",
+        "Amps Divisor",
+        "Watts Divisor",
+        "Dp Power",
+        "",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "type": "Outlet",
+            "disabled": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Devices",
+        "",
+        "Type",
+        "Name",
+        "Tuya ID",
+        "Tuya Key",
+        "Disabled",
+        "IP Address",
+        "Manufacturer",
+        "Model",
+        "Volts Id",
+        "Amps Id",
+        "Watts Id",
+        "Volts Divisor",
+        "Amps Divisor",
+        "Watts Divisor",
+        "Dp Power"
+      ]
+    }
+  ]
+}

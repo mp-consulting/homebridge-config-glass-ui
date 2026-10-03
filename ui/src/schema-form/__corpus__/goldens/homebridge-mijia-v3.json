@@ -1,0 +1,453 @@
+{
+  "plugin": "homebridge-mijia-v3",
+  "version": "0.1.15",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 14,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Xiaomi 1080p",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 5
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 5
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": false,
+            "audio": true,
+            "twoWayAudio": false,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": false,
+            "audio": false,
+            "twoWayAudio": false,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "backgroundMonitoring": false,
+            "motionDetection": true,
+            "maxStreams": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "backgroundMonitoring": false,
+            "motionDetection": true,
+            "maxStreams": 7
+          },
+          {
+            "model": "mijia.camera.v3",
+            "hsv": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "backgroundMonitoring": true,
+            "motionDetection": true,
+            "maxStreams": 5
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "mijia.camera.v3",
+            "hsv": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "backgroundMonitoring": false,
+            "motionDetection": true,
+            "maxStreams": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Xiaomi Device ID (DID)",
+        "Local IP",
+        "Device Key",
+        "Model",
+        "HomeKit Secure Video",
+        "Camera Microphone Audio",
+        "Two-Way Audio / Talkback",
+        "Background Still Image / Motion Monitoring",
+        "Motion Detection",
+        "Maximum Concurrent HomeKit Streams"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+// Keyframe names are prefixed: Angular scoped them to the component
+.hb-valve {
+  &.accessory-on {
+    svg {
+      .grass {
+        stroke: #4caf50 !important;
+      }
+
+      .drop {
+        fill-opacity: 0.5;
+      }
+
+      .drop-in {
+        animation: hb-valve-blink 1.5s infinite;
+      }
+
+      .drop-out {
+        animation: hb-valve-blink 1.5s infinite;
+        animation-delay: 0.75s;
+      }
+
+      @keyframes hb-valve-blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .drop-top {
+        animation: hb-valve-blink 1.5s infinite;
+      }
+
+      .drop-middle {
+        animation: hb-valve-blink 1.5s infinite;
+        animation-delay: 0.5s;
+      }
+
+      .drop-bottom {
+        animation: hb-valve-blink 1.5s infinite;
+        animation-delay: 1s;
+      }
+
+      @keyframes hb-valve-blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes hb-valve-blink-on-off {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .stream {
+        stroke-opacity: 0.5;
+        animation: hb-valve-blink-on-off 4s infinite;
+      }
+
+      .sink {
+        fill: #1976d2;
+      }
+    }
+  }
+}

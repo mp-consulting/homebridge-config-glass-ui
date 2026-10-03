@@ -1,14 +1,22 @@
-import type { Mock } from 'vitest'
+import type { MockInstance } from 'vitest'
 
 import { vi } from 'vitest'
 
-export type ApiMethod = 'delete' | 'get' | 'patch' | 'post' | 'put'
+import { api, ApiError } from '@/core/api/api'
 
 /**
- * One recorded call. `options` is recorded because four of the destructive
- * modals send their payload as `delete(url, { body })` rather than in a body
- * argument, and that is easy to break without noticing.
+ * Test-only stand-in for the api wrapper, ported from the Angular `fakeApi`.
+ *
+ * It spies on the methods of the real `api` object, so any module that imports
+ * `api` sees the fake without a `vi.mock`:
+ *
+ *     const fake = fakeApi().respond('get', '/plugins', [plugin])
+ *
+ * Each call to `fakeApi()` starts again with no routes and no recorded calls.
  */
+
+export type ApiMethod = 'delete' | 'get' | 'patch' | 'post' | 'put'
+
 export interface FakeApiCall {
   method: ApiMethod
   url: string
@@ -26,57 +34,23 @@ interface Route {
 }
 
 export interface FakeApiOptions {
-  /**
-   * Reject calls that have no registered response instead of resolving
-   * `undefined`. Useful for a spec that wants to prove nothing else is
-   * requested; off by default so background fetches a component makes but the
-   * test does not care about stay harmless.
-   */
+  /** Reject calls with no registered response instead of resolving `undefined`. */
   strict?: boolean
 }
 
 export interface FakeApi {
-  get: Mock<(url: string, options?: Record<string, any>) => Promise<any>>
-  post: Mock<(url: string, body?: any, options?: Record<string, any>) => Promise<any>>
-  put: Mock<(url: string, body?: any, options?: Record<string, any>) => Promise<any>>
-  patch: Mock<(url: string, body?: any, options?: Record<string, any>) => Promise<any>>
-  delete: Mock<(url: string, options?: Record<string, any>) => Promise<any>>
-
-  /** Every call made, in order. */
+  get: MockInstance
+  post: MockInstance
+  put: MockInstance
+  patch: MockInstance
+  delete: MockInstance
   calls: FakeApiCall[]
-
-  /**
-   * Register the response for a request. A later registration for the same
-   * method and url wins, so a spec can override a shared default.
-   * @param method - the http verb
-   * @param url - exact url, or a regular expression to match it
-   * @param response - the value to resolve with, or a function returning it
-   */
+  /** Register a response; a later registration for the same method and url wins. */
   respond: (method: ApiMethod, url: RegExp | string, response: Responder | any) => FakeApi
-
-  /**
-   * Register a failure for a request.
-   * @param method - the http verb
-   * @param url - exact url, or a regular expression to match it
-   * @param error - the value to reject with
-   */
+  /** Register a rejection. */
   fail: (method: ApiMethod, url: RegExp | string, error: any) => FakeApi
-
-  /**
-   * Every call matching a verb and url.
-   * @param method - the http verb
-   * @param url - exact url, or a regular expression to match it
-   */
   callsTo: (method: ApiMethod, url?: RegExp | string) => FakeApiCall[]
-
-  /**
-   * The most recent call matching a verb and url, or undefined.
-   * @param method - the http verb
-   * @param url - exact url, or a regular expression to match it
-   */
   lastCall: (method: ApiMethod, url?: RegExp | string) => FakeApiCall | undefined
-
-  /** Forget every recorded call, keeping the registered responses. */
   clearCalls: () => void
 }
 
@@ -84,37 +58,23 @@ function matches(matcher: RegExp | string, url: string): boolean {
   return typeof matcher === 'string' ? matcher === url : matcher.test(url)
 }
 
-/**
- * A stand-in for ApiService.
- *
- * Every component in the app reaches the server through the five promise
- * methods on ApiService, so a plain object replaces the whole HTTP stack:
- *
- *     const api = fakeApi().respond('get', '/plugins', [makePlugin()])
- *     TestBed.configureTestingModule({ providers: [{ provide: ApiService, useValue: api }] })
- * @param options - see FakeApiOptions
- */
 export function fakeApi(options: FakeApiOptions = {}): FakeApi {
   const routes: Route[] = []
   const calls: FakeApiCall[] = []
 
-  const findRoute = (call: FakeApiCall): Route | undefined => {
-    for (let i = routes.length - 1; i >= 0; i -= 1) {
-      if (routes[i].method === call.method && matches(routes[i].matcher, call.url)) {
-        return routes[i]
-      }
-    }
-    return undefined
-  }
-
   const handle = (call: FakeApiCall): Promise<any> => {
     calls.push(call)
-    const route = findRoute(call)
-    if (!route) {
-      if (options.strict) {
-        return Promise.reject(new Error(`fakeApi: no response registered for ${call.method.toUpperCase()} ${call.url}`))
+    let route: Route | undefined
+    for (let i = routes.length - 1; i >= 0; i -= 1) {
+      if (routes[i].method === call.method && matches(routes[i].matcher, call.url)) {
+        route = routes[i]
+        break
       }
-      return Promise.resolve(undefined)
+    }
+    if (!route) {
+      return options.strict
+        ? Promise.reject(new Error(`fakeApi: no response registered for ${call.method.toUpperCase()} ${call.url}`))
+        : Promise.resolve(undefined)
     }
     try {
       const value = route.responder(call)
@@ -124,35 +84,47 @@ export function fakeApi(options: FakeApiOptions = {}): FakeApi {
     }
   }
 
-  const api = {
-    get: vi.fn((url: string, opts?: Record<string, any>) => handle({ method: 'get', url, options: opts })),
-    post: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({ method: 'post', url, body, options: opts })),
-    put: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({ method: 'put', url, body, options: opts })),
-    patch: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({ method: 'patch', url, body, options: opts })),
-    delete: vi.fn((url: string, opts?: Record<string, any>) => handle({ method: 'delete', url, options: opts })),
+  const spy = (method: ApiMethod, withBody: boolean) => {
+    const instance = vi.spyOn(api, method) as unknown as MockInstance
+    instance.mockReset()
+    instance.mockImplementation(((url: string, a?: any, b?: any) => withBody
+      ? handle({ method, url, body: a, options: b })
+      : handle({ method, url, options: a })) as any)
+    return instance
+  }
+
+  const fake = {
+    get: spy('get', false),
+    delete: spy('delete', false),
+    post: spy('post', true),
+    put: spy('put', true),
+    patch: spy('patch', true),
     calls,
   } as FakeApi
 
   const register = (method: ApiMethod, url: RegExp | string, response: any, rejects: boolean) => {
     const responder: Responder = typeof response === 'function' ? response : () => response
     routes.push({ method, matcher: url, responder, rejects })
-    return api
+    return fake
   }
 
-  api.respond = (method, url, response) => register(method, url, response, false)
-  api.fail = (method, url, error) => register(method, url, error, true)
-
-  api.callsTo = (method, url) => calls.filter(call => call.method === method && (url === undefined || matches(url, call.url)))
-  api.lastCall = (method, url) => api.callsTo(method, url).at(-1)
-
-  api.clearCalls = () => {
+  fake.respond = (method, url, response) => register(method, url, response, false)
+  fake.fail = (method, url, error) => register(method, url, error, true)
+  fake.callsTo = (method, url) => calls.filter(call => call.method === method && (url === undefined || matches(url, call.url)))
+  fake.lastCall = (method, url) => fake.callsTo(method, url).at(-1)
+  fake.clearCalls = () => {
     calls.length = 0
-    api.get.mockClear()
-    api.post.mockClear()
-    api.put.mockClear()
-    api.patch.mockClear()
-    api.delete.mockClear()
   }
 
-  return api
+  return fake
+}
+
+/**
+ * An `ApiError` the way the backend fails a request: the server's message in
+ * `error.message`, which is what `toToastMessage` surfaces.
+ * @param message - the server's message
+ * @param status - the HTTP status
+ */
+export function apiError(message: string, status = 500): ApiError {
+  return new ApiError({ status, statusText: 'Internal Server Error', url: '/api', error: { message, statusCode: status } })
 }

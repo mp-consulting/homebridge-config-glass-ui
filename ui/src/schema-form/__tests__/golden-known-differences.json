@@ -1,0 +1,3 @@
+{
+  "@nzws/homebridge-switchbot": "Toggling a device's hide_device drops the false values of the other checkboxes in its settings fieldset from the data in React; Angular keeps them. Those fields are behind conditions that read devices[arrayIndices] outside any array, so they are hidden in both UIs. Saved configs differ only by these false defaults."
+}

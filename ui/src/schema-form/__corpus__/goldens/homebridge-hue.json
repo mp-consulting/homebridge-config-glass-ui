@@ -1,0 +1,395 @@
+{
+  "plugin": "homebridge-hue",
+  "version": "0.15.10",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 2,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Hue",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": false,
+        "stealth": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": false,
+        "stealth": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": true,
+        "stealth": false,
+        "hueDimmerRepeat": false,
+        "hueMotionTemperatureHistory": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": true,
+        "stealth": false,
+        "hueDimmerRepeat": false,
+        "hueMotionTemperatureHistory": false,
+        "excludeSensorTypes": [
+          "ZLLSwitch"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": true,
+        "stealth": false,
+        "hueDimmerRepeat": false,
+        "hueMotionTemperatureHistory": false,
+        "excludeSensorTypes": [
+          "ZLLSwitch",
+          "ZLLRelativeRotary"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": true,
+        "stealth": false,
+        "hueDimmerRepeat": false,
+        "hueMotionTemperatureHistory": false,
+        "excludeSensorTypes": [
+          "ZLLSwitch",
+          "ZLLRelativeRotary",
+          "ZGPSwitch"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": true,
+        "stealth": false,
+        "hueDimmerRepeat": false,
+        "hueMotionTemperatureHistory": false,
+        "excludeSensorTypes": [
+          "ZLLSwitch",
+          "ZLLRelativeRotary",
+          "ZGPSwitch"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "anyOn": true,
+        "nativeHomeKitLights": true,
+        "nativeHomeKitSensors": true,
+        "resource": true,
+        "configuredName": false,
+        "forceHttp": false,
+        "groups": false,
+        "lights": false,
+        "linkButton": false,
+        "ownResourcelinks": false,
+        "rules": false,
+        "schedules": false,
+        "sensors": true,
+        "stealth": false,
+        "hueDimmerRepeat": false,
+        "hueMotionTemperatureHistory": false,
+        "excludeSensorTypes": [
+          "ZLLSwitch",
+          "ZLLRelativeRotary",
+          "ZGPSwitch"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 29,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Bridges",
+        "Bridge",
+        "Users",
+        "Migration",
+        "Resource types",
+        "How",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

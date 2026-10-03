@@ -16,6 +16,8 @@ export interface StartupConfig {
   // Extra origins permitted to frame the UI, from `ui.allowFrameAncestors`.
   // Empty by default, so the CSP is `frame-ancestors 'self'` — same-origin only.
   allowedFrameAncestors?: string[]
+  // Proxy addresses / CIDR ranges whose X-Forwarded-For is trusted, from `ui.trustProxy`
+  trustProxy?: string[]
   debug?: boolean
 }
 
@@ -107,6 +109,8 @@ export interface HomebridgeUiConfig {
   port: number
   host?: '::' | '0.0.0.0' | string
   proxyHost?: string
+  // Reverse proxy addresses / CIDR ranges whose X-Forwarded-For is trusted (see trust-proxy.ts)
+  trustProxy?: string | string[]
   auth: 'form' | 'none'
   theme: string
   lightingMode: 'auto' | 'light' | 'dark'

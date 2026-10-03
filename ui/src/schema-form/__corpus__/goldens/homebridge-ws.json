@@ -1,0 +1,309 @@
+{
+  "plugin": "homebridge-ws",
+  "version": "2.8.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 13,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 7,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Weather",
+        "leakSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": false,
+        "cityIds": [
+          7
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": true,
+        "cityIds": [
+          7
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": true,
+        "cityIds": [
+          7
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": true,
+        "cityIds": [
+          7
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": true,
+        "cityIds": [
+          7
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "leakSensor": true,
+        "cityIds": [
+          7
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "API key",
+        "API version",
+        "",
+        "City Name",
+        "",
+        "City ID",
+        "Daily Forecasts",
+        "Hourly Forecasts",
+        "Expose Leak Sensor",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

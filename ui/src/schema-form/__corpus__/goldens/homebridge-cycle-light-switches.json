@@ -1,0 +1,559 @@
+{
+  "plugin": "homebridge-cycle-light-switches",
+  "version": "1.1.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 12,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 10,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 9,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Cycle Light Switches",
+        "lights": [
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          },
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          },
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          },
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          },
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          },
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "lights": [
+          {
+            "switchCount": 7,
+            "resetCountOnOff": true,
+            "turnOffOnCycleComplete": true,
+            "statefulSwitches": true
+          },
+          {
+            "switchCount": 1,
+            "resetCountOnOff": false,
+            "turnOffOnCycleComplete": false,
+            "statefulSwitches": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Platform Name",
+        "Lights",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)",
+        "Light",
+        "Light Name",
+        "Number of Switches",
+        "Reset switch sequence when the light turns off",
+        "Turn off the light when a cycle completes",
+        "Make switches directly triggerable",
+        "Custom Switch Names (optional)"
+      ]
+    }
+  ]
+}

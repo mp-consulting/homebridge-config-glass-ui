@@ -42,20 +42,23 @@ describe('JsonFileStoreService', () => {
     await writeFile(pathA, JSON.stringify({ v: 'a0' }))
     await writeFile(pathB, JSON.stringify({ v: 'b0' }))
 
-    // If the locks were global rather than per-path, the slow A mutator
-    // would block the fast B mutator from finishing. With per-path locks
-    // both run in parallel and B resolves first despite being scheduled
-    // second.
+    // A's mutator cannot finish until B's has. With per-path locks B runs
+    // alongside A and releases it; with a global lock B would queue behind A
+    // and the test would time out. No timing involved either way.
     const order: string[] = []
+    let releaseA!: () => void
+    const bFinished = new Promise<void>((r) => {
+      releaseA = r
+    })
     await Promise.all([
       store.mutate<{ v: string }>(pathA, async () => {
-        await new Promise(r => setTimeout(r, 60))
+        await bFinished
         order.push('a')
         return { v: 'a1' }
       }),
       store.mutate<{ v: string }>(pathB, async () => {
-        await new Promise(r => setTimeout(r, 10))
         order.push('b')
+        releaseA()
         return { v: 'b1' }
       }),
     ])

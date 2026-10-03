@@ -14,6 +14,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
+import { PluginInstallerService } from '../../src/modules/plugins/plugin-installer.service.js'
 import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway.js'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -28,6 +30,8 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
 
   let configService: ConfigService
   let pluginsService: PluginsService
+  let installed: InstalledPluginsService
+  let installer: PluginInstallerService
   let pluginsGateway: PluginsGateway
   let client: EventEmitter
 
@@ -69,12 +73,14 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
 
     configService = app.get(ConfigService)
     pluginsService = app.get(PluginsService)
+    installed = app.get(InstalledPluginsService)
+    installer = app.get(PluginInstallerService)
     pluginsGateway = app.get(PluginsGateway)
 
     // Isolate plugin discovery to the test plugin path only
-    ;(pluginsService as any)._paths = [pluginsPath]
+    ;(installed as any)._paths = [pluginsPath]
 
-    win32NpmPath = (pluginsService as any).getNpmPath()[0]
+    win32NpmPath = (installer as any).getNpmPath()[0]
   })
 
   beforeEach(async () => {
@@ -92,16 +98,16 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
 
     // Keep existing command tests independent of the npm version running the suite.
     // npm 12 behavior has explicit coverage below.
-    ;(pluginsService as any).npmMajorVersion = 11
+    ;(installer as any).npmMajorVersion = 11
     // Nor spawn `npm root -g` for the write-access pre-check
-    ;(pluginsService as any).npmGlobalRootPromise = Promise.resolve(pluginsPath)
+    ;(installed as any).npmGlobalRootPromise = Promise.resolve(pluginsPath)
 
     // Keep the suite off the network and away from the developer's real npm
     // cache. The mock plugins are not on the registry, so a failed lookup is
     // what these tests would get live anyway (versions fall back to "latest").
-    vi.spyOn(pluginsService as any, 'cleanNpmCache').mockResolvedValue(undefined)
-    vi.spyOn((pluginsService as any).httpService, 'get').mockReturnValue(throwError(() => new Error('offline')))
-    vi.spyOn((pluginsService as any).httpService, 'head').mockReturnValue(throwError(() => new Error('offline')))
+    vi.spyOn(installer as any, 'cleanNpmCache').mockResolvedValue(undefined)
+    vi.spyOn((installer as any).httpService, 'get').mockReturnValue(throwError(() => new Error('offline')))
+    vi.spyOn((installer as any).httpService, 'head').mockReturnValue(throwError(() => new Error('offline')))
   })
 
   it('ON /plugins/install', async () => {
@@ -136,7 +142,7 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
   })
 
   it('ON /plugins/install (npm 12 allow scripts)', async () => {
-    const allowScriptsSpy = vi.spyOn(pluginsService as any, 'getAllowedInstallScripts')
+    const allowScriptsSpy = vi.spyOn(installer as any, 'getAllowedInstallScripts')
       .mockResolvedValue({
         allowed: ['homebridge-mock-plugin', 'ffmpeg-for-homebridge'],
         withScripts: ['ffmpeg-for-homebridge'],
@@ -479,7 +485,10 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
         })
         const errors = await validate(dto)
         const versionError = errors.find(e => e.property === 'version')
-        expect(versionError, `expected version "${version}" to fail validation`).toBeDefined()
+        // Fails on the pattern alone: it is a string, so only @Matches objects
+        expect(versionError?.constraints, `expected version "${version}" to fail validation`).toEqual({
+          matches: expect.stringMatching(/^version must match .+ regular expression$/),
+        })
       }
     })
 

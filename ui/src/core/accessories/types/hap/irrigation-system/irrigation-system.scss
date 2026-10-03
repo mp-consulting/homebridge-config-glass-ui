@@ -1,0 +1,27 @@
+// Keyframe names are prefixed: Angular scoped them to the component
+.hb-irrigation-system {
+  &.accessory-on {
+    svg {
+      .field {
+        fill: #4caf50;
+      }
+
+      .pipe {
+        animation: hb-irrigation-system-pulse 5s infinite;
+      }
+
+      @keyframes hb-irrigation-system-pulse {
+        0%,
+        100% {
+          stroke: #7f7f7f;
+          stroke-opacity: 0.5;
+        }
+
+        50% {
+          stroke: #1976d2;
+          stroke-opacity: 1;
+        }
+      }
+    }
+  }
+}

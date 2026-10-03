@@ -1,8 +1,5 @@
-import type { IoNamespace } from '@/app/core/communication/ws.service'
-import type { Socket } from 'socket.io-client'
 import type { Mock } from 'vitest'
 
-import { Observable, ReplaySubject } from 'rxjs'
 import { vi } from 'vitest'
 
 type Handler = (...args: any[]) => void
@@ -35,10 +32,13 @@ export interface FakeSocket {
   connected: boolean
   id: string
   io: FakeManager
+  auth?: unknown
   on: Mock<(event: string, handler: Handler) => FakeSocket>
+  once: Mock<(event: string, handler: Handler) => FakeSocket>
   off: Mock<(event: string, handler?: Handler) => FakeSocket>
   emit: Mock<(event: string, ...args: any[]) => FakeSocket>
   removeAllListeners: Mock<(event?: string) => FakeSocket>
+  connect: Mock<() => FakeSocket>
   disconnect: Mock<() => FakeSocket>
 
   /** Everything the code under test has emitted, in order. */
@@ -66,18 +66,32 @@ export interface FakeSocket {
 
   /**
    * Answer the acknowledgement callback for an emitted event. Responses are
-   * delivered synchronously, so an `io.request(...)` observable emits as soon
-   * as it is subscribed. Answer with `{ error: ... }` to make the request fail
-   * the way the server does.
+   * delivered synchronously, so an `io.request(...)` promise settles on the
+   * next microtask. Answer with `{ error: ... }` to make the request fail the
+   * way the server does.
    * @param event - the event name
    * @param response - the acknowledgement value, or a function returning it
    */
   respondTo: (event: string, response: AckResponder | any) => FakeSocket
 }
 
-export interface FakeIoNamespace extends IoNamespace {
-  socket: FakeSocket & Socket
-  connected: ReplaySubject<void>
+/**
+ * The `connected` signal of an IoNamespace: `subscribe(cb)` returns an
+ * unsubscribe function, and a subscriber that arrives after a connect is
+ * replayed the last one (the ReplaySubject(1) semantics of `ws.service.ts`).
+ */
+export interface FakeConnected {
+  subscribe: (cb: () => void) => () => void
+  /** Emit a connect to every subscriber (and remember it for late ones). */
+  next: () => void
+  /** How many subscribers are attached right now. */
+  subscriberCount: () => number
+}
+
+export interface FakeIoNamespace {
+  socket: FakeSocket
+  connected: FakeConnected
+  request: Mock<(resource: string, payload?: any) => Promise<any>>
   end: Mock<() => void>
 
   /** The resource and payload of every `request()` call, in order. */
@@ -85,6 +99,9 @@ export interface FakeIoNamespace extends IoNamespace {
 
   /** Mark the socket connected, firing `connect` handlers and `connected`. */
   markConnected: () => void
+
+  /** Mark the socket disconnected and fire its `disconnect` handlers. */
+  markDisconnected: (reason?: string) => void
 }
 
 export interface FakeNamespaceOptions {
@@ -97,36 +114,59 @@ export interface FakeNamespaceOptions {
   connected?: boolean
 }
 
-export function fakeManager(): FakeManager {
+function handlerRegistry() {
   const handlers = new Map<string, Handler[]>()
-
-  const manager = {
-    on: vi.fn((event: string, handler: Handler) => {
+  return {
+    add(event: string, handler: Handler) {
       handlers.set(event, [...(handlers.get(event) ?? []), handler])
-      return manager
-    }),
-    off: vi.fn((event: string, handler?: Handler) => {
+    },
+    remove(event: string, handler?: Handler) {
       if (!handler) {
         handlers.delete(event)
       } else {
         handlers.set(event, (handlers.get(event) ?? []).filter(existing => existing !== handler))
       }
+    },
+    clear() {
+      handlers.clear()
+    },
+    // Snapshot: a handler is allowed to detach itself while being called
+    list: (event: string) => [...(handlers.get(event) ?? [])],
+  }
+}
+
+export function fakeManager(): FakeManager {
+  const registry = handlerRegistry()
+
+  const manager = {
+    on: vi.fn((event: string, handler: Handler) => {
+      registry.add(event, handler)
+      return manager
+    }),
+    off: vi.fn((event: string, handler?: Handler) => {
+      registry.remove(event, handler)
       return manager
     }),
   } as unknown as FakeManager
 
   manager.fire = (event: string, ...args: any[]) => {
-    for (const handler of (handlers.get(event) ?? [])) {
+    for (const handler of registry.list(event)) {
       handler(...args)
     }
   }
-  manager.handlers = (event: string) => [...(handlers.get(event) ?? [])]
+  manager.handlers = registry.list
 
   return manager
 }
 
+/**
+ * A socket.io `Socket` stand-in. Use it on its own to drive code that takes a
+ * socket, or `vi.mock('socket.io-client', () => ({ io: vi.fn(() => fakeSocket(false)) }))`
+ * to drive the ws layer itself.
+ * @param connected - the initial `connected` flag
+ */
 export function fakeSocket(connected = true): FakeSocket {
-  const handlers = new Map<string, Handler[]>()
+  const registry = handlerRegistry()
   const responders = new Map<string, AckResponder>()
   const emitted: Array<{ event: string, args: any[] }> = []
 
@@ -136,25 +176,30 @@ export function fakeSocket(connected = true): FakeSocket {
     io: fakeManager(),
     emitted,
     on: vi.fn((event: string, handler: Handler) => {
-      handlers.set(event, [...(handlers.get(event) ?? []), handler])
+      registry.add(event, handler)
+      return socket
+    }),
+    once: vi.fn((event: string, handler: Handler) => {
+      const wrapped: Handler = (...args) => {
+        registry.remove(event, wrapped)
+        handler(...args)
+      }
+      registry.add(event, wrapped)
       return socket
     }),
     off: vi.fn((event: string, handler?: Handler) => {
-      if (!handler) {
-        handlers.delete(event)
-      } else {
-        handlers.set(event, (handlers.get(event) ?? []).filter(existing => existing !== handler))
-      }
+      registry.remove(event, handler)
       return socket
     }),
     removeAllListeners: vi.fn((event?: string) => {
       if (event) {
-        handlers.delete(event)
+        registry.remove(event)
       } else {
-        handlers.clear()
+        registry.clear()
       }
       return socket
     }),
+    connect: vi.fn(() => socket),
     disconnect: vi.fn(() => {
       socket.connected = false
       return socket
@@ -171,12 +216,11 @@ export function fakeSocket(connected = true): FakeSocket {
   } as unknown as FakeSocket
 
   socket.fire = (event: string, ...args: any[]) => {
-    // Snapshot: a handler is allowed to detach itself while being called
-    for (const handler of (handlers.get(event) ?? [])) {
+    for (const handler of registry.list(event)) {
       handler(...args)
     }
   }
-  socket.handlers = (event: string) => [...(handlers.get(event) ?? [])]
+  socket.handlers = registry.list
   socket.payloadsFor = (event: string) => emitted.filter(entry => entry.event === event).map(entry => entry.args[0])
   socket.respondTo = (event: string, response: AckResponder | any) => {
     responders.set(event, typeof response === 'function' ? response : () => response)
@@ -186,29 +230,56 @@ export function fakeSocket(connected = true): FakeSocket {
   return socket
 }
 
+/** A replaying `connected` signal (see FakeConnected). */
+export function fakeConnected(): FakeConnected {
+  const subscribers = new Set<() => void>()
+  let hasFired = false
+
+  return {
+    subscribe(cb) {
+      // A wrapper per subscription, so the same callback can subscribe twice
+      const entry = () => cb()
+      subscribers.add(entry)
+      if (hasFired) {
+        entry()
+      }
+      return () => {
+        subscribers.delete(entry)
+      }
+    },
+    next() {
+      hasFired = true
+      // Snapshot: a subscriber that subscribes another from inside must not run this round
+      for (const entry of Array.from(subscribers)) {
+        entry()
+      }
+    },
+    subscriberCount: () => subscribers.size,
+  }
+}
+
 /**
- * A stand-in for one namespace returned by `WsService.connectToNamespace`.
+ * A stand-in for one namespace returned by `ws.connectToNamespace`.
  *
- * `request` is the real implementation, not a spy returning a canned value, so
- * specs exercise the `{ error }` mapping and the null-acknowledgement guard
- * exactly as production does.
+ * `request` is the real mapping, not a spy returning a canned value, so specs
+ * exercise the `{ error }` rejection and the null-acknowledgement guard exactly
+ * as production does.
  * @param options - see FakeNamespaceOptions
  */
 export function fakeIoNamespace(options: FakeNamespaceOptions = {}): FakeIoNamespace {
   const isConnected = options.connected ?? true
   const socket = fakeSocket(isConnected)
-  const connected = new ReplaySubject<void>(1)
+  const connected = fakeConnected()
   const requests: Array<{ resource: string, payload: any }> = []
 
-  const request = (resource: string, payload?: any) => new Observable<any>((observer) => {
+  const request = (resource: string, payload?: any) => new Promise<any>((resolve, reject) => {
     requests.push({ resource, payload })
     socket.emit(resource, payload, (resp: any) => {
       if (resp && typeof resp === 'object' && resp.error) {
-        observer.error(resp)
+        reject(resp)
       } else {
-        observer.next(resp)
+        resolve(resp)
       }
-      observer.complete()
     })
   })
 
@@ -224,6 +295,11 @@ export function fakeIoNamespace(options: FakeNamespaceOptions = {}): FakeIoNames
     socket.connected = true
     socket.fire('connect')
     connected.next()
+  }
+
+  io.markDisconnected = (reason = 'transport close') => {
+    socket.connected = false
+    socket.fire('disconnect', reason)
   }
 
   if (isConnected) {
@@ -250,13 +326,16 @@ export interface FakeWs {
 }
 
 /**
- * A stand-in for WsService.
+ * A stand-in for the `ws` singleton of `@/core/ws`:
  *
- * Supports both entry points: `connectToNamespace` creates on first use and
- * returns the identical object afterwards (the caching rule from #2806), and
- * `getExistingNamespace` returns only what already exists - widgets use the
- * second and assume the status page opened the socket first, so arrange with
- * `ws.namespace('status')` before creating the component.
+ *     vi.mock('@/core/ws', async () => ({ ws: (await import('@/testing')).fakeWs() }))
+ *     import { ws as realWs } from '@/core/ws'
+ *     const ws = realWs as unknown as FakeWs
+ *
+ * `connectToNamespace` creates on first use and returns the identical object
+ * afterwards (the caching rule from #2806), and `getExistingNamespace` returns
+ * only what already exists - widgets use the second and assume the status page
+ * opened the socket first, so arrange with `ws.namespace('status')` first.
  */
 export function fakeWs(): FakeWs {
   const namespaces = new Map<string, FakeIoNamespace>()

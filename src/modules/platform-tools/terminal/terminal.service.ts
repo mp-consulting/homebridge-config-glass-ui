@@ -20,6 +20,7 @@ export class TerminalService {
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
   private static persistentAptHintInjected = false
+  private static outputRunners = new WeakMap<WsEventEmitter, (action: () => unknown) => void>()
   private instanceId: string
 
   constructor(
@@ -29,6 +30,19 @@ export class TerminalService {
   ) {
     this.instanceId = Math.random().toString(36).substring(2, 11)
     this.logger.debug(`TerminalService instance created: ${this.instanceId}`)
+  }
+
+  /**
+   * The order-preserving, re-checking runner that sends a client the
+   * persistent shell's output (one per client, kept for its lifetime).
+   */
+  private static outputRunner(client: WsEventEmitter): (action: () => unknown) => void {
+    let runner = TerminalService.outputRunners.get(client)
+    if (!runner) {
+      runner = createAuthorizedRunner(client, { admin: true })
+      TerminalService.outputRunners.set(client, runner)
+    }
+    return runner
   }
 
   private shouldInjectAptPackageCommandHint(): boolean {
@@ -106,7 +120,9 @@ export class TerminalService {
 
     let aptHintInjected = false
 
-    // Write to the client
+    // Write to the client - re-checking its user first, like stdin below:
+    // output is pushed, so no guard would ever see a revoked user otherwise
+    const runAuthorizedOutput = createAuthorizedRunner(client, { admin: true })
     term.onData((data) => {
       let output = data
 
@@ -116,7 +132,7 @@ export class TerminalService {
         output = injectedOutput
       }
 
-      client.emit('stdout', output)
+      runAuthorizedOutput(() => client.emit('stdout', output))
     })
 
     // Let the client know when the session ends
@@ -219,7 +235,10 @@ export class TerminalService {
             if (TerminalService.connectedClients.size > 0) {
               TerminalService.connectedClients.forEach((client) => {
                 try {
-                  client.emit('stdout', output)
+                  // Re-checked per client, as the shell is shared: one
+                  // revoked or demoted viewer must stop receiving its output
+                  // without affecting the others
+                  TerminalService.outputRunner(client)(() => client.emit('stdout', output))
                 } catch (e) {
                   this.logger.error(`[${this.instanceId}] Error sending output to a client: ${e}`)
                   // Remove client if it's no longer valid

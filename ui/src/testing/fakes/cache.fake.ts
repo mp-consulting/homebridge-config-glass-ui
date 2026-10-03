@@ -14,9 +14,9 @@ export interface FakeCache<T = any> {
 }
 
 /**
- * A stand-in for any of the five cache wrapper services (plugins, server
- * pairings, cached accessories, accessory overview, token). They all reduce
- * to the same two methods, so one stub covers them.
+ * A stand-in for any of the cache wrappers (plugins, server pairings, cached
+ * accessories, accessory overview, token). They all reduce to the same two
+ * methods, so one stub covers them.
  * @param value - what `get()` resolves with
  */
 export function cacheStub<T = any>(value?: T): FakeCache<T> {
@@ -32,7 +32,7 @@ export function cacheStub<T = any>(value?: T): FakeCache<T> {
 }
 
 /**
- * A stand-in for CachedAccessoriesCacheService, which has two getters rather
+ * A stand-in for the cached-accessories cache, which has two getters rather
  * than one.
  * @param hap - what `getHap()` resolves with
  * @param matter - what `getMatter()` resolves with
@@ -44,20 +44,5 @@ export function cachedAccessoriesStub(hap: any = [], matter: any = []) {
     invalidate: vi.fn(),
     invalidateHap: vi.fn(),
     invalidateMatter: vi.fn(),
-  }
-}
-
-/**
- * A pass-through stand-in for TtlCacheService: every `get` runs its loader.
- *
- * Use this where the service under test caches through TtlCacheService itself
- * (ChildBridgesService, the wrappers) and the spec is about the loader, not
- * the caching. For the caching rules themselves, test the real service.
- */
-export function ttlCacheStub() {
-  return {
-    get: vi.fn((_key: string, loader: () => Promise<any>) => loader()),
-    invalidate: vi.fn(),
-    invalidateAll: vi.fn(),
   }
 }

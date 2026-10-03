@@ -1,0 +1,239 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-controlmyspa",
+  "version": "1.2.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: none"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 7,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "ControlMySpa",
+        "options": {
+          "devices": [
+            {
+              "showPanelLock": false
+            }
+          ]
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "ControlMySpa Account Info",
+        "Email",
+        "Password",
+        "Spa Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "ControlMySpa",
+        "options": {
+          "devices": [
+            {
+              "showPanelLock": false
+            }
+          ]
+        },
+        "credentials": {
+          "email": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "ControlMySpa Account Info",
+        "Email",
+        "Password",
+        "Spa Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "ControlMySpa",
+        "options": {
+          "devices": [
+            {
+              "showPanelLock": false
+            }
+          ],
+          "refreshRate": 7
+        },
+        "credentials": {
+          "email": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "ControlMySpa Account Info",
+        "Email",
+        "Password",
+        "Spa Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "ControlMySpa",
+        "options": {
+          "devices": [
+            {
+              "showPanelLock": false
+            }
+          ],
+          "refreshRate": 7,
+          "logging": "none"
+        },
+        "credentials": {
+          "email": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "ControlMySpa Account Info",
+        "Email",
+        "Password",
+        "Spa Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "ControlMySpa",
+        "options": {
+          "devices": [
+            {
+              "showPanelLock": false
+            },
+            {
+              "showPanelLock": false
+            }
+          ],
+          "refreshRate": 7,
+          "logging": "none"
+        },
+        "credentials": {
+          "email": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "ControlMySpa Account Info",
+        "Email",
+        "Password",
+        "Spa Settings",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "ControlMySpa",
+        "options": {
+          "devices": [
+            {
+              "showPanelLock": false
+            }
+          ],
+          "refreshRate": 7,
+          "logging": "none"
+        },
+        "credentials": {
+          "email": "golden"
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "ControlMySpa Account Info",
+        "Email",
+        "Password",
+        "Spa Settings",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

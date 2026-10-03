@@ -24,6 +24,7 @@ import { Logger } from '../logger/logger.service.js'
 import { AuthDto, LogoutDto, RefreshTokenDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
+import { disconnectWsClientsWithToken } from './guards/ws-auth.js'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -180,6 +181,13 @@ export class AuthController {
       : []
     res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
 
+    // This browser's sockets end with its session. An account-wide logout
+    // reaches every socket through the revocation write below; a local one
+    // revokes nothing, so it ends the sockets standing on this very token.
+    if (localOnly) {
+      disconnectWsClientsWithToken(this.readBearerToken(req.headers.authorization))
+    }
+
     if (account && !localOnly) {
       try {
         await this.authService.revokeUserSessions(account)
@@ -225,6 +233,12 @@ export class AuthController {
       }
     }
     return null
+  }
+
+  /** The raw bearer token of a request, unverified. */
+  private readBearerToken(authorization?: string): string | undefined {
+    const [scheme, token] = authorization?.split(' ') ?? []
+    return scheme?.toLowerCase() === 'bearer' && token ? token : undefined
   }
 
   /**

@@ -1,0 +1,923 @@
+{
+  "plugin": "homebridge-samsung-rac",
+  "version": "0.4.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: auto"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: Up_And_Low"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 26,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 18,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 6,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "devices": [
+          {
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 10,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": false,
+        "freezeIndoorTemperatureWhenOff": false,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 10,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": false,
+        "freezeIndoorTemperatureWhenOff": false,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": false,
+        "freezeIndoorTemperatureWhenOff": false,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": false,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          },
+          {
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 7,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          },
+          {
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          },
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 8,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          },
+          {
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          },
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          },
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 9,
+        "add": 3,
+        "remove": 6
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          },
+          {
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          },
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 8,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          },
+          {
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 7,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "devices": [
+          {
+            "name": "golden",
+            "heating": "auto"
+          }
+        ],
+        "updateInterval": 7,
+        "swingDirection": "Up_And_Low",
+        "convenienceModes": [
+          {
+            "mode": "Quiet"
+          }
+        ],
+        "modeSwitches": [
+          {
+            "mode": "Dry"
+          }
+        ],
+        "outdoorTemperature": "linked",
+        "outdoorTemperatureUnit": "fahrenheit",
+        "hideOutdoorTemperatureWhenOff": true,
+        "freezeIndoorTemperatureWhenOff": true,
+        "requestTimeout": 5
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 6,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Air conditioners",
+        "",
+        "Name",
+        "IP address",
+        "Device token (optional)",
+        "Heating",
+        "Status poll interval (seconds)",
+        "Swing direction",
+        "Convenience mode switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Dry and fan-only switches",
+        "",
+        "Mode",
+        "Name in the Home app",
+        "Outdoor temperature sensor",
+        "Outdoor temperature scale",
+        "Hide the outdoor reading while the unit is off",
+        "Hold the room temperature while the unit is off",
+        "Advanced"
+      ]
+    }
+  ]
+}

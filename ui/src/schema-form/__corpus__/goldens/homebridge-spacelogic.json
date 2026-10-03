@@ -1,0 +1,547 @@
+{
+  "plugin": "homebridge-spacelogic",
+  "version": "1.0.7",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: dimmer"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 23,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "SpaceLogic C-Bus",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 254
+        },
+        "allowBulkRemoval": false,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": true,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 254
+        },
+        "allowBulkRemoval": false,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": true,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 7
+        },
+        "allowBulkRemoval": false,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": true,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 7
+        },
+        "allowBulkRemoval": true,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": true,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 7
+        },
+        "allowBulkRemoval": true,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": false,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 7
+        },
+        "allowBulkRemoval": true,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": false,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 7
+        },
+        "allowBulkRemoval": true,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": false,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          },
+          {
+            "type": "dimmer",
+            "enabled": true,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 14,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cgate": {
+          "host": "localhost",
+          "commandPort": 20023,
+          "eventPort": 20024,
+          "scpPort": 20025,
+          "network": 7
+        },
+        "allowBulkRemoval": true,
+        "maxAccessories": 0,
+        "commander": {
+          "port": 0
+        },
+        "groupOverrides": [
+          {
+            "type": "dimmer",
+            "enabled": false,
+            "options": {
+              "travelTime": 30,
+              "rampRate": 0
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 10,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform Name",
+        "C-Gate Connection",
+        "C-Gate Host",
+        "C-Gate Project Name",
+        "Default Network",
+        "Command Port",
+        "Event Port",
+        "Status Change Port",
+        "HTTP Commander",
+        "Commander Port",
+        "Advanced",
+        "Group Type Overrides",
+        "",
+        "Group Address",
+        "Device Type",
+        "Custom Name",
+        "Enabled",
+        "Measurement Channel",
+        "Cover Travel Time (seconds)",
+        "Switch Auto-Off (seconds)",
+        "Dimmer Ramp Rate (seconds)"
+      ]
+    }
+  ]
+}

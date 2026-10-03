@@ -1,0 +1,449 @@
+{
+  "plugin": "homebridge-slwf-01pro",
+  "version": "1.1.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 28,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "SLWFOnePro",
+        "debug": false,
+        "autoDiscover": true,
+        "discoveryTimeout": 5,
+        "disableHumiditySensor": true,
+        "disableOutdoorTempSensor": true,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Discovery timeout (seconds)",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": false,
+        "autoDiscover": true,
+        "discoveryTimeout": 5,
+        "disableHumiditySensor": true,
+        "disableOutdoorTempSensor": true,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Discovery timeout (seconds)",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": true,
+        "autoDiscover": true,
+        "discoveryTimeout": 5,
+        "disableHumiditySensor": true,
+        "disableOutdoorTempSensor": true,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Discovery timeout (seconds)",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": true,
+        "autoDiscover": false,
+        "disableHumiditySensor": true,
+        "disableOutdoorTempSensor": true,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": true,
+        "autoDiscover": false,
+        "disableHumiditySensor": false,
+        "disableOutdoorTempSensor": true,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": true,
+        "autoDiscover": false,
+        "disableHumiditySensor": false,
+        "disableOutdoorTempSensor": false,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": true,
+        "autoDiscover": false,
+        "disableHumiditySensor": false,
+        "disableOutdoorTempSensor": false,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 3
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "debug": true,
+        "autoDiscover": false,
+        "disableHumiditySensor": false,
+        "disableOutdoorTempSensor": false,
+        "disablePowerSensor": true,
+        "disableBeeperSwitch": true,
+        "disableDisplaySwitch": true,
+        "disableDryMode": true,
+        "disableFanOnlyMode": true,
+        "disablePresets": true,
+        "devices": [
+          {
+            "port": 6053,
+            "disableHumiditySensor": false,
+            "disableOutdoorTempSensor": false,
+            "disablePowerSensor": false,
+            "disableBeeperSwitch": false,
+            "disableDisplaySwitch": false,
+            "disableDryMode": false,
+            "disableFanOnlyMode": false,
+            "disablePresets": false
+          },
+          {
+            "port": 6053
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 4,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 0,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name (for logs)",
+        "Enable Debug Logs",
+        "Auto-discovery",
+        "Auto-discover SLWF-01Pro devices via mDNS",
+        "Global service toggles (apply to all devices)",
+        "Manual device list"
+      ]
+    }
+  ]
+}

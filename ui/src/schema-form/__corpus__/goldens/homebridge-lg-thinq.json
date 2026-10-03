@@ -1,0 +1,292 @@
+{
+  "plugin": "homebridge-lg-thinq",
+  "version": "1.8.11",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: account"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 15,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "auth_mode": "account",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 60,
+        "devices": [
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "Username",
+        "Password",
+        "",
+        "Country",
+        "Language",
+        "Enable ThinQ1 Support?",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "undefined"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "account",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": false,
+        "refresh_interval": 60,
+        "devices": [
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          }
+        ],
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "Username",
+        "Password",
+        "",
+        "Country",
+        "Language",
+        "Enable ThinQ1 Support?",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "undefined"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "account",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": true,
+        "refresh_interval": 60,
+        "devices": [
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          }
+        ],
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "Username",
+        "Password",
+        "",
+        "Country",
+        "Language",
+        "Enable ThinQ1 Support?",
+        "Refresh interval (in second)",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "undefined"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "account",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": true,
+        "refresh_interval": 60,
+        "devices": [
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          }
+        ],
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "Username",
+        "Password",
+        "",
+        "Country",
+        "Language",
+        "Enable ThinQ1 Support?",
+        "Refresh interval (in second)",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "undefined"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "account",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": true,
+        "refresh_interval": 60,
+        "devices": [
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          },
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          }
+        ],
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "Username",
+        "Password",
+        "",
+        "Country",
+        "Language",
+        "Enable ThinQ1 Support?",
+        "Refresh interval (in second)",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "undefined"
+      ]
+    },
+    {
+      "data": {
+        "auth_mode": "account",
+        "country": "US",
+        "language": "en-US",
+        "thinq1": true,
+        "refresh_interval": 60,
+        "devices": [
+          {
+            "ac_energy_save": true,
+            "ac_air_clean": true
+          }
+        ],
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Auth Mode",
+        "",
+        "Username",
+        "Password",
+        "",
+        "Country",
+        "Language",
+        "Enable ThinQ1 Support?",
+        "Refresh interval (in second)",
+        "",
+        "Device Name",
+        "Device ID",
+        "Serial Number (optional)",
+        "undefined"
+      ]
+    }
+  ]
+}

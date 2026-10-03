@@ -1,0 +1,216 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-pura",
+  "version": "1.8.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Pura Smart Diffuser",
+        "forceNightlightOff": false,
+        "enableFanService": false,
+        "enableBayControl": false,
+        "enableNightlightAccessory": false,
+        "enableAutoAlternate": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Force Nightlight Off",
+        "Enable Intensity Control",
+        "Enable Per-Bay Controls",
+        "Enable Nightlight Controls",
+        "Enable Auto-Alternate Control"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "forceNightlightOff": false,
+        "enableFanService": false,
+        "enableBayControl": false,
+        "enableNightlightAccessory": false,
+        "enableAutoAlternate": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Force Nightlight Off",
+        "Enable Intensity Control",
+        "Enable Per-Bay Controls",
+        "Enable Nightlight Controls",
+        "Enable Auto-Alternate Control"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "forceNightlightOff": true,
+        "enableFanService": false,
+        "enableBayControl": false,
+        "enableNightlightAccessory": false,
+        "enableAutoAlternate": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Force Nightlight Off",
+        "Enable Intensity Control",
+        "Enable Per-Bay Controls",
+        "Enable Nightlight Controls",
+        "Enable Auto-Alternate Control"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "forceNightlightOff": true,
+        "enableFanService": true,
+        "enableBayControl": false,
+        "enableNightlightAccessory": false,
+        "enableAutoAlternate": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Force Nightlight Off",
+        "Enable Intensity Control",
+        "Enable Per-Bay Controls",
+        "Enable Nightlight Controls",
+        "Enable Auto-Alternate Control"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "forceNightlightOff": true,
+        "enableFanService": true,
+        "enableBayControl": true,
+        "enableNightlightAccessory": false,
+        "enableAutoAlternate": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Force Nightlight Off",
+        "Enable Intensity Control",
+        "Enable Per-Bay Controls",
+        "Enable Nightlight Controls",
+        "Enable Auto-Alternate Control"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "forceNightlightOff": true,
+        "enableFanService": true,
+        "enableBayControl": true,
+        "enableNightlightAccessory": true,
+        "enableAutoAlternate": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Username",
+        "Password",
+        "Force Nightlight Off",
+        "Enable Intensity Control",
+        "Enable Per-Bay Controls",
+        "Enable Nightlight Controls",
+        "Enable Auto-Alternate Control"
+      ]
+    }
+  ]
+}

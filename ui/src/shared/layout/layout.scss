@@ -1,0 +1,44 @@
+.hb-layout {
+  height: 100%;
+
+  > .content {
+    margin-left: 60px;
+    transition: 0.3s;
+    height: 100%;
+
+    @media (max-width: 767px) {
+      margin-left: 0;
+      padding-top: 85px !important;
+    }
+
+    @media (min-width: 768px) {
+      height: 100%;
+    }
+  }
+}
+
+// Visually hidden until focused: the first stop for a keyboard user
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1100;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+
+  &:focus,
+  &:focus-visible {
+    transform: none;
+    outline: 3px solid #1a73e8;
+    outline-offset: 2px;
+  }
+}
+
+.hb-layout > main.content:focus {
+  outline: none;
+}

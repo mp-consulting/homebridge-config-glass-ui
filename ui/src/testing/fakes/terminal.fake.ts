@@ -1,5 +1,5 @@
-import type { SaveAs } from '@/app/core/utilities/file-saver.factory'
-import type { TerminalFactory } from '@/app/core/utilities/terminal.factory'
+import type { SaveAs, TerminalFactory } from '@/core/utilities/terminal/types'
+import type { Mock } from 'vitest'
 
 import { vi } from 'vitest'
 
@@ -27,6 +27,7 @@ export class FakeTerminal {
   public focus = vi.fn()
   public dispose = vi.fn()
   public scrollToLine = vi.fn()
+  public scrollToBottom = vi.fn()
 
   constructor(public options: any) {}
 
@@ -68,14 +69,8 @@ export interface FakeTerminals {
 }
 
 /**
- * A stand-in for the terminal factory the app injects.
- *
- * ⚠️ This replaces `vi.mock('@xterm/xterm')`, which cannot work here: the
- * unit-test builder compiles the app through its build target, so xterm is
- * bundled into the app code and a module mock registered in the spec's own
- * graph never reaches it — the app quietly builds a real terminal and every
- * assertion reads `undefined`. Providing the token is the seam that survives
- * bundling.
+ * A stand-in for the terminal factory (`xtermFactory`) the terminal services
+ * take, so a spec never builds a real xterm (jsdom has no canvas or layout).
  */
 export function fakeTerminals(): FakeTerminals {
   const terminals: FakeTerminal[] = []
@@ -109,6 +104,6 @@ export function fakeTerminals(): FakeTerminals {
 }
 
 /** A stand-in for the file-saver seam, recording what would have been saved. */
-export function fakeSaveAs() {
-  return vi.fn() as unknown as SaveAs & ReturnType<typeof vi.fn>
+export function fakeSaveAs(): SaveAs & Mock<SaveAs> {
+  return vi.fn<SaveAs>()
 }

@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
+import { EventEmitter } from 'node:events'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -18,11 +19,13 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
+import { authorizeWsGuardClient } from '../../src/core/auth/guards/ws-auth.js'
 import { WsLogGuard } from '../../src/core/auth/guards/ws-log.guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
 import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -223,7 +226,7 @@ describe('AuthController (e2e)', () => {
     const header = login.headers['set-cookie']
     const setCookies = (Array.isArray(header) ? header : [header]) as string[]
     const refreshCookie = setCookies.find(c => c.startsWith('hb-refresh='))!
-    expect(refreshCookie).toBeDefined()
+    expect(refreshCookie).toMatch(/^hb-refresh=[^;]+;/)
     // The token must not be reachable from JavaScript, which is the whole point
     // of moving it out of localStorage.
     expect(refreshCookie).toContain('HttpOnly')
@@ -631,6 +634,36 @@ describe('AuthController (e2e)', () => {
     expect(replayed.statusCode).toBe(401)
   })
 
+  it('ends this browser\'s sockets on a local logout, and only those', async () => {
+    const signIn = async () => (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })).json().access_token
+    const socket = async (token: string) => {
+      const client = Object.assign(new EventEmitter(), { handshake: { auth: { token } }, data: {} as any, disconnect: vi.fn() })
+      await authorizeWsGuardClient(client, app.get(ConfigService), app.get(AuthService))
+      return client
+    }
+    const token = await signIn()
+    const here = await socket(token)
+    // Signed a second later, so it is a distinct token for the same account
+    await new Promise(resolve => setTimeout(resolve, 1100))
+    const elsewhere = await socket(await signIn())
+
+    await app.inject({
+      method: 'POST',
+      path: '/auth/logout',
+      payload: { scope: 'local' },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect(here.disconnect).toHaveBeenCalledWith(true)
+    expect(elsewhere.disconnect).not.toHaveBeenCalled()
+    here.emit('disconnect')
+    elsewhere.emit('disconnect')
+  })
+
   it('clears session cookies when logout receives an invalid bearer token', async () => {
     const loggedOut = await app.inject({
       method: 'POST',
@@ -835,6 +868,36 @@ describe('AuthController (e2e)', () => {
     }
   })
 
+  it('GET /auth/settings (unauthenticated - only what the login and setup pages need)', async () => {
+    const anonymous = (await app.inject({ method: 'GET', path: '/auth/settings' })).json()
+
+    expect(Object.keys(anonymous.env).sort()).toEqual([
+      'customWallpaperHash',
+      'homebridgeInstanceName',
+      'instanceId',
+      'lang',
+      'setupWizardComplete',
+      'temperatureUnits',
+    ].filter(key => key in anonymous.env).sort())
+    for (const key of ['packageVersion', 'packageName', 'homebridgeVersion', 'platform', 'port', 'scheduledBackupPath', 'canShutdownRestartHost', 'dockerOfflineUpdate', 'featureFlags', 'swaggerEnabled']) {
+      expect(anonymous.env).not.toHaveProperty(key)
+    }
+
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })).json().access_token
+    const authorised = (await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+      headers: { authorization: `bearer ${accessToken}` },
+    })).json()
+    for (const key of ['packageVersion', 'platform', 'port', 'scheduledBackupPath', 'featureFlags', 'swaggerEnabled']) {
+      expect(authorised.env).toHaveProperty(key)
+    }
+  })
+
   it('GET /auth/settings (authenticated - exposes hasInstalledPlugins)', async () => {
     const accessToken = (await app.inject({
       method: 'POST',
@@ -850,7 +913,7 @@ describe('AuthController (e2e)', () => {
     // bootstrap/login path). Warm the cache first so the flag is exposed.
     // Scan this spec's own storage only - the default paths spawn a real `npm -g prefix`.
     const pluginsService = app.get(PluginsService, { strict: false })
-    ;(pluginsService as any)._paths = [resolve(testStoragePath, 'plugins', 'node_modules')]
+    ;(app.get(InstalledPluginsService, { strict: false }) as any)._paths = [resolve(testStoragePath, 'plugins', 'node_modules')]
     await pluginsService.getInstalledPlugins()
 
     const res = await app.inject({
@@ -1300,8 +1363,8 @@ describe('AuthController (e2e)', () => {
 
     const after = await authService.getUsers()
     expect(after.length).toBe(baseline + 2)
-    expect(after.find(u => u.username === 'race-add-a')).toBeDefined()
-    expect(after.find(u => u.username === 'race-add-b')).toBeDefined()
+    expect(after.find(u => u.username === 'race-add-a')).toMatchObject({ id: results.find(r => r.username === 'race-add-a')!.id, name: 'Race A', admin: false })
+    expect(after.find(u => u.username === 'race-add-b')).toMatchObject({ id: results.find(r => r.username === 'race-add-b')!.id, name: 'Race B', admin: false })
     const ids = after.map(u => u.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
@@ -1365,6 +1428,91 @@ describe('AuthController (e2e)', () => {
       await expect(authService.updateOwnPassword('admin', 'admin', 'new-password-123'))
         .rejects
         .toMatchObject({ status: 429 })
+    })
+
+    describe('per-username budget across addresses', () => {
+      // Each failure is a full-strength hash; make the wrong guesses cheap
+      const failFrom = async (username: string, count: number, address = (i: number) => `198.51.100.${i % 250}`) => {
+        const hashSpy = vi.spyOn(authService as any, 'hashPassword').mockResolvedValue('not-the-hash')
+        const results = []
+        for (let i = 0; i < count; i++) {
+          results.push(await authService.authenticate(username, 'wrong', undefined, address(i)).catch((e: any) => e))
+        }
+        hashSpy.mockRestore()
+        return results
+      }
+
+      beforeEach(() => {
+        ;(authService as any).usernameFailureCache.flushAll()
+        ;(authService as any).knownLoginSources.flushAll()
+      })
+
+      afterEach(() => {
+        vi.restoreAllMocks()
+        ;(authService as any).usernameFailureCache.flushAll()
+        ;(authService as any).knownLoginSources.flushAll()
+      })
+
+      it('slows a username down once guesses spread over many addresses pass the budget', async () => {
+        // 50 failures, each from a fresh address: no single address is locked
+        const results = await failFrom('admin', 50, i => `203.0.113.${i}`)
+        expect(results.every(e => e instanceof HttpException && e.getStatus() === 403)).toBe(true)
+
+        // A new address is now refused with the right password, before any hash
+        const hashSpy = vi.spyOn(authService as any, 'hashPassword')
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.200'))
+          .rejects
+          .toMatchObject({ status: 429 })
+        expect(hashSpy).not.toHaveBeenCalled()
+        // Other usernames are not affected
+        await expect(authService.authenticate('someone-else', 'x', undefined, '192.0.2.200'))
+          .rejects
+          .toMatchObject({ status: 403 })
+      })
+
+      it('lets an address that has signed in as the user before through the cooldown', async () => {
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.50')).resolves.toBeTruthy()
+
+        await failFrom('admin', 50, i => `203.0.113.${i}`)
+
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.200')).rejects.toMatchObject({ status: 429 })
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.50')).resolves.toBeTruthy()
+      })
+
+      it('is time-bounded, and each further failure doubles the cooldown up to a cap', async () => {
+        const start = Date.now()
+        const now = vi.spyOn(Date, 'now').mockReturnValue(start)
+        const lockedFor = () => ((authService as any).usernameFailureCache.get('admin').lockedUntil - Date.now()) / 1000
+
+        await failFrom('admin', 50, i => `203.0.113.${i}`)
+        expect(lockedFor()).toBe(60)
+
+        // After the cooldown the user can sign in again (from anywhere)
+        now.mockReturnValue(start + 61_000)
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.201')).resolves.toBeTruthy()
+
+        // Another failure past the budget: twice as long
+        await failFrom('admin', 1, () => '203.0.113.200')
+        expect(lockedFor()).toBe(120)
+
+        // ... capped at 15 minutes
+        for (let i = 0; i < 10; i++) {
+          now.mockReturnValue(Date.now() + 3_600_000 - 1)
+          ;(authService as any).usernameFailureCache.set('admin', { ...(authService as any).usernameFailureCache.get('admin'), lockedUntil: 0 })
+          await failFrom('admin', 1, () => `203.0.113.${210 + i}`)
+        }
+        expect(lockedFor()).toBe(900)
+      })
+
+      it('does not count a 2FA prompt as a failure', async () => {
+        const hashSpy = vi.spyOn(authService as any, 'checkPassword').mockResolvedValue(undefined)
+        vi.spyOn(authService, 'findByUsername').mockResolvedValue({ username: 'otp-user', otpActive: true } as any)
+        for (let i = 0; i < 60; i++) {
+          await expect(authService.authenticate('otp-user', 'pw', undefined, `203.0.113.${i}`)).rejects.toMatchObject({ status: 412 })
+        }
+        hashSpy.mockRestore()
+        expect((authService as any).usernameFailureCache.get('otp-user')).toBeUndefined()
+      })
     })
 
     it('throttles an IPv6 client per /64, so rotating addresses does not grant fresh guesses', async () => {

@@ -1,0 +1,384 @@
+{
+  "plugin": "homebridge-doorbell-telegram-photo",
+  "version": "3.0.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 10,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 8,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "DoorbellTelegramPhoto",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          },
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Chat-Id",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          },
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          },
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 15,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Chat-Id",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          },
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Chat-Id",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "devices": [
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          },
+          {
+            "name": "DoorbellPhotoTelegram",
+            "hostName": "192.168.0.100"
+          }
+        ],
+        "locale": "de-DE",
+        "useFfmpeg": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 0,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Cameras",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Camera",
+        "Camera Name",
+        "Snaphot URL or FFmpeg command",
+        "Id of Bot (without leading 'bot')",
+        "Chat-Ids",
+        "Chat-Id",
+        "Locale",
+        "Use FFmpeg to grab the pciture"
+      ]
+    }
+  ]
+}

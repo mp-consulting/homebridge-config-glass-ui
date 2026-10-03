@@ -1,0 +1,882 @@
+{
+  "plugin": "homebridge-appletv-enhanced",
+  "version": "1.15.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 26,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 12,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 6,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 3,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 0
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 3,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 3,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 3,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 3,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 3,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          },
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 6
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 4
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    },
+    {
+      "data": {
+        "name": "Apple TV Enhanced",
+        "avadaKedavraAppAmount": 15,
+        "disableCharacteristics": false,
+        "disableInputs": false,
+        "disableVolumeControlRemote": false,
+        "absoluteVolumeControl": false,
+        "setTopBox": false,
+        "discover": {
+          "multicast": true
+        },
+        "forceVenvRecreate": false,
+        "logLevel": 0,
+        "deviceSpecificOverrides": [
+          {
+            "overrideMediaTypes": false,
+            "overrideDeviceStates": false,
+            "overrideRemoteKeysAsSwitch": false,
+            "overrideCustomPyatvCommands": false,
+            "overrideAvadaKedavraAppAmount": false,
+            "avadaKedavraAppAmount": 15,
+            "overrideCustomInputURIs": false,
+            "overrideDisableCharacteristics": false,
+            "disableCharacteristics": false,
+            "overrideDisableInputs": false,
+            "disableInputs": false,
+            "overrideDisableVolumeControlRemote": false,
+            "disableVolumeControlRemote": false,
+            "overrideAbsoluteVolumeControl": false,
+            "absoluteVolumeControl": false,
+            "overrideSetTopBox": false,
+            "setTopBox": false
+          }
+        ],
+        "customInputURIs": [
+          "golden"
+        ],
+        "mediaTypes": [
+          "music",
+          "tv",
+          "unknown",
+          "video"
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 41,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 3
+      },
+      "labels": [
+        "Basics",
+        "Device Specific Overrides",
+        "Discovery",
+        "Other"
+      ]
+    }
+  ]
+}

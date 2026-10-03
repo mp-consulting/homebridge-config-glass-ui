@@ -1,0 +1,991 @@
+{
+  "plugin": "homebridge-xiaomi-km81",
+  "version": "2.4.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 7,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: cn"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: airPurifier"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 47,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Xiaomi KM81",
+        "micloud": {
+          "country": "cn",
+          "debug": false
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": false
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": false
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "pollingInterval": 7,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "pollingInterval": 7,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": true,
+            "pollingInterval": 7,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": true,
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": true,
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "buzzerControl": true,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "fan",
+            "putAway": true,
+            "pollingInterval": 7,
+            "deepDebugLog": true,
+            "buzzerControl": true,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 2,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[선풍기/멀티탭] 모델명",
+        "[선풍기] 상세 디버그 로그",
+        "[선풍기] 부저 제어 스위치",
+        "[선풍기] LED 제어 스위치",
+        "[선풍기] 자연풍 모드 스위치",
+        "[선풍기] 수면 모드 스위치",
+        "[선풍기] 좌/우 이동 스위치",
+        "[선풍기] 꺼짐 예약 타이머",
+        "[선풍기] 이온 발생기 제어",
+        "[선풍기] 풍량 단계 스위치",
+        "[선풍기] 회전 각도 버튼 (좌우)",
+        "각도 (°)",
+        "[선풍기] 수직 회전 각도 버튼 (상하)",
+        "수직 각도 (°)",
+        "[선풍기] 회전 각도 전구(슬라이더) 사용",
+        "[선풍기] MiCloud(클라우드) 전용 제어",
+        "[선풍기] 하이브리드 (로컬 우선 + 실패 시 클라우드 자동 전환)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "airPurifier",
+            "putAway": true,
+            "pollingInterval": 7,
+            "showTemperature": false,
+            "showHumidity": false,
+            "showAirQuality": false,
+            "showLED": false,
+            "showBuzzer": false,
+            "showAutoModeSwitch": false,
+            "showSleepModeSwitch": false,
+            "showFavoriteModeSwitch": false,
+            "keepFavoriteMode": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 7,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[공기청정기] 모델",
+        "[공기청정기] 온도 센서 표시",
+        "[공기청정기] 습도 센서 표시",
+        "[공기청정기] 공기질 센서 표시",
+        "[공기청정기] LED 스위치 표시",
+        "[공기청정기] 부저 스위치 표시",
+        "[공기청정기] 자동 모드 스위치 표시",
+        "[공기청정기] 수면 모드 스위치 표시",
+        "[공기청정기] 선호 모드 스위치 표시",
+        "[공기청정기] 항상 선호(Favorite) 모드 유지"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "airPurifier",
+            "putAway": true,
+            "pollingInterval": 7,
+            "showTemperature": false,
+            "showHumidity": false,
+            "showAirQuality": false,
+            "showLED": false,
+            "showBuzzer": false,
+            "showAutoModeSwitch": false,
+            "showSleepModeSwitch": false,
+            "showFavoriteModeSwitch": false,
+            "keepFavoriteMode": false
+          },
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 12,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[공기청정기] 모델",
+        "[공기청정기] 온도 센서 표시",
+        "[공기청정기] 습도 센서 표시",
+        "[공기청정기] 공기질 센서 표시",
+        "[공기청정기] LED 스위치 표시",
+        "[공기청정기] 부저 스위치 표시",
+        "[공기청정기] 자동 모드 스위치 표시",
+        "[공기청정기] 수면 모드 스위치 표시",
+        "[공기청정기] 선호 모드 스위치 표시",
+        "[공기청정기] 항상 선호(Favorite) 모드 유지"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "airPurifier",
+            "putAway": true,
+            "pollingInterval": 7,
+            "showTemperature": false,
+            "showHumidity": false,
+            "showAirQuality": false,
+            "showLED": false,
+            "showBuzzer": false,
+            "showAutoModeSwitch": false,
+            "showSleepModeSwitch": false,
+            "showFavoriteModeSwitch": false,
+            "keepFavoriteMode": false
+          },
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 12,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 4,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[공기청정기] 모델",
+        "[공기청정기] 온도 센서 표시",
+        "[공기청정기] 습도 센서 표시",
+        "[공기청정기] 공기질 센서 표시",
+        "[공기청정기] LED 스위치 표시",
+        "[공기청정기] 부저 스위치 표시",
+        "[공기청정기] 자동 모드 스위치 표시",
+        "[공기청정기] 수면 모드 스위치 표시",
+        "[공기청정기] 선호 모드 스위치 표시",
+        "[공기청정기] 항상 선호(Favorite) 모드 유지"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "airPurifier",
+            "putAway": true,
+            "pollingInterval": 7,
+            "showTemperature": false,
+            "showHumidity": false,
+            "showAirQuality": false,
+            "showLED": false,
+            "showBuzzer": false,
+            "showAutoModeSwitch": false,
+            "showSleepModeSwitch": false,
+            "showFavoriteModeSwitch": false,
+            "keepFavoriteMode": false
+          },
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          },
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 5,
+        "add": 5,
+        "remove": 8
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[공기청정기] 모델",
+        "[공기청정기] 온도 센서 표시",
+        "[공기청정기] 습도 센서 표시",
+        "[공기청정기] 공기질 센서 표시",
+        "[공기청정기] LED 스위치 표시",
+        "[공기청정기] 부저 스위치 표시",
+        "[공기청정기] 자동 모드 스위치 표시",
+        "[공기청정기] 수면 모드 스위치 표시",
+        "[공기청정기] 선호 모드 스위치 표시",
+        "[공기청정기] 항상 선호(Favorite) 모드 유지"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "micloud": {
+          "country": "cn",
+          "debug": true
+        },
+        "devices": [
+          {
+            "deviceType": "airPurifier",
+            "putAway": true,
+            "pollingInterval": 7,
+            "showTemperature": false,
+            "showHumidity": false,
+            "showAirQuality": false,
+            "showLED": false,
+            "showBuzzer": false,
+            "showAutoModeSwitch": false,
+            "showSleepModeSwitch": false,
+            "showFavoriteModeSwitch": false,
+            "keepFavoriteMode": false
+          },
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          },
+          {
+            "deviceType": "fan",
+            "putAway": false,
+            "deepDebugLog": false,
+            "buzzerControl": false,
+            "ledControl": false,
+            "naturalModeControl": false,
+            "sleepModeControl": false,
+            "moveControl": false,
+            "shutdownTimer": false,
+            "ioniserControl": false,
+            "fanLevelControl": false,
+            "angleLightbulb": false,
+            "forceMiCloud": false,
+            "cloudFallback": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 37,
+        "radio": 0,
+        "select": 5,
+        "add": 5,
+        "remove": 7
+      },
+      "labels": [
+        "플랫폼 이름",
+        "MiCloud 기기 등록",
+        "",
+        "장치 종류",
+        "이름",
+        "임시 연결해제",
+        "IP 주소",
+        "토큰",
+        "Device ID (선택)",
+        "폴링 간격 (초)",
+        "[공기청정기] 모델",
+        "[공기청정기] 온도 센서 표시",
+        "[공기청정기] 습도 센서 표시",
+        "[공기청정기] 공기질 센서 표시",
+        "[공기청정기] LED 스위치 표시",
+        "[공기청정기] 부저 스위치 표시",
+        "[공기청정기] 자동 모드 스위치 표시",
+        "[공기청정기] 수면 모드 스위치 표시",
+        "[공기청정기] 선호 모드 스위치 표시",
+        "[공기청정기] 항상 선호(Favorite) 모드 유지"
+      ]
+    }
+  ]
+}

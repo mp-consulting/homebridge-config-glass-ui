@@ -1,0 +1,71 @@
+import type { MatterTileProps } from '@/core/accessories/types/matter/matter-tile'
+
+import { useTranslation } from 'react-i18next'
+
+import { getLightSensorIlluminance } from '@/core/accessories/types/matter/matter-device.utils'
+import { sensorSrText } from '@/core/accessories/types/matter/matter-tile'
+import { formatDecimal } from '@/core/pipes/decimal'
+
+/** The Matter light sensor tile (Angular `MatterLightSensorComponent`). */
+export function MatterLightSensorTile({ service }: MatterTileProps) {
+  const { t } = useTranslation()
+
+  const lux = getLightSensorIlluminance(service)
+  const luxValue = lux < 1 ? formatDecimal(lux, '0.1-1') : formatDecimal(lux, '1.0-0')
+  const srText = sensorSrText(service, t('accessories.core.light_sensor'), `${luxValue} lux`)
+
+  return (
+    <div className="accessory-box">
+      <span className="visually-hidden">
+        {srText}
+      </span>
+      <div className="d-flex flex-column h-100">
+        <div className="accessory-svg" aria-hidden="true">
+          <svg
+            width="32px"
+            height="32px"
+            viewBox="0 0 32 32"
+            xmlns="http://www.w3.org/2000/svg"
+            focusable="false"
+            aria-hidden="true"
+          >
+            {/* outer casing */}
+            <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" strokeWidth="1.2" />
+            {/* sun outline */}
+            <circle cx="16" cy="13.75" r="5" stroke="#ff9800" fill="none" strokeWidth="1.2" strokeOpacity="0.5" />
+            {/* sun rays, top first going clockwise */}
+            <line x1="16" y1="3" x2="16" y2="7" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="23.5" y1="6" x2="20.5" y2="9" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="22.75" y1="13.5" x2="26.75" y2="13.5" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="20.75" y1="18.25" x2="23.75" y2="21.25" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="16" y1="20.5" x2="16" y2="24.5" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="11.25" y1="18.25" x2="8.25" y2="21.25" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="5.25" y1="13.5" x2="9.25" y2="13.5" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            <line x1="8.5" y1="6" x2="11.5" y2="9" stroke="#ff9800" strokeWidth="1.2" strokeOpacity="0.5" />
+            {/* grille horizontal lines */}
+            <line strokeLinecap="round" x1="7" y1="26" x2="25" y2="26" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="7" y1="27.5" x2="25" y2="27.5" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="7" y1="29" x2="25" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            {/* grille vertical lines */}
+            <line strokeLinecap="round" x1="7" y1="26" x2="7" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="9" y1="26" x2="9" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="11" y1="26" x2="11" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="13" y1="26" x2="13" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="15" y1="26" x2="15" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="17" y1="26" x2="17" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="19" y1="26" x2="19" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="21" y1="26" x2="21" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="23" y1="26" x2="23" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+            <line strokeLinecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" strokeWidth="0.5" />
+          </svg>
+        </div>
+        <div className="accessory-label mt-auto" aria-hidden="true">{service.customName || service.serviceName}</div>
+        <div className="accessory-label grey-text" aria-hidden="true">
+          {luxValue}
+          {' '}
+          lux
+        </div>
+      </div>
+    </div>
+  )
+}

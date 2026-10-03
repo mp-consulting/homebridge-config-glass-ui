@@ -1,0 +1,413 @@
+{
+  "plugin": "@jackietreeh0rn/homebridge-blink-security",
+  "version": "2.0.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: auto"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: quiet"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Blink Security",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": false,
+        "enable-alarm-triggering": false,
+        "hide-manual-arm-switch": false,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": false,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": false,
+        "enable-alarm-triggering": false,
+        "hide-manual-arm-switch": false,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": false,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": false,
+        "enable-alarm-triggering": false,
+        "hide-manual-arm-switch": false,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": false,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": true,
+        "enable-alarm-triggering": false,
+        "hide-manual-arm-switch": false,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": false,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": true,
+        "enable-alarm-triggering": true,
+        "hide-manual-arm-switch": false,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": false,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": true,
+        "enable-alarm-triggering": true,
+        "hide-manual-arm-switch": true,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": false,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": true,
+        "enable-alarm-triggering": true,
+        "hide-manual-arm-switch": true,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": true,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": true,
+        "enable-alarm-triggering": true,
+        "hide-manual-arm-switch": true,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": true,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enable-liveview": true,
+        "lv-save": false,
+        "disable-thumbnail-refresh": false,
+        "blink-status-polling-seconds": 10,
+        "enable-startup-diagnostic": false,
+        "enable-audio": false,
+        "local-storage-motion": "auto",
+        "hide-alarm": true,
+        "enable-alarm-triggering": true,
+        "hide-manual-arm-switch": true,
+        "hide-temperature-sensor": false,
+        "hide-enabled-switch": true,
+        "hide-privacy-switch": false,
+        "hide-cameras": false,
+        "hide-doorbells": false,
+        "camera-thumbnail-refresh-seconds": 7,
+        "logging": "quiet"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Authentication",
+        "Email",
+        "Password",
+        "2FA Verification Code",
+        "Features",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

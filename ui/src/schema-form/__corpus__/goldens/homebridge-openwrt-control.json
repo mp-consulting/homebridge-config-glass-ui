@@ -1,0 +1,899 @@
+{
+  "plugin": "homebridge-openwrt-control",
+  "version": "0.4.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 71,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 49,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "wireless": {
+              "radio": {
+                "control": {
+                  "displayType": 0
+                }
+              }
+            },
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 6,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "wireless": {
+              "radio": {
+                "control": {
+                  "displayType": 0
+                }
+              }
+            },
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 7,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "wireless": {
+              "radio": {
+                "control": {
+                  "displayType": 0
+                }
+              }
+            },
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          },
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 13,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "wireless": {
+              "radio": {
+                "control": {
+                  "displayType": 0
+                }
+              }
+            },
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          },
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          },
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 19,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "wireless": {
+              "radio": {
+                "control": {
+                  "displayType": 0
+                }
+              }
+            },
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          },
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          },
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 27,
+        "radio": 0,
+        "select": 18,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "OpenWrt Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": {
+              "enable": true
+            },
+            "displayType": 1,
+            "wireless": {
+              "radio": {
+                "control": {
+                  "displayType": 0
+                }
+              }
+            },
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": false,
+              "success": false,
+              "info": true,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          },
+          {
+            "auth": {
+              "enable": false
+            },
+            "displayType": 0,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false,
+              "haWifiQr": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 13,
+        "add": 3,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Device control",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

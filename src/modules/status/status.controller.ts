@@ -1,9 +1,9 @@
-import { Controller, Get, Inject, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, Request, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
-import { StatusService } from './status.service.js'
+import { serverInfoForUser, StatusService, withoutInstallPath } from './status.service.js'
 
 @ApiTags('Server Status')
 @ApiBearerAuth()
@@ -54,8 +54,9 @@ export class StatusController {
     summary: 'Return an array of the active child bridges and their status.',
   })
   @Get('/homebridge/child-bridges')
-  async getChildBridges() {
-    return this.childBridgesService.getChildBridges()
+  async getChildBridges(@Request() req: any) {
+    // Pairing codes (HomeKit / Matter PIN and setup URI) only for administrators
+    return this.childBridgesService.getChildBridgesForUser(req.user?.admin === true)
   }
 
   @ApiOperation({ summary: 'Return the current Homebridge version and package information.' })
@@ -66,14 +67,16 @@ export class StatusController {
 
   @ApiOperation({ summary: 'Return general information about the host environment.' })
   @Get('/server-information')
-  async getHomebridgeServerInfo() {
-    return this.statusService.getHomebridgeServerInfo()
+  async getHomebridgeServerInfo(@Request() req: any) {
+    // Paths, service user and network details for administrators only
+    return serverInfoForUser(await this.statusService.getHomebridgeServerInfo(), req.user?.admin === true)
   }
 
   @ApiOperation({ summary: 'Return current Node.js version and update availability information.' })
   @Get('/nodejs')
-  async getNodeVersionInfo() {
-    return this.statusService.getNodeVersionInfo()
+  async getNodeVersionInfo(@Request() req: any) {
+    // The install path for administrators only
+    return withoutInstallPath(await this.statusService.getNodeVersionInfo(), req.user?.admin === true)
   }
 
   @ApiOperation({ summary: 'Returns throttled status for Raspberry Pi.' })

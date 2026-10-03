@@ -2,7 +2,6 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 import type { MockInstance } from 'vitest'
 
-import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -21,9 +20,11 @@ import { API_PREFIX } from '../../src/core/api.constants.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { setStaticAssetCacheHeaders } from '../../src/core/static-assets.js'
+import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
+import { PluginMetadataService } from '../../src/modules/plugins/plugin-metadata.service.js'
 import { testStoragePath } from '../storage-path.js'
 import { authorizeWsClient } from '../ws-client.js'
 
@@ -84,7 +85,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
 
     // Isolate plugin discovery to the test plugin path only - resolving the
     // global paths would spawn `npm -g prefix`
-    ;(app.get(PluginsService) as any)._paths = [pluginsPath]
+    ;(app.get(InstalledPluginsService) as any)._paths = [pluginsPath]
 
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>')
@@ -288,8 +289,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const baseSchema = await readJson(baseSchemaPath)
         const maxLengthDomain = `https://${'a'.repeat(244)}.com`
         const overLengthDomain = `https://${'b'.repeat(245)}.com`
-        const pluginsService = app.get(PluginsService)
-        const loggerErrorSpy = vi.spyOn((pluginsService as any).logger, 'error').mockImplementation(() => undefined)
+        const loggerErrorSpy = vi.spyOn((app.get(PluginMetadataService) as any).logger, 'error').mockImplementation(() => undefined)
 
         try {
           await writeJson(baseSchemaPath, {
@@ -734,26 +734,6 @@ describe('PluginsSettingsUiController (e2e)', () => {
     })
   })
 
-  describe('frontend iframe navigation sentinel', () => {
-    it('navigates the iframe directly after ticket issuance instead of silently submitting a hidden form', async () => {
-      // Regression sentinel for the blank custom-UI failure: a form targeted
-      // at the sandboxed iframe could fail without surfacing an Angular or
-      // server error. Keep redemption tied to an observable src navigation.
-      const component = await readFile(resolve(
-        __dirname,
-        '../../ui/src/app/core/plugins/custom-plugins/custom-plugins.component.ts',
-      ), 'utf8')
-
-      expect(component).toMatch(/url\.searchParams\.set\('ticket', ticket\)/)
-      expect(component).toContain('iframe.src = url.toString()')
-      expect(component).not.toContain('form.submit()')
-      expect(component).toContain('e.source === this.iframe?.contentWindow')
-      expect(component).toContain('await this.revokeAssetSession()')
-      expect(component).toMatch(/this\.basePath\}\/session\/revoke/)
-      expect(component).toMatch(/ngOnDestroy\(\): void \{[\s\S]*void this\.revokeAssetSession\(\)/)
-    })
-  })
-
   describe('PluginsSettingsUiService', () => {
     let pluginsSettingsUiService: PluginsSettingsUiService
 
@@ -907,8 +887,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const { Reflector } = await import('@nestjs/core')
       const reflector = new Reflector()
       const guards = reflector.get<any[]>('__guards__', PluginsSettingsUiGateway)
-      expect(guards, 'no guards applied to PluginsSettingsUiGateway').toBeDefined()
-      expect(guards.includes(WsAdminGuard)).toBe(true)
+      expect(guards, 'no guards applied to PluginsSettingsUiGateway').toEqual([WsAdminGuard])
     })
   })
 
@@ -1179,6 +1158,50 @@ process.on('message', (request) => {
 
         client.emit('end')
       })
+    })
+  })
+
+  describe('ticket and asset session lifetimes', () => {
+    let tickets: PluginsSettingsUiTicketService
+
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      tickets = new PluginsSettingsUiTicketService()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('refuses a ticket redeemed after its minute is up', () => {
+      const ticket = tickets.issue('homebridge-example', 'admin')
+
+      vi.advanceTimersByTime(61_000)
+
+      expect(() => tickets.consume(ticket, 'homebridge-example')).toThrow()
+    })
+
+    it('redeems a ticket within its minute', () => {
+      const ticket = tickets.issue('homebridge-example', 'admin')
+
+      vi.advanceTimersByTime(59_000)
+
+      expect(tickets.consume(ticket, 'homebridge-example')).toMatchObject({ pluginName: 'homebridge-example', username: 'admin' })
+    })
+
+    it('keeps an asset session alive while it is used, and drops it once idle', () => {
+      const ttl = PluginsSettingsUiTicketService.assetSessionTtl * 1000
+      const token = tickets.issueAssetSession('homebridge-example', 'admin', '')
+
+      vi.advanceTimersByTime(ttl - 1000)
+      expect(tickets.validateAssetSession(token, 'homebridge-example').username).toBe('admin')
+
+      // The use above restarted the clock
+      vi.advanceTimersByTime(ttl - 1000)
+      expect(tickets.validateAssetSession(token, 'homebridge-example').username).toBe('admin')
+
+      vi.advanceTimersByTime(ttl + 1000)
+      expect(() => tickets.validateAssetSession(token, 'homebridge-example')).toThrow()
     })
   })
 

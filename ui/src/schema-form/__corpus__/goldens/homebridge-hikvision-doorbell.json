@@ -1,0 +1,813 @@
+{
+  "plugin": "homebridge-hikvision-doorbell",
+  "version": "0.1.10",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 9,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: tcp"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: none"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 27,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Hikvision DS-KB8112IM",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 101,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 101,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": true,
+            "twoWayAudio": false,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": false,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": true,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": true,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": true,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": true,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          },
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": true,
+            "audio": true,
+            "twoWayAudio": false,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": false,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 101,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 25,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 12,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "cameras": [
+          {
+            "model": "DS-KB8112-IM",
+            "username": "admin",
+            "rtspTransport": "tcp",
+            "doorbellService": false,
+            "audio": false,
+            "twoWayAudio": true,
+            "talkbackTransport": "none",
+            "privatePort": 8000,
+            "hsv": true,
+            "doorbellTriggersHsv": true,
+            "doorbellHsvDurationMs": 60000,
+            "hsvRtspChannel": 7,
+            "localHttpApi": false,
+            "localHttpHost": "0.0.0.0",
+            "localHttpPort": 8781,
+            "ffmpeg": "ffmpeg"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Plugin Name",
+        "Cameras",
+        "Camera",
+        "Name",
+        "Stable Accessory ID",
+        "Model",
+        "Doorbell IP Address",
+        "Device Username",
+        "Device Password",
+        "RTSP URL",
+        "RTSP Transport",
+        "Doorbell Service",
+        "Enable Audio",
+        "Two-Way Audio",
+        "Talkback Transport",
+        "Hikvision Private Protocol Port",
+        "HomeKit Secure Video",
+        "Record Doorbell Rings",
+        "Doorbell Recording Window (ms)",
+        "HKSV RTSP URL",
+        "HKSV RTSP Channel",
+        "HKSV RTSP Path",
+        "Local HTTP API",
+        "Local HTTP Host",
+        "Local HTTP Port",
+        "Local HTTP API Token",
+        "FFmpeg Path"
+      ]
+    }
+  ]
+}

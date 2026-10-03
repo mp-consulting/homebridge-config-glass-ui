@@ -1,0 +1,7 @@
+// Shared by the container and host restart pages (each Angular component had
+// its own copy of this rule, the same as the Homebridge restart page's).
+.restart-progress-box {
+  font-size: 22px;
+  font-weight: 300;
+  margin-top: 15px;
+}

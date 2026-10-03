@@ -1,0 +1,7 @@
+// Scoped to the modal's root (Angular scoped it to the component)
+.setup2fa {
+  .qrcode-size {
+    width: 175px;
+    height: 175px;
+  }
+}

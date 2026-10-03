@@ -1,0 +1,964 @@
+{
+  "plugin": "@homebridge-plugins/homebridge-tuya",
+  "version": "2.7.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 2"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: tuyaSmart"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 5,
+      "list": 33,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": false,
+              "addExtraFeaturesAutomatically": false,
+              "schema": [
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": false,
+              "addExtraFeaturesAutomatically": false,
+              "schema": [
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": false,
+              "addExtraFeaturesAutomatically": false,
+              "schema": [
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": false,
+              "schema": [
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 5
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 6
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                },
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 7
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                },
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "unbridged": false,
+              "addExtraFeaturesAutomatically": false,
+              "schema": [
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 23,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 2,
+        "add": 6,
+        "remove": 9
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tuya",
+        "options": {
+          "projectType": "2",
+          "endpoint": "golden",
+          "countryCode": 7,
+          "appSchema": "tuyaSmart",
+          "deviceOverrides": [
+            {
+              "unbridged": true,
+              "addExtraFeaturesAutomatically": true,
+              "schema": [
+                {
+                  "hidden": true,
+                  "extra": true,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                },
+                {
+                  "hidden": false,
+                  "extra": false,
+                  "extraRawSwitch": [
+                    {
+                      "notation": "base64",
+                      "byteIndex": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "serviceInformationOverrides": [
+            {
+              "index": "1"
+            }
+          ],
+          "generateWeatherAccessory": false,
+          "weatherAPI": "Open-Meteo",
+          "debug": false,
+          "forceIPv4": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 2,
+        "add": 5,
+        "remove": 7
+      },
+      "labels": [
+        "Tuya Account Info",
+        "Tuya Home Settings",
+        "Tuya Device Settings",
+        "null",
+        "ID",
+        "Category",
+        "Unbridge",
+        "Add Extra Features Automatically",
+        "undefined",
+        "",
+        "DP Code",
+        "Hidden",
+        "Extra",
+        "Accessory Service Informations",
+        "Advance Settings"
+      ]
+    }
+  ]
+}

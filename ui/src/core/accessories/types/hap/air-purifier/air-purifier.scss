@@ -1,0 +1,26 @@
+.hb-air-purifier.purifying {
+  svg {
+    .air-wave {
+      animation: hb-air-purifier-wave-motion 5s ease-in-out infinite;
+      stroke: #1976d2;
+      stroke-opacity: 0.5;
+    }
+
+    .bottom-line {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes hb-air-purifier-wave-motion {
+      0%,
+      100% {
+        transform: translateY(0px);
+        stroke-opacity: 0.5;
+      }
+
+      50% {
+        transform: translateY(2px);
+        stroke-opacity: 1;
+      }
+    }
+  }
+}

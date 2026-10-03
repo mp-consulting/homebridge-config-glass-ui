@@ -1,0 +1,212 @@
+{
+  "plugin": "homebridge-dummy",
+  "version": "2.1.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: CarbonMonoxideSensor"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: TIMEOUT"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 35,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Homebridge Dummy",
+        "accessories": [
+          {
+            "protocol": "HomeKit"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Homebridge Dummy",
+        "accessories": [
+          {
+            "name": "golden",
+            "protocol": "HomeKit"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Homebridge Dummy",
+        "accessories": [
+          {
+            "name": "golden",
+            "type": "CarbonMonoxideSensor",
+            "protocol": "HomeKit",
+            "resetOnRestart": false,
+            "enableWebhook": false,
+            "disableLogging": false
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Homebridge Dummy",
+        "accessories": [
+          {
+            "name": "golden",
+            "type": "CarbonMonoxideSensor",
+            "protocol": "HomeKit",
+            "schedule": {
+              "type": "TIMEOUT"
+            },
+            "resetOnRestart": false,
+            "enableWebhook": false,
+            "disableLogging": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Homebridge Dummy",
+        "accessories": [
+          {
+            "name": "golden",
+            "type": "CarbonMonoxideSensor",
+            "protocol": "HomeKit",
+            "schedule": {
+              "type": "TIMEOUT"
+            },
+            "resetOnRestart": false,
+            "enableWebhook": false,
+            "disableLogging": false
+          },
+          {
+            "protocol": "HomeKit"
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 6,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Accessory",
+        "Accessory"
+      ]
+    },
+    {
+      "data": {
+        "name": "Homebridge Dummy",
+        "accessories": [
+          {
+            "name": "golden",
+            "type": "CarbonMonoxideSensor",
+            "protocol": "HomeKit",
+            "schedule": {
+              "type": "TIMEOUT"
+            },
+            "resetOnRestart": false,
+            "enableWebhook": false,
+            "disableLogging": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Accessory"
+      ]
+    }
+  ]
+}

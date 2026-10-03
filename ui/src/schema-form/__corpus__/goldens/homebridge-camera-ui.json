@@ -1,0 +1,697 @@
+{
+  "plugin": "homebridge-camera-ui",
+  "version": "5.0.27",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 1,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 0,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: info"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 12,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 8081,
+        "logLevel": "info",
+        "mqtt": {
+          "active": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": false
+        },
+        "cameras": [
+          {
+            "disable": false,
+            "excludeSwitch": false,
+            "privacySwitch": false,
+            "motion": true,
+            "doorbell": false,
+            "switches": false,
+            "useInterfaceTimer": false,
+            "unbridge": true,
+            "hsv": true,
+            "prebuffering": true,
+            "forcePrebuffering": false,
+            "prebufferLength": 4,
+            "hksvConfig": {
+              "audio": false
+            },
+            "videoConfig": {
+              "readRate": false,
+              "forceMax": false,
+              "vcodec": "copy",
+              "acodec": "libfdk_aac",
+              "audio": false,
+              "debug": false,
+              "debugReturn": false
+            },
+            "videoanalysis": {
+              "active": true
+            }
+          }
+        ],
+        "atHomeSwitch": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 8081,
+        "logLevel": "info",
+        "mqtt": {
+          "active": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": false
+        },
+        "cameras": [
+          {
+            "disable": false,
+            "name": "golden",
+            "excludeSwitch": false,
+            "privacySwitch": false,
+            "motion": true,
+            "doorbell": false,
+            "switches": false,
+            "useInterfaceTimer": false,
+            "unbridge": true,
+            "hsv": true,
+            "prebuffering": true,
+            "forcePrebuffering": false,
+            "prebufferLength": 4,
+            "hksvConfig": {
+              "audio": false
+            },
+            "videoConfig": {
+              "readRate": false,
+              "forceMax": false,
+              "vcodec": "copy",
+              "acodec": "libfdk_aac",
+              "audio": false,
+              "debug": false,
+              "debugReturn": false
+            },
+            "videoanalysis": {
+              "active": true
+            }
+          }
+        ],
+        "atHomeSwitch": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": false
+        },
+        "cameras": [
+          {
+            "disable": false,
+            "name": "golden",
+            "excludeSwitch": false,
+            "privacySwitch": false,
+            "motion": true,
+            "doorbell": false,
+            "switches": false,
+            "useInterfaceTimer": false,
+            "unbridge": true,
+            "hsv": true,
+            "prebuffering": true,
+            "forcePrebuffering": false,
+            "prebufferLength": 4,
+            "hksvConfig": {
+              "audio": false
+            },
+            "videoConfig": {
+              "readRate": false,
+              "forceMax": false,
+              "vcodec": "copy",
+              "acodec": "libfdk_aac",
+              "audio": false,
+              "debug": false,
+              "debugReturn": false
+            },
+            "videoanalysis": {
+              "active": true
+            }
+          }
+        ],
+        "atHomeSwitch": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": false
+        },
+        "cameras": [
+          {
+            "disable": false,
+            "name": "golden",
+            "excludeSwitch": false,
+            "privacySwitch": false,
+            "motion": true,
+            "doorbell": false,
+            "switches": false,
+            "useInterfaceTimer": false,
+            "unbridge": true,
+            "hsv": true,
+            "prebuffering": true,
+            "forcePrebuffering": false,
+            "prebufferLength": 4,
+            "hksvConfig": {
+              "audio": false
+            },
+            "videoConfig": {
+              "readRate": false,
+              "forceMax": false,
+              "vcodec": "copy",
+              "acodec": "libfdk_aac",
+              "audio": false,
+              "debug": false,
+              "debugReturn": false
+            },
+            "videoanalysis": {
+              "active": true
+            }
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": true
+        },
+        "cameras": [
+          {
+            "disable": false,
+            "name": "golden",
+            "excludeSwitch": false,
+            "privacySwitch": false,
+            "motion": true,
+            "doorbell": false,
+            "switches": false,
+            "useInterfaceTimer": false,
+            "unbridge": true,
+            "hsv": true,
+            "prebuffering": true,
+            "forcePrebuffering": false,
+            "prebufferLength": 4,
+            "hksvConfig": {
+              "audio": false
+            },
+            "videoConfig": {
+              "readRate": false,
+              "forceMax": false,
+              "vcodec": "copy",
+              "acodec": "libfdk_aac",
+              "audio": false,
+              "debug": false,
+              "debugReturn": false
+            },
+            "videoanalysis": {
+              "active": true
+            }
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": true
+        },
+        "cameras": [
+          {
+            "disable": true
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 3,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 7,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": true,
+          "tls": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": true
+        },
+        "cameras": [
+          {
+            "disable": true
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": true,
+          "tls": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": true
+        },
+        "cameras": [
+          {
+            "disable": true
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": true,
+          "tls": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": true
+        },
+        "cameras": [
+          {
+            "disable": true
+          },
+          {
+            "disable": false,
+            "excludeSwitch": false,
+            "privacySwitch": false,
+            "motion": true,
+            "doorbell": false,
+            "switches": false,
+            "useInterfaceTimer": false,
+            "unbridge": true,
+            "hsv": true,
+            "prebuffering": true,
+            "forcePrebuffering": false,
+            "prebufferLength": 4,
+            "hksvConfig": {
+              "audio": false
+            },
+            "videoConfig": {
+              "readRate": false,
+              "forceMax": false,
+              "vcodec": "copy",
+              "acodec": "libfdk_aac",
+              "audio": false,
+              "debug": false,
+              "debugReturn": false
+            },
+            "videoanalysis": {
+              "active": true
+            }
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 30,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 26,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    },
+    {
+      "data": {
+        "name": "CameraUI",
+        "port": 7,
+        "logLevel": "info",
+        "mqtt": {
+          "active": true,
+          "tls": false
+        },
+        "http": {
+          "active": false
+        },
+        "smtp": {
+          "active": false
+        },
+        "ftp": {
+          "active": false
+        },
+        "ssl": {
+          "active": true
+        },
+        "cameras": [
+          {
+            "disable": true
+          }
+        ],
+        "atHomeSwitch": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Cameras",
+        "Options",
+        "MQTT Server",
+        "HTTP Server",
+        "SMTP Server",
+        "FTP Server"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1154 @@
+{
+  "plugin": "homebridge-thermo-reset",
+  "version": "0.4.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 47,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 35,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 20,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Thermo Reset",
+        "enabled": true,
+        "dryRun": false,
+        "exposeStatusAccessories": true,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": false,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": true,
+        "dryRun": false,
+        "exposeStatusAccessories": true,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": false,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": true,
+        "dryRun": false,
+        "exposeStatusAccessories": true,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": false,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": false,
+        "exposeStatusAccessories": true,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": false,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": true,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": false,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": false,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          },
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 18,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          },
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 18,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              },
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          },
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 24,
+        "number": 18,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          },
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 18,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          },
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 18,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 10,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enabled": false,
+        "dryRun": true,
+        "exposeStatusAccessories": false,
+        "rooms": [
+          {
+            "enabled": true,
+            "sensors": [
+              {
+                "invert": false
+              }
+            ]
+          }
+        ],
+        "exposeTestTiles": true,
+        "matterDevices": [
+          {
+            "unpair": false
+          }
+        ],
+        "debugLogging": false,
+        "matterLogging": false,
+        "openDelaySeconds": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 17,
+        "number": 17,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "General",
+        "Name",
+        "Active (master switch)",
+        "Dry run",
+        "Show status tiles in the Home app",
+        "Show test switches (setup only)",
+        "Timing",
+        "Pause after open for (s)",
+        "Restore after closed for (s)",
+        "Give up restoring after (min)",
+        "Restore heating anyway when the window state is unknown for (min, 0 = never)",
+        "Names in the Home app",
+        "Master switch",
+        "Master switch while Dry run is on",
+        "Problem sensor",
+        "Test switches: first word",
+        "Matter devices",
+        "",
+        "Id",
+        "Unpair on next start",
+        "Rooms",
+        "",
+        "Id",
+        "Name",
+        "Name of this room's 'heating paused' tile",
+        "Enabled",
+        "Thermostats",
+        "",
+        "Device id",
+        "Which thermostat behind a bridge",
+        "Endpoint",
+        "Window and door sensors",
+        "",
+        "Id",
+        "Name (for the log)",
+        "Device id",
+        "Which sensor behind the hub",
+        "Invert (open reads as closed)",
+        "Room timing (optional)",
+        "Advanced"
+      ]
+    }
+  ]
+}

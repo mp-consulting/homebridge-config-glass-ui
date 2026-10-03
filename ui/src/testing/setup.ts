@@ -1,34 +1,27 @@
-import { beforeEach } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import { afterEach, beforeEach } from 'vitest'
 
-import { setStoredToken } from '@/app/core/auth/token-store'
+import { setStoredToken } from '@/core/auth/token-store'
+import { resetModals } from '@/core/ui/modal'
+import { installBrowserStubs, resetBrowserStubs } from '@/testing/fakes/browser.fake'
 
-import { installBrowserStubs, resetBrowserStubs } from './fakes/browser.fake'
-
-// `globalThis.backup` and `globalThis.terminal` are read in field
-// initialisers by the settings, backup, restore, wallpaper and setup-wizard
-// components, so without this a spec for any of them throws while the
-// component is being constructed. main.ts imports the same module for the
-// real app.
-import '../../../src/global-defaults'
+import '@testing-library/jest-dom/vitest'
+import '../../../src/global-defaults.ts'
+// Specs see translation keys, as the Angular specs did (see testing/i18n.ts)
+import '@/testing/i18n'
 
 installBrowserStubs()
 
 beforeEach(() => {
-  window.localStorage.clear()
-  window.sessionStorage.clear()
-
-  // Module-level state, not a service: a token left behind by one test is
-  // still there for the next one.
-  //
-  // ⚠️ Cleared through the hook `@/testing` publishes, not by calling the
-  // import directly - this file holds a different copy of `token-store` from
-  // the one the specs and the app share, so clearing its own copy did nothing.
+  localStorage.clear()
+  sessionStorage.clear()
   setStoredToken(null)
-  ;((globalThis as any).__resetTokenStore as (() => void) | undefined)?.()
-
-  // The theme, terminal and accessory pages all add classes to the body
   document.body.className = ''
   document.body.removeAttribute('style')
-
   resetBrowserStubs()
+})
+
+afterEach(() => {
+  cleanup()
+  resetModals()
 })

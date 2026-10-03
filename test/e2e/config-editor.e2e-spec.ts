@@ -29,9 +29,10 @@ import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
+import { ConfigBackupService } from '../../src/modules/config-editor/config-backup.service.js'
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 describe('ConfigEditorController (e2e)', () => {
@@ -46,6 +47,7 @@ describe('ConfigEditorController (e2e)', () => {
 
   let schedulerService: SchedulerService
   let configEditorService: ConfigEditorService
+  let configBackupService: ConfigBackupService
   let backupService: BackupService
   let homebridgeConfigService: ConfigService
   let originalHomebridgeVersion: string
@@ -89,16 +91,18 @@ describe('ConfigEditorController (e2e)', () => {
 
     schedulerService = app.get(SchedulerService)
     configEditorService = app.get(ConfigEditorService)
+    configBackupService = app.get(ConfigBackupService)
     backupService = app.get(BackupService)
     homebridgeConfigService = app.get(ConfigService)
     originalHomebridgeVersion = homebridgeConfigService.homebridgeVersion
 
     // Isolate plugin discovery to the test plugin path only - resolving the
     // global paths would spawn `npm -g prefix`
-    ;(app.get(PluginsService, { strict: false }) as any)._paths = [pluginsPath]
+    ;(app.get(InstalledPluginsService, { strict: false }) as any)._paths = [pluginsPath]
 
-    // Wait for initial paths to be setup
-    await new Promise(res => setTimeout(res, 1000))
+    // app.init() already ran onApplicationBootstrap (the backup migration);
+    // this resolves once that start-up work is done
+    await configBackupService.ready
   })
 
   beforeEach(async () => {
@@ -155,7 +159,7 @@ describe('ConfigEditorController (e2e)', () => {
     expect(backupsBeforeCleanup).toHaveLength(11)
 
     // Run cleanup job
-    await configEditorService.cleanupConfigBackups()
+    await configBackupService.cleanupConfigBackups()
 
     // There should only be 5 backups on disk now
     const backupsAfterJob = await readdir(backupFilePath)
@@ -1123,10 +1127,8 @@ describe('ConfigEditorController (e2e)', () => {
       },
     })
 
-    // There is a race condition here whereby we might read the backup file
-    // Path before the deletion has actually happened, causing the test to fail,
-    // So I have added a 1-second delay.
-    await new Promise(r => setTimeout(r, 1000))
+    // The controller returns the deletion promise, so the files are gone by
+    // the time the response arrives
 
     const backups = await readdir(backupFilePath)
     const newBackupCount = backups.length
@@ -1248,6 +1250,144 @@ describe('ConfigEditorController (e2e)', () => {
       } finally {
         spy.mockRestore()
       }
+    })
+  })
+
+  describe('command-like ui values (log command / log path)', () => {
+    let originalTerminal: boolean
+
+    beforeAll(() => {
+      originalTerminal = homebridgeConfigService.enableTerminalAccess
+    })
+
+    afterAll(() => {
+      homebridgeConfigService.enableTerminalAccess = originalTerminal
+    })
+
+    beforeEach(() => {
+      homebridgeConfigService.enableTerminalAccess = false
+    })
+
+    it('PATCH refuses a custom log command that is not on the allowlist when the terminal is disabled', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { 'log.method': 'custom', 'log.command': 'bash -c id' },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('log.command')
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.log?.command).toBeUndefined()
+    })
+
+    it('PATCH accepts an allowlisted log command with the terminal disabled', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { 'log.method': 'custom', 'log.command': 'sudo -n tail -n 100 -f /var/log/homebridge.log' },
+      })
+
+      expect(res.statusCode).toBe(200)
+    })
+
+    it('PATCH accepts any log command when terminal access is enabled', async () => {
+      homebridgeConfigService.enableTerminalAccess = true
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { 'log.method': 'custom', 'log.command': 'my-log-viewer --follow' },
+      })
+
+      expect(res.statusCode).toBe(200)
+    })
+
+    it('POST /config-editor (full save) refuses an unsafe log command and a log path with control characters', async () => {
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.log = { method: 'custom', command: 'node -e process.exit()' }
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('log.command')
+
+      uiBlock.log = { method: 'file', path: 'C:\\homebridge.log\n; calc' }
+      const res2 = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res2.statusCode).toBe(400)
+      expect(res2.body).toContain('log.path')
+    })
+
+    it('PATCH refuses a log path that points at the secrets in the storage directory', async () => {
+      for (const path of [resolve(process.env.UIX_STORAGE_PATH, 'auth.json'), resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')]) {
+        const res = await app.inject({
+          method: 'PATCH',
+          url: '/config-editor/ui',
+          headers: { authorization },
+          payload: { 'log.method': 'file', 'log.path': path },
+        })
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toContain('log.path')
+      }
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(String(uiBlock.log?.path)).not.toContain('auth.json')
+    })
+
+    it('PATCH and full save refuse a wallpaper that is not an uploaded wallpaper file', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { wallpaper: '../auth.json' },
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('wallpaper')
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.wallpaper = '.uix-secrets'
+      const res2 = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res2.statusCode).toBe(400)
+      expect(res2.body).toContain('wallpaper')
+
+      const ok = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { wallpaper: 'ui-wallpaper.jpg' },
+      })
+      expect(ok.statusCode).toBe(200)
+    })
+
+    it('PUT /config-editor/ui refuses an unsafe linux.shutdown command', async () => {
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { key: 'linux.shutdown', value: 'shutdown -h now && curl evil' },
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('linux.shutdown')
     })
   })
 

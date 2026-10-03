@@ -1,0 +1,155 @@
+{
+  "plugin": "homebridge-nibe-s1156",
+  "version": "3.0.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: pl"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "language": "en",
+        "showApiResponse": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Nibe API Credentials",
+        "Client Identifier",
+        "Client Secret",
+        "Locale",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "language": "en",
+        "showApiResponse": false,
+        "identifier": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Nibe API Credentials",
+        "Client Identifier",
+        "Client Secret",
+        "Locale",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "language": "en",
+        "showApiResponse": false,
+        "identifier": "golden",
+        "pollingPeriod": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Nibe API Credentials",
+        "Client Identifier",
+        "Client Secret",
+        "Locale",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "language": "en",
+        "showApiResponse": true,
+        "identifier": "golden",
+        "pollingPeriod": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Nibe API Credentials",
+        "Client Identifier",
+        "Client Secret",
+        "Locale",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "language": "pl",
+        "showApiResponse": true,
+        "identifier": "golden",
+        "pollingPeriod": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 2,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Nibe API Credentials",
+        "Client Identifier",
+        "Client Secret",
+        "Locale",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

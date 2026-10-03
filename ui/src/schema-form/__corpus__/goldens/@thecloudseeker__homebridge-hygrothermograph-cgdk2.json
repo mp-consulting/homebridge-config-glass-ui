@@ -1,0 +1,627 @@
+{
+  "plugin": "@thecloudseeker/homebridge-hygrothermograph-cgdk2",
+  "version": "5.8.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 28,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 4,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "autoDiscovery": true,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": false,
+            "disableBatteryLevel": false,
+            "logSignalStrength": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": true,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": false,
+            "disableBatteryLevel": false,
+            "logSignalStrength": false
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": true,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": false,
+            "timeout": 7,
+            "disableBatteryLevel": false,
+            "logSignalStrength": false
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": false,
+            "timeout": 7,
+            "disableBatteryLevel": false,
+            "logSignalStrength": false
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": false,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": false
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": false,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": true
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": true,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": true
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": true,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": true
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": true,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": true
+          },
+          {
+            "fakeGatoEnabled": false,
+            "disableBatteryLevel": false,
+            "logSignalStrength": false
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 33,
+        "number": 16,
+        "textarea": 0,
+        "checkbox": 11,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": true,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": true
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    },
+    {
+      "data": {
+        "autoDiscovery": false,
+        "timeout": 15,
+        "forceDiscovering": true,
+        "forceDiscoveringDelay": 2.5,
+        "disableBatteryLevel": false,
+        "lowBattery": 10,
+        "logSignalStrength": false,
+        "temperatureOffset": 0,
+        "humidityOffset": 0,
+        "fakeGatoEnabled": false,
+        "sensors": [
+          {
+            "fakeGatoEnabled": true,
+            "timeout": 7,
+            "disableBatteryLevel": true,
+            "logSignalStrength": true
+          }
+        ],
+        "ignoredAddresses": [
+          "golden"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 11,
+        "textarea": 0,
+        "checkbox": 8,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Auto-Discovery",
+        "Ignored / Per-Sensor Overrides",
+        "Defaults for every discovered sensor",
+        "Timeout (minutes)",
+        "Enable Force Discovering",
+        "Force Discovering Interval (seconds)",
+        "Update Interval (seconds)",
+        "Disable Battery Level",
+        "Low Battery Threshold",
+        "Log Signal Strength (RSSI)",
+        "Offset - Temperature",
+        "Offset - Humidity",
+        "FakeGato",
+        "MQTT"
+      ]
+    }
+  ]
+}

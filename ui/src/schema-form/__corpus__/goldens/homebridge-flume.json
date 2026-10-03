@@ -1,0 +1,431 @@
+{
+  "plugin": "homebridge-flume",
+  "version": "3.1.25",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: ContactSensor"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: LITERS"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 12,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 2,
+        "sensorType": "LeakSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": false,
+        "useNotifications": false,
+        "verbose": false
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 2,
+        "sensorType": "LeakSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": false,
+        "useNotifications": false,
+        "verbose": false,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "LeakSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": false,
+        "useNotifications": false,
+        "verbose": false,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "LeakSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": false,
+        "useNotifications": true,
+        "verbose": false,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "LeakSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": true,
+        "useNotifications": true,
+        "verbose": false,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "LeakSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": true,
+        "useNotifications": true,
+        "verbose": true,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "ContactSensor",
+        "units": "GALLONS",
+        "disableDeviceLogging": true,
+        "useNotifications": true,
+        "verbose": true,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "ContactSensor",
+        "units": "LITERS",
+        "disableDeviceLogging": true,
+        "useNotifications": true,
+        "verbose": true,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "ContactSensor",
+        "units": "LITERS",
+        "disableDeviceLogging": true,
+        "useNotifications": true,
+        "verbose": true,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID",
+        "Device ID"
+      ]
+    },
+    {
+      "data": {
+        "name": "Flume",
+        "refreshInterval": 7,
+        "sensorType": "ContactSensor",
+        "units": "LITERS",
+        "disableDeviceLogging": true,
+        "useNotifications": true,
+        "verbose": true,
+        "username": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Flume Username",
+        "Flume Password",
+        "Client ID",
+        "Client Secret",
+        "Refresh Interval",
+        "Use Unread Usage Notifications",
+        "Sensor Type",
+        "Units",
+        "Disable Device Logging",
+        "Verbose",
+        "Exclude Devices",
+        "Device ID"
+      ]
+    }
+  ]
+}

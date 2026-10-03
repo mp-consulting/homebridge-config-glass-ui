@@ -1,0 +1,245 @@
+{
+  "plugin": "homebridge-homeworks-alt",
+  "version": "1.2.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: shade"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 9,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "apiPort": 23,
+        "devices": [
+          {
+            "deviceType": "light",
+            "isDimmable": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Processor address",
+        "Telnet port",
+        "Login",
+        "Password",
+        "Devices",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type",
+        "Dimmable"
+      ]
+    },
+    {
+      "data": {
+        "apiPort": 23,
+        "devices": [
+          {
+            "deviceType": "light",
+            "isDimmable": false
+          }
+        ],
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Processor address",
+        "Telnet port",
+        "Login",
+        "Password",
+        "Devices",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type",
+        "Dimmable"
+      ]
+    },
+    {
+      "data": {
+        "apiPort": 23,
+        "devices": [
+          {
+            "deviceType": "light",
+            "isDimmable": true
+          }
+        ],
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Processor address",
+        "Telnet port",
+        "Login",
+        "Password",
+        "Devices",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type",
+        "Dimmable"
+      ]
+    },
+    {
+      "data": {
+        "apiPort": 23,
+        "devices": [
+          {
+            "deviceType": "shade"
+          }
+        ],
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Processor address",
+        "Telnet port",
+        "Login",
+        "Password",
+        "Devices",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type"
+      ]
+    },
+    {
+      "data": {
+        "apiPort": 23,
+        "devices": [
+          {
+            "deviceType": "shade"
+          },
+          {
+            "deviceType": "light",
+            "isDimmable": false
+          }
+        ],
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 1,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Processor address",
+        "Telnet port",
+        "Login",
+        "Password",
+        "Devices",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type",
+        "Dimmable"
+      ]
+    },
+    {
+      "data": {
+        "apiPort": 23,
+        "devices": [
+          {
+            "deviceType": "shade"
+          }
+        ],
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Processor address",
+        "Telnet port",
+        "Login",
+        "Password",
+        "Devices",
+        "",
+        "Name",
+        "Integration ID",
+        "Device type"
+      ]
+    }
+  ]
+}

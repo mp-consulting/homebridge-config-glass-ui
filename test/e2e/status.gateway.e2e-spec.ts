@@ -8,6 +8,7 @@ import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, pathExists, readFile, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
@@ -105,8 +106,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return layout from cache after being set', async () => {
       // The layout was set in the previous test and cached in memory
       const result = await statusGateway.getDashboardLayout()
-      expect(result).toBeDefined()
-      expect(Array.isArray(result)).toBe(true)
+      expect(result).toEqual([{ widget: 'cpu', order: 1 }, { widget: 'memory', order: 2 }])
     })
   })
 
@@ -214,7 +214,7 @@ describe('StatusGateway (e2e)', () => {
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(response) as any)
 
-      const result = await statusGateway.nodeVersionCheck()
+      const result = await statusGateway.nodeVersionCheck(authorizeWsClient({}))
       expect(result).toHaveProperty('currentVersion')
       expect(result).toHaveProperty('latestVersion')
       expect(result).toHaveProperty('updateAvailable')
@@ -224,7 +224,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return WsException when nodejs version check fails', async () => {
       vi.spyOn(statusService, 'getNodeVersionInfo').mockRejectedValue(new Error('node error'))
 
-      const result = await statusGateway.nodeVersionCheck()
+      const result = await statusGateway.nodeVersionCheck(authorizeWsClient({}))
       expect((result as any).message).toBe('node error')
     })
 
@@ -296,7 +296,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return all version fields on happy path', async () => {
       mockAllForHappyPath()
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.serverInfo).toEqual(mockServerInfo)
       expect(result.node).toEqual(mockNode)
       expect(result.homebridge).toEqual(mockHomebridge)
@@ -316,7 +316,7 @@ describe('StatusGateway (e2e)', () => {
       vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
       vi.spyOn(statusService, 'getDockerDetails').mockResolvedValue(mockDocker as any)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.docker).toEqual(mockDocker)
     })
 
@@ -328,7 +328,7 @@ describe('StatusGateway (e2e)', () => {
       vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockRejectedValue(new Error('outdated down'))
       vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.node).toBeNull()
       expect(result.homebridgeUi).toBeNull()
       expect(result.outOfDatePlugins).toEqual([])
@@ -349,7 +349,7 @@ describe('StatusGateway (e2e)', () => {
         { name: 'homebridge-bar', engines: { homebridge: '^1.6.0' } },
       ] as any)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.hbV2Ready).toBe(false)
     })
 
@@ -365,21 +365,21 @@ describe('StatusGateway (e2e)', () => {
         { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
       ] as any)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.hbV2Ready).toBe(true)
     })
 
     it('should return WsException when the aggregator itself throws', async () => {
       vi.spyOn(statusService, 'getVersionOverview').mockRejectedValue(new Error('overview error'))
 
-      const result = await statusGateway.getVersionOverview()
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({}))
       expect((result as any).message).toBe('overview error')
     })
   })
 
   describe('Server Info', () => {
     it('should return homebridge server info', async () => {
-      const result = await statusGateway.getHomebridgeServerInfo()
+      const result = await statusGateway.getHomebridgeServerInfo(authorizeWsClient({}))
       expect(result).toHaveProperty('serviceUser')
       expect(result).toHaveProperty('homebridgeStoragePath')
       expect(result).toHaveProperty('nodeVersion')
@@ -388,10 +388,80 @@ describe('StatusGateway (e2e)', () => {
       expect(result).toHaveProperty('network')
     }, 30000)
 
+    describe('for non-admin users', () => {
+      const nonAdmin = () => authorizeWsClient({}, { username: 'viewer', admin: false })
+      const fullServerInfo = () => ({
+        serviceUser: 'homebridge',
+        homebridgeConfigJsonPath: '/var/lib/homebridge/config.json',
+        homebridgeStoragePath: '/var/lib/homebridge',
+        homebridgeCustomPluginPath: '/opt/plugins',
+        homebridgePluginPath: '/opt/homebridge/lib/node_modules',
+        homebridgeInsecureMode: false,
+        homebridgeRunningInDocker: true,
+        homebridgeRunningInSynologyPackage: false,
+        homebridgeRunningInPackageMode: false,
+        nodeVersion: 'v22.12.0',
+        os: { platform: 'linux', distro: 'Debian', arch: 'arm64', hostname: 'hb', serial: 'abc123' },
+        time: { timezone: 'Europe/Paris' },
+        network: { iface: 'eth0', ip4: '192.168.1.10', ip6: 'fe80::1', mac: 'aa:bb:cc:dd:ee:ff' },
+      })
+      const expectRedacted = (info: any) => {
+        for (const key of ['serviceUser', 'homebridgeConfigJsonPath', 'homebridgeStoragePath', 'homebridgeCustomPluginPath', 'homebridgePluginPath']) {
+          expect(info).not.toHaveProperty(key)
+        }
+        expect(info.network).toEqual({})
+        expect(info.os).not.toHaveProperty('serial')
+        // What the non-admin dashboard still uses
+        expect(info.os.arch).toBe('arm64')
+        expect(info.time.timezone).toBe('Europe/Paris')
+        expect(info.nodeVersion).toBe('v22.12.0')
+        expect(info.homebridgeRunningInDocker).toBe(true)
+        expect(info).toHaveProperty('homebridgeRunningInSynologyPackage')
+      }
+
+      it('leaves paths, the service user and network details out of the server info', async () => {
+        vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(fullServerInfo() as any)
+
+        const info = await statusGateway.getHomebridgeServerInfo(nonAdmin()) as any
+        expect(info).not.toHaveProperty('serviceUser')
+        expectRedacted(info)
+      })
+
+      it('leaves them out of the version overview', async () => {
+        vi.spyOn(statusService, 'getVersionOverview').mockResolvedValue({ serverInfo: fullServerInfo(), node: null } as any)
+
+        const result = await statusGateway.getVersionOverview(nonAdmin()) as any
+        expect(result.serverInfo).not.toHaveProperty('homebridgeStoragePath')
+        expectRedacted(result.serverInfo)
+      })
+
+      it('leaves install paths out of the node and plugin details', async () => {
+        const node = { currentVersion: 'v22.12.0', installPath: '/usr/local/bin', npmVersion: '10.9.0' }
+        vi.spyOn(statusService, 'getVersionOverview').mockResolvedValue({
+          serverInfo: fullServerInfo(),
+          node,
+          outOfDatePlugins: [{ name: 'homebridge-example', installPath: '/opt/homebridge/lib/node_modules' }],
+        } as any)
+        vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(node as any)
+
+        const overview = await statusGateway.getVersionOverview(nonAdmin()) as any
+        expect(overview.node).toEqual({ currentVersion: 'v22.12.0', npmVersion: '10.9.0' })
+        expect(overview.outOfDatePlugins).toEqual([{ name: 'homebridge-example' }])
+        expect(await statusGateway.nodeVersionCheck(nonAdmin())).not.toHaveProperty('installPath')
+        expect(await statusGateway.nodeVersionCheck(authorizeWsClient({}))).toHaveProperty('installPath', '/usr/local/bin')
+      })
+
+      it('still gives an admin everything', async () => {
+        vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(fullServerInfo() as any)
+
+        expect(await statusGateway.getHomebridgeServerInfo(authorizeWsClient({}))).toEqual(fullServerInfo())
+      })
+    })
+
     it('should return WsException when server info fails', async () => {
       vi.spyOn(statusService, 'getHomebridgeServerInfo').mockRejectedValue(new Error('server error'))
 
-      const result = await statusGateway.getHomebridgeServerInfo()
+      const result = await statusGateway.getHomebridgeServerInfo(authorizeWsClient({}))
       expect((result as any).message).toBe('server error')
     })
 
@@ -537,18 +607,15 @@ describe('StatusGateway (e2e)', () => {
     it('should start watching stats and emit initial status', async () => {
       await statusGateway.serverStatus(client)
 
-      // watchStats is async internally - wait for it to emit
-      await new Promise(res => setTimeout(res, 100))
-
-      expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
+      // the gateway does not await watchStats, which gathers the status first
+      await vi.waitFor(() => expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
         status: expect.any(String),
         pin: expect.any(String),
-      }))
+      })))
     })
 
     it('should emit updated status when homebridge status changes', async () => {
-      await statusGateway.serverStatus(client)
-      await new Promise(res => setTimeout(res, 100))
+      await statusService.watchStats(client)
 
       // Clear initial emit calls
       vi.mocked(client.emit).mockClear()
@@ -556,27 +623,27 @@ describe('StatusGateway (e2e)', () => {
       // Simulate status change
       ipcService.emit('serverStatusUpdate', { status: 'up' })
 
-      await new Promise(res => setTimeout(res, 100))
-
-      expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
+      await vi.waitFor(() => expect(client.emit).toHaveBeenCalledWith('homebridge-status', expect.objectContaining({
         status: 'up',
-      }))
+      })))
     })
 
     it('should clean up on client disconnect', async () => {
-      await statusGateway.serverStatus(client)
-      await new Promise(res => setTimeout(res, 100))
+      await statusService.watchStats(client)
 
       // Disconnect
       client.emit('disconnect')
 
       // Clear emit calls
       vi.mocked(client.emit).mockClear()
+      const getStats = vi.spyOn(statusService as any, 'getHomebridgeStats')
 
-      // Emit another status change - should NOT reach client
+      // Emit another status change - should NOT reach client. A live
+      // subscription would call getHomebridgeStats synchronously on the emit,
+      // so this shows it was dropped without waiting for anything
       ipcService.emit('serverStatusUpdate', { status: 'down' })
-
-      await new Promise(res => setTimeout(res, 100))
+      expect(getStats).not.toHaveBeenCalled()
+      getStats.mockRestore()
 
       // The 'homebridge-status' event should not have been emitted after disconnect
       const homebridgeStatusCalls = vi.mocked(client.emit).mock.calls.filter(
@@ -598,9 +665,12 @@ describe('StatusGateway (e2e)', () => {
       expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'homebridge-status')).toHaveLength(2)
 
       vi.mocked(client.emit).mockClear()
+      const getStats = vi.spyOn(statusService as any, 'getHomebridgeStats')
       ipcService.emit('serverStatusUpdate', { status: 'up' })
-      await new Promise(res => setTimeout(res, 100))
-      expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'homebridge-status')).toHaveLength(1)
+      // one subscription, so one (synchronously started) stats lookup
+      expect(getStats).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'homebridge-status')).toHaveLength(1))
+      getStats.mockRestore()
 
       // and after a disconnect the socket may subscribe afresh
       client.emit('disconnect')
@@ -650,7 +720,8 @@ describe('StatusGateway (e2e)', () => {
 
       const result = await statusGateway.getRaspberryPiThrottledStatus()
       // Not running on a Raspberry Pi in test, so should return WsException
-      expect((result as any).message).toBeDefined()
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).message).toBe('This command is only available on Raspberry Pi')
     })
   })
 

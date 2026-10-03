@@ -4,7 +4,7 @@ import { WsException } from '@nestjs/websockets'
 
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
-import { rememberWsUser, verifyWsClient } from './ws-auth.js'
+import { authorizeWsGuardClient } from './ws-auth.js'
 
 @Injectable()
 export class WsAdminGuard implements CanActivate {
@@ -35,8 +35,7 @@ export class WsAdminGuard implements CanActivate {
       // otherwise a demoted administrator would keep admin sockets until
       // their token expired. Live setup-wizard tokens are allowed *only*
       // while the wizard is in progress.
-      const user = await verifyWsClient(client, this.configService, this.authService)
-      rememberWsUser(client, user, () => verifyWsClient(client, this.configService, this.authService, { ignoreExpiration: true }))
+      const user = await authorizeWsGuardClient(client, this.configService, this.authService, { admin: () => true })
       return user.admin
     } catch (e) {
       client.disconnect()

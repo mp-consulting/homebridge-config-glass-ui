@@ -1,0 +1,165 @@
+// Was the component's scoped stylesheet; everything is nested under the card's root class.
+.hb-plugin-card {
+  // The icon column keeps its width, so a long package name cannot squeeze it
+  // and shift one card's text against the next. The content takes the rest and
+  // may shrink, which lets the title truncate instead of running under the
+  // action button.
+  .card-body > .d-flex > .d-flex:first-child {
+    flex-shrink: 0;
+  }
+
+  .plugin-content {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .card-title {
+    min-width: 0;
+    flex: 1 1 auto;
+
+    + .ms-auto {
+      flex-shrink: 0;
+    }
+  }
+
+  // The package name is a button inside the truncating line: truncate the
+  // button's own text so it ends in an ellipsis (the full name is its title)
+  .card-text.text-truncate > .card-link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+
+  // The plugin name and @author lines were plain <a class="card-link"> text that
+  // inherited the surrounding .card-text weight (300). The a11y pass turned them
+  // into <button class="btn btn-link">, and Bootstrap's .btn forces font-weight:
+  // 400, so those lines rendered heavier than the plain version line beneath them.
+  // Inherit the weight again so every small-text line in the card matches at 300.
+  // (Icons are unaffected — Font Awesome sets its own font-weight on the <i>.)
+  .card-link {
+    font-weight: inherit;
+  }
+
+  .heart-muted {
+    opacity: 0.5;
+  }
+
+  .dropdown-toggle-no-outline {
+    outline: none;
+  }
+
+  // The transport icons (hap + matter) sit side by side, centred in the empty
+  // space below the plugin icon. Each icon is either enabled (coloured, via the
+  // theme files) or disabled (faded grey, below). The fa-hap/fa-matter glyphs
+  // inherit the text colour via their currentColor masks.
+  .transport-icons {
+    gap: 12px;
+  }
+
+  .transport-icon {
+    line-height: 0;
+
+    // Halfway between the default icon size (1em) and fa-lg (1.25em).
+    i {
+      font-size: 1.125em;
+    }
+
+    &:not(.enabled) {
+      color: #888888;
+      opacity: 0.35;
+    }
+  }
+
+  // ── Card layout on the plugins grid ──
+  // The grid spaces the cards, so each one fills its cell and a row lines up
+  .card {
+    height: 100%;
+    margin-bottom: 0 !important;
+    padding: 18px 18px 14px;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    @media (hover: hover) {
+      &:hover {
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .card-title {
+    font-weight: 500;
+    font-size: 1.12rem;
+    margin-bottom: 0.4rem !important;
+  }
+
+  // Package, author and version lines: smaller text with icons in one column
+  .card-text {
+    font-size: 0.86rem;
+    margin-bottom: 0.3rem !important;
+
+    i.fa-lg {
+      font-size: 1em;
+      width: 1.35em;
+      text-align: center;
+      vertical-align: -0.05em;
+    }
+  }
+
+  // Round action buttons: the attention icon at the top right and the ⋮ menu
+  .card-title + .ms-auto .card-link,
+  .dropdown-toggle-no-outline {
+    width: 34px;
+    height: 34px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.15s;
+
+    i {
+      margin: 0 !important;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(127, 127, 127, 0.16);
+    }
+  }
+
+  .card-title + .ms-auto .card-link {
+    background: rgba(var(--glass-primary-rgb, 127, 127, 127), 0.12);
+  }
+
+  // Phone-sized hit areas for the round buttons, without changing how they look
+  // (the ⋮ toggle's ::before is Bootstrap's dropstart caret, so it uses ::after,
+  // which dropstart hides, with the caret styles reset)
+  @media (max-width: 767px) {
+    .card-title + .ms-auto .card-link,
+    .dropdown-toggle-no-outline {
+      position: relative;
+    }
+
+    .card-title + .ms-auto .card-link::before,
+    .dropdown-toggle-no-outline::after {
+      content: '';
+      display: block !important;
+      position: absolute;
+      inset: -5px;
+      margin: 0;
+      border: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+}

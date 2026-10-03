@@ -1,0 +1,244 @@
+{
+  "plugin": "@thecloudseeker/homebridge-homekit-ble-matter",
+  "version": "0.1.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 3,
+      "value": 7
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: dbus"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 8,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "pollInterval": 10,
+        "timeout": 60,
+        "bluetoothBinding": "dbus"
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Devices",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "Defaults"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 10,
+        "timeout": 60,
+        "bluetoothBinding": "dbus",
+        "devices": [
+          {
+            "deviceId": "golden"
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Devices",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "Defaults"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 10,
+        "timeout": 60,
+        "bluetoothBinding": "dbus",
+        "devices": [
+          {
+            "deviceId": "golden",
+            "pollInterval": 7
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Devices",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "Defaults"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 10,
+        "timeout": 60,
+        "bluetoothBinding": "dbus",
+        "devices": [
+          {
+            "deviceId": "golden",
+            "pollInterval": 7
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Devices",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "Defaults"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 10,
+        "timeout": 60,
+        "bluetoothBinding": "dbus",
+        "devices": [
+          {
+            "deviceId": "golden",
+            "pollInterval": 7
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Devices",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "Defaults"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 10,
+        "timeout": 60,
+        "bluetoothBinding": "dbus",
+        "devices": [
+          {
+            "deviceId": "golden",
+            "pollInterval": 7
+          }
+        ]
+      },
+      "isValid": true,
+      "controls": {
+        "text": 4,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Devices",
+        "",
+        "DeviceID",
+        "Name",
+        "HomeKit Setup Code",
+        "Poll Interval (minutes)",
+        "Timeout (minutes)",
+        "Matter ID (optional)",
+        "Defaults"
+      ]
+    }
+  ]
+}

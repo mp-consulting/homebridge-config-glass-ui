@@ -1,0 +1,891 @@
+{
+  "plugin": "homebridge-xbox-tv",
+  "version": "4.3.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 42,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 29,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "displayType": 2,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": false,
+              "filterApps": false,
+              "filterSystemApps": false,
+              "filterDlc": false
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 2,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": false,
+              "filterApps": false,
+              "filterSystemApps": false,
+              "filterDlc": false
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 2,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": false,
+              "filterSystemApps": false,
+              "filterDlc": false
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 2,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": false,
+              "filterDlc": false
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 2,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": false
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 2,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true,
+              "displayOrder": 0
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true,
+              "displayOrder": 0
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true,
+              "displayOrder": 0
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 9,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true,
+              "displayOrder": 0
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              },
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 10,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true,
+              "displayOrder": 0
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 9,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Xbox TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "webApi": {
+              "enable": false
+            },
+            "inputs": {
+              "filterGames": true,
+              "filterApps": true,
+              "filterSystemApps": true,
+              "filterDlc": true,
+              "displayOrder": 0
+            },
+            "sensors": [
+              {
+                "displayType": 0
+              }
+            ],
+            "infoButtonCommand": "nexus",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 13,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Live ID",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "plugin": "@cecnic1989/homebridge-roborock-mower",
+  "version": "0.6.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "pollInterval": 3600,
+        "mqttLivenessProbe": true,
+        "exposeDocked": true,
+        "exposeLeaving": true,
+        "exposeMowing": true,
+        "exposeReturning": true,
+        "exposeAttention": true,
+        "exposeBattery": true,
+        "faultIndicator": true,
+        "exposeControls": false,
+        "sensorDebounceSeconds": 15
+      },
+      "isValid": true,
+      "controls": {
+        "text": 0,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "HomeKit sensors",
+        "Docked sensor",
+        "Leaving sensor",
+        "Mowing sensor",
+        "Returning sensor",
+        "Needs Attention sensor",
+        "Battery",
+        "Fault indicator",
+        "Sensor debounce (seconds)",
+        "Controls",
+        "Control switches (Mow, Pause)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 3600,
+        "mqttLivenessProbe": true,
+        "exposeDocked": false,
+        "exposeLeaving": true,
+        "exposeMowing": true,
+        "exposeReturning": true,
+        "exposeAttention": true,
+        "exposeBattery": true,
+        "faultIndicator": true,
+        "exposeControls": false,
+        "sensorDebounceSeconds": 15
+      },
+      "isValid": true,
+      "controls": {
+        "text": 0,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "HomeKit sensors",
+        "Docked sensor",
+        "Leaving sensor",
+        "Mowing sensor",
+        "Returning sensor",
+        "Needs Attention sensor",
+        "Battery",
+        "Fault indicator",
+        "Sensor debounce (seconds)",
+        "Controls",
+        "Control switches (Mow, Pause)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 3600,
+        "mqttLivenessProbe": true,
+        "exposeDocked": false,
+        "exposeLeaving": false,
+        "exposeMowing": true,
+        "exposeReturning": true,
+        "exposeAttention": true,
+        "exposeBattery": true,
+        "faultIndicator": true,
+        "exposeControls": false,
+        "sensorDebounceSeconds": 15
+      },
+      "isValid": true,
+      "controls": {
+        "text": 0,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "HomeKit sensors",
+        "Docked sensor",
+        "Leaving sensor",
+        "Mowing sensor",
+        "Returning sensor",
+        "Needs Attention sensor",
+        "Battery",
+        "Fault indicator",
+        "Sensor debounce (seconds)",
+        "Controls",
+        "Control switches (Mow, Pause)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 3600,
+        "mqttLivenessProbe": true,
+        "exposeDocked": false,
+        "exposeLeaving": false,
+        "exposeMowing": false,
+        "exposeReturning": true,
+        "exposeAttention": true,
+        "exposeBattery": true,
+        "faultIndicator": true,
+        "exposeControls": false,
+        "sensorDebounceSeconds": 15
+      },
+      "isValid": true,
+      "controls": {
+        "text": 0,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "HomeKit sensors",
+        "Docked sensor",
+        "Leaving sensor",
+        "Mowing sensor",
+        "Returning sensor",
+        "Needs Attention sensor",
+        "Battery",
+        "Fault indicator",
+        "Sensor debounce (seconds)",
+        "Controls",
+        "Control switches (Mow, Pause)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "pollInterval": 3600,
+        "mqttLivenessProbe": true,
+        "exposeDocked": false,
+        "exposeLeaving": false,
+        "exposeMowing": false,
+        "exposeReturning": false,
+        "exposeAttention": true,
+        "exposeBattery": true,
+        "faultIndicator": true,
+        "exposeControls": false,
+        "sensorDebounceSeconds": 15
+      },
+      "isValid": true,
+      "controls": {
+        "text": 0,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 9,
+        "radio": 0,
+        "select": 0,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "HomeKit sensors",
+        "Docked sensor",
+        "Leaving sensor",
+        "Mowing sensor",
+        "Returning sensor",
+        "Needs Attention sensor",
+        "Battery",
+        "Fault indicator",
+        "Sensor debounce (seconds)",
+        "Controls",
+        "Control switches (Mow, Pause)",
+        "Advanced"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+.hb-filter-maintenance {
+  &.dirty {
+    svg {
+      .status {
+        fill: #e69533 !important;
+      }
+    }
+  }
+
+  &.replace {
+    svg {
+      .status {
+        fill: #d32f2f !important;
+      }
+    }
+  }
+}
+
+body.dark-mode {
+  .hb-filter-maintenance {
+    svg {
+      .back {
+        fill: #2b2b2b !important;
+      }
+    }
+  }
+}

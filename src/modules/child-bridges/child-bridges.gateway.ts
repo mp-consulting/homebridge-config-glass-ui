@@ -24,9 +24,10 @@ export class ChildBridgesGateway {
   ) {}
 
   @SubscribeMessage('get-homebridge-child-bridge-status')
-  async getChildBridges() {
+  async getChildBridges(client) {
     try {
-      return await this.childBridgesService.getChildBridges()
+      // Pairing codes only for administrators (see withoutChildBridgePairingCodes)
+      return await this.childBridgesService.getChildBridgesForUser(client?.data?.user?.admin === true)
     } catch (e) {
       return new WsException(e.message)
     }

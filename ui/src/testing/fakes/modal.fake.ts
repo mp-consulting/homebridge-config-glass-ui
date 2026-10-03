@@ -1,30 +1,23 @@
-import type { InjectionToken } from '@angular/core'
-import type { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap/modal'
-import type { Observable } from 'rxjs'
 import type { Mock } from 'vitest'
 
-import { Subject } from 'rxjs'
 import { vi } from 'vitest'
 
 export interface FakeModalRef {
-  componentInstance: Record<string, any>
   result: Promise<any>
-  hidden: Observable<void>
-  closed: Observable<any>
-  close: (value?: any) => void
-  dismiss: (reason?: any) => void
+  close: Mock<(value?: any) => void>
+  dismiss: Mock<(reason?: any) => void>
 }
 
 export interface OpenedModal {
-  content: any
-  options: NgbModalOptions | undefined
+  component: unknown
+  props: Record<string, any> | undefined
+  options: Record<string, any> | undefined
   ref: FakeModalRef
 }
 
-export interface FakeModalService {
-  open: Mock<(content: any, options?: NgbModalOptions) => FakeModalRef>
-  dismissAll: Mock<(reason?: any) => void>
-  hasOpenModals: Mock<() => boolean>
+export interface FakeOpenModal {
+  /** Drop-in for `openModal(Component, props, options)` from `@/core/ui/modal`. */
+  openModal: Mock<(component: unknown, props?: Record<string, any>, options?: Record<string, any>) => FakeModalRef>
 
   /** Every modal opened, in order. */
   opened: OpenedModal[]
@@ -33,35 +26,26 @@ export interface FakeModalService {
   lastOpened: () => OpenedModal | undefined
 
   /**
-   * Read the data a modal was opened with.
-   *
-   * Openers pass modal data through `createEnvironmentInjector` on the modal
-   * options, not through `componentInstance`, so this resolves the token out
-   * of that injector.
-   * @param token - the modal's data token from core/modal-data-tokens
+   * The props a modal was opened with (what Angular passed as modal data).
    * @param index - which opened modal, defaulting to the most recent
    */
-  dataFor: <T>(token: InjectionToken<T>, index?: number) => T | undefined
+  propsFor: (index?: number) => Record<string, any> | undefined
 }
 
 /**
- * A stand-in for the NgbActiveModal a modal component injects.
- *
- * Most modal specs assert on these two: callers branch on whether the modal's
- * result resolved (close) or rejected (dismiss).
+ * A stand-in for the `activeModal` prop a modal component receives.
+ * Callers branch on whether the result resolved (close) or rejected (dismiss).
  */
-export function activeModalStub(): NgbActiveModal {
+export function activeModalStub() {
   return {
     close: vi.fn(),
     dismiss: vi.fn(),
-  } as unknown as NgbActiveModal
+  }
 }
 
 /**
- * A controllable modal reference. `result` settles when `close` or `dismiss`
- * is called, matching NgbModalRef - close resolves, dismiss rejects, `hidden`
- * emits either way, and `closed` emits the close value on close only (a
- * dismiss completes it silently, like the real ref).
+ * A controllable modal reference: `close` resolves `result`, `dismiss`
+ * rejects it, matching the modal service (and NgbModalRef before it).
  */
 export function fakeModalRef(): FakeModalRef {
   let settle: (value: any) => void = () => {}
@@ -76,64 +60,33 @@ export function fakeModalRef(): FakeModalRef {
   // rejection and fail an unrelated test
   result.catch(() => {})
 
-  const hidden = new Subject<void>()
-  const closed = new Subject<any>()
-  const emitHidden = () => {
-    hidden.next()
-    hidden.complete()
-  }
-
   return {
-    componentInstance: {},
     result,
-    hidden,
-    closed,
-    close: vi.fn((value?: any) => {
-      settle(value)
-      closed.next(value)
-      closed.complete()
-      emitHidden()
-    }) as unknown as (value?: any) => void,
-    dismiss: vi.fn((reason?: any) => {
-      reject(reason)
-      closed.complete()
-      emitHidden()
-    }) as unknown as (reason?: any) => void,
+    close: vi.fn((value?: any) => settle(value)),
+    dismiss: vi.fn((reason?: any) => reject(reason)),
   }
 }
 
 /**
- * A stand-in for NgbModal, recording what was opened and with what data.
+ * A stand-in for `openModal`, recording what was opened and with what props:
+ *
+ *     vi.mock('@/core/ui/modal', async () => ({ ...(await import('@/testing')).fakeOpenModal() }))
+ *     import * as modalModule from '@/core/ui/modal'
+ *     const modal = modalModule as unknown as FakeOpenModal
  */
-export function modalServiceSpy(): FakeModalService {
+export function fakeOpenModal(): FakeOpenModal {
   const opened: OpenedModal[] = []
 
-  const modal = {
+  const openModal = vi.fn((component: unknown, props?: Record<string, any>, options?: Record<string, any>) => {
+    const ref = fakeModalRef()
+    opened.push({ component, props, options, ref })
+    return ref
+  })
+
+  return {
+    openModal,
     opened,
-    open: vi.fn((content: any, options?: NgbModalOptions) => {
-      const ref = fakeModalRef()
-      opened.push({ content, options, ref })
-      return ref
-    }),
-    dismissAll: vi.fn(),
-    hasOpenModals: vi.fn(() => opened.length > 0),
-  } as FakeModalService
-
-  modal.lastOpened = () => opened.at(-1)
-
-  modal.dataFor = <T>(token: InjectionToken<T>, index?: number) => {
-    const entry = index === undefined ? opened.at(-1) : opened[index]
-    const injector = entry?.options?.injector
-    return injector?.get(token, undefined, { optional: true }) ?? undefined
+    lastOpened: () => opened.at(-1),
+    propsFor: (index?: number) => (index === undefined ? opened.at(-1) : opened[index])?.props,
   }
-
-  return modal
-}
-
-/**
- * Convenience cast for providing the spy where NgbModal is injected.
- * @param spy - the spy from modalServiceSpy
- */
-export function asNgbModal(spy: FakeModalService): NgbModal {
-  return spy as unknown as NgbModal
 }

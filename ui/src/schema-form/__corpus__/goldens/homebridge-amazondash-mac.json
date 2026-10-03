@@ -1,0 +1,649 @@
+{
+  "plugin": "homebridge-amazondash-mac",
+  "version": "4.0.0-beta.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 14,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 13,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 6,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "debug": 1,
+        "airInstead": false,
+        "buttons": [
+          {
+            "doublePress": false
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 1,
+        "airInstead": false,
+        "buttons": [
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 1,
+        "airInstead": false,
+        "buttons": [
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 1,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 1,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 1,
+        "add": 2,
+        "remove": 1
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          },
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 15,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          },
+          {
+            "doublePress": false
+          },
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 21,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          },
+          {
+            "doublePress": false
+          },
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 20,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": true
+          },
+          {
+            "doublePress": false
+          },
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 19,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    },
+    {
+      "data": {
+        "debug": 0,
+        "airInstead": true,
+        "buttons": [
+          {
+            "doublePress": false
+          },
+          {
+            "doublePress": false
+          }
+        ],
+        "interface": "golden",
+        "wport": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 4
+      },
+      "labels": [
+        "Interface",
+        "Debug",
+        "Web API Port",
+        "Web API Token",
+        "Use airodump-ng instead of tcpdump",
+        "Dash Buttons",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press",
+        "Button",
+        "Name",
+        "MAC Address",
+        "Serial Number",
+        "Firmware",
+        "Model",
+        "Aliases",
+        "Alias",
+        "Enable Double Press"
+      ]
+    }
+  ]
+}

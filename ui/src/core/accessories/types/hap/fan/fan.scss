@@ -1,0 +1,45 @@
+.hb-fan {
+  .spin {
+    svg {
+      g {
+        .fan-blades {
+          animation: hb-fan-spin 2s infinite linear;
+          transform-origin: 53.5% 50%;
+        }
+      }
+    }
+  }
+
+  .spin-counter {
+    svg {
+      g {
+        .fan-blades {
+          animation: hb-fan-spin-counter 2s infinite linear;
+          transform-origin: 53.5% 50%;
+        }
+      }
+    }
+  }
+}
+
+// Renamed from fa-spin / fa-spin-counter: Angular scoped these names to the
+// component, and a global `fa-spin` would replace Font Awesome's own
+@keyframes hb-fan-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes hb-fan-spin-counter {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-359deg);
+  }
+}

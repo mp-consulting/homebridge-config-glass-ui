@@ -80,3 +80,14 @@ info
 
 # AI agents
 .claude
+
+# React UI
+*.tsbuildinfo
+ui/src/schema-form/__corpus__/schemas/
+
+# Playwright parity suite builds and results
+e2e/.run/
+test-results/
+playwright-report/
+e2e/specs/__screenshots__/
+e2e/specs/*-snapshots/

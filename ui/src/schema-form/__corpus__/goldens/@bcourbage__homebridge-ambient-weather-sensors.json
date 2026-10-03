@@ -1,0 +1,910 @@
+{
+  "plugin": "@bcourbage/homebridge-ambient-weather-sensors",
+  "version": "1.7.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: polling"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 27,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 23,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 0,
+      "list": 18,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "AmbientWeatherSensors",
+        "temperatureSensors": false,
+        "humiditySensors": false,
+        "solarRadiationSensors": false,
+        "co2Sensors": false,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": false,
+        "humiditySensors": false,
+        "solarRadiationSensors": false,
+        "co2Sensors": false,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": false,
+        "solarRadiationSensors": false,
+        "co2Sensors": false,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": false,
+        "co2Sensors": false,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": false,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 7,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "temperatureSensors": true,
+        "humiditySensors": true,
+        "solarRadiationSensors": true,
+        "co2Sensors": true,
+        "airQualitySensors": false,
+        "extendedSensors": false,
+        "windSensors": false,
+        "rainSensors": false,
+        "pressureSensors": false,
+        "uvSensors": false,
+        "lightningSensors": false,
+        "extendedDisplayMode": "static",
+        "embedNameUpdateMinIntervalMinutes": 2,
+        "thresholds": {
+          "windSpeedEnabled": true,
+          "windSpeedMph": 25,
+          "windGustEnabled": true,
+          "windGustMph": 35,
+          "rainRateEnabled": true,
+          "rainRateInHr": 0.01,
+          "uvEnabled": true,
+          "uv": 3,
+          "lightningDistanceEnabled": true,
+          "lightningDistanceMi": 10,
+          "pressureEnabled": true,
+          "pressureInHg": 29.5
+        },
+        "units": {
+          "windSpeed": "mph",
+          "rain": "in",
+          "pressure": "inHg",
+          "distance": "mi"
+        },
+        "dataSource": "polling"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 6,
+        "radio": 0,
+        "select": 1,
+        "add": 3,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "API Key",
+        "Application Key",
+        "Temperature Sensors",
+        "Humidity Sensors",
+        "Solar Radiation Sensors",
+        "CO2 Sensors",
+        "Air Quality Sensors (PM2.5 / PM10)",
+        "Enable Extended Sensors",
+        "Data Source",
+        "Include Only These Stations (allowlist)",
+        "Exclude Sensors (blacklist)",
+        "Include Only These Sensors (allowlist)"
+      ]
+    }
+  ]
+}

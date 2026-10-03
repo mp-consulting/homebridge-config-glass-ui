@@ -1,0 +1,691 @@
+{
+  "plugin": "homebridge-rinnai-touch-platform",
+  "version": "3.5.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 2,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: H"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: S"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 57,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Rinnai Touch",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": true,
+        "showAuto": true,
+        "showAdvanceSwitches": true,
+        "showManualSwitches": true,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        }
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": true,
+        "showAuto": true,
+        "showAdvanceSwitches": true,
+        "showManualSwitches": true,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        }
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": true,
+        "showAuto": true,
+        "showAdvanceSwitches": true,
+        "showManualSwitches": true,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": true,
+        "showAdvanceSwitches": true,
+        "showManualSwitches": true,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": true,
+        "showManualSwitches": true,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": false,
+        "showManualSwitches": true,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "T",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": false,
+        "showManualSwitches": false,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "H",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": false,
+        "showManualSwitches": false,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "H",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": false,
+        "showManualSwitches": false,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "H",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": false,
+        "showManualSwitches": false,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 21,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "controllerType": "H",
+        "zoneType": "S",
+        "showFan": false,
+        "showAuto": false,
+        "showAdvanceSwitches": false,
+        "showManualSwitches": false,
+        "seperateModeAccessories": false,
+        "seperateFanZoneSwitches": false,
+        "invertComfortLevel": true,
+        "setAutoOperatingState": true,
+        "showHomebridgeEvents": true,
+        "showModuleEvents": true,
+        "showModuleStatus": false,
+        "clearCache": false,
+        "forceAutoDiscovery": false,
+        "mqtt": {
+          "formatHomeAssistant": false,
+          "formatConnection": false,
+          "formatFault": false,
+          "publishStatusChanged": false,
+          "publishIntervals": false,
+          "publishAll": false,
+          "showMqttEvents": true
+        },
+        "pushover": {
+          "connectionError": false,
+          "faultDetected": false,
+          "dayIncorrect": false,
+          "timeIncorrect": false
+        },
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 20,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 24,
+        "radio": 0,
+        "select": 2,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "",
+        "IP Address",
+        "Port",
+        "Accessory Settings",
+        "Evaporative Cooler Settings",
+        "MQTT Settings",
+        "Pushover Notifications",
+        "Other Settings"
+      ]
+    }
+  ]
+}

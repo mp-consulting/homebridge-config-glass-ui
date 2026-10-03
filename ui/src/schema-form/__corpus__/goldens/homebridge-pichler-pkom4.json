@@ -1,0 +1,194 @@
+{
+  "plugin": "homebridge-pichler-pkom4",
+  "version": "1.1.11",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 1"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "PKOM 4",
+        "simulate": false,
+        "readOnly": false,
+        "simulatedOptions": 3,
+        "modbusDebugLevel": 0
+      },
+      "isValid": true,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Accessory name",
+        "Simulation mode",
+        "Read only mode",
+        "Simulated options",
+        "Modbus logs level"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "simulate": false,
+        "readOnly": false,
+        "simulatedOptions": 3,
+        "modbusDebugLevel": 0
+      },
+      "isValid": true,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Accessory name",
+        "Simulation mode",
+        "Read only mode",
+        "Simulated options",
+        "Modbus logs level"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "simulate": true,
+        "readOnly": false,
+        "simulatedOptions": 3,
+        "modbusDebugLevel": 0
+      },
+      "isValid": true,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Accessory name",
+        "Simulation mode",
+        "Read only mode",
+        "Simulated options",
+        "Modbus logs level"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "simulate": true,
+        "readOnly": true,
+        "simulatedOptions": 3,
+        "modbusDebugLevel": 0
+      },
+      "isValid": true,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Accessory name",
+        "Simulation mode",
+        "Read only mode",
+        "Simulated options",
+        "Modbus logs level"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "simulate": true,
+        "readOnly": true,
+        "simulatedOptions": 1,
+        "modbusDebugLevel": 0
+      },
+      "isValid": true,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Accessory name",
+        "Simulation mode",
+        "Read only mode",
+        "Simulated options",
+        "Modbus logs level"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "simulate": true,
+        "readOnly": true,
+        "simulatedOptions": 1,
+        "modbusDebugLevel": 1
+      },
+      "isValid": true,
+      "controls": {
+        "text": 1,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 2,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Accessory name",
+        "Simulation mode",
+        "Read only mode",
+        "Simulated options",
+        "Modbus logs level"
+      ]
+    }
+  ]
+}

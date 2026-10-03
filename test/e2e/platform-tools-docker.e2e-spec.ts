@@ -12,6 +12,7 @@ import { copy, readFile, remove } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 import { DockerModule } from '../../src/modules/platform-tools/docker/docker.module.js'
 import { DockerService } from '../../src/modules/platform-tools/docker/docker.service.js'
 import { testStoragePath } from '../storage-path.js'
@@ -25,6 +26,7 @@ describe('PlatformToolsDocker (e2e)', () => {
   let authorization: string
   let restartDockerContainerFn: Mock
   let dockerService: DockerService
+  let configService: ConfigService
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
@@ -57,12 +59,17 @@ describe('PlatformToolsDocker (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready()
 
     dockerService = app.get(DockerService)
+    configService = app.get(ConfigService)
   })
 
   beforeEach(async () => {
     // Setup mock functions
     restartDockerContainerFn = vi.fn()
     dockerService.restartDockerContainer = restartDockerContainerFn as any
+
+    // The startup script is offered in the Docker image with the terminal on
+    configService.runningInDocker = true
+    configService.enableTerminalAccess = true
 
     // Restore startup.sh
     await copy(resolve(__dirname, '../mocks', 'startup.sh'), startupFilePath)
@@ -168,6 +175,52 @@ describe('PlatformToolsDocker (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json()).toEqual({ ok: true, command: 'sudo kill 1' })
+  })
+
+  describe('startup script access', () => {
+    const getScript = () => app.inject({
+      method: 'GET',
+      path: '/platform-tools/docker/startup-script',
+      headers: { authorization },
+    })
+    const putScript = (payload: unknown) => app.inject({
+      method: 'PUT',
+      path: '/platform-tools/docker/startup-script',
+      headers: { authorization },
+      payload: payload as any,
+    })
+
+    it('refuses to read or write the script when terminal access is disabled', async () => {
+      configService.enableTerminalAccess = false
+      const before = await readFile(startupFilePath, 'utf8')
+
+      expect((await getScript()).statusCode).toBe(403)
+      expect((await putScript({ script: '#!/bin/sh\nid\n' })).statusCode).toBe(403)
+      expect(await readFile(startupFilePath, 'utf8')).toBe(before)
+    })
+
+    it('refuses to read or write the script outside the Docker image', async () => {
+      configService.runningInDocker = false
+      const before = await readFile(startupFilePath, 'utf8')
+
+      expect((await getScript()).statusCode).toBe(403)
+      expect((await putScript({ script: '#!/bin/sh\nid\n' })).statusCode).toBe(403)
+      expect(await readFile(startupFilePath, 'utf8')).toBe(before)
+    })
+
+    it.each([
+      { script: 42 },
+      { script: { a: 1 } },
+      { script: ['x'] },
+      {},
+    ])('refuses a script that is not a string (%j)', async (payload) => {
+      const before = await readFile(startupFilePath, 'utf8')
+
+      const res = await putScript(payload)
+
+      expect(res.statusCode).toBe(400)
+      expect(await readFile(startupFilePath, 'utf8')).toBe(before)
+    })
   })
 
   afterAll(async () => {

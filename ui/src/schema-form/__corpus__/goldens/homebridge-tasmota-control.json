@@ -1,0 +1,791 @@
+{
+  "plugin": "homebridge-tasmota-control",
+  "version": "1.8.12",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 1"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 43,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 32,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "auth": false,
+            "disableAccessory": false,
+            "miElHvac": {
+              "remoteTemperatureSensor": {
+                "enable": false,
+                "auth": false
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": false,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 17,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": false,
+            "miElHvac": {
+              "remoteTemperatureSensor": {
+                "enable": false,
+                "auth": false
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": false,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 17,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "remoteTemperatureSensor": {
+                "enable": false,
+                "auth": false
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": false,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 17,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": false
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": false,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": false,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "coolDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 7,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "coolDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "coolDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 9,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "coolDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 10,
+        "add": 4,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "coolDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 9,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "Tasmota Control",
+        "devices": [
+          {
+            "name": "golden",
+            "auth": false,
+            "disableAccessory": true,
+            "miElHvac": {
+              "heatDryFanMode": 1,
+              "coolDryFanMode": 1,
+              "remoteTemperatureSensor": {
+                "enable": true,
+                "auth": true
+              },
+              "frostProtect": {
+                "enable": false
+              },
+              "temperatureSensor": true,
+              "temperatureSensorOutdoor": false
+            },
+            "relaysNamePrefix": false,
+            "lightsNamePrefix": false,
+            "fansNamePrefix": false,
+            "sensorsNamePrefix": false,
+            "loadNameFromDevice": false,
+            "refreshInterval": 5,
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 18,
+        "radio": 0,
+        "select": 8,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Disable Accessory",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

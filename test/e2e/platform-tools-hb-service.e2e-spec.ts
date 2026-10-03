@@ -113,7 +113,7 @@ describe('PlatformToolsHbService (e2e)', () => {
       HOMEBRIDGE_KEEP_ORPHANS: true,
       HOMEBRIDGE_INSECURE: false,
       ENV_DEBUG: '*',
-      ENV_NODE_OPTIONS: '--inspect',
+      ENV_NODE_OPTIONS: '--max-old-space-size=512',
     }
 
     const res = await app.inject({
@@ -132,7 +132,7 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(envFile.keepOrphans).toBe(true)
     expect(envFile.insecureMode).toBe(false)
     expect(envFile.env.DEBUG).toBe('*')
-    expect(envFile.env.NODE_OPTIONS).toBe('--inspect')
+    expect(envFile.env.NODE_OPTIONS).toBe('--max-old-space-size=512')
 
     // The restart flag should be set
     expect(configService.hbServiceUiRestartRequired).toBe(true)
@@ -237,6 +237,28 @@ describe('PlatformToolsHbService (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(await readFile(logFilePath, 'utf8')).toBe('')
+  })
+
+  it('refuses to download or truncate a log path that points at the secrets in the storage directory', async () => {
+    const authPath = resolve(configService.storagePath, 'auth.json')
+    const before = await readFile(authPath, 'utf8')
+    configService.ui.log = { method: 'file', path: authPath }
+
+    const download = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=no',
+      headers: { authorization },
+    })
+    expect(download.statusCode).toBe(400)
+    expect(download.body).not.toContain('hashedPassword')
+
+    const truncateRes = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/log/truncate',
+      headers: { authorization },
+    })
+    expect(truncateRes.statusCode).toBe(400)
+    expect(await readFile(authPath, 'utf8')).toBe(before)
   })
 
   afterAll(async () => {

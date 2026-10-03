@@ -1,0 +1,450 @@
+{
+  "plugin": "homebridge-cync-app",
+  "version": "0.7.5",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 5,
+      "value": 7
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: no-response"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 15,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 14,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 11,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Cync",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 8,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 8
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 7,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 8
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 6,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 7
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "unreachableStatePolicy": "no-response",
+        "unreachableTimeoutSeconds": 600,
+        "deviceShowConfigs": [
+          {
+            "lightShowIndexes": [
+              7
+            ]
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 5,
+        "textarea": 0,
+        "checkbox": 0,
+        "radio": 0,
+        "select": 1,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "Name",
+        "Cync Email",
+        "Cync Password",
+        "Two-Factor Code (OTP)",
+        "Unreachable Accessory State",
+        "Unreachable Timeout",
+        "Shows by Device",
+        "",
+        "Device Id",
+        "Light Show Indexes",
+        "Music Show Indexes",
+        "Custom Light Show Indexes",
+        "Custom Music Show Indexes",
+        "Multi Color Scheme Indexes"
+      ]
+    }
+  ]
+}

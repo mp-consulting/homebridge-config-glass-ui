@@ -1,6 +1,34 @@
 @use 'sass:color';
+@use 'sass:list';
 
-@mixin make-dark-theme($name, $darkModePrimary) {
+@use './contrast';
+
+// The dark themes: `.glass-ui-dark-mode-<name>`. As with the light themes, each
+// theme only sets custom properties and one shared rule set reads them; only
+// one theme class is ever applied, and `:is()` keeps a single class's specificity.
+$themes: (
+  'dark-mode-orange': #ffa000,
+  'dark-mode-red': #d32f2f,
+  'dark-mode-pink': #c2185b,
+  'dark-mode-purple': #9c27b0,
+  'dark-mode-deep-purple': #673ab7,
+  'dark-mode-indigo': #3f51b5,
+  'dark-mode-blue': #2196f3,
+  'dark-mode-blue-grey': #607d8b,
+  'dark-mode-cyan': #00838f,
+  'dark-mode-green': #388e3c,
+  'dark-mode-teal': #009688,
+  'dark-mode-grey': #9e9e9e,
+  'dark-mode-brown': #795548,
+);
+
+/// The rgb channels of a colour, for `rgba(var(--x), <alpha>)`.
+@function rgb-channels($color) {
+  @return #{color.channel($color, 'red', $space: rgb)}, #{color.channel($color, 'green', $space: rgb)},
+    #{color.channel($color, 'blue', $space: rgb)};
+}
+
+@mixin make-dark-theme-vars($name, $darkModePrimary) {
   .glass-ui-#{$name} {
     // Read by the glass layer (glass.scss) so it can tint surfaces per theme
     --glass-primary: #{$darkModePrimary};
@@ -8,7 +36,22 @@
       #{color.channel($darkModePrimary, 'red', $space: rgb)}, #{color.channel($darkModePrimary, 'green', $space: rgb)},
       #{color.channel($darkModePrimary, 'blue', $space: rgb)};
     --glass-primary-dark: #{color.adjust($darkModePrimary, $lightness: -15%)};
+    // The filled button's gradient under white text, at 4.5:1
+    --glass-primary-btn: #{contrast.darken-to-contrast($darkModePrimary, #ffffff)};
+    --glass-primary-btn-dark: #{contrast.darken-to-contrast(color.adjust($darkModePrimary, $lightness: -15%), #ffffff)};
 
+    // Read by the shared theme rules below
+    --glass-theme-primary: #{$darkModePrimary};
+    --glass-theme-primary-rgb: #{rgb-channels($darkModePrimary)};
+    --glass-theme-primary-shade: #{color.adjust($darkModePrimary, $lightness: -5%)};
+    // For the grey theme, the on colour of a toggle is too close to the off
+    // colour, so as an exception, use a slightly greener colour
+    --glass-theme-toggle-on: #{if($name == 'dark-mode-grey', #6b7d5a, $darkModePrimary)};
+  }
+}
+
+@mixin make-dark-theme-rules($selector) {
+  #{$selector} {
     $backgroundColor: #000000;
     $secondaryBackground: #2b2b2b;
     $secondaryText: #9e9e9e;
@@ -38,7 +81,7 @@
       }
 
       .link-wrapper {
-        scrollbar-color: $darkModePrimary transparent;
+        scrollbar-color: var(--glass-theme-primary) transparent;
 
         .link {
           .link-row {
@@ -52,7 +95,7 @@
 
             &.active {
               i {
-                color: $darkModePrimary;
+                color: var(--glass-theme-primary);
               }
             }
 
@@ -120,7 +163,7 @@
     }
 
     .primary-text {
-      color: $darkModePrimary;
+      color: var(--glass-theme-primary);
     }
 
     // Brand colours lightened for dark backgrounds: hap = the UI's light
@@ -136,7 +179,7 @@
     }
 
     .hb-uix-switch input:checked ~ .hb-uix-slider {
-      background-color: $darkModePrimary;
+      background-color: var(--glass-theme-primary);
     }
 
     .rendux-label {
@@ -147,24 +190,19 @@
     .rendux-input:checked + label {
       // For the grey theme, the on colour is too close to the off colour,
       // so as an exception, use a slightly greener colour
-      @if $name == 'dark-mode-grey' {
-        background: #6b7d5a !important;
-        border-color: #6b7d5a !important;
-      } @else {
-        background: $darkModePrimary !important;
-        border-color: $darkModePrimary !important;
-      }
+      background: var(--glass-theme-toggle-on) !important;
+      border-color: var(--glass-theme-toggle-on) !important;
     }
 
     .btn-primary,
     .btn-default {
-      background-color: $darkModePrimary !important;
-      border-color: $darkModePrimary !important;
+      background-color: var(--glass-theme-primary) !important;
+      border-color: var(--glass-theme-primary) !important;
 
       &:hover,
       &:focus {
-        background-color: color.adjust($darkModePrimary, $lightness: -5%) !important;
-        border-color: color.adjust($darkModePrimary, $lightness: -5%) !important;
+        background-color: var(--glass-theme-primary-shade) !important;
+        border-color: var(--glass-theme-primary-shade) !important;
         transition: background-color 0.25s;
       }
     }
@@ -193,7 +231,7 @@
       color: #9e9e9e !important;
 
       &.primary-text {
-        color: $darkModePrimary !important;
+        color: var(--glass-theme-primary) !important;
       }
     }
 
@@ -218,12 +256,12 @@
       border: none;
 
       a {
-        color: $darkModePrimary;
+        color: var(--glass-theme-primary);
       }
     }
 
     .alert-info {
-      box-shadow: 0 0 1px $darkModePrimary;
+      box-shadow: 0 0 1px var(--glass-theme-primary);
     }
 
     .alert-warning {
@@ -238,23 +276,23 @@
       background-color: $secondaryBackground;
 
       svg {
-        fill: $darkModePrimary;
+        fill: var(--glass-theme-primary);
       }
     }
 
     .qr-code-theme-color {
-      stroke: $darkModePrimary !important;
+      stroke: var(--glass-theme-primary) !important;
     }
 
     a {
-      color: $darkModePrimary;
+      color: var(--glass-theme-primary);
 
       &.card-link {
         color: #9e9e9e;
 
         @media (hover: hover) {
           &:hover {
-            color: $darkModePrimary !important;
+            color: var(--glass-theme-primary) !important;
           }
         }
       }
@@ -275,7 +313,7 @@
     .card-link-title {
       @media (hover: hover) {
         &:hover {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -285,7 +323,7 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -299,7 +337,7 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -319,7 +357,7 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
           background-color: rgba(255, 255, 255, 0.1);
         }
       }
@@ -328,7 +366,7 @@
     .widget-toolbar-button {
       @media (hover: hover) {
         &:hover {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
           background-color: rgba(255, 255, 255, 0.1);
         }
       }
@@ -337,7 +375,7 @@
     .manage-accessory-button {
       @media (hover: hover) {
         &:hover i {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -355,15 +393,15 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $darkModePrimary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
 
     hr {
-      border-color: $darkModePrimary;
-      background-color: $darkModePrimary;
-      color: $darkModePrimary;
+      border-color: var(--glass-theme-primary);
+      background-color: var(--glass-theme-primary);
+      color: var(--glass-theme-primary);
     }
 
     .btn-close {
@@ -376,7 +414,7 @@
     }
 
     .modal-title {
-      color: $darkModePrimary;
+      color: var(--glass-theme-primary);
     }
 
     .modal-body {
@@ -429,7 +467,7 @@
 
     .table-hover tbody tr:hover {
       @media (hover: hover) {
-        color: $darkModePrimary !important;
+        color: var(--glass-theme-primary) !important;
       }
     }
 
@@ -453,7 +491,7 @@
       }
 
       .grey-text {
-        color: $darkModePrimary !important;
+        color: var(--glass-theme-primary) !important;
       }
     }
 
@@ -470,7 +508,7 @@
       &:focus {
         border: 1px solid #242424 !important;
         box-shadow: inherit !important;
-        color: $darkModePrimary !important;
+        color: var(--glass-theme-primary) !important;
       }
     }
 
@@ -479,7 +517,7 @@
       color: #ffffff;
 
       .badge-primary {
-        background-color: $darkModePrimary !important;
+        background-color: var(--glass-theme-primary) !important;
       }
     }
 
@@ -493,7 +531,7 @@
     }
 
     .badge-beta {
-      background-color: $darkModePrimary !important;
+      background-color: var(--glass-theme-primary) !important;
     }
 
     /** Gridster **/
@@ -511,13 +549,13 @@
     }
 
     .hb-widget-chart-background {
-      background-color: rgba($darkModePrimary, 0.2);
+      background-color: rgba(var(--glass-theme-primary-rgb), 0.2);
       display: none;
     }
 
     .animate_loader {
       .spinner_outer {
-        stroke: $darkModePrimary;
+        stroke: var(--glass-theme-primary);
       }
 
       .spinner_inner {
@@ -579,7 +617,7 @@
     }
 
     .gradient {
-      background: linear-gradient(130deg, $darkModePrimary, #4a266c, #2b2b2b);
+      background: linear-gradient(130deg, var(--glass-theme-primary), #4a266c, #2b2b2b);
     }
 
     .dropdown-menu {
@@ -607,22 +645,16 @@
     }
 
     .list-group-item-highlight {
-      background-color: rgba($darkModePrimary, 0.18) !important;
-      box-shadow: inset 3px 0 0 0 $darkModePrimary;
+      background-color: rgba(var(--glass-theme-primary-rgb), 0.18) !important;
+      box-shadow: inset 3px 0 0 0 var(--glass-theme-primary);
     }
   }
 }
 
-@include make-dark-theme('dark-mode-orange', #ffa000);
-@include make-dark-theme('dark-mode-red', #d32f2f);
-@include make-dark-theme('dark-mode-pink', #c2185b);
-@include make-dark-theme('dark-mode-purple', #9c27b0);
-@include make-dark-theme('dark-mode-deep-purple', #673ab7);
-@include make-dark-theme('dark-mode-indigo', #3f51b5);
-@include make-dark-theme('dark-mode-blue', #2196f3);
-@include make-dark-theme('dark-mode-blue-grey', #607d8b);
-@include make-dark-theme('dark-mode-cyan', #00838f);
-@include make-dark-theme('dark-mode-green', #388e3c);
-@include make-dark-theme('dark-mode-teal', #009688);
-@include make-dark-theme('dark-mode-grey', #9e9e9e);
-@include make-dark-theme('dark-mode-brown', #795548);
+$selectors: ();
+@each $name, $color in $themes {
+  @include make-dark-theme-vars($name, $color);
+  $selectors: list.append($selectors, '.glass-ui-#{$name}', $separator: comma);
+}
+
+@include make-dark-theme-rules(':is(#{$selectors})');

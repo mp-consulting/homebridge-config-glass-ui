@@ -29,12 +29,19 @@ jobs:
             package-lock.json
             ui/package-lock.json
 
-      # The server and the Angular UI are two npm packages with their own lock files
+      # The server and the React UI are two npm packages with their own lock files
       - name: Install dependencies
         run: npm ci && npm ci --prefix ui
 
       - name: Lint
         run: npm run lint
+
+      - name: Typecheck UI
+        run: npm run typecheck --prefix ui
+
+      # Test code is compiled by SWC in vitest, which strips types without checking them
+      - name: Typecheck tests
+        run: npm run typecheck:test
 
       - name: Build
         run: npm run build
@@ -42,5 +49,83 @@ jobs:
       - name: Test server
         run: npm test
 
+      # The schema-form golden suite replays real plugin schemas, which are gitignored and
+      # pinned by manifest.json. On CI the suite fails (rather than skips) when they are missing.
+      - name: Cache schema corpus
+        id: schema-corpus
+        uses: actions/cache@v4
+        with:
+          path: ui/src/schema-form/__corpus__/schemas
+          key: schema-corpus-${{ hashFiles('ui/src/schema-form/__corpus__/manifest.json') }}
+
+      - name: Fetch schema corpus
+        if: steps.schema-corpus.outputs.cache-hit != 'true'
+        run: node scripts/schema-corpus/fetch.mjs --from-manifest
+
       - name: Test UI
         run: npm run test:ui
+
+  e2e:
+    name: Browser (Playwright)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci && npm ci --prefix ui
+
+      - name: Build UI for the e2e suite
+        run: node e2e/build.mjs
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Also installs the system libraries chromium needs (not cached)
+      - name: Install chromium
+        run: npx playwright install --with-deps chromium
+
+      # Real plugins with a custom settings UI, for custom-ui.spec.ts. The script copies the
+      # mock plugins in too, so they are part of the key.
+      - name: Cache e2e plugins
+        id: e2e-plugins
+        uses: actions/cache@v4
+        with:
+          path: e2e/.run/plugins
+          key: e2e-plugins-${{ hashFiles('e2e/install-plugins.mjs', 'test/mocks/plugins/**') }}
+
+      - name: Install e2e plugins
+        if: steps.e2e-plugins.outputs.cache-hit != 'true'
+        run: node e2e/install-plugins.mjs
+
+      # Visual baselines are machine-specific (fonts, rendering), so they only run locally
+      - name: Run browser tests
+        run: npx playwright test -c e2e --grep-invert visual --reporter=list,html
+        env:
+          # Seeds the 2FA user saves.spec.ts logs in with
+          E2E_OTP_USER: '1'
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report/
+            playwright-report/
+            e2e/test-results/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

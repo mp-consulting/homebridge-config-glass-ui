@@ -20,7 +20,7 @@ import { getStartupConfig } from './core/config/config.startup.js'
 import { devServerCorsConfig } from './core/cors.config.js'
 import { Logger } from './core/logger/logger.service.js'
 import { SpaFilter } from './core/spa/spa.filter.js'
-import { setStaticAssetCacheHeaders } from './core/static-assets.js'
+import { staticAssetOptions } from './core/static-assets.js'
 
 import './env-setup.js'
 import 'reflect-metadata'
@@ -36,6 +36,8 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   const fAdapter = new FastifyAdapter({
     https: startupConfig.httpsOptions,
     logger: startupConfig.debug || false,
+    // Off unless `ui.trustProxy` names the reverse proxies (see trust-proxy.ts)
+    ...(startupConfig.trustProxy ? { trustProxy: startupConfig.trustProxy } : {}),
   })
 
   // (2) Register multipart with file size limit
@@ -66,7 +68,8 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         // because the Monaco editor genuinely needs it. Plugin custom UIs are
         // served with their own, looser policy in plugins-settings-ui.service.
         scriptSrc: ['\'self\'', '\'unsafe-eval\''],
-        // Angular injects component styles as inline <style> blocks.
+        // The Vite dev server injects styles as inline <style> blocks, and
+        // react-bootstrap / the grid set inline style attributes.
         styleSrc: ['\'self\'', '\'unsafe-inline\''],
         imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
         connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {
@@ -138,10 +141,14 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   // (v9 passed a node Response), while @nestjs/platform-fastify still vendors
   // the v9 signature in its FastifyStaticOptions type. Drop the cast once its
   // peer range covers v10.
+  //
+  // `preCompressed` serves the .br/.gz siblings scripts/precompress.mjs writes
+  // at build time to clients that accept them (~1.1 MB -> ~215 kB initial load).
+  // The options live in core/static-assets.ts so the static-assets spec runs
+  // against exactly this configuration.
   app.useStaticAssets({
     root: resolve(process.env.UIX_BASE_PATH, 'public'),
-    cacheControl: false,
-    setHeaders: setStaticAssetCacheHeaders,
+    ...staticAssetOptions,
   })
 
   // Set prefix
@@ -160,22 +167,27 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     skipMissingProperties: true,
   }))
 
-  // (11) Build and serve swagger api docs at /swagger
-  const options = new DocumentBuilder()
-    .setTitle('Homebridge Glass UI API Reference')
-    .setVersion(configService.package.version)
-    .addBearerAuth({
-      type: 'oauth2',
-      flows: {
-        password: {
-          tokenUrl: '/api/auth/login',
-          scopes: null,
+  // (11) Build and serve swagger api docs at /swagger - in development only.
+  // Mounted without authentication, the full api map (every route, parameter
+  // and schema) was readable by anyone who could reach the port. The support
+  // page hides its link unless the server reports `swaggerEnabled`.
+  if (process.env.UIX_DEVELOPMENT === '1') {
+    const options = new DocumentBuilder()
+      .setTitle('Homebridge Glass UI API Reference')
+      .setVersion(configService.package.version)
+      .addBearerAuth({
+        type: 'oauth2',
+        flows: {
+          password: {
+            tokenUrl: '/api/auth/login',
+            scopes: null,
+          },
         },
-      },
-    })
-    .build()
-  const document = SwaggerModule.createDocument(app, options)
-  SwaggerModule.setup('swagger', app, document)
+      })
+      .build()
+    const document = SwaggerModule.createDocument(app, options)
+    SwaggerModule.setup('swagger', app, document)
+  }
 
   // (12) Use the spa filter to serve index.html for any non-api routes
   app.useGlobalFilters(new SpaFilter())

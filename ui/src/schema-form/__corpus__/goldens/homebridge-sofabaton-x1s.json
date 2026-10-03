@@ -1,0 +1,520 @@
+{
+  "plugin": "homebridge-sofabaton-x1s",
+  "version": "0.1.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: tv"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 12,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "platform": "SofaBatonX1S",
+        "name": "SofaBaton X1S",
+        "discovery": true,
+        "localListenPort": 8200,
+        "exposureMode": "switches",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": false,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": false,
+        "assumeX1S": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 0
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": true,
+        "localListenPort": 8200,
+        "exposureMode": "switches",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": false,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": false,
+        "assumeX1S": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "switches",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": false,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": false,
+        "assumeX1S": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "switches",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": true,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": false,
+        "assumeX1S": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "switches",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": true,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": true,
+        "assumeX1S": false
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "switches",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": true,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": true,
+        "assumeX1S": true
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "tv",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": true,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": true,
+        "assumeX1S": true
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "tv",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          },
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": true,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": true,
+        "assumeX1S": true
+      },
+      "isValid": true,
+      "controls": {
+        "text": 6,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    },
+    {
+      "data": {
+        "platform": "golden",
+        "name": "SofaBaton X1S",
+        "discovery": false,
+        "localListenPort": 8200,
+        "exposureMode": "tv",
+        "manualActivities": [
+          {
+            "keyCode": 198
+          }
+        ],
+        "enableAllOff": true,
+        "pollIntervalSeconds": 60,
+        "commandTimeoutSeconds": 8,
+        "retryIntervalSeconds": 30,
+        "debugProtocol": true,
+        "assumeX1S": true
+      },
+      "isValid": true,
+      "controls": {
+        "text": 5,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 4,
+        "radio": 0,
+        "select": 1,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Platform",
+        "Platform Name",
+        "X1S Hub IP Address",
+        "Stable Hub ID",
+        "Enable Discovery",
+        "Local Listen Port",
+        "HomeKit Exposure",
+        "Manual Activities",
+        "Activity",
+        "Activity ID",
+        "Name",
+        "Activation Key Code",
+        "Enable All Off",
+        "All Off Activity ID",
+        "State Polling Interval",
+        "Command Timeout",
+        "Retry Interval",
+        "Debug Protocol Logging",
+        "Assume Hub Is X1S"
+      ]
+    }
+  ]
+}

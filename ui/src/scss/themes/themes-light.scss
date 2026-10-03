@@ -1,6 +1,75 @@
 @use 'sass:color';
+@use 'sass:list';
 
-@mixin make-theme($name, $primary, $primary-dark) {
+@use './contrast';
+
+// The light themes: `.glass-ui-<name>` on the body (and on a plugin custom UI
+// iframe's body). Each theme only sets custom properties; one shared rule set,
+// scoped to all the theme classes, reads them. Only one theme class is ever
+// applied, so this renders exactly what a full rule set per theme did, at a
+// fraction of the size. `:is()` keeps the specificity of a single class.
+$themes: (
+  'orange': (
+    #ff9800,
+    #ef6c00,
+  ),
+  'red': (
+    #f44336,
+    #d32f2f,
+  ),
+  'pink': (
+    #e91e63,
+    #c2185b,
+  ),
+  'purple': (
+    #9c27b0,
+    #421367,
+  ),
+  'deep-purple': (
+    #673ab7,
+    #4527a0,
+  ),
+  'indigo': (
+    #3f51b5,
+    #303f9f,
+  ),
+  'blue': (
+    #4949af,
+    #000070,
+  ),
+  'blue-grey': (
+    #607d8b,
+    #455a64,
+  ),
+  'cyan': (
+    #00bcd4,
+    #00838f,
+  ),
+  'green': (
+    #4caf50,
+    #388e3c,
+  ),
+  'teal': (
+    #009688,
+    #00695c,
+  ),
+  'grey': (
+    #9e9e9e,
+    #616161,
+  ),
+  'brown': (
+    #795548,
+    #4e342e,
+  ),
+);
+
+/// The rgb channels of a colour, for `rgba(var(--x), <alpha>)`.
+@function rgb-channels($color) {
+  @return #{color.channel($color, 'red', $space: rgb)}, #{color.channel($color, 'green', $space: rgb)},
+    #{color.channel($color, 'blue', $space: rgb)};
+}
+
+@mixin make-theme-vars($name, $primary, $primary-dark) {
   .glass-ui-#{$name} {
     // Read by the glass layer (glass.scss) so it can tint surfaces per theme
     --glass-primary: #{$primary};
@@ -8,7 +77,23 @@
       #{color.channel($primary, 'red', $space: rgb)}, #{color.channel($primary, 'green', $space: rgb)},
       #{color.channel($primary, 'blue', $space: rgb)};
     --glass-primary-dark: #{$primary-dark};
+    // Accessible variants (4.5:1): the accent as text on the light glass, and
+    // the filled button's gradient under white text
+    --glass-primary-text: #{contrast.darken-to-contrast($primary, #e8eaf2)};
+    --glass-primary-btn: #{contrast.darken-to-contrast($primary, #ffffff)};
+    --glass-primary-btn-dark: #{contrast.darken-to-contrast($primary-dark, #ffffff)};
 
+    // Read by the shared theme rules below
+    --glass-theme-primary: #{$primary};
+    --glass-theme-primary-rgb: #{rgb-channels($primary)};
+    --glass-theme-primary-dark: #{$primary-dark};
+    --glass-theme-primary-dark-rgb: #{rgb-channels($primary-dark)};
+    --glass-theme-primary-shade: #{color.adjust($primary, $lightness: -5%)};
+  }
+}
+
+@mixin make-theme-rules($selector) {
+  #{$selector} {
     pre {
       background-color: #eaeaea;
       color: #333333;
@@ -35,20 +120,20 @@
     }
 
     .sidebar {
-      background: $primary-dark;
+      background: var(--glass-theme-primary-dark);
       color: #eeeeee;
 
       .header {
-        background: $primary-dark;
+        background: var(--glass-theme-primary-dark);
       }
 
       .link-wrapper {
-        scrollbar-color: $primary transparent;
+        scrollbar-color: var(--glass-theme-primary) transparent;
 
         .link {
           .link-row {
             &:hover {
-              background: $primary;
+              background: var(--glass-theme-primary);
 
               .title {
                 color: #ffffff;
@@ -57,7 +142,7 @@
 
             &.active {
               i {
-                color: $primary;
+                color: var(--glass-theme-primary);
               }
             }
 
@@ -78,7 +163,7 @@
     }
 
     .m-header {
-      background: $primary-dark;
+      background: var(--glass-theme-primary-dark);
     }
 
     .search-bar {
@@ -87,7 +172,7 @@
     }
 
     .primary-text {
-      color: $primary;
+      color: var(--glass-theme-primary);
     }
 
     // Brand colours, not theme accents: hap = Homebridge purple, matter = the
@@ -109,23 +194,23 @@
 
     .btn-primary,
     .btn-default {
-      background-color: $primary !important;
-      border-color: $primary !important;
+      background-color: var(--glass-theme-primary) !important;
+      border-color: var(--glass-theme-primary) !important;
 
       &:hover,
       &:focus {
-        background-color: color.adjust($primary, $lightness: -5%) !important;
-        border-color: color.adjust($primary, $lightness: -5%) !important;
+        background-color: var(--glass-theme-primary-shade) !important;
+        border-color: var(--glass-theme-primary-shade) !important;
         transition: background-color 0.25s;
       }
     }
 
     .badge-primary {
-      background-color: $primary-dark !important;
+      background-color: var(--glass-theme-primary-dark) !important;
     }
 
     .badge-beta {
-      background-color: $primary-dark !important;
+      background-color: var(--glass-theme-primary-dark) !important;
     }
 
     a {
@@ -134,7 +219,7 @@
 
         @media (hover: hover) {
           &:hover {
-            color: $primary !important;
+            color: var(--glass-theme-primary) !important;
           }
         }
       }
@@ -150,7 +235,7 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -159,7 +244,7 @@
       cursor: pointer;
       @media (hover: hover) {
         &:hover {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -173,7 +258,7 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -193,7 +278,7 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
           background-color: rgba(0, 0, 0, 0.05);
         }
       }
@@ -202,7 +287,7 @@
     .widget-toolbar-button {
       @media (hover: hover) {
         &:hover {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
           background-color: rgba(0, 0, 0, 0.05);
         }
       }
@@ -211,7 +296,7 @@
     .manage-accessory-button {
       @media (hover: hover) {
         &:hover i {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
@@ -229,51 +314,51 @@
 
       @media (hover: hover) {
         &:hover {
-          color: $primary !important;
+          color: var(--glass-theme-primary) !important;
         }
       }
     }
 
     .hb-uix-switch {
       .hb-uix-slider {
-        border-color: $primary !important;
+        border-color: var(--glass-theme-primary) !important;
       }
 
       input:checked ~ .hb-uix-slider {
-        background-color: $primary !important;
+        background-color: var(--glass-theme-primary) !important;
       }
     }
 
     .rendux-input:checked + label {
-      background: $primary-dark !important;
+      background: var(--glass-theme-primary-dark) !important;
     }
 
     .qr-code-container {
       svg {
-        fill: $primary-dark;
+        fill: var(--glass-theme-primary-dark);
       }
     }
 
     .qr-code-theme-color {
-      stroke: $primary-dark !important;
+      stroke: var(--glass-theme-primary-dark) !important;
     }
 
     .hb-widget-chart-background {
-      background-color: rgba($primary-dark, 0.2);
+      background-color: rgba(var(--glass-theme-primary-dark-rgb), 0.2);
       display: none;
     }
 
     .animate_loader {
       .spinner_outer {
-        stroke: $primary-dark;
+        stroke: var(--glass-theme-primary-dark);
       }
       .spinner_inner {
-        stroke: $primary;
+        stroke: var(--glass-theme-primary);
       }
     }
 
     .login-container {
-      background-color: $primary-dark !important;
+      background-color: var(--glass-theme-primary-dark) !important;
     }
 
     .alert {
@@ -282,12 +367,12 @@
       border-color: #cccccc;
 
       a {
-        color: $primary;
+        color: var(--glass-theme-primary);
       }
     }
 
     .alert-info {
-      border-color: $primary;
+      border-color: var(--glass-theme-primary);
     }
 
     .alert-warning {
@@ -340,7 +425,7 @@
     }
 
     .gradient {
-      background: linear-gradient(130deg, $primary, #4a266c, $primary-dark);
+      background: linear-gradient(130deg, var(--glass-theme-primary), #4a266c, var(--glass-theme-primary-dark));
     }
 
     .grey-outline {
@@ -365,22 +450,16 @@
     }
 
     .list-group-item-highlight {
-      background-color: rgba($primary, 0.12);
-      box-shadow: inset 3px 0 0 0 $primary;
+      background-color: rgba(var(--glass-theme-primary-rgb), 0.12);
+      box-shadow: inset 3px 0 0 0 var(--glass-theme-primary);
     }
   }
 }
 
-@include make-theme('orange', #ff9800, #ef6c00);
-@include make-theme('red', #f44336, #d32f2f);
-@include make-theme('pink', #e91e63, #c2185b);
-@include make-theme('purple', #9c27b0, #421367);
-@include make-theme('deep-purple', #673ab7, #4527a0);
-@include make-theme('indigo', #3f51b5, #303f9f);
-@include make-theme('blue', #4949af, #000070);
-@include make-theme('blue-grey', #607d8b, #455a64);
-@include make-theme('cyan', #00bcd4, #00838f);
-@include make-theme('green', #4caf50, #388e3c);
-@include make-theme('teal', #009688, #00695c);
-@include make-theme('grey', #9e9e9e, #616161);
-@include make-theme('brown', #795548, #4e342e);
+$selectors: ();
+@each $name, $colors in $themes {
+  @include make-theme-vars($name, list.nth($colors, 1), list.nth($colors, 2));
+  $selectors: list.append($selectors, '.glass-ui-#{$name}', $separator: comma);
+}
+
+@include make-theme-rules(':is(#{$selectors})');

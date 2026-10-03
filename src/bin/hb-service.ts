@@ -35,6 +35,7 @@ import { check as tcpCheck } from 'tcp-port-used'
 
 import { getUiNodeModulesPath } from '../core/install-paths.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { sanitiseStartupEnv } from '../modules/config-editor/config-safety.js'
 import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
@@ -1179,8 +1180,10 @@ export class HomebridgeServiceHelper {
           process.env.UIX_INSECURE_MODE = '0'
         }
 
-        // Copy any custom env vars in
-        Object.assign(this.homebridgeCustomEnv, homebridgeStartupOptions.env)
+        // Copy any custom env vars in. NODE_OPTIONS is set from the UI, so
+        // it may not load code or open a debugger (that would be a shell
+        // for any admin, even with the terminal disabled).
+        Object.assign(this.homebridgeCustomEnv, sanitiseStartupEnv(homebridgeStartupOptions.env, msg => this.logger.warn(msg)))
       } else if (this.docker) {
         // Check old docker flag for debug mode
         if (process.env.HOMEBRIDGE_DEBUG === '1' && !this.homebridgeOpts.includes('-D')) {

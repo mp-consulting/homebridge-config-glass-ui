@@ -9,8 +9,10 @@ import { SchedulerModule } from '../../core/scheduler/scheduler.module.js'
 import { BackupModule } from '../backup/backup.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
+import { ConfigBackupService } from './config-backup.service.js'
 import { ConfigEditorController } from './config-editor.controller.js'
 import { ConfigEditorService } from './config-editor.service.js'
+import { ConfigProtocolService } from './config-protocol.service.js'
 
 @Module({
   imports: [
@@ -26,12 +28,15 @@ import { ConfigEditorService } from './config-editor.service.js'
   ],
   providers: [
     ConfigEditorService,
+    ConfigBackupService,
+    ConfigProtocolService,
   ],
   controllers: [
     ConfigEditorController,
   ],
   exports: [
     ConfigEditorService,
+    ConfigBackupService,
   ],
 })
 export class ConfigEditorModule {}

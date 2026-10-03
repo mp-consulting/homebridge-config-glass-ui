@@ -11,9 +11,11 @@ import { cyan, green, red, yellow } from 'bash-color'
 import { satisfies } from 'semver'
 import { Tail } from 'tail'
 
+import { createAuthorizedRunner } from '../../core/auth/guards/ws-auth.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
+import { isLogCommandAllowed, isProtectedStoragePath, LOG_COMMAND_RULE, LOG_PATH_RULE } from '../config-editor/config-safety.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 
 // How long a trailing partial line is held back waiting for its terminator
@@ -23,6 +25,13 @@ const PARTIAL_LINE_FLUSH_MS = 50
 @Injectable()
 export class LogService {
   private command: string[]
+  // Extra environment for the log command (the Windows log path is passed
+  // to PowerShell this way rather than spliced into the script)
+  private commandEnv: Record<string, string> = {}
+  // Set when a custom log command was refused, to explain why to the client
+  private refusedCommand: string | undefined
+  // Set when the log path points at secrets in the storage directory
+  private refusedPath: string | undefined
   private useNative = false
   private nativeTail: Tail
   private activeClients = new WeakSet<EventEmitter>()
@@ -40,7 +49,14 @@ export class LogService {
    */
   public setLogMethod() {
     this.useNative = false
+    this.commandEnv = {}
+    this.refusedCommand = undefined
+    this.refusedPath = undefined
     if (typeof this.configService.ui.log !== 'object') {
+      this.logNotConfigured()
+    } else if (['file', 'native'].includes(this.configService.ui.log.method) && isProtectedStoragePath(this.configService.ui.log.path, this.configService.storagePath)) {
+      // A value saved before the check existed: checked again here, on use
+      this.refusedPath = this.configService.ui.log.path
       this.logNotConfigured()
     } else if (this.configService.ui.log.method === 'file' && this.configService.ui.log.path) {
       this.logFromFile()
@@ -90,6 +106,12 @@ export class LogService {
       client.emit('stdout', cyan('Loading logs using native method...\r\n'))
       client.emit('stdout', cyan(`File: ${this.configService.ui.log.path}\r\n\r\n`))
       this.tailLogFromFileNative(client)
+    } else if (this.refusedPath !== undefined) {
+      client.emit('stdout', red(`Refusing to show the log file "${this.refusedPath}". ${LOG_PATH_RULE}\r\n\r\n`))
+      this.activeClients.delete(client)
+    } else if (this.refusedCommand !== undefined) {
+      client.emit('stdout', red(`Refusing to run the custom log command "${this.refusedCommand}". ${LOG_COMMAND_RULE}\r\n\r\n`))
+      this.activeClients.delete(client)
     } else {
       client.emit('stdout', red('Cannot show logs. The log option is not configured correctly in your Homebridge config.json file.\r\n\r\n'))
       client.emit('stdout', cyan('See https://homebridge.io/w/JtHrm for instructions or use hb-service.\r\n'))
@@ -117,7 +139,7 @@ export class LogService {
         windowsHide: true,
         stdio: ['ignore', 'pipe', 'pipe'],
         cwd: this.configService.storagePath,
-        env: process.env,
+        env: { ...process.env, ...this.commandEnv },
       })
 
       // Send stdout data from the process to the client
@@ -176,7 +198,7 @@ export class LogService {
         cols: size.cols,
         rows: size.rows,
         cwd: this.configService.storagePath,
-        env: process.env,
+        env: { ...process.env, ...this.commandEnv },
       })
 
       // Send stdout data from the process to the client
@@ -237,7 +259,11 @@ export class LogService {
     let command: string[]
     if (platform() === 'win32') {
       // Windows - use powershell to tail log
-      command = ['powershell.exe', '-command', `Get-Content -Path '${this.configService.ui.log.path}' -Wait -Tail 200`]
+      // The path is user config: hand it over in an environment variable and
+      // read it with -LiteralPath, so no quoting in it can end the string
+      // and run PowerShell code.
+      command = ['powershell.exe', '-NoProfile', '-Command', 'Get-Content -LiteralPath $env:UIX_LOG_PATH -Wait -Tail 200']
+      this.commandEnv = { UIX_LOG_PATH: this.configService.ui.log.path }
     } else {
       // Linux / macos etc
       command = ['tail', '-n', '500', '-f', this.configService.ui.log.path]
@@ -378,7 +404,16 @@ export class LogService {
    * Construct the logs from custom command
    */
   private logFromCommand() {
-    this.command = this.configService.ui.log.command.split(' ')
+    // The custom command is spawned directly, so it is a shell for whoever can
+    // edit the config. Allow any command only when the terminal is enabled
+    // (an admin has a shell anyway), otherwise only the log-command allowlist.
+    const command = this.configService.ui.log.command
+    if (!isLogCommandAllowed(command, this.configService.enableTerminalAccess)) {
+      this.command = null
+      this.refusedCommand = String(command)
+      return
+    }
+    this.command = command.split(' ')
   }
 
   /**
@@ -469,7 +504,20 @@ export class LogService {
     })
 
     if (output) {
-      client.emit('stdout', output)
+      // Pushed, not requested, so no guard ever sees it: re-check the user
+      // (and `restrictLogsToAdmins`) before each send, in order
+      this.outputRunner(client)(() => client.emit('stdout', output))
     }
+  }
+
+  private outputRunners = new WeakMap<EventEmitter, (action: () => unknown) => void>()
+
+  private outputRunner(client: EventEmitter): (action: () => unknown) => void {
+    let runner = this.outputRunners.get(client)
+    if (!runner) {
+      runner = createAuthorizedRunner(client, { admin: () => this.configService.restrictLogsToAdmins })
+      this.outputRunners.set(client, runner)
+    }
+    return runner
   }
 }

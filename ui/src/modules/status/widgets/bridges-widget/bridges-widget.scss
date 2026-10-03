@@ -1,0 +1,40 @@
+// Angular: bridges-widget.component.scss, scoped under the widget's root
+.hb-bridges-widget {
+  .flex-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hb-status-icon {
+    font-size: 20px;
+  }
+
+  .hb-status-item {
+    @media (max-width: 767px) {
+      width: 100%;
+    }
+  }
+
+  // Reset native <button> chrome so the whole-row buttons render identically to
+  // the previous <div> rows. Keeps the row clickable and aria-labeled as a unit.
+  .hb-status-row {
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    width: 100%;
+
+    &[aria-disabled='true'] {
+      cursor: default;
+    }
+  }
+
+  .hb-status-item-quarter {
+    min-width: max(25%, 225px);
+  }
+
+  .opacity-muted {
+    opacity: 0.25;
+  }
+}

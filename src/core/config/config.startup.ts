@@ -9,6 +9,7 @@ import { readJson } from 'fs-extra/esm'
 
 import { Logger } from '../logger/logger.service.js'
 import { SslCertGeneratorService } from '../ssl/ssl-cert-generator.service.js'
+import { parseTrustProxy } from './trust-proxy.js'
 
 /**
  * Return config required to start the console server
@@ -102,6 +103,10 @@ export async function getStartupConfig() {
       : String(ui.allowFrameAncestors).split(/[\s,]+/)
     config.allowedFrameAncestors = raw.map((s: string) => s.trim()).filter(Boolean)
   }
+
+  // Reverse proxies whose X-Forwarded-For is believed (opt-in, see
+  // trust-proxy.ts). Without it the client address is the TCP peer.
+  config.trustProxy = parseTrustProxy(ui.trustProxy, reason => logger.error(`${reason} Ignoring it - proxy headers are not trusted.`))
 
   // Preload debug settings
   if (ui.debug) {

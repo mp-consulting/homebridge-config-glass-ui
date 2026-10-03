@@ -1,0 +1,217 @@
+// Status dashboard. Angular scoped this to the component; here it is nested
+// under the page root (`.hb-status`).
+
+.hb-status {
+  // Box-less like Angular's inline <app-status> host, so `.status-container`'s
+  // percentage min-height resolves against `.content` as it did there
+  display: contents;
+
+  a {
+    &.grey-text {
+      @media (hover: hover) {
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .status-container {
+    min-height: calc(100% - 30px);
+  }
+
+  .gridster {
+    background-color: inherit;
+  }
+
+  // Keyboard-driven widget reorder list
+  .list-group-box {
+    .list-group-item[role='option'] {
+      cursor: pointer;
+
+      // Visible state for the currently picked-up widget (also covers pointer
+      // moves where keyboard focus isn't on the row).
+      &[aria-selected='true'] {
+        background-color: rgba(127, 127, 127, 0.12);
+        font-weight: 600;
+      }
+
+      // Clear focus indicator now sighted keyboard users can reach this view.
+      &:focus-visible {
+        outline: 2px solid #4f7cff;
+        outline-offset: -2px;
+        z-index: 1;
+      }
+    }
+  }
+
+  .widget-control-button {
+    position: absolute;
+    float: right;
+    top: 0 !important;
+    right: 2px !important;
+    padding: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+    color: #999999;
+
+    &:active,
+    &:hover,
+    &:focus {
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 767px) {
+      opacity: 1;
+    }
+  }
+
+  .widget-item {
+    @media (hover: hover) {
+      &:hover,
+      &:active {
+        .widget-control-button {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .gridster {
+    &.mobile {
+      #UpdateInfoWidgetComponent,
+      #SystemInfoWidgetComponent,
+      #WeatherWidgetComponent,
+      #BridgesWidgetComponent,
+      #ClockWidgetComponent {
+        height: unset !important;
+      }
+
+      #CpuWidgetComponent,
+      #NetworkWidgetComponent,
+      #MemoryWidgetComponent,
+      #UptimeWidgetComponent {
+        height: unset !important;
+        padding-bottom: 10px;
+      }
+
+      #HapQrcodeWidgetComponent,
+      #MatterQrcodeWidgetComponent {
+        height: 360px !important;
+      }
+
+      #AccessoriesWidgetComponent {
+        height: unset !important;
+        border: none !important;
+      }
+    }
+  }
+}
+
+// What angular-gridster2's own stylesheet did, on react-grid-layout's markup.
+// Wrapped in :where() so these keep the library's low specificity and the
+// theme rules (widgets.scss, themes-*.scss, glass.scss) still win.
+:where(.hb-status) {
+  .gridster {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    user-select: none;
+    display: block;
+
+    &.mobile {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+  }
+
+  .react-grid-layout {
+    position: relative;
+    transition: height 300ms ease;
+  }
+
+  gridster-item {
+    display: block;
+    box-sizing: border-box;
+    z-index: 1;
+    position: absolute;
+    overflow: hidden;
+    background: #fff;
+    user-select: text;
+    transition: all 300ms;
+    transition-property: transform, width, height;
+  }
+
+  .mobile gridster-item {
+    position: relative;
+    transition: none;
+  }
+
+  gridster-item.gridster-item-moving {
+    cursor: move;
+  }
+
+  gridster-item.gridster-item-resizing,
+  gridster-item.gridster-item-moving {
+    transition: none;
+    z-index: 2;
+    box-shadow:
+      0 0 5px 5px rgba(0, 0, 0, 0.2),
+      0 6px 10px rgba(0, 0, 0, 0.14),
+      0 1px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  .gridster-item-resizable-handler {
+    position: absolute;
+    z-index: 2;
+
+    &.handle-e {
+      cursor: ew-resize;
+      width: 10px;
+      bottom: 0;
+      right: 0;
+      top: 0;
+    }
+
+    &.handle-s {
+      cursor: ns-resize;
+      height: 10px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    &.handle-se {
+      cursor: se-resize;
+      width: 0;
+      height: 0;
+      right: 0;
+      bottom: 0;
+      border-style: solid;
+      border-width: 0 0 10px 10px;
+      border-color: transparent;
+    }
+  }
+
+  // react-grid-layout renders the handles on a locked grid too, marked with this class
+  .react-resizable-hide > .gridster-item-resizable-handler {
+    display: none;
+  }
+
+  gridster-item:hover .gridster-item-resizable-handler.handle-se {
+    border-color: transparent transparent #cccccc;
+  }
+
+  // gridster-preview: where the widget will land. Only shown while editing, so
+  // it takes the layout-editing look of dashboard-edit.scss directly.
+  .react-grid-placeholder {
+    position: absolute;
+    z-index: 0;
+    border-radius: 24px;
+    background: rgba(var(--glass-primary-rgb, 103, 58, 183), 0.16);
+    border: 2px dashed rgba(var(--glass-primary-rgb, 103, 58, 183), 0.7);
+    transition: transform 100ms ease;
+    user-select: none;
+  }
+}

@@ -15,6 +15,7 @@ import fastifyMultipart from '@fastify/multipart'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import dayjs from 'dayjs'
 import FormData from 'form-data'
 import {
@@ -42,6 +43,7 @@ import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupGateway } from '../../src/modules/backup/backup.gateway.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -184,7 +186,7 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     schedulerService = app.get(SchedulerService)
 
     // Isolate plugin discovery to the test plugin path only
-    ;(pluginsService as any)._paths = [resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')]
+    ;(app.get(InstalledPluginsService) as any)._paths = [resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')]
   })
 
   beforeEach(async () => {
@@ -349,10 +351,9 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
     expect(res.statusCode).toBe(201)
 
-    await new Promise(r => setTimeout(r, 100))
-
-    // check the backup contains the required files
+    // the upload is extracted before the response is sent
     const restoreDirectory = (backupService as any).restoreDirectory
+    expect(restoreDirectory).toStrictEqual(expect.stringContaining(join(tmpdir(), 'homebridge-backup-')))
     const pluginsJson = join(restoreDirectory, 'plugins.json')
     const infoJson = join(restoreDirectory, 'info.json')
 
@@ -442,13 +443,9 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
     expect(res.statusCode).toBe(500)
 
-    await new Promise(r => setTimeout(r, 100))
-
-    // check the backup contains the required files
-    const restoreDirectory = (backupService as any).restoreDirectory
-
-    // Ensure the temp restore directory was removed
-    expect(await pathExists(restoreDirectory)).toBe(false)
+    // The truncated upload is refused before anything is extracted (the
+    // response is only sent after that), so no restore directory is left
+    expect((backupService as any).restoreDirectory).toBeUndefined()
   })
 
   it('GET /backup/restart', async () => {
@@ -748,7 +745,8 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       const result = await backupGateway.doRestore(gwClient)
 
       expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('restore failed'))
-      expect(result).toBeDefined()
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toStrictEqual(new Error('restore failed'))
     })
 
     it('do-restore-hbfx should delegate to backupService.restoreHbfxBackup', async () => {
@@ -766,7 +764,8 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       const result = await backupGateway.doRestoreHbfx(gwClient)
 
       expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('hbfx restore failed'))
-      expect(result).toBeDefined()
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toStrictEqual(new Error('hbfx restore failed'))
     })
 
     it('do-restore should return WsException on error', async () => {
@@ -777,7 +776,8 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
       // The gateway should catch, log, emit red error, and return WsException
       expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('unexpected error'))
-      expect((result as any).error).toBeDefined()
+      expect(result).toBeInstanceOf(WsException)
+      expect((result as WsException).getError()).toBe(error)
     })
   })
 
@@ -820,7 +820,7 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       await backupService.restoreScheduledBackup(backupId)
 
       const restoreDir = (backupService as any).restoreDirectory as string
-      expect(restoreDir).toBeDefined()
+      expect(restoreDir).toStrictEqual(expect.stringContaining(join(tmpdir(), 'homebridge-backup-')))
       const entries = await readdir(restoreDir)
       for (const entry of entries) {
         const stats = await lstat(join(restoreDir, entry))
@@ -860,9 +860,9 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       })
       expect(res.statusCode).toBe(201)
 
-      await new Promise(r => setTimeout(r, 100))
+      // extracted before the response is sent
       const restoreDir = (backupService as any).restoreDirectory as string
-      expect(restoreDir).toBeDefined()
+      expect(restoreDir).toStrictEqual(expect.stringContaining(join(tmpdir(), 'homebridge-backup-')))
       const entries = await readdir(restoreDir)
       for (const entry of entries) {
         const stats = await lstat(join(restoreDir, entry))

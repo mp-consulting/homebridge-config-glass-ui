@@ -1,0 +1,953 @@
+{
+  "plugin": "homebridge-lgwebos-tv",
+  "version": "4.9.1",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 1"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 0"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 6,
+      "list": 43,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 4,
+      "list": 26,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": false,
+              "filterSystemApps": false
+            },
+            "power": {
+              "startInput": false
+            },
+            "picture": {
+              "brightnessControl": false,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 10,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": false,
+              "filterSystemApps": false
+            },
+            "power": {
+              "startInput": false
+            },
+            "picture": {
+              "brightnessControl": false,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 10,
+        "add": 7,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": false
+            },
+            "power": {
+              "startInput": false
+            },
+            "picture": {
+              "brightnessControl": false,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 9,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true
+            },
+            "power": {
+              "startInput": false
+            },
+            "picture": {
+              "brightnessControl": false,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 9,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": false,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 9,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 9,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 9,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true,
+              "displayOrder": 0
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 9,
+        "add": 6,
+        "remove": 6
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true,
+              "displayOrder": 0
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 10,
+        "add": 6,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true,
+              "displayOrder": 0
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 11,
+        "add": 6,
+        "remove": 8
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true,
+              "displayOrder": 0
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 13,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 12,
+        "add": 6,
+        "remove": 9
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true,
+              "displayOrder": 0
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 11,
+        "add": 6,
+        "remove": 8
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    },
+    {
+      "data": {
+        "name": "LG webOS TV",
+        "devices": [
+          {
+            "name": "golden",
+            "displayType": 1,
+            "inputs": {
+              "getFromDevice": true,
+              "filterSystemApps": true,
+              "displayOrder": 0
+            },
+            "power": {
+              "startInput": true
+            },
+            "picture": {
+              "brightnessControl": true,
+              "backlightControl": false,
+              "contrastControl": false,
+              "colorControl": false
+            },
+            "screen": {
+              "turnOnOff": false,
+              "saverOnOff": false
+            },
+            "sslWebSocket": false,
+            "disableTvService": false,
+            "infoButtonCommand": "MENU",
+            "log": {
+              "deviceInfo": true,
+              "success": true,
+              "info": false,
+              "warn": true,
+              "error": true,
+              "debug": false
+            },
+            "restFul": {
+              "enable": false
+            },
+            "mqtt": {
+              "enable": false,
+              "protocolVersion": 5,
+              "haDiscovery": false
+            }
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 0,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 10,
+        "add": 6,
+        "remove": 7
+      },
+      "labels": [
+        "",
+        "Name",
+        "IP/Hostname",
+        "Address Mac",
+        "Accessory type",
+        "Inputs",
+        "Buttons",
+        "Advanced Settings"
+      ]
+    }
+  ]
+}

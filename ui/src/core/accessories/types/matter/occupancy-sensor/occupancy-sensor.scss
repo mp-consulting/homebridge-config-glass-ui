@@ -1,0 +1,19 @@
+.hb-matter-occupancy-sensor.accessory-on {
+  svg {
+    .orange-outline {
+      stroke: #ff9800;
+      animation: hb-matter-occupancy-sensor-flash 1s infinite;
+    }
+  }
+}
+
+@keyframes hb-matter-occupancy-sensor-flash {
+  0%,
+  100% {
+    stroke-opacity: 0.8;
+  }
+
+  50% {
+    stroke-opacity: 0.2;
+  }
+}

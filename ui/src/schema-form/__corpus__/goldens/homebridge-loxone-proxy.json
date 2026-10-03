@@ -1,0 +1,503 @@
+{
+  "plugin": "homebridge-loxone-proxy",
+  "version": "1.13.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: enabled"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: inclusion"
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "port": 80,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": false,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": false,
+        "TLS": false,
+        "switchAlias": {
+          "ReverseLockSwitch": false
+        }
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 80,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": false,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": false,
+        "TLS": false,
+        "switchAlias": {
+          "ReverseLockSwitch": false
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": false,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": false,
+        "TLS": false,
+        "switchAlias": {
+          "ReverseLockSwitch": false
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": false,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": false,
+        "TLS": true,
+        "switchAlias": {
+          "ReverseLockSwitch": false
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": false,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": false,
+        "TLS": true,
+        "switchAlias": {
+          "ReverseLockSwitch": true
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": false,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": true,
+        "TLS": true,
+        "switchAlias": {
+          "ReverseLockSwitch": true
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": true,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": true,
+        "TLS": true,
+        "switchAlias": {
+          "ReverseLockSwitch": true
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": true,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "exclusion"
+        },
+        "enableHKSV": true,
+        "TLS": true,
+        "switchAlias": {
+          "ReverseLockSwitch": true
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    },
+    {
+      "data": {
+        "port": 7,
+        "options": {
+          "MoodSwitches": "enabled"
+        },
+        "Advanced": {
+          "NfcCodeTouchMapping": "DoorBell",
+          "MotionTriggersDoorbell": true,
+          "JpegHeaderSize": 623,
+          "EnableTwoWayAudio": false
+        },
+        "roomfilter": {
+          "type": "inclusion"
+        },
+        "enableHKSV": true,
+        "TLS": true,
+        "switchAlias": {
+          "ReverseLockSwitch": true
+        },
+        "host": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 14,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 5,
+        "radio": 0,
+        "select": 3,
+        "add": 0,
+        "remove": 0
+      },
+      "labels": [
+        "Required Settings",
+        "",
+        "MiniServer hostname/IP Address (without http/https)",
+        "MiniServer Port",
+        "",
+        "Username",
+        "Password",
+        "",
+        "TLS",
+        "Filters",
+        "SwitchItem Mappings",
+        "InfoOnlyAnalog Mappings",
+        "InfoOnlyDigital Mappings",
+        "HomeKit Secure Video (HKSV)",
+        "Advanced"
+      ]
+    }
+  ]
+}

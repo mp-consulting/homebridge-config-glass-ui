@@ -1,0 +1,357 @@
+{
+  "plugin": "homebridge-adt-pulse",
+  "version": "3.5.0",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 6,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: paused"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: 0.75"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 19,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "ADT Pulse",
+        "subdomain": "portal",
+        "mode": "normal",
+        "speed": 1
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "normal",
+        "speed": 1
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "normal",
+        "speed": 1,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "normal",
+        "speed": 1,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ],
+        "options": [
+          "disableAlarmRingingSwitch"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "normal",
+        "speed": 1,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ],
+        "options": [
+          "disableAlarmRingingSwitch",
+          "ignoreSensorProblemStatus"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "paused",
+        "speed": 1,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ],
+        "options": [
+          "disableAlarmRingingSwitch",
+          "ignoreSensorProblemStatus"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "paused",
+        "speed": 0.75,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ],
+        "options": [
+          "disableAlarmRingingSwitch",
+          "ignoreSensorProblemStatus"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "paused",
+        "speed": 0.75,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ],
+        "options": [
+          "disableAlarmRingingSwitch",
+          "ignoreSensorProblemStatus"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 5,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "subdomain": "portal",
+        "mode": "paused",
+        "speed": 0.75,
+        "sensors": [
+          {
+            "adtZone": 7
+          }
+        ],
+        "options": [
+          "disableAlarmRingingSwitch",
+          "ignoreSensorProblemStatus"
+        ]
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 1,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "",
+        "Name",
+        "Operational Mode",
+        "Synchronization Speed",
+        "Advanced Options",
+        "Disable \"Alarm Ringing\" switch",
+        "Ignore \"Sensor Problem\" Panel Status"
+      ]
+    }
+  ]
+}

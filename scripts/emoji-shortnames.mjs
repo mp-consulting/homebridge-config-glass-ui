@@ -16,7 +16,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const outFile = join(here, '..', 'ui', 'src', 'app', 'core', 'components', 'markdown', 'emoji-shortnames.json')
+const outFile = join(here, '..', 'ui', 'src', 'core', 'components', 'markdown', 'emoji-shortnames.json')
 
 // Resolve `emoji-js` from ui/node_modules (it's a ui devDependency).
 // pathToFileURL: dynamic import() rejects bare Windows paths (e.g. `D:\...`).

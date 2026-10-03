@@ -1,0 +1,438 @@
+{
+  "plugin": "homebridge-wiz-lan",
+  "version": "3.4.2",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 1,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "remove",
+      "index": 3,
+      "list": 23,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 14,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "WizSmarthome",
+        "enableScenes": false,
+        "lastStatus": false,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 0
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": false,
+        "lastStatus": false,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": false,
+        "lastStatus": false,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": true,
+        "lastStatus": false,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": true,
+        "lastStatus": true,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": true,
+        "lastStatus": true,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 11,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": true,
+        "lastStatus": true,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 13,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 4
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": true,
+        "lastStatus": true,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 11,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 3
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "enableScenes": true,
+        "lastStatus": true,
+        "refreshInterval": 0,
+        "discoveryInterval": 0,
+        "pingFailuresBeforeOffline": 3,
+        "port": 7
+      },
+      "isValid": true,
+      "controls": {
+        "text": 8,
+        "number": 4,
+        "textarea": 0,
+        "checkbox": 2,
+        "radio": 0,
+        "select": 0,
+        "add": 2,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Port",
+        "Enable Scenes",
+        "Last Status",
+        "Broadcast Address",
+        "Server Address",
+        "Refresh Interval (seconds)",
+        "Discovery Interval (seconds)",
+        "Ping Failures Before Offline",
+        "Devices",
+        "",
+        "Device IP",
+        "Device Name",
+        "Device MAC",
+        "Ignored Devices",
+        "",
+        "Device IP",
+        "Device MAC"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+{
+  "plugin": "homebridge-atlas",
+  "version": "1.0.3",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: push"
+    },
+    {
+      "op": "select",
+      "index": 1,
+      "value": "1: stay"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 16,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Atlas",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": false,
+        "enableControl": false,
+        "partialArmMode": "stay",
+        "includeZones": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": false,
+        "enableControl": false,
+        "partialArmMode": "stay",
+        "includeZones": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": false,
+        "enableControl": false,
+        "partialArmMode": "stay",
+        "includeZones": true,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": false,
+        "partialArmMode": "stay",
+        "includeZones": true,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": true,
+        "partialArmMode": "stay",
+        "includeZones": true,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": true,
+        "partialArmMode": "stay",
+        "includeZones": false,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": true,
+        "partialArmMode": "stay",
+        "includeZones": false,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": true,
+        "partialArmMode": "stay",
+        "includeZones": false,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": true,
+        "partialArmMode": "stay",
+        "includeZones": false,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 6,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 4,
+        "add": 1,
+        "remove": 2
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    },
+    {
+      "data": {
+        "name": "golden",
+        "updates": "push",
+        "pollInterval": 30,
+        "debug": true,
+        "enableControl": true,
+        "partialArmMode": "stay",
+        "includeZones": false,
+        "siteId": 7
+      },
+      "isValid": false,
+      "controls": {
+        "text": 5,
+        "number": 2,
+        "textarea": 0,
+        "checkbox": 3,
+        "radio": 0,
+        "select": 3,
+        "add": 1,
+        "remove": 1
+      },
+      "labels": [
+        "Name",
+        "Atlas / RISCO username",
+        "Password",
+        "Panel user code (PIN)",
+        "Site ID (optional)",
+        "Updates",
+        "Poll interval (seconds)",
+        "Debug diagnostics",
+        "Enable arming and disarming",
+        "Show partial arm as",
+        "Include zone sensors",
+        "Zone overrides",
+        "",
+        "Zone ID",
+        "Zone name",
+        "Type"
+      ]
+    }
+  ]
+}

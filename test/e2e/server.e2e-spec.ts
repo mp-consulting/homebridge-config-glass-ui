@@ -262,6 +262,26 @@ describe('ServerController (e2e)', () => {
     expect(res.json()).toHaveLength(1)
   })
 
+  it('lists no pairings or cached accessories before Homebridge has run once', async () => {
+    // A fresh storage folder: Homebridge creates persist/ and accessories/ on its first start
+    await remove(persistPath)
+    await remove(accessoriesPath)
+
+    for (const path of ['/server/pairings', '/server/cached-accessories']) {
+      const res = await app.inject({ method: 'GET', path, headers: { authorization } })
+      expect({ path, status: res.statusCode, body: res.json() }).toEqual({ path, status: 200, body: [] })
+    }
+
+    const res = await app.inject({ method: 'PUT', path: '/server/reset-cached-accessories', headers: { authorization } })
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('DELETE /server/cached-accessories refuses a request without accessories', async () => {
+    const res = await app.inject({ method: 'DELETE', path: '/server/cached-accessories', headers: { authorization } })
+
+    expect(res.statusCode).toBe(400)
+  })
+
   it('GET /server/pairings/:deviceId', async () => {
     const res = await app.inject({
       method: 'GET',
@@ -272,7 +292,8 @@ describe('ServerController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()._setupCode).toBeDefined()
+    // pincode 874-99-441, category 2 (bridge), setupID 1FAP from the mock AccessoryInfo
+    expect(res.json()._setupCode).toBe('X-HM://0024X0Z3L1FAP')
     expect(res.json()._isPaired).toBe(false)
     expect(res.json()._username).toBe('67:E4:1F:0E:A0:5D')
   })
@@ -331,12 +352,13 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     const external = res.json().find((d: any) => d._id === externalDeviceId)
-    expect(external).toBeDefined()
+    expect(external).toMatchObject({ _id: externalDeviceId, _username: externalUsername })
     expect(external._plugin).toBe('homebridge-camera-ffmpeg')
     expect(external._isExternal).toBe(true)
     expect(external._port).toBe(externalPort)
     expect(external._couldBeStale).toBe(false)
-    expect(external._setupCode).toBeDefined()
+    // pincode 874-99-441, category 17 (camera), setupID ABCD
+    expect(external._setupCode).toBe('X-HM://00GXNDDWXABCD')
   })
 
   it('exposes Matter commissioning QR data on Matter externals', async () => {
@@ -353,7 +375,7 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     const matterExternal = res.json().find((d: any) => d._matterOnly === true)
-    expect(matterExternal).toBeDefined()
+    expect(matterExternal).toMatchObject({ _matterOnly: true })
     expect(matterExternal._isExternal).toBe(true)
     expect(matterExternal._setupCode).toBe('MT:Y.K90-C80B00000000')
     expect(matterExternal.pincode).toBe('8765-432-1098')
@@ -705,9 +727,8 @@ describe('ServerController (e2e)', () => {
       payload,
     })
 
+    // the upload is saved before the response is sent
     expect(res.statusCode).toBe(201)
-
-    await new Promise(r => setTimeout(r, 100))
 
     // Two things to ensure:
     // 1. The wallpaper was saved to the correct location
@@ -734,9 +755,8 @@ describe('ServerController (e2e)', () => {
       payload,
     })
 
+    // the upload is saved before the response is sent
     expect(res.statusCode).toBe(201)
-
-    await new Promise(r => setTimeout(r, 100))
 
     // Now delete the wallpaper
     const deleteRes = await app.inject({
@@ -754,6 +774,105 @@ describe('ServerController (e2e)', () => {
     // Check the config file was updated
     const config = await readJson(configService.configPath)
     expect(config.platforms[0].wallpaper).toBeUndefined()
+  })
+
+  describe('wallpaper file name hardening', () => {
+    const uploadWallpaper = async (fileName: string) => {
+      const payload = new FormData()
+      payload.append('wallpaper', await readFile(resolve(__dirname, '../mocks/persist/wallpaper.png')), fileName)
+      const headers = payload.getHeaders()
+      headers.authorization = authorization
+      return app.inject({ method: 'POST', path: '/server/wallpaper', headers, payload })
+    }
+
+    // Write `ui.wallpaper` straight into config.json and the running config,
+    // the way a hand edit (or a value saved before the check existed) would
+    const setWallpaperInConfig = async (value: string) => {
+      const config: HomebridgeConfig = await readJson(configService.configPath)
+      ;(config.platforms.find((p: any) => p.platform === 'config') as any).wallpaper = value
+      await writeJson(configService.configPath, config)
+      configService.ui.wallpaper = value
+    }
+
+    afterAll(async () => {
+      await remove(resolve(process.env.UIX_STORAGE_PATH, 'victim.txt'))
+    })
+
+    it('refuses to upload a file that is not an allowed image type', async () => {
+      const res = await uploadWallpaper('evil.html')
+
+      expect(res.statusCode).toBe(400)
+      expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.html'))).toBe(false)
+      const config = await readJson(configService.configPath)
+      expect(config.platforms[0].wallpaper).not.toBe('ui-wallpaper.html')
+    })
+
+    it('refuses to upload a file without an extension', async () => {
+      const res = await uploadWallpaper('wallpaper')
+      expect(res.statusCode).toBe(400)
+    })
+
+    it('accepts an upper-case image extension and keeps its case', async () => {
+      const res = await uploadWallpaper('Photo.JPG')
+
+      expect(res.statusCode).toBe(201)
+      const config = await readJson(configService.configPath)
+      expect(config.platforms[0].wallpaper).toBe('ui-wallpaper.JPG')
+      expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.JPG'))).toBe(true)
+      await remove(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.JPG'))
+    })
+
+    it('does not delete the file a hand-edited wallpaper value names when a new one is uploaded', async () => {
+      const victim = resolve(process.env.UIX_STORAGE_PATH, 'victim.txt')
+      await writeJson(victim, { keep: true })
+      await setWallpaperInConfig('victim.txt')
+
+      const res = await uploadWallpaper('wallpaper.png')
+
+      expect(res.statusCode).toBe(201)
+      expect(await pathExists(victim)).toBe(true)
+    })
+
+    it('does not delete the file a hand-edited wallpaper value names on DELETE, but clears the value', async () => {
+      const victim = resolve(process.env.UIX_STORAGE_PATH, 'victim.txt')
+      await writeJson(victim, { keep: true })
+      await setWallpaperInConfig('../storage/victim.txt')
+
+      const res = await app.inject({ method: 'DELETE', path: '/server/wallpaper', headers: { authorization } })
+
+      expect(res.statusCode).toBe(204)
+      expect(await pathExists(victim)).toBe(true)
+      const config = await readJson(configService.configPath)
+      expect(config.platforms[0].wallpaper).toBeUndefined()
+    })
+
+    it('GET /auth/wallpaper/:hash serves an uploaded wallpaper without authentication', async () => {
+      expect((await uploadWallpaper('wallpaper.png')).statusCode).toBe(201)
+      configService.ui.wallpaper = 'ui-wallpaper.png'
+
+      const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/any.jpg' })
+
+      expect(res.statusCode).toBe(200)
+      expect(res.rawPayload).toEqual(await readFile(resolve(__dirname, '../mocks/persist/wallpaper.png')))
+    })
+
+    it.each([
+      'auth.json',
+      '.uix-secrets',
+      '../auth.json',
+      '/etc/passwd',
+      'ui-wallpaper.png/../auth.json',
+      'sub/ui-wallpaper.png',
+    ])('GET /auth/wallpaper/:hash does not serve a wallpaper value of %s', async (value) => {
+      configService.ui.wallpaper = value
+
+      const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/any.jpg' })
+
+      expect(res.statusCode).toBe(404)
+      expect(res.body).not.toContain('hashedPassword')
+      expect(res.body).not.toContain('secretKey')
+      expect(res.body).not.toContain('root:')
+    })
   })
 
   it('GET /server/matter-accessories (should return empty array when no Matter storage)', async () => {
@@ -1145,7 +1264,7 @@ describe('ServerController (e2e)', () => {
   it('DELETE /server/cached-accessories (bulk - rejects unsafe cacheFile)', async () => {
     const authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
     const authBefore = await readJson(authFilePath)
-    expect(authBefore).toBeDefined()
+    expect(authBefore).toStrictEqual(expect.arrayContaining([expect.objectContaining({ username: 'admin' })]))
 
     for (const cacheFile of ['../../auth.json', 'auth.json', 'cachedAccessories.NOTHEX']) {
       const res = await app.inject({
@@ -1382,8 +1501,11 @@ describe('ServerController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().type).toBe('generated')
     expect(res.json().mode).toBe('keycert')
-    expect(res.json().keyPath).toBeDefined()
-    expect(res.json().certPath).toBeDefined()
+    const sslDir = resolve(configService.storagePath, 'ssl-certs')
+    expect(res.json().keyPath).toBe(resolve(sslDir, 'private-key.pem'))
+    expect(res.json().certPath).toBe(resolve(sslDir, 'certificate.pem'))
+    expect(await pathExists(res.json().keyPath)).toBe(true)
+    expect(await pathExists(res.json().certPath)).toBe(true)
   })
 
   it('POST /server/ssl/selfsigned/generate (selfsigned mode)', async () => {

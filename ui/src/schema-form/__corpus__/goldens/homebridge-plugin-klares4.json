@@ -1,0 +1,1185 @@
+{
+  "plugin": "homebridge-plugin-klares4",
+  "version": "2.1.4",
+  "initialData": {},
+  "steps": [
+    {
+      "op": "type",
+      "index": 0,
+      "value": "golden"
+    },
+    {
+      "op": "type",
+      "index": 4,
+      "value": 7
+    },
+    {
+      "op": "toggle",
+      "index": 0
+    },
+    {
+      "op": "toggle",
+      "index": 1
+    },
+    {
+      "op": "toggle",
+      "index": 2
+    },
+    {
+      "op": "toggle",
+      "index": 3
+    },
+    {
+      "op": "select",
+      "index": 0,
+      "value": "1: 0.5"
+    },
+    {
+      "op": "add",
+      "index": 0
+    },
+    {
+      "op": "add",
+      "index": 1
+    },
+    {
+      "op": "add",
+      "index": 2
+    },
+    {
+      "op": "remove",
+      "index": 2,
+      "list": 41,
+      "item": 0
+    },
+    {
+      "op": "remove",
+      "index": 1,
+      "list": 38,
+      "item": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": true,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 21,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": true,
+          "sensorFreshnessMs": 300000
+        },
+        "ksaImport": {
+          "enabled": false,
+          "applyAtStartup": false,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": true,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 21,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": true,
+          "sensorFreshnessMs": 300000
+        },
+        "ksaImport": {
+          "enabled": false,
+          "applyAtStartup": false,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": true,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": true,
+          "sensorFreshnessMs": 300000
+        },
+        "ksaImport": {
+          "enabled": false,
+          "applyAtStartup": false,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": true,
+          "sensorFreshnessMs": 300000
+        },
+        "ksaImport": {
+          "enabled": false,
+          "applyAtStartup": false,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 5,
+        "remove": 1
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": false,
+          "applyAtStartup": false,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 8,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 14,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 0
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": false,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 0
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 0
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 9,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 0
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 4
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 12,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 11,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 6
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    },
+    {
+      "data": {
+        "name": "Klares4",
+        "port": 443,
+        "https": false,
+        "allowInsecureTls": false,
+        "sender": "homebridge",
+        "showAdvanced": false,
+        "debug": false,
+        "logLevel": 1,
+        "maxSeconds": 30,
+        "reconnectInterval": 5000,
+        "heartbeatInterval": 30000,
+        "commandTimeoutMs": 8000,
+        "coverStepSize": 5,
+        "scenarioAutoOffDelay": 500,
+        "devicesSummaryDelay": 2000,
+        "matterExposure": {
+          "zones": true,
+          "sensors": true,
+          "scenarios": true,
+          "lights": true,
+          "covers": true,
+          "gates": true,
+          "thermostats": true
+        },
+        "temperatureDefaults": {
+          "target": 7,
+          "min": 10,
+          "max": 38,
+          "step": 0.5
+        },
+        "domusThermostat": {
+          "enabled": false
+        },
+        "ksaImport": {
+          "enabled": true,
+          "applyAtStartup": true,
+          "applyDomusMappings": true,
+          "applyRoomMapping": true,
+          "applyCustomNames": false,
+          "applyExclusionSuggestions": false
+        },
+        "mqtt": {
+          "enabled": false,
+          "clientId": "homebridge-klares4",
+          "topicPrefix": "homebridge/klares4",
+          "qos": 1,
+          "retain": true
+        },
+        "roomMapping": {
+          "enabled": false
+        },
+        "generateDebugFile": false,
+        "debugCaptureDurationMs": 60000,
+        "telemetry": true,
+        "ip": "golden"
+      },
+      "isValid": false,
+      "controls": {
+        "text": 10,
+        "number": 3,
+        "textarea": 0,
+        "checkbox": 19,
+        "radio": 0,
+        "select": 1,
+        "add": 4,
+        "remove": 5
+      },
+      "labels": [
+        "Connessione & Autenticazione",
+        "Indirizzo IP Centrale",
+        "",
+        "Porta WebSocket",
+        "Connessione Sicura (HTTPS)",
+        "PIN di Accesso",
+        "",
+        "Identificativo Client",
+        "Nome Piattaforma",
+        "Preferenze Dispositivi",
+        "Esclusioni Dispositivi",
+        "Nomi Personalizzati",
+        "Integrazione MQTT",
+        "Configurazione Avanzata"
+      ]
+    }
+  ]
+}
