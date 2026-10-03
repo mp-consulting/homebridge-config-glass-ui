@@ -64,6 +64,11 @@ export class ServerCachedAccessoriesService {
   public async getCachedAccessories() {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
 
+    // Homebridge creates the folder on its first run; until then nothing is cached
+    if (!await pathExists(cachedAccessoriesDir)) {
+      return []
+    }
+
     const cachedAccessoryFiles = (await readdir(cachedAccessoriesDir))
       .filter(x => x.match(RE_CACHED_ACCESSORIES_EXACT) || x === 'cachedAccessories')
 
@@ -125,7 +130,11 @@ export class ServerCachedAccessoriesService {
   /**
    * Remove multiple cached accessories
    */
-  public async deleteCachedAccessories(accessories: { uuid: string, cacheFile: string }[]) {
+  public async deleteCachedAccessories(accessories?: { uuid: string, cacheFile: string }[]) {
+    if (!Array.isArray(accessories) || accessories.length === 0) {
+      throw new BadRequestException('Send the accessories to remove as an array of { uuid, cacheFile }.')
+    }
+
     this.logger.warn(`Shutting down Homebridge before removing cached accessories ${accessories.map(x => x.uuid).join(', ')}.`)
 
     // Wait for homebridge to stop.
@@ -182,9 +191,11 @@ export class ServerCachedAccessoriesService {
    */
   public async deleteAllCachedAccessories() {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
-    const cachedAccessoryPaths = (await readdir(cachedAccessoriesDir))
-      .filter(x => x.match(RE_CACHED_ACCESSORIES) || x === 'cachedAccessories' || x === '.cachedAccessories.bak')
-      .map(x => resolve(cachedAccessoriesDir, x))
+    const cachedAccessoryPaths = await pathExists(cachedAccessoriesDir)
+      ? (await readdir(cachedAccessoriesDir))
+          .filter(x => x.match(RE_CACHED_ACCESSORIES) || x === 'cachedAccessories' || x === '.cachedAccessories.bak')
+          .map(x => resolve(cachedAccessoriesDir, x))
+      : []
 
     const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', 'cachedAccessories')
 

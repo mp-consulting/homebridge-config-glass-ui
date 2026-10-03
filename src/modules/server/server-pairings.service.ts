@@ -195,6 +195,11 @@ export class ServerPairingsService {
   public async getDevicePairings() {
     const persistPath = join(this.configService.storagePath, 'persist')
 
+    // Homebridge creates the folder on its first run; until then nothing is paired
+    if (!await pathExists(persistPath)) {
+      return []
+    }
+
     const devices = (await readdir(persistPath))
       .filter(x => x.match(RE_ACCESSORY_INFO_FILE))
 

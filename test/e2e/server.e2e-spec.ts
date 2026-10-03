@@ -262,6 +262,26 @@ describe('ServerController (e2e)', () => {
     expect(res.json()).toHaveLength(1)
   })
 
+  it('lists no pairings or cached accessories before Homebridge has run once', async () => {
+    // A fresh storage folder: Homebridge creates persist/ and accessories/ on its first start
+    await remove(persistPath)
+    await remove(accessoriesPath)
+
+    for (const path of ['/server/pairings', '/server/cached-accessories']) {
+      const res = await app.inject({ method: 'GET', path, headers: { authorization } })
+      expect({ path, status: res.statusCode, body: res.json() }).toEqual({ path, status: 200, body: [] })
+    }
+
+    const res = await app.inject({ method: 'PUT', path: '/server/reset-cached-accessories', headers: { authorization } })
+    expect(res.statusCode).toBe(200)
+  })
+
+  it('DELETE /server/cached-accessories refuses a request without accessories', async () => {
+    const res = await app.inject({ method: 'DELETE', path: '/server/cached-accessories', headers: { authorization } })
+
+    expect(res.statusCode).toBe(400)
+  })
+
   it('GET /server/pairings/:deviceId', async () => {
     const res = await app.inject({
       method: 'GET',
