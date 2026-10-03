@@ -32,6 +32,7 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { getUiNodeModulesPath } from '../../core/install-paths.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { npmVersion as getNpmVersion } from '../../core/npm/npm-runner.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
@@ -952,8 +953,7 @@ export class StatusService {
       // Also return the npm version here
       let npmVersion = null
       try {
-        const { stdout } = await execAsync('npm --version')
-        npmVersion = `v${stdout.trim()}`
+        npmVersion = `v${await getNpmVersion()}`
       } catch (e) {
         this.logger.debug(`Could not check npm version as ${e.message}.`)
       }

@@ -34,6 +34,7 @@ import { extract } from 'tar'
 import { generatePin, generateUsername } from '../core/hap-identity.js'
 import { getUiNodeModulesPath } from '../core/install-paths.js'
 import { findFreePort, isPortInUse } from '../core/net/port.js'
+import { npmGlobalModulesPath, npmGlobalPrefixSync } from '../core/npm/npm-runner.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { sanitiseStartupEnv } from '../modules/config-editor/config-safety.js'
 import { Logger } from './logger.js'
@@ -626,15 +627,9 @@ export class HomebridgeServiceHelper {
    */
   private async getNpmGlobalModulesDirectory() {
     try {
-      const npmPrefix = execSync('npm -g prefix', {
-        env: {
-          npm_config_loglevel: 'silent',
-          npm_update_notifier: 'false',
-          ...process.env,
-        },
-      }).toString('utf8').trim()
-      return platform() === 'win32' ? join(npmPrefix, 'node_modules') : join(npmPrefix, 'lib', 'node_modules')
+      return npmGlobalModulesPath(npmGlobalPrefixSync())
     } catch (e) {
+      this.logger.debug(`Could not determine the npm global prefix: ${e.message}`)
       return null
     }
   }

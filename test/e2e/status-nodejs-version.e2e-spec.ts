@@ -14,13 +14,11 @@ import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
 
-// getNodeVersionInfo shells out to `npm --version` on every uncached call,
-// which costs about a second per test. No test here asserts on the npm version.
-vi.mock('node:child_process', async importOriginal => ({
-  ...await importOriginal<typeof import('node:child_process')>(),
-  exec: vi.fn((_command: string, callback: (error: Error | null, result: { stdout: string, stderr: string }) => void) => {
-    callback(null, { stdout: '11.0.0\n', stderr: '' })
-  }),
+// getNodeVersionInfo asks npm for its version, which costs about a second.
+// No test here asserts on the npm version.
+vi.mock('../../src/core/npm/npm-runner.js', async importOriginal => ({
+  ...await importOriginal<typeof import('../../src/core/npm/npm-runner.js')>(),
+  npmVersion: vi.fn(async () => '11.0.0'),
 }))
 
 interface NodeJsVersionInfo {

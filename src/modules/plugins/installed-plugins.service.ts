@@ -6,7 +6,6 @@ import type {
   IPackageJson,
 } from './plugins.interfaces.js'
 
-import { exec, execFile } from 'node:child_process'
 import { readdir, realpath, stat } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { cpus, platform } from 'node:os'
@@ -18,7 +17,6 @@ import {
   sep,
 } from 'node:path'
 import process from 'node:process'
-import { promisify } from 'node:util'
 
 import { Inject, Injectable } from '@nestjs/common'
 import { pathExists, readJson } from 'fs-extra/esm'
@@ -29,6 +27,7 @@ import { gt, lt, rcompare } from 'semver'
 import { ConfigService } from '../../core/config/config.service.js'
 import { getUiNodeModulesPath } from '../../core/install-paths.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { npmGlobalModulesPath, npmGlobalPrefix, queryNpm } from '../../core/npm/npm-runner.js'
 import {
   RE_URL,
 } from '../../core/regex.constants.js'
@@ -37,9 +36,6 @@ import { PluginRegistryService } from './plugin-registry.service.js'
 // Create a require function for ESM compatibility
 const require = createRequire(import.meta.url)
 const module = require('node:module')
-
-const execAsync = promisify(exec)
-const execFileAsync = promisify(execFile)
 
 // How long a filesystem scan of the installed modules is reused - the same
 // lifetime as the installed plugins cache built from it
@@ -732,12 +728,7 @@ export class InstalledPluginsService {
       paths.push(join(process.env.APPDATA, 'npm/node_modules'))
     } else {
       try {
-        const prefix = await this.queryNpm(['-g', 'prefix'], {
-          npm_config_loglevel: 'silent',
-          npm_update_notifier: 'false',
-          ...process.env,
-        })
-        paths.push(`${prefix}/lib/node_modules`)
+        paths.push(npmGlobalModulesPath(await npmGlobalPrefix()))
       } catch (e) {
         this.logger.debug(`Could not determine the npm global prefix: ${e.message}`)
       }
@@ -751,14 +742,7 @@ export class InstalledPluginsService {
    * second or more to start on a Raspberry Pi.
    */
   public async queryNpm(args: string[], env: NodeJS.ProcessEnv = process.env): Promise<string> {
-    const options = { env, timeout: 10000 }
-    // npm is a .cmd shim on Windows, which only runs through a shell. The
-    // command line is built from these fixed arguments only, as it was when
-    // this used execSync.
-    const { stdout } = platform() === 'win32'
-      ? await execAsync(['npm', ...args].join(' '), options)
-      : await execFileAsync('npm', args, options)
-    return stdout.toString().trim()
+    return queryNpm(args, env)
   }
 
   /**
