@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -113,7 +114,7 @@ export function RemoveBridgeAccessories({ activeModal }: ModalComponentProps) {
                           aria-label={t('form.button_delete')}
                           onClick={() => toggleList(item._id, item._protocol)}
                         >
-                          <i className={`fas ${!inList ? 'fa-broom' : clicked ? 'fa-circle-notch fa-spin' : 'fa-undo'}`}></i>
+                          <i className={`fas ${!inList ? 'fa-broom' : clicked ? 'fa-circle-notch fa-spin' : 'fa-undo'}`} aria-hidden="true"></i>
                         </button>
                       </li>
                     )
@@ -153,7 +154,7 @@ export function RemoveBridgeAccessories({ activeModal }: ModalComponentProps) {
               onClick={() => void cleanBridges()}
             >
               {clicked
-                ? <i className="fas fa-circle-notch fa-spin"></i>
+                ? <InlineSpinner />
                 : `${t('form.button_remove')}${toDelete.length > 0 ? ` (${toDelete.length})` : ''}`}
             </button>
           )}

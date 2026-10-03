@@ -8,6 +8,7 @@ import { satisfies } from 'semver'
 
 import { pluginsCache } from '@/core/caching/plugins-cache'
 import { assessHbV2Readiness, DEFAULT_ICON } from '@/core/components/hb-v2-modal/hb-v2-readiness'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -102,7 +103,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
         {loading
           ? (
               <div className="w-100 text-center primary-text">
-                <i className="fas fa-circle-notch fa-spin icon-xl"></i>
+                <InlineSpinner className="icon-xl" />
               </div>
             )
           : (

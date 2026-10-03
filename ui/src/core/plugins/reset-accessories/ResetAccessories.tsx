@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { buildResetPairings } from '@/core/plugins/reset-accessories/reset-accessories.helpers'
 import { useSettingsStore } from '@/core/settings'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -177,7 +178,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
                       {toDelete.length > 0 && ` (${toDelete.length})`}
                     </>
                   )
-                : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
+                : <InlineSpinner />}
             </button>
           )}
         </div>

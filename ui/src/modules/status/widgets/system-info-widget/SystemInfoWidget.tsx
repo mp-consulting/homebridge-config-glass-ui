@@ -5,6 +5,7 @@ import type { NodeJsInfo, ServerInfo } from './system-info.interfaces'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { useNamespace, useNamespaceConnected } from '@/core/ws'
 
 import './system-info-widget.scss'
@@ -67,7 +68,7 @@ export function SystemInfoWidget({ widget }: WidgetProps) {
       <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>{t('status.widget.info')}</div>
       {!loaded && (
         <div className="d-flex flex-grow-1 align-items-center justify-content-center" role="status" aria-label={t('status.widget.info.loading')}>
-          <i className="fas fa-circle-notch fa-spin fa-2xl grey-text" aria-hidden="true"></i>
+          <InlineSpinner className="fa-2xl grey-text" />
         </div>
       )}
       <div className="d-flex flex-wrap w-100 px-1" hidden={!loaded}>

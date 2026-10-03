@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { serverPairingsCache } from '@/core/caching'
 import { QrCode } from '@/core/components/qrcode/QrCode'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
@@ -161,7 +162,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
         {loading
           ? (
               <div className="text-center primary-text my-5 w-100">
-                <i aria-hidden="true" className="fas fa-circle-notch fa-spin icon-xl"></i>
+                <InlineSpinner className="icon-xl" />
               </div>
             )
           : (

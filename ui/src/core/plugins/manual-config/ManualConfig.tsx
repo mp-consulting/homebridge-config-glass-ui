@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { MonacoEditor } from '@/core/monaco'
 import { interpolateMd } from '@/core/pipes/interpolate-md'
 import { managePlugins } from '@/core/plugins/manage-plugins'
@@ -94,7 +95,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
       <div className="modal-body pb-0">
         {ctrl.loading && (
           <div className="text-center primary-text my-5 w-100">
-            <i className="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
+            <InlineSpinner className="icon-xl" />
           </div>
         )}
         {!ctrl.loading && !ctrl.canConfigure && (
@@ -249,7 +250,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                   >
                     {!ctrl.saveInProgress
                       ? t('form.button_save')
-                      : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
+                      : <InlineSpinner />}
                   </button>
                 </>
               )

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
@@ -295,7 +296,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
               {clicked
                 ? (
                     <span>
-                      {(!uploadPercent || uploadPercent === 100) && <i className="fas fa-circle-notch fa-spin"></i>}
+                      {(!uploadPercent || uploadPercent === 100) && <InlineSpinner />}
                       {!!uploadPercent && uploadPercent !== 100 && (
                         <span>
                           {uploadPercent}

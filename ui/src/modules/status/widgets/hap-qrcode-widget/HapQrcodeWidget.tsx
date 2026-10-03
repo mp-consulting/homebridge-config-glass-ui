@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useAuthStore } from '@/core/auth'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { useNamespace, useSocketEvent } from '@/core/ws'
 
 import { PairingCard } from './PairingCard'
@@ -67,7 +68,7 @@ export function HapQrcodeWidget({ resizeEvent }: WidgetProps) {
 
   let placeholder
   if (loading) {
-    placeholder = <i className="fas fa-circle-notch fa-spin fa-2xl" aria-hidden="true"></i>
+    placeholder = <InlineSpinner className="fa-2xl" />
   } else if (externalsOnly) {
     // HAP externalsOnly: the bridge itself isn't published, only external accessories
     placeholder = (

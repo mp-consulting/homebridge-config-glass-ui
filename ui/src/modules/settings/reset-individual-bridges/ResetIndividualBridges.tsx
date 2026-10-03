@@ -87,7 +87,7 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
         aria-label={t('form.button_unpair')}
         onClick={() => toggleList(item._id, resetPairingInfo)}
       >
-        <i className={`fas ${!inList ? idleIcon : clicked ? 'fa-circle-notch fa-spin' : 'fa-undo'}`}></i>
+        <i className={`fas ${!inList ? idleIcon : clicked ? 'fa-circle-notch fa-spin' : 'fa-undo'}`} aria-hidden="true"></i>
       </button>
     )
   }

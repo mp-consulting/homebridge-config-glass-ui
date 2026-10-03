@@ -14,6 +14,7 @@ import { pluginsCache } from '@/core/caching/plugins-cache'
 import { HbV2Modal } from '@/core/components/hb-v2-modal/HbV2Modal'
 import { Markdown } from '@/core/components/markdown/Markdown'
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { determineSupportMessage, SELF_PACKAGES } from '@/core/plugins/manage-plugin/support-message'
 import { ManageVersion } from '@/core/plugins/manage-version/ManageVersion'
 import { PluginLogs } from '@/core/plugins/plugin-logs/PluginLogs'
@@ -554,7 +555,7 @@ export function ManagePlugin(props: ManagePluginProps) {
 
   const spinner = (
     <div className="w-100 text-center primary-text mt-3 mb-4">
-      <i className="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
+      <InlineSpinner className="icon-xl" />
     </div>
   )
 

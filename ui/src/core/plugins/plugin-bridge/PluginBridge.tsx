@@ -4,6 +4,7 @@ import type { PluginBridgeModalData } from '@/core/ui/modal-data'
 import { useTranslation } from 'react-i18next'
 import { useStore } from 'zustand'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { getHapNameValidationError, selectHasValidationErrors, selectValidationErrorBridgeName } from '@/core/plugins/plugin-bridge/plugin-bridge.hap'
 import { linkChildBridges } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 import { PluginBridgeAdvanced } from '@/core/plugins/plugin-bridge/PluginBridgeAdvanced'
@@ -78,7 +79,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
         {loading
           ? (
               <div className="text-center primary-text my-5 w-100">
-                <i aria-hidden="true" className="fas fa-circle-notch fa-spin icon-xl"></i>
+                <InlineSpinner className="icon-xl" />
               </div>
             )
           : (
@@ -399,7 +400,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                   >
                     {!saveInProgress
                       ? t('form.button_save')
-                      : <i aria-hidden="true" className="fas fa-circle-notch fa-spin"></i>}
+                      : <InlineSpinner />}
                   </button>
                 )
               : (

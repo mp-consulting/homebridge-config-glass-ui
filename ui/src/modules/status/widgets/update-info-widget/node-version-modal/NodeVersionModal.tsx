@@ -8,6 +8,7 @@ import { satisfies } from 'semver'
 
 import { api } from '@/core/api'
 import { pluginsCache } from '@/core/caching'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -177,7 +178,7 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
         {loading
           ? (
               <div className="w-100 text-center primary-text text-center">
-                <i className="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
+                <InlineSpinner className="icon-xl" />
               </div>
             )
           : (

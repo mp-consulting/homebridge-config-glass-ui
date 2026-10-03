@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { escapeHtml } from '@/core/helpers/html.helper'
 import { RE_ANSI } from '@/core/regex.constants'
 import { settingsActions, useSettingsStore } from '@/core/settings'
@@ -292,7 +293,7 @@ hb-service start`}
               onClick={() => void doSwitch()}
             >
               {!busy && <span>{t('form.button_continue')}</span>}
-              {busy && !failure && <i className="fas fa-circle-notch fa-spin"></i>}
+              {busy && !failure && <InlineSpinner />}
             </button>
           )}
         </div>

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { ManagePlugin } from '@/core/plugins/manage-plugin/ManagePlugin'
 import { openModal } from '@/core/ui/modal'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -184,7 +185,7 @@ export function UninstallPlugin({
         {loading
           ? (
               <div className="text-center primary-text my-5 w-100">
-                <i className="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
+                <InlineSpinner className="icon-xl" />
               </div>
             )
           : (
@@ -274,7 +275,7 @@ export function UninstallPlugin({
           >
             {!uninstalling
               ? t('plugins.manage.uninstall')
-              : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
+              : <InlineSpinner />}
           </button>
         </div>
       </ModalFooter>

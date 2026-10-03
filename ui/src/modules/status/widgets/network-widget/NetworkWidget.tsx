@@ -5,6 +5,7 @@ import { useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { formatDecimal } from '@/core/pipes'
 import { useChartWidget } from '@/modules/status/widgets/base-chart-widget/use-chart-widget'
 
@@ -62,7 +63,7 @@ export function NetworkWidget(props: WidgetProps) {
             <div className="widget-value mb-0">
               {receivedPerSec !== undefined
                 ? `${formatDecimal(receivedPerSec, '1.0-1')} Mb/s`
-                : <i className="fas fa-circle-notch fa-spin"></i>}
+                : <InlineSpinner />}
             </div>
             <div className="widget-value-label grey-text">{t('status.network.received_per_second')}</div>
           </div>
@@ -70,7 +71,7 @@ export function NetworkWidget(props: WidgetProps) {
             <div className="widget-value mb-0">
               {sentPerSec !== undefined
                 ? `${formatDecimal(sentPerSec, '1.0-1')} Mb/s`
-                : <i className="fas fa-circle-notch fa-spin"></i>}
+                : <InlineSpinner />}
             </div>
             <div className="widget-value-label grey-text">{t('status.network.sent_per_second')}</div>
           </div>

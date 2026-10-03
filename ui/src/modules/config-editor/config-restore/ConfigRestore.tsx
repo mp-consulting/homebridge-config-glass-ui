@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { Confirm } from '@/core/components/confirm/Confirm'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { formatDate } from '@/core/pipes/date'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { t } from '@/core/ui/i18n'
@@ -160,7 +161,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
         {loading
           ? (
               <div className="text-center primary-text">
-                <i className="fas fa-circle-notch fa-spin mt-3 icon-xl" aria-hidden="true"></i>
+                <InlineSpinner className="mt-3 icon-xl" />
               </div>
             )
           : backupList.length > 0 && (

@@ -3,6 +3,7 @@ import type { WidgetProps } from '@/modules/status/widgets/widget.types'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { useNamespace, useNamespaceConnected } from '@/core/ws'
 
 import { humaniseDuration } from './humanise-duration'
@@ -45,13 +46,13 @@ export function UptimeWidget({ widget }: WidgetProps) {
         <div className="d-flex justify-content-around flex-wrap w-100">
           <div className="text-center widget-value-parent-wrap">
             <div className="widget-value mb-0">
-              {serverUptime || <i className="fas fa-circle-notch fa-spin"></i>}
+              {serverUptime || <InlineSpinner />}
             </div>
             <div className="widget-value-label grey-text">{t('status.widget.uptime.label_server')}</div>
           </div>
           <div className="text-center widget-value-parent-wrap">
             <div className="widget-value mb-0">
-              {processUptime || <i className="fas fa-circle-notch fa-spin"></i>}
+              {processUptime || <InlineSpinner />}
             </div>
             <div className="widget-value-label grey-text">{t('status.widget.uptime.label_process')}</div>
           </div>
