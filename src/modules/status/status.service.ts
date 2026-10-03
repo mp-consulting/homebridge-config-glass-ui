@@ -614,8 +614,10 @@ export class StatusService {
     const onEnd = () => {
       disposed = true
       this.statsClients.delete(client)
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
+      // Only our own pair: removeAllListeners would also strip the WS auth
+      // registry's and socket.io's own disconnect listeners
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
 
       if (homebridgeStatusInterval) {
         clearInterval(homebridgeStatusInterval)
@@ -624,8 +626,8 @@ export class StatusService {
       homebridgeStatusChangeSub.unsubscribe()
     }
 
-    client.on('end', onEnd.bind(this))
-    client.on('disconnect', onEnd.bind(this))
+    client.on('end', onEnd)
+    client.on('disconnect', onEnd)
 
     const stats = withoutPairingCodes(await this.getHomebridgeStats(), isAdminClient(client))
     if (!disposed) {

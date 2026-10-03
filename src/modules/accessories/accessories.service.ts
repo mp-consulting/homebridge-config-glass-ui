@@ -161,6 +161,8 @@ export class AccessoriesService {
     // What the last full load sent this client, so the blind secondary load
     // can skip re-sending a list that did not change
     let lastSent: { hap: string, matter: string } | null = null
+    // Bound once setup completes, so `onEnd` can detach exactly this listener
+    let controlListener: ((msg?: AccessoryControlMessage) => void) | null = null
 
     const updateHandler = (data: ServiceType | MatterService) => {
       client.emit('accessories-data', data)
@@ -196,9 +198,13 @@ export class AccessoriesService {
         instanceReloadTimeout = null
       }
       this.clientSessions.delete(client)
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
-      client.removeAllListeners('accessory-control')
+      // Only this session's listeners: removeAllListeners would also strip
+      // the WS auth registry's and socket.io's own disconnect listeners
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
+      if (controlListener) {
+        client.off('accessory-control', controlListener)
+      }
       // Only detach THIS client's listener. The monitor is shared by every
       // connected client, so removing all listeners or finishing it here
       // would silence live updates for everyone else (the same reasoning as
@@ -350,12 +356,13 @@ export class AccessoriesService {
         }
       }
     }
-    client.on('accessory-control', (msg?: AccessoryControlMessage) => {
+    controlListener = (msg?: AccessoryControlMessage) => {
       requestHandler(msg).catch((e) => {
         this.logger.error(`Failed to handle accessory control request as ${e.message}.`)
         client.emit('accessory-control-failure', e.message)
       })
-    })
+    }
+    client.on('accessory-control', controlListener)
 
     monitor.on('service-update', updateHandler)
     this.hapClient.on('instance-discovered', instanceUpdateHandler)

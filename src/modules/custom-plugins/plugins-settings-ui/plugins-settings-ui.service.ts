@@ -327,6 +327,20 @@ export class PluginsSettingsUiService {
       outstanding.clear()
     }
 
+    // Requests reach the plugin's server-side helper, so re-check the user
+    // before each one rather than trusting the admin check `start` passed
+    const runAuthorized = createAuthorizedRunner(client, { admin: true })
+    const onRequest = (request: { requestId?: string }) => runAuthorized(() => {
+      if (child?.connected) {
+        if (request?.requestId) {
+          outstanding.add(request.requestId)
+        }
+        child.send(request)
+      } else if (request?.requestId) {
+        this.rejectRequest(pluginName, client, request.requestId)
+      }
+    })
+
     // Function to handle cleanup. socket.io often emits both 'disconnect'
     // and 'end' on the same socket close, so cleanup() would otherwise
     // run twice and schedule two 5-second SIGTERM timers. By the time
@@ -370,9 +384,11 @@ export class PluginsSettingsUiService {
         }, 5000)
       }
 
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
-      client.removeAllListeners('request')
+      // Only this invocation's listeners: removeAllListeners would also strip
+      // the WS auth registry's and socket.io's own disconnect listeners
+      client.off('end', cleanup)
+      client.off('disconnect', cleanup)
+      client.off('request', onRequest)
       this.customUiCleanups.delete(client)
     }
 
@@ -381,19 +397,7 @@ export class PluginsSettingsUiService {
     // Bind the socket's listeners synchronously, before the lookups below suspend: they belong to
     // the socket for its whole session, and a request that arrives while a helper is being
     // resolved still has to be answered rather than dropped.
-    // Requests reach the plugin's server-side helper, so re-check the user
-    // before each one rather than trusting the admin check `start` passed
-    const runAuthorized = createAuthorizedRunner(client, { admin: true })
-    client.on('request', (request: { requestId?: string }) => runAuthorized(() => {
-      if (child?.connected) {
-        if (request?.requestId) {
-          outstanding.add(request.requestId)
-        }
-        child.send(request)
-      } else if (request?.requestId) {
-        this.rejectRequest(pluginName, client, request.requestId)
-      }
-    }))
+    client.on('request', onRequest)
 
     client.on('disconnect', cleanup)
     client.on('end', cleanup)

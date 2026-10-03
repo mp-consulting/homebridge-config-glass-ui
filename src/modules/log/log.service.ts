@@ -181,8 +181,8 @@ export class LogService {
         this.activeClients.delete(client)
         this.discardMessageBuffer(client)
 
-        client.removeAllListeners('end')
-        client.removeAllListeners('disconnect')
+        client.off('end', onEnd)
+        client.off('disconnect', onEnd)
 
         try {
           proc.kill()
@@ -222,11 +222,12 @@ export class LogService {
       })
 
       // Handle resize events
-      client.on('resize', (resize: { rows: number, cols: number }) => {
+      const onResize = (resize: { rows: number, cols: number }) => {
         try {
           term.resize(resize.cols, resize.rows)
         } catch (e) { }
-      })
+      }
+      client.on('resize', onResize)
 
       // Cleanup on disconnect
       const onEnd = () => {
@@ -234,9 +235,9 @@ export class LogService {
         this.activeClients.delete(client)
         this.discardMessageBuffer(client)
 
-        client.removeAllListeners('resize')
-        client.removeAllListeners('end')
-        client.removeAllListeners('disconnect')
+        client.off('resize', onResize)
+        client.off('end', onEnd)
+        client.off('disconnect', onEnd)
 
         try {
           term.kill()
@@ -329,8 +330,8 @@ export class LogService {
         }
       }
 
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
     }
 
     client.on('end', onEnd)

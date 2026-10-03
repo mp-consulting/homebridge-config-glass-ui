@@ -11,6 +11,7 @@ import { WsException } from '@nestjs/websockets'
 import { copy } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { disconnectWsClientsWithToken, rememberWsUser } from '../../src/core/auth/guards/ws-auth.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 import { ChildBridgesGateway } from '../../src/modules/child-bridges/child-bridges.gateway.js'
@@ -177,6 +178,29 @@ describe('ChildBridges (e2e)', () => {
 
       await childBridgesGateway.watchChildBridgeStatus(client)
       expect(childBridgesService.watchChildBridgeStatus).toHaveBeenCalledWith(client)
+    })
+
+    it('keeps the WS auth registry\'s disconnect cleanup when the status stream ends', async () => {
+      const user = { username: 'admin', admin: true }
+      const socket = Object.assign(new EventEmitter(), { data: {} as any, disconnect: vi.fn() })
+      rememberWsUser(socket, user as any, async () => user as any)
+      socket.data.wsToken = 'child-bridges-listener-test-token'
+      const registryListeners = socket.listenerCount('disconnect')
+
+      await childBridgesService.watchChildBridgeStatus(socket)
+      expect(socket.listenerCount('disconnect')).toBe(registryListeners + 1)
+
+      // The UI closing the stream (`end`) detaches only the service's own pair
+      socket.emit('end')
+      expect(socket.listenerCount('end')).toBe(0)
+      expect(socket.listenerCount('disconnect')).toBe(registryListeners)
+
+      // ...so the registry still learns of the disconnect and forgets the
+      // socket: a later logout with its token no longer reaches it
+      socket.emit('disconnect')
+      expect(socket.listenerCount('disconnect')).toBe(0)
+      disconnectWsClientsWithToken('child-bridges-listener-test-token')
+      expect(socket.disconnect).not.toHaveBeenCalled()
     })
 
     it('should restart a child bridge', async () => {

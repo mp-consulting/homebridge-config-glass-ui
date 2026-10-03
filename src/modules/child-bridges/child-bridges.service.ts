@@ -89,16 +89,18 @@ export class ChildBridgesService {
     // Cleanup on disconnect
     const onEnd = () => {
       this.watchingClients.delete(client)
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
+      // Only our own pair: removeAllListeners would also strip the WS auth
+      // registry's and socket.io's own disconnect listeners
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
       client.setMaxListeners(client.getMaxListeners() - 2)
       this.homebridgeIpcService.removeListener('childBridgeStatusUpdate', listener)
       this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
     }
 
     client.setMaxListeners(client.getMaxListeners() + 2)
-    client.on('end', onEnd.bind(this))
-    client.on('disconnect', onEnd.bind(this))
+    client.on('end', onEnd)
+    client.on('disconnect', onEnd)
   }
 
   /**

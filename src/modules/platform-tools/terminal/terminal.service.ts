@@ -20,6 +20,8 @@ export class TerminalService {
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
   private static persistentAptHintInjected = false
+  // Detaches a socket's current session listeners (stdin/resize/end/disconnect)
+  private static clientDetach = new WeakMap<WsEventEmitter, () => void>()
   private static outputRunners = new WeakMap<WsEventEmitter, (action: () => unknown) => void>()
   private instanceId: string
 
@@ -149,27 +151,38 @@ export class TerminalService {
     // Write input to the terminal - re-checking the user first, as a shell
     // must not outlive its user's admin rights
     const runAuthorized = createAuthorizedRunner(client, { admin: true })
-    client.on('stdin', (data) => {
+    const onStdin = (data) => {
       runAuthorized(() => term.write(data))
-    })
+    }
 
     // capture resize events
-    client.on('resize', (resize: TermSize) => {
+    const onResize = (resize: TermSize) => {
       try {
         term.resize(resize.cols, resize.rows)
       } catch {
         // The terminal has probably already exited
       }
-    })
+    }
+
+    // A second start on the same socket replaces the previous session
+    TerminalService.clientDetach.get(client)?.()
+
+    client.on('stdin', onStdin)
+    client.on('resize', onResize)
 
     // cleanup on disconnect
     const onEnd = () => {
       ending = true
 
-      client.removeAllListeners('stdin')
-      client.removeAllListeners('resize')
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
+      // Only this session's listeners: removeAllListeners would also strip
+      // the WS auth registry's and socket.io's own disconnect listeners
+      client.off('stdin', onStdin)
+      client.off('resize', onResize)
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
+      if (TerminalService.clientDetach.get(client) === onEnd) {
+        TerminalService.clientDetach.delete(client)
+      }
 
       try {
         this.logger.debug('Terminal session ended.')
@@ -179,6 +192,7 @@ export class TerminalService {
       }
     }
 
+    TerminalService.clientDetach.set(client, onEnd)
     client.on('end', onEnd)
     client.on('disconnect', onEnd)
   }
@@ -291,10 +305,9 @@ export class TerminalService {
       }
     }
 
-    // Clean up any existing listeners on this client before adding new ones
+    // Detach this socket's previous session (a repeat start) before adding new listeners
     this.logger.debug(`[${this.instanceId}] Cleaning up existing client listeners`)
-    client.removeAllListeners('stdin')
-    client.removeAllListeners('resize')
+    TerminalService.clientDetach.get(client)?.()
 
     // Add client to connected clients set
     this.logger.debug(`[${this.instanceId}] Adding client to connected clients`)
@@ -318,7 +331,7 @@ export class TerminalService {
     // Re-check the user before each write, as a shell must not outlive its
     // user's admin rights
     const runAuthorized = createAuthorizedRunner(client, { admin: true })
-    client.on('stdin', (data) => {
+    const onStdin = (data) => {
       runAuthorized(() => {
         if (TerminalService.persistentTerminal) {
           TerminalService.persistentTerminal.write(data)
@@ -326,9 +339,9 @@ export class TerminalService {
           this.logger.warn(`[${this.instanceId}] No persistent terminal to write to!`)
         }
       })
-    })
+    }
 
-    client.on('resize', (resize: TermSize) => {
+    const onResize = (resize: TermSize) => {
       this.logger.debug(`[${this.instanceId}] Received resize from client`)
       try {
         if (TerminalService.persistentTerminal) {
@@ -337,17 +350,24 @@ export class TerminalService {
       } catch {
         // The terminal has probably already exited
       }
-    })
+    }
+
+    client.on('stdin', onStdin)
+    client.on('resize', onResize)
 
     // Clean up client listeners on disconnect (but keep terminal alive)
     const onEnd = () => {
       this.logger.debug(`[${this.instanceId}] Client disconnecting`)
 
-      // Remove all listeners from this specific client
-      client.removeAllListeners('stdin')
-      client.removeAllListeners('resize')
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
+      // Only this session's listeners: removeAllListeners would also strip
+      // the WS auth registry's and socket.io's own disconnect listeners
+      client.off('stdin', onStdin)
+      client.off('resize', onResize)
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
+      if (TerminalService.clientDetach.get(client) === onEnd) {
+        TerminalService.clientDetach.delete(client)
+      }
 
       // Remove client from connected clients set
       if (TerminalService.connectedClients.has(client)) {
@@ -358,6 +378,7 @@ export class TerminalService {
       this.logger.debug(`[${this.instanceId}] Client cleanup complete`)
     }
 
+    TerminalService.clientDetach.set(client, onEnd)
     client.on('end', onEnd)
     client.on('disconnect', onEnd)
   }
