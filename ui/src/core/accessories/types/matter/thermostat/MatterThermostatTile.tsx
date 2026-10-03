@@ -2,9 +2,9 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 
 import { useTranslation } from 'react-i18next'
 
+import { MatterThermostatManage } from '@/core/accessories/types/matter/lazy-manage'
 import { getThermostatLocalTemperature, getThermostatSystemMode, isThermostatOn } from '@/core/accessories/types/matter/matter-device.utils'
 import { onEnterOrSpace, openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
-import { MatterThermostatManage } from '@/core/accessories/types/matter/thermostat/MatterThermostatManage'
 import { convertTemp } from '@/core/pipes/convert-temp'
 import { formatDecimal } from '@/core/pipes/decimal'
 import { useSettingsStore } from '@/core/settings/settings.store'

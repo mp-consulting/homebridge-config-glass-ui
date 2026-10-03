@@ -8,7 +8,7 @@ import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradien
 import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
 import { toggleActiveOrOn } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { humidifierStatusFill } from '@/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.utils'
-import { HumidifierDehumidifierManage } from '@/core/accessories/types/hap/humidifier-dehumidifier/HumidifierDehumidifierManage'
+import { HumidifierDehumidifierManage } from '@/core/accessories/types/hap/lazy-manage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'

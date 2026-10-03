@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
-import { ValveManage } from '@/core/accessories/types/hap/valve/ValveManage'
+import { ValveManage } from '@/core/accessories/types/hap/lazy-manage'
 import { useLatest } from '@/core/hooks/use-latest'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'

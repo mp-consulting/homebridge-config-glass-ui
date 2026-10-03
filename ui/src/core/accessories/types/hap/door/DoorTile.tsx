@@ -2,7 +2,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { DoorManage } from '@/core/accessories/types/hap/door/DoorManage'
+import { DoorManage } from '@/core/accessories/types/hap/lazy-manage'
 import { PositionLabel } from '@/core/accessories/types/hap/position-tile'
 import { positionStyle, togglePosition } from '@/core/accessories/types/hap/position.utils'
 import { openModal } from '@/core/ui/modal'

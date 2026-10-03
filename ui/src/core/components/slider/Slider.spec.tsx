@@ -91,4 +91,14 @@ describe('slider', () => {
 
     expect(target.noUiSlider).toBeUndefined()
   })
+
+  it('brings nouislider\'s stylesheet into the page with the first slider', () => {
+    render(<Slider min={0} max={100} value={1} />)
+
+    // (Vitest does not process CSS, so the sheet itself is empty here)
+    expect(document.head.querySelector('style#nouislider-styles')).not.toBeNull()
+    // Loaded once, however many sliders there are
+    render(<Slider min={0} max={100} value={2} />)
+    expect(document.querySelectorAll('#nouislider-styles')).toHaveLength(1)
+  })
 })

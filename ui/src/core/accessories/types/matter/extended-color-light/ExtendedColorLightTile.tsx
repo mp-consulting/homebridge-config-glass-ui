@@ -3,7 +3,7 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 
 import { useTranslation } from 'react-i18next'
 
-import { ExtendedColorLightManage } from '@/core/accessories/types/matter/extended-color-light/ExtendedColorLightManage'
+import { ExtendedColorLightManage } from '@/core/accessories/types/matter/lazy-manage'
 import { getBrightnessPercentage, getColorMode, getColorTemperatureMireds, getDeviceActiveState, getHue, getSaturation, hasClusterFeature, hasColorTemperature, toggleDimmableLight } from '@/core/accessories/types/matter/matter-device.utils'
 import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { SafeHtml } from '@/core/ui/SafeHtml'

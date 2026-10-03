@@ -1,7 +1,7 @@
 import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
+import { SpeakerManage } from '@/core/accessories/types/hap/lazy-manage'
 import { MediaTile } from '@/core/accessories/types/hap/media-tile'
-import { SpeakerManage } from '@/core/accessories/types/hap/speaker/SpeakerManage'
 
 import './speaker.scss'
 
