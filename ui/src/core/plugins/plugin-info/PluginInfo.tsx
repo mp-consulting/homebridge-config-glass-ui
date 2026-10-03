@@ -17,7 +17,7 @@ const defaultIcon = 'assets/hb-icon.png'
 
 /** An icon-only wiki link, named for screen readers by `label` */
 function wikiLink(href: string, label: string): string {
-  return `<a href="${href}" target="_blank" aria-label="${escapeHtml(label)}"><i class="fas fa-external-link-alt primary-text" aria-hidden="true"></i></a>`
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(label)}"><i class="fas fa-external-link-alt primary-text" aria-hidden="true"></i></a>`
 }
 
 /** What the verified / scoped shields of a plugin mean. */

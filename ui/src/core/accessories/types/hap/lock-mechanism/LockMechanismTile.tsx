@@ -3,7 +3,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useTranslation } from 'react-i18next'
 
 import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
-import { LockMechanismManage } from '@/core/accessories/types/hap/lock-mechanism/LockMechanismManage'
+import { LockMechanismManage } from '@/core/accessories/types/hap/lazy-manage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'

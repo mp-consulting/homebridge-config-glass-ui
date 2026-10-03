@@ -12,7 +12,7 @@ import { settingsActions, useSettingsStore } from '@/core/settings'
 import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
-import { terminalNavigationGuard } from '@/core/utilities/terminal'
+import { terminalNavigationGuard } from '@/core/utilities/terminal/instances'
 
 import { Credits } from './credits/Credits'
 import defaultDashboardLayout from './default-dashboard-layout.json'

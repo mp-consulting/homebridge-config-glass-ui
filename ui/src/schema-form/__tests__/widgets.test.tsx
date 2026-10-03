@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { fixNestedArrayLayout, installFixArrays } from '../engine/fix-arrays'
 import { changeSelect, click, lastEmitted, renderSchemaForm, settle, typeInto } from './helpers'
@@ -127,6 +127,32 @@ describe('schema-form widgets', () => {
 
       expect(form.container.querySelector('input[name="host"]')).toBeNull()
       expect(lastEmitted(form)).toEqual({ advanced: false })
+    })
+
+    it('reports a plugin-written condition functionBody once, naming the schema and path', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      try {
+        const body = 'return model.flag === \'warn-once\''
+        const schema = {
+          type: 'object',
+          title: 'Warn Once Platform',
+          properties: {
+            flag: { type: 'string' },
+            extra: { type: 'string', title: 'Extra', condition: { functionBody: body } },
+          },
+        }
+        const form = renderSchemaForm({ schema }, { flag: 'warn-once' })
+        await settle()
+        await typeInto(form.container.querySelector('input[name="flag"]')!, 'warn-once!')
+        await settle(200)
+
+        const calls = warn.mock.calls.filter(call => call[1] === body)
+        expect(calls).toHaveLength(1)
+        expect(String(calls[0][0])).toContain('Warn Once Platform')
+        expect(String(calls[0][0])).toContain('/extra')
+      } finally {
+        warn.mockRestore()
+      }
     })
 
     it('evaluates null-safe conditions inside array items', async () => {

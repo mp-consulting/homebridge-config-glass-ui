@@ -1,11 +1,30 @@
 import type { API, Options } from 'nouislider'
 
 import { create } from 'nouislider'
+import nouisliderCss from 'nouislider/dist/nouislider.min.css?inline'
 import { useEffect, useRef } from 'react'
 
 import { cx } from '@/core/utilities/cx'
 
 import './slider.scss'
+
+/**
+ * nouislider's stylesheet, loaded with the first slider (the accessory manage
+ * modals) rather than with the global styles. It goes in ahead of the app's
+ * stylesheets, where `styles.scss` used to import it, so the app's
+ * equal-specificity overrides (`.noUi-handle` in base/layout.scss) still win.
+ */
+function installNouisliderStyles(): void {
+  if (typeof document === 'undefined' || document.getElementById('nouislider-styles')) {
+    return
+  }
+  const style = document.createElement('style')
+  style.id = 'nouislider-styles'
+  style.textContent = nouisliderCss
+  document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"], style'))
+}
+
+installNouisliderStyles()
 
 export type SliderValue = number | number[]
 

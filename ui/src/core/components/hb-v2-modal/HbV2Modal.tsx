@@ -125,7 +125,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
                         <p className="text-center">
                           For more information about this update, please see the
                           {' '}
-                          <a href="https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0" target="_blank" rel="noreferrer">wiki page</a>
+                          <a href="https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0" target="_blank" rel="noopener noreferrer">wiki page</a>
                           .
                         </p>
                         {isUpdating && <p className="text-center">To ignore this warning and continue with the update, click continue below.</p>}

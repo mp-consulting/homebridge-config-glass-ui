@@ -1,8 +1,10 @@
 import type { Plugin } from 'vite'
 
+import { realpathSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 
 import react from '@vitejs/plugin-react'
+import { searchForWorkspaceRoot } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { defineConfig } from 'vitest/config'
 
@@ -87,6 +89,15 @@ export default defineConfig({
     // Plugin custom-UI iframes are served from the backend origin (:8581) and
     // fetch fonts from this dev server with CORS, also over a LAN IP.
     cors: true,
+    fs: {
+      // The default (the workspace root), plus wherever node_modules really
+      // is: a git worktree that symlinks it to the main checkout would
+      // otherwise be refused `?inline` imports from it (Slider.tsx)
+      allow: [
+        searchForWorkspaceRoot(fileURLToPath(new URL('.', import.meta.url))),
+        realpathSync(fileURLToPath(new URL('./node_modules', import.meta.url))),
+      ],
+    },
   },
   // Pre-bundled up front: discovering it on first load makes Vite re-optimise
   // and reload mid-render ("Invalid hook call").

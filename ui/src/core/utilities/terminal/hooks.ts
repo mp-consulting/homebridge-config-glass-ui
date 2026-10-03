@@ -7,11 +7,17 @@ import type { TerminalService } from './terminal.service'
 import type { ResizeSource } from './types'
 
 import { useEffect, useState } from 'react'
-import { useBlocker } from 'react-router'
 
 import { useLatest } from '@/core/hooks/use-latest'
 
+import { useCanDeactivate } from './can-deactivate'
 import { createLogService, getTerminalSettings, terminalNavigationGuard, terminalService } from './instances'
+
+// Every component that starts a terminal comes through these hooks: loading
+// the xterm factory here hands it to the shared services (see
+// deferred-terminal-factory.ts), and keeps xterm out of pages that only need
+// the navigation guard or `useCanDeactivate`
+import './terminal.factory'
 
 export interface UseTerminalOptions {
   /** xterm options, usually `getTerminalOptions(...)` from the settings store. Read once, at mount. */
@@ -119,49 +125,6 @@ export function useLog(ref: RefObject<HTMLElement | null>, opts: UseLogOptions =
   }, [ref, service, latest, pluginName])
 
   return service
-}
-
-/**
- * The `canDeactivate` of a route component, on react-router's `useBlocker`.
- * Every navigation to another path is held while `canDeactivate(nextPath)`
- * decides; true lets it through, false keeps the user on the page.
- *
- * Needs a data router (`createBrowserRouter` / `createMemoryRouter`).
- */
-export function useCanDeactivate(canDeactivate: (nextPath: string) => boolean | Promise<boolean>): void {
-  const latest = useLatest(canDeactivate)
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname)
-  // The blocker object can change identity between renders; key the effect on
-  // its state only, or one blocked navigation would ask twice (two modals)
-  const blockerRef = useLatest(blocker)
-
-  useEffect(() => {
-    const current = blockerRef.current
-    if (current.state !== 'blocked') {
-      return undefined
-    }
-    let cancelled = false
-    const nextPath = current.location.pathname
-    void (async () => {
-      let allowed = false
-      try {
-        allowed = await latest.current(nextPath)
-      } catch (error) {
-        console.error(error)
-      }
-      if (cancelled) {
-        return
-      }
-      if (allowed) {
-        current.proceed()
-      } else {
-        current.reset()
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [blocker.state, blockerRef, latest])
 }
 
 export interface UseTerminalNavigationGuardOptions {

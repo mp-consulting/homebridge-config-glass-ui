@@ -43,7 +43,7 @@ import { Subject, BehaviorSubject, debounceTime, distinctUntilChanged, of } from
 import { deValidationMessages, enValidationMessages, esValidationMessages, frValidationMessages, itValidationMessages, ptValidationMessages, zhValidationMessages } from './validation-messages'
 import { isDefined, hasValue, isEmpty, isObject, isArray, forEach, hasOwn, fixTitle, toTitleCase } from './utility.functions'
 import { JsonPointer } from './jsonpointer.functions'
-import { buildSchemaFromLayout, buildSchemaFromData, removeRecursiveReferences } from './json-schema.functions'
+import { buildSchemaFromLayout, buildSchemaFromData, generatedFunctionBodies, removeRecursiveReferences } from './json-schema.functions'
 import { buildFormGroupTemplate, buildFormGroup, formatFormData, getControl, setControl } from './form-group.functions'
 import { buildLayout, getLayoutNode } from './layout.functions'
 import { v4 } from 'uuid'
@@ -52,6 +52,9 @@ import def from 'ajv-keywords/dist/definitions/dynamicDefaults'
 // DEFAULTS entries are factories that return the generator function
 // (see ajv-keywords' own: `timestamp: () => () => Date.now()`)
 def.DEFAULTS.uuid = () => v4;
+
+// Plugin-written condition functionBody strings already reported (once per page load)
+const warnedFunctionBodies = new Set();
 
 export class JsonSchemaFormService {
     setDraggableState(value) {
@@ -680,8 +683,16 @@ export class JsonSchemaFormService {
         if (typeof condition === 'object'
             && (typeof condition?.functionBody === 'string'
                 || typeof condition?.functionBodyRaw === 'string')) {
-            // This still uses the potentially insecure new Function approach, 
-            // but encapsulated as requested by the original code's structure.
+            // Trust model: a `functionBody` is JavaScript from the plugin's
+            // config.schema.json, run with `new Function` in the ui's origin.
+            // It is kept because published plugin schemas depend on it (as
+            // they did with ng-formworks), and an installed plugin already runs
+            // code on the server, so its schema is trusted no further than the
+            // plugin itself. It is reported once so it stays visible.
+            // (Bodies built from the schema's if/then/else are not reported.)
+            if (condition.functionBodyRaw || !generatedFunctionBodies.has(condition.functionBody)) {
+                this.warnFunctionBodyOnce(layoutNode, condition.functionBodyRaw || condition.functionBody);
+            }
             //TODO-fix- add null checking as a workaround for issue caused by adding
             //debounceTime in buildFormGroup
             //also added functionBodyRaw that won't do any replacements
@@ -696,6 +707,15 @@ export class JsonSchemaFormService {
             return this.evaluateFunctionBodyCondition(condition_nullChecks, dataIndex);
         }
         return true; // Default visible if condition type is unknown
+    }
+    warnFunctionBodyOnce(layoutNode, functionBody) {
+        if (warnedFunctionBodies.has(functionBody)) {
+            return;
+        }
+        warnedFunctionBodies.add(functionBody);
+        const schemaName = this.schema?.title || this.schema?.$id || 'plugin schema';
+        const path = layoutNode?.dataPointer || layoutNode?.name || layoutNode?.key || '(layout item)';
+        console.warn(`[schema-form] ${schemaName} at ${path} uses a condition functionBody, which runs as JavaScript in the ui (new Function).`, functionBody);
     }
     evaluateStringCondition(pointer, dataIndex) {
         // Simplify index handling:

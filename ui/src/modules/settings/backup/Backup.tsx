@@ -17,7 +17,6 @@ import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
 import { toastApiError } from '@/core/utilities/http-error'
-import { Restore } from '@/modules/settings/backup/restore/Restore'
 
 export type BackupProps = ModalComponentProps
 
@@ -127,10 +126,13 @@ export function Backup({ activeModal }: BackupProps) {
   const restore = (backup: ScheduledBackup | null): void => {
     // Close the backup modal and open the restore modal
     activeModal.close()
-    openModal(Restore, { selectedBackup: backup }, {
-      size: 'lg',
-      backdrop: 'static',
-    })
+    // Loaded on demand: the restore log brings xterm (~90 kB gzipped) with it
+    import('@/modules/settings/backup/restore/Restore')
+      .then(({ Restore }) => openModal(Restore, { selectedBackup: backup }, {
+        size: 'lg',
+        backdrop: 'static',
+      }))
+      .catch(error => console.error(error))
   }
 
   const retryScheduledBackups = (): void => {

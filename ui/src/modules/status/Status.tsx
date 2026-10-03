@@ -8,7 +8,7 @@ import { useAuthStore } from '@/core/auth'
 import { Spinner } from '@/core/components/spinner/Spinner'
 import { settingsActions } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { useCanDeactivate } from '@/core/utilities/terminal'
+import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 import { ws } from '@/core/ws'
 
 import { DashboardGrid } from './DashboardGrid'

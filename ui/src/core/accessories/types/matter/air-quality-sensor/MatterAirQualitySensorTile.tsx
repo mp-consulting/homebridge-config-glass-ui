@@ -3,7 +3,7 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { AIR_QUALITY_LABELS } from '@/core/accessories/types/matter/air-quality-sensor/air-quality-sensor'
-import { AirQualitySensorManage } from '@/core/accessories/types/matter/air-quality-sensor/AirQualitySensorManage'
+import { AirQualitySensorManage } from '@/core/accessories/types/matter/lazy-manage'
 import { getAirQualityValue, hasConcentrationData } from '@/core/accessories/types/matter/matter-device.utils'
 import { openManageModal } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'

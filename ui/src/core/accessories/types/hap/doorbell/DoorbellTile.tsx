@@ -1,6 +1,6 @@
 import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
-import { DoorbellManage } from '@/core/accessories/types/hap/doorbell/DoorbellManage'
+import { DoorbellManage } from '@/core/accessories/types/hap/lazy-manage'
 import { MediaTile } from '@/core/accessories/types/hap/media-tile'
 
 export function DoorbellTile(props: HapTileProps) {

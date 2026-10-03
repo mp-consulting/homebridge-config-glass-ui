@@ -11,7 +11,7 @@ import { useStore } from 'zustand'
 import { useAuthStore } from '@/core/auth/auth.store'
 import { Spinner } from '@/core/components/spinner/Spinner'
 import { settingsActions } from '@/core/settings'
-import { useCanDeactivate } from '@/core/utilities/terminal/hooks'
+import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 import { ws } from '@/core/ws'
 import { PluginCard } from '@/modules/plugins/plugin-card/PluginCard'
 import {
@@ -26,6 +26,23 @@ import './plugins.scss'
 // Shared empty list for plugins without child bridges, so the card prop
 // keeps the same reference instead of receiving a new `[]` every render
 const noChildBridges: ChildBridge[] = []
+
+/**
+ * The child bridges by plugin, regrouped when the list changes but keeping the
+ * previous array for every plugin whose bridges did not change: a status update
+ * for one bridge then re-renders only that plugin's (memoised) card.
+ * @param childBridges - the store's bridge list
+ */
+function useStableChildBridgeGroups(childBridges: ChildBridge[]): Map<string, ChildBridge[]> {
+  const [grouped, setGrouped] = useState(() => ({ source: childBridges, groups: groupChildBridgesByPlugin(childBridges) }))
+  if (grouped.source !== childBridges) {
+    // Adjusting state while rendering, as React documents for derived state
+    const next = { source: childBridges, groups: groupChildBridgesByPlugin(childBridges, grouped.groups) }
+    setGrouped(next)
+    return next.groups
+  }
+  return grouped.groups
+}
 
 /** The ngbTooltip of the toolbar buttons: on hover, below, after 150ms. */
 function ToolbarTooltip({ text, children }: { text: string, children: ReactElement }) {
@@ -94,7 +111,7 @@ export function PluginsPage() {
   const isSearchMode = useStore(store, s => s.isSearchMode)
   const uiUpdateAvailable = useStore(store, s => s.uiUpdateAvailable)
 
-  const childBridgesByPlugin = useMemo(() => groupChildBridgesByPlugin(childBridges), [childBridges])
+  const childBridgesByPlugin = useStableChildBridgeGroups(childBridges)
   const pluginSummary = useMemo(() => summarise(installedPlugins), [installedPlugins])
   const availableUpdateCount = countAvailableUpdates({ installedPlugins, uiUpdateAvailable })
 
@@ -276,6 +293,7 @@ export function PluginsPage() {
                 <a
                   href="https://developers.homebridge.io/analytics"
                   target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={t('plugins.stats_open_in_new_tab')}
                 >
                   <i aria-hidden="true" className="fas fa-up-right-from-square"></i>

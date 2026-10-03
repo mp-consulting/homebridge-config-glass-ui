@@ -130,6 +130,9 @@ describe('toast', () => {
 
       const [plain, html] = [...document.querySelectorAll('[role="alert"]')]
       expect(plain.querySelector('b')).toBeNull()
+      // The sanitiser is loaded with the first html toast
+      await import('@/core/ui/sanitize-html')
+      await tick()
       expect(html.querySelector('b')?.textContent).toBe('bold')
       expect(html.innerHTML).not.toContain('onerror')
     })

@@ -1,7 +1,7 @@
 import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
+import { MicrophoneManage } from '@/core/accessories/types/hap/lazy-manage'
 import { MediaTile } from '@/core/accessories/types/hap/media-tile'
-import { MicrophoneManage } from '@/core/accessories/types/hap/microphone/MicrophoneManage'
 
 export function MicrophoneTile(props: HapTileProps) {
   return (

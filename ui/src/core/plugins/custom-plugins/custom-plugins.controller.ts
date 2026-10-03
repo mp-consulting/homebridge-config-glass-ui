@@ -50,6 +50,20 @@ export interface CustomPluginsControllerOptions {
   getIframe: () => HTMLIFrameElement | null
 }
 
+/** A plain object: not null, not an array. */
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isOptionalString(value: unknown): value is string | null | undefined {
+  return value === undefined || value === null || typeof value === 'string'
+}
+
+/** `toast.*` messages: text only, since the toast renders them as React children. */
+function isToastPayload(data: Record<string, unknown>): data is { message?: string, title?: string } {
+  return isOptionalString(data.message) && isOptionalString(data.title)
+}
+
 /**
  * The plugin-ui-utils host: everything CustomPluginsComponent did, minus the
  * template. This is a frozen contract with `@homebridge/plugin-ui-utils`
@@ -311,6 +325,11 @@ export class CustomPluginsController {
       || (e.origin !== environment.api.origin && e.origin !== window.origin)) {
       return
     }
+    // The page is the plugin author's code: never trust the shape of what it
+    // sends. Anything that is not `{ action: string, ... }` is ignored.
+    if (!e.data || typeof e.data !== 'object' || typeof e.data.action !== 'string') {
+      return
+    }
     switch (e.data.action) {
       case 'loaded':
         // The theme classes, the parent's stylesheets and inline styles, then
@@ -322,6 +341,9 @@ export class CustomPluginsController {
         break
       }
       case 'scrollHeight':
+        if (typeof e.data.scrollHeight !== 'number' || !Number.isFinite(e.data.scrollHeight)) {
+          break
+        }
         this.setiFrameHeight(e)
         this.setState({ uiLoaded: true })
         break
@@ -368,6 +390,9 @@ export class CustomPluginsController {
         break
       }
       case 'form.create': {
+        if (!isObject(e.data.schema) || !isOptionalString(e.data.submitButton) || !isOptionalString(e.data.cancelButton)) {
+          break
+        }
         this.setState({ showSchemaForm: false }) // hide the schema generated form
         void this.formCreate(e.data.formId, e.data.schema, e.data.data, e.data.submitButton, e.data.cancelButton)
         break
@@ -396,16 +421,24 @@ export class CustomPluginsController {
         break
       }
       case 'toast.success':
-        toast.success(e.data.message, e.data.title)
+        if (isToastPayload(e.data)) {
+          toast.success(e.data.message, e.data.title)
+        }
         break
       case 'toast.error':
-        toast.error(e.data.message, e.data.title)
+        if (isToastPayload(e.data)) {
+          toast.error(e.data.message, e.data.title)
+        }
         break
       case 'toast.warning':
-        toast.warning(e.data.message, e.data.title)
+        if (isToastPayload(e.data)) {
+          toast.warning(e.data.message, e.data.title)
+        }
         break
       case 'toast.info':
-        toast.info(e.data.message, e.data.title)
+        if (isToastPayload(e.data)) {
+          toast.info(e.data.message, e.data.title)
+        }
         break
       case 'spinner.show':
         this.setState({ pluginSpinner: true })
@@ -439,7 +472,7 @@ export class CustomPluginsController {
     this.io!.socket.emit('request', event.data)
   }
 
-  private handleUpdateConfig(event: MessageEvent, pluginConfig: Array<Record<string, unknown>>): void {
+  private handleUpdateConfig(event: MessageEvent, pluginConfig: unknown): void {
     // Ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
       toast.error(t('plugins.config.must_be_array'), t('toast.title_error'))
@@ -448,7 +481,7 @@ export class CustomPluginsController {
 
     // Validate each block in the array
     for (const block of pluginConfig) {
-      if (typeof block !== 'object' || Array.isArray(block)) {
+      if (!isObject(block)) {
         toast.error(t('plugins.config.must_be_array_objects'), t('toast.title_error'))
         return this.requestResponse(event, { message: t('plugins.config.must_be_array_objects') }, false)
       }

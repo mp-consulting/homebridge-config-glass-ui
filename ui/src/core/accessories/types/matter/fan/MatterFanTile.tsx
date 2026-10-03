@@ -2,7 +2,7 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 
 import { useTranslation } from 'react-i18next'
 
-import { MatterFanManage } from '@/core/accessories/types/matter/fan/MatterFanManage'
+import { MatterFanManage } from '@/core/accessories/types/matter/lazy-manage'
 import { getFanPercentSetting, isFanOn, toggleFan } from '@/core/accessories/types/matter/matter-device.utils'
 import { openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'

@@ -2,10 +2,10 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 
 import { useTranslation } from 'react-i18next'
 
+import { RoboticVacuumCleanerManage } from '@/core/accessories/types/matter/lazy-manage'
 import { RvcOperationalState } from '@/core/accessories/types/matter/matter-device.constants'
 import { controlDevice, getDeviceActiveState, getDeviceStatusText, getRvcOperationalState, isOnOffDevice } from '@/core/accessories/types/matter/matter-device.utils'
 import { openManageModal } from '@/core/accessories/types/matter/matter-tile'
-import { RoboticVacuumCleanerManage } from '@/core/accessories/types/matter/robotic-vacuum-cleaner/RoboticVacuumCleanerManage'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
 

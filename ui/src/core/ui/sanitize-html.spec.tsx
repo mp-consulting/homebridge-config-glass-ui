@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { sanitizeHtml } from '@/core/ui/sanitize-html'
+import { safeHtml as schemaFormHtml } from '@/schema-form/widgets/html'
 
 /**
  * The stand-in for Angular's `[innerHTML]` sanitising. Translation strings
@@ -31,6 +32,28 @@ describe('sanitizeHtml', () => {
     expect(sanitizeHtml('<a href="mailto:a@b.c">x</a>')).toBe('<a href="mailto:a@b.c">x</a>')
   })
 
+  it('removes form controls, <style> and inline styles that could overlay a fake form', () => {
+    const clean = sanitizeHtml(
+      '<form action="https://evil.example"><input name="password"><textarea>t</textarea>'
+      + '<select><option>o</option></select><button formaction="https://evil.example">Sign in</button></form>'
+      + '<style>body{display:none}</style><p style="position:fixed;inset:0">overlay</p>',
+    )
+
+    for (const tag of ['<form', '<input', '<textarea', '<select', '<option', '<button', '<style', 'style=', 'formaction', 'display:none']) {
+      expect(clean).not.toContain(tag)
+    }
+    expect(clean).toContain('<p>overlay</p>')
+    expect(clean).toContain('Sign in')
+  })
+
+  it('forces rel="noopener noreferrer" on any link with a target', () => {
+    expect(sanitizeHtml('<a href="https://example.com" target="_blank">x</a>'))
+      .toBe('<a href="https://example.com" target="_blank" rel="noopener noreferrer">x</a>')
+    expect(sanitizeHtml('<a href="https://example.com" target="_blank" rel="opener">x</a>'))
+      .toBe('<a href="https://example.com" target="_blank" rel="noopener noreferrer">x</a>')
+    expect(sanitizeHtml('<a href="https://example.com">x</a>')).toBe('<a href="https://example.com">x</a>')
+  })
+
   it('turns nothing into an empty string', () => {
     expect(sanitizeHtml(undefined)).toBe('')
     expect(sanitizeHtml(null)).toBe('')
@@ -46,5 +69,13 @@ describe('safeHtml', () => {
     expect(p.className).toBe('mb-0')
     expect(p.querySelector('b')?.textContent).toBe('hi')
     expect(p.innerHTML).not.toContain('onerror')
+  })
+})
+
+describe('schema-form html', () => {
+  it('uses the same hardened profile for plugin schema help text', () => {
+    const { __html } = schemaFormHtml('<b>Note</b> <span style="color:red">x</span><form><input></form><a href="https://e.x" target="_blank">doc</a>')
+
+    expect(__html).toBe('<b>Note</b> <span>x</span><a href="https://e.x" target="_blank" rel="noopener noreferrer">doc</a>')
   })
 })

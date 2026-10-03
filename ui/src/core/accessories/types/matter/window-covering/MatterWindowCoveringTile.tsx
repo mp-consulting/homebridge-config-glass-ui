@@ -3,9 +3,9 @@ import type { CSSProperties } from 'react'
 
 import { useTranslation } from 'react-i18next'
 
+import { WindowCoveringManage } from '@/core/accessories/types/matter/lazy-manage'
 import { getWindowCoveringOpenPercentage, toggleWindowCovering } from '@/core/accessories/types/matter/matter-device.utils'
 import { openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
-import { WindowCoveringManage } from '@/core/accessories/types/matter/window-covering/WindowCoveringManage'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
 

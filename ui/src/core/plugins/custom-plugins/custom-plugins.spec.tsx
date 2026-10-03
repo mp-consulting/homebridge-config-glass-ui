@@ -355,6 +355,55 @@ describe('the custom plugin ui', () => {
       expect(lastReply()).toBeUndefined()
     })
 
+    it.each([
+      ['no data', null],
+      ['a string', 'config.get'],
+      ['an action that is not a string', { action: 42, requestId: 'r1' }],
+      ['an action given as an object', { action: { toString: 'config.get' }, requestId: 'r1' }],
+    ])('ignores a message with %s', async (_label, data) => {
+      await open()
+      await ready()
+      pluginWindow.postMessage.mockClear()
+
+      await post(data as Record<string, unknown>)
+
+      expect(pluginWindow.postMessage).not.toHaveBeenCalled()
+      expect(console.error).not.toHaveBeenCalled()
+    })
+
+    it('ignores toasts whose text is not text', async () => {
+      await open()
+      await ready()
+
+      await post({ action: 'toast.error', message: { $$typeof: 'x' }, title: 'Oops' })
+      await post({ action: 'toast.success', message: 'Saved', title: ['not', 'text'] })
+
+      expect(toast.error).not.toHaveBeenCalled()
+      expect(toast.success).not.toHaveBeenCalled()
+
+      await post({ action: 'toast.success', message: 'Saved', title: 'Example' })
+      expect(toast.success).toHaveBeenCalledWith('Saved', 'Example')
+    })
+
+    it('ignores a form without a schema object', async () => {
+      await open()
+      await ready()
+
+      await post({ action: 'form.create', formId: 'f1', schema: 'not a schema' })
+
+      expect(document.querySelector('.custom-form-action-buttons')).toBeNull()
+    })
+
+    it('ignores a scrollHeight that is not a number', async () => {
+      await open()
+      await ready()
+      const before = iframe.style.height
+
+      await post({ action: 'scrollHeight', scrollHeight: '100px;position:fixed' })
+
+      expect(iframe.style.height).toBe(before)
+    })
+
     it('answers a message from its own iframe, from the page origin too', async () => {
       await open()
       await ready()
@@ -416,6 +465,7 @@ describe('the custom plugin ui', () => {
       ['entries that are not objects', ['not an object'], 'plugins.config.must_be_array_objects'],
       // `typeof [] === 'object'`, so this needs its own check
       ['entries that are arrays', [[]], 'plugins.config.must_be_array_objects'],
+      ['entries that are null', [null], 'plugins.config.must_be_array_objects'],
     ])('refuses a config update with %s', async (_label, update, key) => {
       await open()
       await ready()
