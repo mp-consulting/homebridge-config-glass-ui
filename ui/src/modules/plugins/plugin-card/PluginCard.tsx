@@ -16,7 +16,6 @@ import { DisablePlugin } from '@/core/plugins/disable-plugin/DisablePlugin'
 import { Donate } from '@/core/plugins/donate/Donate'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { PluginInfo } from '@/core/plugins/plugin-info/PluginInfo'
-import { PluginLogs } from '@/core/plugins/plugin-logs/PluginLogs'
 import { RE_HOMEBRIDGE_PREFIX } from '@/core/regex.constants'
 import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
@@ -212,14 +211,17 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
     }
   }
 
+  // Loaded on demand: the log brings xterm (~90 kB gzipped) with it
   const viewPluginLog = () => {
-    openModal(PluginLogs, {
-      plugin,
-      childBridges,
-    }, {
-      size: 'xl',
-      backdrop: 'static',
-    })
+    import('@/core/plugins/plugin-logs/PluginLogs')
+      .then(({ PluginLogs }) => openModal(PluginLogs, {
+        plugin,
+        childBridges,
+      }, {
+        size: 'xl',
+        backdrop: 'static',
+      }))
+      .catch(error => console.error(error))
   }
 
   const handleIconError = () => setBrokenIcon(plugin.icon)

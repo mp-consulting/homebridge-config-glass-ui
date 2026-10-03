@@ -2,7 +2,7 @@ import type { ChildBridge, Plugin } from '@/core/plugins/manage-plugins.interfac
 import type { FakeApi, FakeOpenModal, FakeWs } from '@/testing'
 import type { Mock } from 'vitest'
 
-import { act, fireEvent, screen } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useAuthStore } from '@/core/auth/auth.store'
@@ -577,23 +577,24 @@ describe('pluginCard', () => {
   })
 
   describe('the plugin log and the info panels', () => {
-    it('opens the log with the plugin and its bridges', () => {
+    it('opens the log with the plugin and its bridges', async () => {
       // The log is filtered per bridge, so it needs both
       const bridge = makeChildBridge({ username: '0E:11:22:33:44:55' })
       render({ name: 'homebridge-example', isConfigured: true, hasChildBridges: true }, [bridge])
 
       fireEvent.click(menuItem('plugins.manage.plugin_logs'))
 
-      expect(modal.lastOpened()!.component).toBe(PluginLogs)
+      await waitFor(() => expect(modal.lastOpened()?.component).toBe(PluginLogs))
       expect(modal.lastOpened()!.props?.plugin.name).toBe('homebridge-example')
       expect(modal.lastOpened()!.props?.childBridges).toHaveLength(1)
     })
 
-    it('opens the log wide, because log lines are long', () => {
+    it('opens the log wide, because log lines are long', async () => {
       render({ name: 'homebridge-example' })
 
       fireEvent.click(menuItem('plugins.manage.plugin_logs'))
 
+      await waitFor(() => expect(modal.lastOpened()?.component).toBe(PluginLogs))
       expect(modal.lastOpened()!.options).toMatchObject({ size: 'xl', backdrop: 'static' })
     })
 

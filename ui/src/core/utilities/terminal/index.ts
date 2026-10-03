@@ -1,3 +1,4 @@
+export * from './can-deactivate'
 export * from './hooks'
 export * from './instances'
 export * from './log.service'

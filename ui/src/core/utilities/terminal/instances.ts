@@ -10,15 +10,20 @@ import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { ws } from '@/core/ws'
 
+import { deferredTerminalFactory } from './deferred-terminal-factory'
 import { LogService } from './log.service'
 import { TerminalNavigationGuard } from './terminal-navigation-guard'
-import { xtermFactory } from './terminal.factory'
 import { TerminalService } from './terminal.service'
 
 /**
  * The real wiring of the terminal services. Kept apart from the classes so a
  * spec can build them with fakes, and so the hooks spec can `vi.mock` this file
  * without loading the app graph.
+ *
+ * ⚠️ Does not import xterm: the dashboard, settings, plugins and config editor
+ * reach this file for the navigation guard / session state only. The xterm
+ * factory arrives through `deferredTerminalFactory` once a terminal component
+ * (which imports `terminal.factory.ts`) has loaded.
  */
 
 /** Opens the shared confirm modal; dismiss → false (NgbModal rejected `result`). */
@@ -36,7 +41,7 @@ const terminalWs = ws as unknown as TerminalWs
 
 /** The one interactive terminal, shared by the terminal page and the dashboard widget. */
 export const terminalService = new TerminalService({
-  terminals: xtermFactory,
+  terminals: deferredTerminalFactory,
   ws: terminalWs,
   api,
 })
@@ -44,7 +49,7 @@ export const terminalService = new TerminalService({
 /** A fresh read-only log terminal; each host needs its own (see LogService). */
 export function createLogService(): LogService {
   return new LogService({
-    terminals: xtermFactory,
+    terminals: deferredTerminalFactory,
     ws: terminalWs,
     api,
     confirm: confirmModal,

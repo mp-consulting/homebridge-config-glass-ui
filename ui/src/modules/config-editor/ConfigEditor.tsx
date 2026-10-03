@@ -26,7 +26,7 @@ import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
-import { useCanDeactivate } from '@/core/utilities/terminal/hooks'
+import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 
 import { DIFF_MODIFIED_URI, DIFF_ORIGINAL_URI, disposeLeftoverModels, PLAIN_TEXT_STORAGE_KEY } from './config-editor.monaco'
 import { ConfigRestore } from './config-restore/ConfigRestore'

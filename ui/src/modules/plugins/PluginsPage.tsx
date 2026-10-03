@@ -11,7 +11,7 @@ import { useStore } from 'zustand'
 import { useAuthStore } from '@/core/auth/auth.store'
 import { Spinner } from '@/core/components/spinner/Spinner'
 import { settingsActions } from '@/core/settings'
-import { useCanDeactivate } from '@/core/utilities/terminal/hooks'
+import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 import { ws } from '@/core/ws'
 import { PluginCard } from '@/modules/plugins/plugin-card/PluginCard'
 import {

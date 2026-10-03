@@ -1,7 +1,7 @@
 import type { EnvInterface } from '@/core/interfaces/settings.interfaces'
 import type { FakeApi, FakeOpenModal, FakeToast } from '@/testing'
 
-import { act, fireEvent, screen } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { Confirm } from '@/core/components/confirm/Confirm'
@@ -288,7 +288,7 @@ describe('backup', () => {
 
       // Both are `size: 'lg'` modals; leaving this one open would stack them
       expect(activeModal.close).toHaveBeenCalled()
-      expect(modal.lastOpened()?.component).toBe(Restore)
+      await waitFor(() => expect(modal.lastOpened()?.component).toBe(Restore))
     })
 
     it('passes the chosen backup through the modal props', async () => {
@@ -296,7 +296,7 @@ describe('backup', () => {
 
       await click(button('form.button_restore', 1))
 
-      expect(modal.propsFor()?.selectedBackup).toEqual(scheduledBackups[1])
+      await waitFor(() => expect(modal.propsFor()?.selectedBackup).toEqual(scheduledBackups[1]))
     })
 
     it('passes nothing when the user wants to upload their own file', async () => {
