@@ -10,6 +10,7 @@ import { useAuthStore } from '@/core/auth/auth.store'
 import { pluginsCache } from '@/core/caching/plugins-cache'
 import { Confirm } from '@/core/components/confirm/Confirm'
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { escapeHtml } from '@/core/helpers/html.helper'
 import { formatDatePattern } from '@/core/pipes/date-pattern'
 import { DisablePlugin } from '@/core/plugins/disable-plugin/DisablePlugin'
@@ -26,8 +27,6 @@ import { mobileDetect } from '@/core/utilities/mobile-detect'
 import { ws } from '@/core/ws'
 
 import './plugin-card.scss'
-
-export const defaultIcon = 'assets/hb-icon.png'
 
 const UI_PLUGIN_NAME = '@mp-consulting/homebridge-config-glass-ui'
 
@@ -88,7 +87,7 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
   const displayName = isMobile && plugin.displayName.toLowerCase().startsWith('homebridge ')
     ? plugin.displayName.replace(RE_HOMEBRIDGE_PREFIX, '')
     : plugin.displayName
-  const icon = !plugin.icon || plugin.icon === brokenIcon ? defaultIcon : plugin.icon
+  const icon = !plugin.icon || plugin.icon === brokenIcon ? DEFAULT_PLUGIN_ICON : plugin.icon
 
   // A plugin with neither supports-* keyword predates the convention and can
   // only be a HAP plugin, so the hap icon stays enabled as the fallback.

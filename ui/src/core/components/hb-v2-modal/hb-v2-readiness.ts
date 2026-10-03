@@ -9,8 +9,6 @@ export interface InstalledPlugin {
   [key: string]: unknown
 }
 
-export const DEFAULT_ICON = 'assets/hb-icon.png'
-
 /**
  * Whether each installed plugin declares Homebridge v2 support, and whether
  * they all do. A plugin declares `engines.homebridge` as a semver range, so

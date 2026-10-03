@@ -3,8 +3,8 @@ import type { PluginBridgeStore } from '@/core/plugins/plugin-bridge/plugin-brid
 import { useTranslation } from 'react-i18next'
 import { useStore } from 'zustand'
 
+import { linkCron } from '@/core/constants/links'
 import { getScheduledRestartCron } from '@/core/plugins/plugin-bridge/plugin-bridge.schedule'
-import { linkCron } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 /** The per-bridge scheduled restart (a cron expression), in the advanced options. */

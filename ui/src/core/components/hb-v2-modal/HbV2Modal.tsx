@@ -7,8 +7,9 @@ import { useTranslation } from 'react-i18next'
 import { satisfies } from 'semver'
 
 import { pluginsCache } from '@/core/caching/plugins-cache'
-import { assessHbV2Readiness, DEFAULT_ICON } from '@/core/components/hb-v2-modal/hb-v2-readiness'
+import { assessHbV2Readiness } from '@/core/components/hb-v2-modal/hb-v2-readiness'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -109,7 +110,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
           : (
               <>
                 <div className="text-center mb-3">
-                  <img src={DEFAULT_ICON} alt="" className="plugin-icon-card" height="100" width="100" />
+                  <img src={DEFAULT_PLUGIN_ICON} alt="" className="plugin-icon-card" height="100" width="100" />
                 </div>
                 {allPluginsSupported
                   ? <p className="text-center">All your plugins are marked as compatible with Homebridge v2.</p>
@@ -177,7 +178,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
                           alt=""
                           aria-hidden="true"
                           className="plugin-icon-small"
-                          src={brokenIcons.has(plugin.name) ? DEFAULT_ICON : (plugin.icon as string | undefined)}
+                          src={brokenIcons.has(plugin.name) ? DEFAULT_PLUGIN_ICON : (plugin.icon as string | undefined)}
                           onError={() => setBrokenIcons(current => new Set(current).add(plugin.name))}
                         />
                       </div>

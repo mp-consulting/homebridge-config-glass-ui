@@ -1,7 +1,6 @@
 import type { SyntheticEvent } from 'react'
 
-/** The Homebridge logo, used for the UI and Homebridge themselves and for any plugin without an icon */
-export const defaultIcon = 'assets/hb-icon.png'
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 
 export interface UpdateAllItemRowProps {
   displayName: string
@@ -15,7 +14,7 @@ export interface UpdateAllItemRowProps {
 }
 
 function handleIconError(event: SyntheticEvent<HTMLImageElement>): void {
-  event.currentTarget.src = defaultIcon
+  event.currentTarget.src = DEFAULT_PLUGIN_ICON
 }
 
 /**
@@ -31,7 +30,7 @@ export function UpdateAllItemRow({ displayName, icon = null, note = null }: Upda
         alt=""
         aria-hidden="true"
         className="plugin-icon-small me-3 flex-shrink-0"
-        src={icon || defaultIcon}
+        src={icon || DEFAULT_PLUGIN_ICON}
         onError={handleIconError}
       />
       <div>

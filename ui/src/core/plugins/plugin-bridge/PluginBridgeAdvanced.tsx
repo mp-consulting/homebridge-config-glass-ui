@@ -3,7 +3,7 @@ import type { PluginBridgeStore } from '@/core/plugins/plugin-bridge/plugin-brid
 import { useTranslation } from 'react-i18next'
 import { useStore } from 'zustand'
 
-import { linkDebug } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
+import { linkDebug } from '@/core/constants/links'
 import { PluginBridgeSchedule } from '@/core/plugins/plugin-bridge/PluginBridgeSchedule'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { cx } from '@/core/utilities/cx'

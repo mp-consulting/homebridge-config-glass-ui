@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
+import { linkRaspbianSsl } from '@/core/constants/links'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { cx } from '@/core/utilities/cx'
 import { INNER_BLOCK, INNER_FLEX, NumberInput, SaveIndicator, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useField, useInvalid, useSaving, useSettingsPage, useSettingsPageState } from '@/modules/settings/settings-page.context'
-import { linkRaspbianSsl } from '@/modules/settings/settings-page.store'
 
 /** One of the three session timeout boxes, with its unit beside it. */
 function SessionTimeoutBox({ field, id, max, placeholder, unit }: {

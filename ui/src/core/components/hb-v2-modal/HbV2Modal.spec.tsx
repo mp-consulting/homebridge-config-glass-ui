@@ -4,8 +4,9 @@ import { act, fireEvent, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { pluginsCache as realPluginsCache } from '@/core/caching/plugins-cache'
-import { assessHbV2Readiness, DEFAULT_ICON } from '@/core/components/hb-v2-modal/hb-v2-readiness'
+import { assessHbV2Readiness } from '@/core/components/hb-v2-modal/hb-v2-readiness'
 import { HbV2Modal } from '@/core/components/hb-v2-modal/HbV2Modal'
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { useSettingsStore } from '@/core/settings'
 import { toast } from '@/core/ui/toast'
 import { ws as realWs } from '@/core/ws'
@@ -257,7 +258,7 @@ describe('hbV2Modal', () => {
 
       fireEvent.error(img)
 
-      expect(img.getAttribute('src')).toBe(DEFAULT_ICON)
+      expect(img.getAttribute('src')).toBe(DEFAULT_PLUGIN_ICON)
     })
 
     it('passes on the reason it was closed with', async () => {

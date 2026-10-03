@@ -9,6 +9,7 @@ import { satisfies } from 'semver'
 import { api } from '@/core/api'
 import { pluginsCache } from '@/core/caching'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -24,8 +25,6 @@ export interface PluginNodeCheck {
 }
 
 export type NodeVersionModalProps = NodeVersionModalData & ModalComponentProps
-
-const defaultIcon = 'assets/hb-icon.png'
 
 const POLICIES: Array<{ value: NodeUpdatePolicy, icon: string }> = [
   { value: 'all', icon: 'fas fa-bell' },
@@ -51,7 +50,7 @@ async function loadInstalledPlugins(latestVersion: string, homebridgePkg: NodeVe
         name: x.name,
         isSupported,
         isSupportedStr: `status.widget.update_node_${isSupported}`,
-        icon: x.icon || defaultIcon,
+        icon: x.icon || DEFAULT_PLUGIN_ICON,
       } as PluginNodeCheck
     })
     .sort((a: PluginNodeCheck, b: PluginNodeCheck) => {
@@ -73,7 +72,7 @@ async function loadInstalledPlugins(latestVersion: string, homebridgePkg: NodeVe
     name: 'homebridge',
     isSupported: hbIsSupported,
     isSupportedStr: `status.widget.update_node_${hbIsSupported}`,
-    icon: defaultIcon,
+    icon: DEFAULT_PLUGIN_ICON,
   })
   return processedPlugins
 }
@@ -168,7 +167,7 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
   const dismissModal = () => activeModal.dismiss('Dismiss')
 
   const handleIconError = (plugin: PluginNodeCheck) => {
-    setInstalledPlugins(plugins => plugins.map(p => (p === plugin ? { ...p, icon: defaultIcon } : p)))
+    setInstalledPlugins(plugins => plugins.map(p => (p === plugin ? { ...p, icon: DEFAULT_PLUGIN_ICON } : p)))
   }
 
   return (

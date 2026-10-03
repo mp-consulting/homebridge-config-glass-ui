@@ -134,8 +134,6 @@ export interface SliceContext {
 
 export { t }
 
-export const defaultIcon = 'assets/hb-icon.png'
-
 /** What Angular's number value accessor wrote for an `<input type="number">`: null when empty. */
 export function numberValue(value: string): number | null {
   return value === '' ? null : Number.parseFloat(value)
@@ -221,14 +219,3 @@ export function initialState(data: PluginBridgeModalData): PluginBridgeState {
     originalHideChildBridgeSetup: false,
   }
 }
-
-/** An icon-only link markup for a translation's `{{ link }}` slot, with an accessible name. */
-export function externalIconLink(href: string, label: string): string {
-  const name = label.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
-  return `<a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${name}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
-}
-
-/** Icon-only links out, named for screen readers by `label`. */
-export const linkChildBridges = (label: string) => externalIconLink('https://github.com/homebridge/homebridge/wiki/Child-Bridges', label)
-export const linkDebug = (label: string) => externalIconLink('https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Debug-Common-Values', label)
-export const linkCron = (label: string) => externalIconLink('https://crontab.guru/', label)
