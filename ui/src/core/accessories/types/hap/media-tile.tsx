@@ -3,10 +3,10 @@ import type { ComponentType, ReactNode } from 'react'
 
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { mediaHasControls, mediaIsOn, mediaToggle } from '@/core/accessories/types/hap/media.utils'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 export interface MediaTileProps extends HapTileProps {
   /** The root class (`hb-speaker`, …), for the component styles. */

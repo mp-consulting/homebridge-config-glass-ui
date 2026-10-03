@@ -5,6 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } fr
 import { createPortal } from 'react-dom'
 
 import { ActiveModalContext, ModalDismissReasons, stack } from '@/core/ui/modal'
+import { cx } from '@/core/utilities/cx'
 
 const FOCUSABLE_ELEMENTS_SELECTOR = [
   'a[href]',
@@ -115,7 +116,7 @@ function ModalBackdrop({ view }: { view: ModalView }) {
   const backdropRef = useRef<HTMLDivElement>(null)
   const shown = useShown(backdropRef, options.animation, view.closing)
   const show = !options.animation || shown
-  const className = ['modal-backdrop', options.backdropClass, options.animation ? 'fade' : '', show ? 'show' : ''].filter(Boolean).join(' ')
+  const className = cx('modal-backdrop', options.backdropClass, options.animation ? 'fade' : '', show ? 'show' : '')
   return <div ref={backdropRef} className={className} style={{ zIndex: 1055 }} />
 }
 
@@ -224,22 +225,22 @@ function ModalWindow({ view, isTop }: { view: ModalView, isTop: boolean }) {
     ? 'modal-fullscreen'
     : typeof options.fullscreen === 'string' ? `modal-fullscreen-${options.fullscreen}-down` : ''
 
-  const windowClassName = [
+  const windowClassName = cx(
     'modal d-block',
     options.windowClass,
     options.animation ? 'fade' : '',
     shown ? 'show' : '',
     bumping ? 'modal-static' : '',
-  ].filter(Boolean).join(' ')
+  )
 
-  const dialogClassName = [
+  const dialogClassName = cx(
     'modal-dialog',
     options.size ? `modal-${options.size}` : '',
     options.centered ? 'modal-dialog-centered' : '',
     fullscreenClass,
     options.scrollable ? 'modal-dialog-scrollable' : '',
     options.modalDialogClass,
-  ].filter(Boolean).join(' ')
+  )
 
   return (
     <div

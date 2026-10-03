@@ -3,6 +3,8 @@ import type { ModalComponentProps } from '@/core/ui/modal'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+
 /** "A restart is needed": the restart button takes the user to the restart page. */
 export function RestartHomebridge({ activeModal }: ModalComponentProps) {
   const { t } = useTranslation()
@@ -18,24 +20,12 @@ export function RestartHomebridge({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="restart-homebridge-modal-title">
-      <div className="modal-header">
-        <h5 className="modal-title" id="restart-homebridge-modal-title">
-          {t('platform.version.service_restart_required')}
-        </h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('platform.version.service_restart_required')} titleId="restart-homebridge-modal-title" onClose={dismissModal} />
       <div className="modal-body text-center">
         <i className="fas fa-power-off primary-text mb-3 icon-xl"></i>
         <p className="mb-0">{t('plugins.settings.restart_required')}</p>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -53,7 +43,7 @@ export function RestartHomebridge({ activeModal }: ModalComponentProps) {
             {t('menu.tooltip_restart')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

@@ -6,14 +6,16 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { backupService } from '@/core/backup'
+import { formatMegabytes } from '@/core/pipes/bytes'
 import { formatDate } from '@/core/pipes/date'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { Restore } from '@/modules/settings/backup/restore/Restore'
 
 export type BackupProps = ModalComponentProps
@@ -21,8 +23,6 @@ export type BackupProps = ModalComponentProps
 /** How long each schedule field waits for the user to stop before writing config.json. */
 const ENABLED_DEBOUNCE_MS = 500
 const PATH_DEBOUNCE_MS = 1500
-
-const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
 
 /**
  * The backup modal: download a backup now, manage the scheduled ones, and hand
@@ -80,7 +80,7 @@ export function Backup({ activeModal }: BackupProps) {
       settingsActions.showRestartToast()
     } catch (error) {
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -108,7 +108,7 @@ export function Backup({ activeModal }: BackupProps) {
       if (sizeInBytes > maxBackupSize) {
         const message = t('backup.backup_exceeds_max_size', {
           maxBackupSizeText,
-          size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
+          size: formatMegabytes(sizeInBytes),
         })
         toast.warning(message, t('toast.title_warning'))
       }
@@ -149,7 +149,7 @@ export function Backup({ activeModal }: BackupProps) {
     } catch (error) {
       setClicked(false)
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -160,7 +160,7 @@ export function Backup({ activeModal }: BackupProps) {
       void getScheduledBackups()
     } catch (error) {
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     } finally {
       setClicked(false)
     }
@@ -181,18 +181,7 @@ export function Backup({ activeModal }: BackupProps) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{translate('backup.title_backup')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={translate('form.button_close')}
-          disabled={busy}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={translate('backup.title_backup')} closeDisabled={busy} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center mb-3">
           <i aria-hidden="true" className="fas fa-hard-drive primary-text icon-xl"></i>
@@ -367,7 +356,7 @@ export function Backup({ activeModal }: BackupProps) {
         )}
       </div>
 
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start"></div>
         <div className="text-center">
           <button
@@ -381,7 +370,7 @@ export function Backup({ activeModal }: BackupProps) {
           </button>
         </div>
         <div className="text-end"></div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

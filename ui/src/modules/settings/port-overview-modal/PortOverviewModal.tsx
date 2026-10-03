@@ -5,9 +5,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
-import { i18n } from '@/core/ui/i18n'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { toastApiError } from '@/core/utilities/http-error'
 import { displayName, sortEntries } from '@/modules/settings/port-overview-modal/port-overview'
 
 /** Every port in use: the bridge, the UI and each child bridge, with any conflicts. */
@@ -28,7 +27,7 @@ export function PortOverviewModal({ activeModal }: ModalComponentProps) {
         }
       } catch (error) {
         console.error(error)
-        toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+        toastApiError(error)
       } finally {
         if (active) {
           setLoading(false)
@@ -44,17 +43,7 @@ export function PortOverviewModal({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('settings.ports.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('settings.ports.title')} onClose={dismissModal} />
       <div className="modal-body">
         {loading
           ? (
@@ -107,11 +96,11 @@ export function PortOverviewModal({ activeModal }: ModalComponentProps) {
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-center">
+      <ModalFooter justify="center">
         <button type="button" className="btn btn-elegant" onClick={dismissModal}>
           {t('form.button_close')}
         </button>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

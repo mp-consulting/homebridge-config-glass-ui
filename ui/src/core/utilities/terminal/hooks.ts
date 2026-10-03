@@ -6,17 +6,12 @@ import type { TerminalNavigationGuard } from './terminal-navigation-guard'
 import type { TerminalService } from './terminal.service'
 import type { ResizeSource } from './types'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useBlocker } from 'react-router'
 
-import { createLogService, getTerminalSettings, terminalNavigationGuard, terminalService } from './instances'
+import { useLatest } from '@/core/hooks/use-latest'
 
-/** Keep the latest value in a ref, so effects that run once still see it. */
-function useLatest<T>(value: T) {
-  const ref = useRef(value)
-  ref.current = value
-  return ref
-}
+import { createLogService, getTerminalSettings, terminalNavigationGuard, terminalService } from './instances'
 
 export interface UseTerminalOptions {
   /** xterm options, usually `getTerminalOptions(...)` from the settings store. Read once, at mount. */

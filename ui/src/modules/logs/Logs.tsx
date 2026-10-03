@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { useDebouncedCallback } from '@/core/utilities/debounce'
 import { useCanDeactivate, useLog } from '@/core/utilities/terminal'
 
 import { createResizeEmitter, enterTerminalPage, leaveTerminalPage, patchXtermLiveRegion } from './terminal-page'
@@ -71,9 +72,7 @@ export function Logs() {
   useEffect(() => () => resizeEvent.complete(), [resizeEvent])
 
   // The query's valueChanges pipe: debounceTime(500) + distinctUntilChanged
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lastQueryRef = useRef<string | undefined>(undefined)
-  useEffect(() => () => clearTimeout(debounceTimerRef.current), [])
 
   const onQueryChanged = (value: string) => {
     if (value === lastQueryRef.current) {
@@ -101,11 +100,12 @@ export function Logs() {
     }
   }
 
+  const queryChanged = useDebouncedCallback(onQueryChanged, 500)
+
   function setQueryValue(value: string, emitEvent = true) {
     setQuery(value)
     if (emitEvent) {
-      clearTimeout(debounceTimerRef.current)
-      debounceTimerRef.current = setTimeout(onQueryChanged, 500, value)
+      queryChanged(value)
     }
   }
 

@@ -1,6 +1,7 @@
 import type { ResizeSource } from '@/core/utilities/terminal'
 
 import { settingsActions, useSettingsStore } from '@/core/settings'
+import { createEmitter } from '@/core/utilities/emitter'
 
 /**
  * Behaviour shared by the two full-page terminals: the log page (`/logs`) and
@@ -120,21 +121,10 @@ export interface ResizeEmitter extends ResizeSource {
 
 /** The `Subject<void>` the pages fed window resizes into. */
 export function createResizeEmitter(): ResizeEmitter {
-  const listeners = new Set<() => void>()
+  const resizes = createEmitter()
   return {
-    subscribe(cb) {
-      listeners.add(cb)
-      return () => {
-        listeners.delete(cb)
-      }
-    },
-    next() {
-      for (const listener of listeners) {
-        listener()
-      }
-    },
-    complete() {
-      listeners.clear()
-    },
+    subscribe: resizes.subscribe,
+    next: () => resizes.emit(),
+    complete: resizes.clear,
   }
 }

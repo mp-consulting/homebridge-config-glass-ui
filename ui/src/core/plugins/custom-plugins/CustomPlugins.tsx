@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { CustomPluginsController } from '@/core/plugins/custom-plugins/custom-plugins.controller'
 import { useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
+import { ModalFooter } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 import { SchemaForm } from '@/schema-form'
 
 import './custom-plugins.scss'
@@ -174,7 +176,7 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
           </div>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button type="button" className="btn btn-elegant" disabled={state.saveInProgress} onClick={dismissModal}>
             {t('form.button_close')}
@@ -187,13 +189,13 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
               text={t(state.formIsValid ? 'form.label_valid' : strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')}
             >
               <i
-                className={[
+                className={cx(
                   'fas fa-xl me-2',
                   state.formIsValid && 'fa-circle-check green-text',
                   !state.formIsValid && 'fa-circle-exclamation',
                   strictValidation && !state.formIsValid && 'red-text',
                   !strictValidation && !state.formIsValid && 'orange-text',
-                ].filter(Boolean).join(' ')}
+                )}
               >
               </i>
             </HoverTooltip>
@@ -209,7 +211,7 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
               : <i className="fas fa-circle-notch fa-spin"></i>}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

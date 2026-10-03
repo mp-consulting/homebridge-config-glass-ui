@@ -10,8 +10,9 @@ import { pluginsCache } from '@/core/caching/plugins-cache'
 import { assessHbV2Readiness, DEFAULT_ICON } from '@/core/components/hb-v2-modal/hb-v2-readiness'
 import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { ws } from '@/core/ws'
 
 export type HbV2ModalProps = HbV2ModalData & ModalComponentProps
@@ -40,7 +41,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
         }
       } catch (error: any) {
         console.error(error)
-        toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+        toastApiError(error)
       }
     }
 
@@ -96,17 +97,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('status.readiness.title', { app: 'Homebridge v2' })}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={() => closeModal('Dismiss')}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('status.readiness.title', { app: 'Homebridge v2' })} onClose={() => closeModal('Dismiss')} />
       <div className="modal-body">
         {loading
           ? (
@@ -214,7 +205,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">{isUpdating && closeButton}</div>
         <div className="text-center">{!isUpdating && closeButton}</div>
         <div className="text-end">
@@ -230,7 +221,7 @@ export function HbV2Modal({ activeModal, isUpdating, skipIfCompatible }: HbV2Mod
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

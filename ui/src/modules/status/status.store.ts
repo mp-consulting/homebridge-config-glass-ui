@@ -9,7 +9,7 @@ import { createStore } from 'zustand/vanilla'
 import { useAuthStore } from '@/core/auth'
 import { notifications } from '@/core/notifications'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { terminalNavigationGuard } from '@/core/utilities/terminal'
@@ -93,8 +93,6 @@ export interface StatusStoreOptions {
   /** For specs; defaults to the app-wide terminal navigation guard. */
   navigationGuard?: Pick<typeof terminalNavigationGuard, 'canDeactivate' | 'handleBeforeUnload'>
 }
-
-const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
 
 function currentPage() {
   return {

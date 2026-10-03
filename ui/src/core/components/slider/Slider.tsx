@@ -3,6 +3,8 @@ import type { API, Options } from 'nouislider'
 import { create } from 'nouislider'
 import { useEffect, useRef } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import './slider.scss'
 
 export type SliderValue = number | number[]
@@ -139,7 +141,7 @@ export function Slider({ min, max, step, value, onChange, disabled, className, o
   }, [min, max, step])
 
   return (
-    <div className={['ng2-nouislider', className].filter(Boolean).join(' ')}>
+    <div className={cx('ng2-nouislider', className)}>
       <div ref={targetRef} />
     </div>
   )

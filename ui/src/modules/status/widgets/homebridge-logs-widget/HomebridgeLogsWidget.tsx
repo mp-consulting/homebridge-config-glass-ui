@@ -9,6 +9,7 @@ import { Link } from 'react-router'
 import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
+import { useDebouncedCallback } from '@/core/utilities/debounce'
 import { useLog } from '@/core/utilities/terminal'
 import { patchXtermLiveRegion } from '@/modules/logs/terminal-page'
 import { useFollowTerminalSettings } from '@/modules/status/widgets/terminal-widget/use-follow-terminal-settings'
@@ -90,15 +91,11 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
   useFollowTerminalSettings(() => log.term, resizeEvent)
 
   // The query's valueChanges pipe: debounceTime(500) + distinctUntilChanged
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const lastQueryRef = useRef<string | undefined>(undefined)
   const timersRef = useRef(new Set<ReturnType<typeof setTimeout>>())
   useEffect(() => {
     const timers = timersRef.current
-    return () => {
-      clearTimeout(debounceTimerRef.current)
-      timers.forEach(clearTimeout)
-    }
+    return () => timers.forEach(clearTimeout)
   }, [])
 
   const later = (fn: () => void, ms: number) => {
@@ -130,11 +127,12 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
     }
   }
 
+  const queryChanged = useDebouncedCallback(onQueryChanged, 500)
+
   function setQueryValue(value: string, emitEvent = true) {
     setQuery(value)
     if (emitEvent) {
-      clearTimeout(debounceTimerRef.current)
-      debounceTimerRef.current = setTimeout(onQueryChanged, 500, value)
+      queryChanged(value)
     }
   }
 

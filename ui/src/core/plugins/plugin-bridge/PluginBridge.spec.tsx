@@ -16,7 +16,7 @@ import { PluginBridge } from '@/core/plugins/plugin-bridge/PluginBridge'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import * as modalModule from '@/core/ui/modal'
 import { childBridges as childBridgesModule } from '@/core/utilities/child-bridges'
-import { activeModalStub, fakeApi, makePlugin, makeSettingsState, renderWithProviders, toastStub } from '@/testing'
+import { activeModalStub, apiError, fakeApi, makePlugin, makeSettingsState, renderWithProviders, toastStub } from '@/testing'
 
 import '@/testing/i18n'
 
@@ -1290,7 +1290,7 @@ describe('pluginBridge', () => {
 
       it('reports a failed save and stays open', async () => {
         const modal = await open([bridgeBlock()], {
-          arrange: () => api.fail('post', /config-editor\/plugin/, new Error('config.json is not writable')),
+          arrange: () => api.fail('post', /config-editor\/plugin/, apiError('config.json is not writable')),
         })
 
         await save(modal)

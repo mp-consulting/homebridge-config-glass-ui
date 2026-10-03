@@ -4,9 +4,10 @@ import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getWindowCoveringOpenPercentage, toggleWindowCovering } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { WindowCoveringManage } from '@/core/accessories/types/matter/window-covering/WindowCoveringManage'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './window-covering.scss'
 
@@ -49,7 +50,7 @@ export function MatterWindowCoveringTile({ service, readyForControl = false }: M
   return (
     <div
       ref={pressRef}
-      className={classes('accessory-box hb-matter-window-covering', pos > 0 && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box hb-matter-window-covering', pos > 0 && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="slider"
       tabIndex={0}
       style={{ '--position': pos / 100 } as CSSProperties}

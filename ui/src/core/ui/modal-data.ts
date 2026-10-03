@@ -1,4 +1,8 @@
-import type { PluginEditorContext, PluginFundingOption } from '@/core/plugins/manage-plugins.interfaces'
+import type { ScheduledBackup } from '@/core/backup/backup.interfaces'
+import type { ChildBridge, Plugin, PluginEditorContext, PluginFundingOption } from '@/core/plugins/manage-plugins.interfaces'
+import type { IoNamespace } from '@/core/ws'
+import type { Widget } from '@/modules/status/widgets/widget.types'
+import type { User } from '@/modules/users/users.interface'
 
 /**
  * The data each modal is opened with. In Angular these were injection tokens;
@@ -29,39 +33,39 @@ export interface InformationModalData {
 
 // ===== Plugin Management =====
 export interface PluginModalData {
-  plugin: any // Plugin type
+  plugin: Plugin
   schema?: any
   pluginConfig?: any[]
   editorContext?: PluginEditorContext
 }
 
 export interface PluginBridgeModalData {
-  plugin: any
+  plugin: Plugin
   schema: any
   justInstalled?: boolean
   editorContext?: PluginEditorContext
 }
 
 export interface PluginExternalsModalData {
-  plugin: any
+  plugin: Plugin
 }
 
 export interface CustomPluginsModalData {
-  plugin: any
+  plugin: Plugin
   schema: any
   pluginConfig?: any[]
   editorContext?: PluginEditorContext
 }
 
 export interface PluginLogsModalData {
-  plugin: any
-  childBridges?: any[]
+  plugin: Plugin
+  childBridges?: ChildBridge[]
   editorContext?: PluginEditorContext
 }
 
 export interface UninstallPluginModalData {
-  plugin: any
-  childBridges?: any[]
+  plugin: Plugin
+  childBridges?: ChildBridge[]
   action?: string
   keepOrphans?: boolean
   onRefreshPluginList?: () => void
@@ -69,14 +73,14 @@ export interface UninstallPluginModalData {
 }
 
 export interface ResetAccessoriesModalData {
-  childBridges?: any[]
+  childBridges?: ChildBridge[]
 }
 
 export interface ManagePluginModalData {
   action: string
   pluginName: string
   pluginDisplayName?: string
-  plugin?: any
+  plugin?: Plugin
   targetVersion?: string
   latestVersion?: string
   installedVersion?: string
@@ -86,13 +90,13 @@ export interface ManagePluginModalData {
   isConfigured?: boolean
   justInstalled?: boolean
   schema?: any
-  childBridges?: any[]
+  childBridges?: ChildBridge[]
   isUpdating?: boolean
   onRefreshPluginList?: () => void
   verifiedPlugin?: boolean
   verifiedPlusPlugin?: boolean
   funding?: PluginFundingOption[] | PluginFundingOption
-  backToVersionModal?: any
+  backToVersionModal?: Plugin | null
 }
 
 export interface DisablePluginModalData {
@@ -103,45 +107,43 @@ export interface DisablePluginModalData {
 }
 
 export interface PluginCompatibilityModalData {
-  plugin: any
+  plugin: Plugin
   isValidNode?: boolean
   isValidHb?: boolean
   action?: 'install' | 'update' | 'alternate' | null
 }
 
 export interface ManageVersionModalData {
-  plugin: any
+  plugin: Plugin
   onRefreshPluginList: () => void
   onSettingsChange?: () => void
 }
 
 export interface SwitchToScopedModalData {
-  plugin: any
+  /** Only a plugin with a scoped successor is offered the switch. */
+  plugin: Plugin & { newHbScope: NonNullable<Plugin['newHbScope']> }
 }
 
 // ===== User Management =====
 export interface UserModalData {
-  user: any // User type
-  existingUsers?: any[] // For duplicate validation
+  user: User
+  /** For duplicate validation. */
+  existingUsers?: User[]
 }
 
 export interface AddUserModalData {
-  existingUsers: any[] // List of existing users for duplicate validation
+  /** For duplicate validation. */
+  existingUsers: User[]
 }
 
 // ===== Settings =====
-export interface NetworkInterfacesModalData {
-  adaptersAvailable: any[]
-  adaptersSelected: any[]
-}
-
 export interface AccessoryControlListsModalData {
   existingBlacklist: string[]
 }
 
 export interface RestoreModalData {
   setupWizardRestore?: boolean
-  selectedBackup?: any
+  selectedBackup?: ScheduledBackup | null
 }
 
 // ===== Remove Individual Accessories =====
@@ -149,13 +151,6 @@ export interface RemoveIndividualAccessoriesModalData {
   selectedBridge: string
   highlightUuid?: string
   highlightCacheFile?: string
-}
-
-// ===== Accessory Info =====
-export interface AccessoryInfoModalData {
-  service: any
-  accessoryCache: any[]
-  pairingCache: any[]
 }
 
 // ===== Config Editor =====
@@ -166,18 +161,18 @@ export interface ConfigRestoreModalData {
 
 // ===== Widget Control =====
 export interface WidgetControlModalData {
-  widget: any
+  widget: Widget
 }
 
 // ===== Widget Visibility =====
 export interface WidgetVisibilityModalData {
-  dashboard: any
+  dashboard: Array<Partial<Widget>>
   resetLayout: () => void
 }
 
 // ===== Child Bridges =====
 export interface RestartChildBridgesModalData {
-  bridges: any[]
+  bridges: { name: string, username: string, matterSerialNumber?: string }[]
 }
 
 // ===== Node Version Modal =====
@@ -187,11 +182,12 @@ export interface NodeVersionModalData {
   showNodeUnsupportedWarning: boolean
   homebridgeRunningInSynologyPackage: boolean
   homebridgeRunningInDocker: boolean
-  homebridgePkg: any
+  /** The homebridge package, for its own engines range. */
+  homebridgePkg: Pick<Plugin, 'engines'>
   architecture: string
   supportsNodeJs24: boolean
   onUpdate?: () => Promise<void>
-  statusIo?: any
+  statusIo?: Pick<IoNamespace, 'request'> | null
 }
 
 // ===== Homebridge V2 Modal =====

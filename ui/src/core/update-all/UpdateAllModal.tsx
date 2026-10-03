@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { toast } from '@/core/ui/toast'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import {
   buildRows,
   restartPlan as computeRestartPlan,
@@ -24,7 +24,8 @@ import {
   rowLine,
 } from '@/core/update-all/update-all.view'
 import { UpdateAllItemRow } from '@/core/update-all/UpdateAllItemRow'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { cx } from '@/core/utilities/cx'
+import { toastApiError } from '@/core/utilities/http-error'
 import { xtermFactory } from '@/core/utilities/terminal/terminal.factory'
 import { ws } from '@/core/ws'
 
@@ -48,10 +49,6 @@ function useSynced<T>(initial: T) {
     setValue(next)
   }, [])
   return [value, set, ref] as const
-}
-
-function cls(...names: (string | false | null | undefined)[]): string {
-  return names.filter(Boolean).join(' ')
 }
 
 /**
@@ -143,10 +140,6 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
   /** True while this modal is following child bridges back, so the summary does not repeat it */
   const watchingBridges = restartingBridges.length > 0
 
-  const toastError = (error: unknown) => {
-    toast.error(toToastMessage(error), depsRef.current.t('toast.title_error'))
-  }
-
   /** Fetch the plan and show it for confirmation */
   const loadPlan = async () => {
     try {
@@ -161,7 +154,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
       setPhase('plan')
     } catch (error) {
       console.error(error)
-      toastError(error)
+      toastApiError(error)
       depsRef.current.activeModal.dismiss('Dismiss')
     }
   }
@@ -327,7 +320,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
       }
     } catch (error) {
       console.error(error)
-      toastError(error)
+      toastApiError(error)
       depsRef.current.activeModal.dismiss('Dismiss')
     } finally {
       stateRef.current.awaitingSnapshot = false
@@ -396,7 +389,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
       enterRun()
     } catch (error) {
       console.error(error)
-      toastError(error)
+      toastApiError(error)
       setStarting(false)
     }
   }
@@ -408,7 +401,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
       await api.post('/update-all/cancel', {})
     } catch (error) {
       console.error(error)
-      toastError(error)
+      toastApiError(error)
       setCancelRequested(false)
     }
   }
@@ -477,17 +470,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
 
   return (
     <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="update-all-modal-title">
-      <div className="modal-header">
-        <h5 className="modal-title" id="update-all-modal-title">{t('update_all.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={closeModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('update_all.title')} titleId="update-all-modal-title" onClose={closeModal} />
       <div className="modal-body">
         {phase === 'loading'
           ? (
@@ -583,7 +566,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
                         aria-expanded={showSkipped}
                         onClick={() => setShowSkipped(!showSkipped)}
                       >
-                        <i className={cls('fas fa-chevron-down me-1', showSkipped && 'fa-rotate-180')} aria-hidden="true"></i>
+                        <i className={cx('fas fa-chevron-down me-1', showSkipped && 'fa-rotate-180')} aria-hidden="true"></i>
                         {t('update_all.label_skipped', { count: plan.skipped.length })}
                       </button>
                       {showSkipped && (
@@ -609,7 +592,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
                             <div
                               id="update-all-log-output"
                               ref={terminalTargetRef}
-                              className={cls('mt-3', isLightTerminalTheme ? 'terminal-light-bg' : 'terminal-dark-bg')}
+                              className={cx('mt-3', isLightTerminalTheme ? 'terminal-light-bg' : 'terminal-dark-bg')}
                               aria-hidden="true"
                             >
                             </div>
@@ -642,7 +625,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {phase === 'plan' && (
             <button
@@ -690,7 +673,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

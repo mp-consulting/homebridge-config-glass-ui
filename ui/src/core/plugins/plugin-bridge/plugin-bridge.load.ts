@@ -2,13 +2,13 @@ import type { SliceContext } from './plugin-bridge.state'
 
 import { api } from '@/core/api'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import { loadBridgeConfigs } from './plugin-bridge.bridge-list'
 import { bridgesAvailableForLink } from './plugin-bridge.child-bridge'
 import { getDeviceInfo } from './plugin-bridge.hap'
 import { getMatterCommissioningInfo } from './plugin-bridge.matter'
-import { t, withEntry, withFlag } from './plugin-bridge.state'
+import { withEntry, withFlag } from './plugin-bridge.state'
 
 /** ngOnInit: read the plugin type, its config blocks, the saved bridge list and the global startup settings. */
 export async function initialize(ctx: SliceContext): Promise<void> {
@@ -25,8 +25,7 @@ export async function initialize(ctx: SliceContext): Promise<void> {
     })
   } catch (error) {
     console.error('Failed to initialize:', error)
-    const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-    toast.error(message, t('toast.title_error'))
+    toastApiError(error)
   } finally {
     set({ loading: false })
   }
@@ -45,8 +44,7 @@ async function getPluginType(ctx: SliceContext): Promise<void> {
     ctx.set({ isPlatform: alias.pluginType === 'platform' })
   } catch (error) {
     console.error(error)
-    const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-    toast.error(message, t('toast.title_error'))
+    toastApiError(error)
     ctx.deps.activeModal.close()
   }
 }

@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next'
 import { formatTemp, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
 import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
 import { thermostatStatusClass } from '@/core/accessories/types/hap/thermostat/thermostat.utils'
-import { useLatest } from '@/core/accessories/types/hap/use-latest'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
+import { useLatest } from '@/core/hooks/use-latest'
 
 const THERMOSTAT_GRADIENT = 'linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))'
 

@@ -11,8 +11,9 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { hideXtermInputFromScreenReader } from '@/core/utilities/terminal/log.service'
 import { ws } from '@/core/ws'
@@ -21,8 +22,6 @@ import { Backup } from '@/modules/settings/backup/Backup'
 import { restoreDeps } from './restore.deps'
 
 export type RestoreProps = RestoreModalData & ModalComponentProps<boolean>
-
-const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
 
 /**
  * The restore modal: replaces the whole Homebridge storage directory from an
@@ -219,18 +218,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
 
   return (
     <div className={`modal-content${isLightTerminalTheme ? ' terminal-light-theme' : ''}`}>
-      <div className="modal-header">
-        <h5 className="modal-title">{translate('backup.title_backup')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={translate('form.button_close')}
-          disabled={restoreInProgress}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={translate('backup.title_backup')} closeDisabled={restoreInProgress} onClose={dismissModal} />
       {!restoreStarted && !setupWizardRestore && (
         <div className="modal-body">
           <div className="text-center mb-3">
@@ -265,7 +253,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       </div>
 
       {(!restoreStarted || restoreFailed) && (
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start">
             {setupWizardRestore
               ? (
@@ -321,10 +309,10 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
                 : translate('form.button_restore')}
             </button>
           </div>
-        </div>
+        </ModalFooter>
       )}
       {!restoreInProgress && restoreStarted && (
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start"></div>
           <div className="text-center">
             <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => void postBackupRestart()}>
@@ -332,7 +320,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
             </button>
           </div>
           <div className="text-end"></div>
-        </div>
+        </ModalFooter>
       )}
     </div>
   )

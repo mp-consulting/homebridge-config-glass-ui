@@ -8,11 +8,12 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { authActions, setStoredToken, useAuthStore } from '@/core/auth'
+import { formatMegabytes } from '@/core/pipes/bytes'
 import { RE_ANSI_FULL, RE_NEWLINE, RE_SPINNER } from '@/core/regex.constants'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { ws } from '@/core/ws'
 import { environment } from '@/environments/environment'
 
@@ -113,7 +114,7 @@ export function SetupWizard() {
       setLoading(false)
       setProgress(50)
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -132,7 +133,7 @@ export function SetupWizard() {
         toast.error(
           t('backup.backup_exceeds_max_size', {
             maxBackupSizeText: globalThis.backup.maxBackupSizeText,
-            size: `${(file.size / (1024 * 1024)).toFixed(1)}MB`,
+            size: formatMegabytes(file.size),
           }),
           t('toast.title_error'),
         )
@@ -271,7 +272,7 @@ export function SetupWizard() {
       setRestoreUploading(false)
       setProgress(20)
       setStep('restore-backup')
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     } finally {
       if (ioRef.current) {
         detachStdout()

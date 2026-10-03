@@ -1,4 +1,4 @@
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 
 /** Constants and small helpers shared by the settings page and its sections. */
 
@@ -18,7 +18,7 @@ export const linkDebug = (label: string) => externalIconLink('https://github.com
 export const linkRaspbianSsl = (label: string) => externalIconLink('https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access', label)
 export const linkCron = (label: string) => externalIconLink('https://crontab.guru/', label)
 
-export const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
+export { t }
 
 export const MODAL_OPTIONS = { size: 'lg', backdrop: 'static' } as const
 

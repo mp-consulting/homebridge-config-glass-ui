@@ -1,3 +1,4 @@
+import type { Plugin } from '@/core/plugins/manage-plugins.interfaces'
 import type { ActiveModal } from '@/core/ui/modal'
 import type { Mock } from 'vitest'
 
@@ -35,7 +36,7 @@ describe('the external accessories of a plugin', () => {
       get.mockResolvedValue(pairings)
     }
     const view = renderWithProviders(
-      <PluginExternals activeModal={activeModal} plugin={{ name: 'homebridge-example', displayName: 'Example' }} />,
+      <PluginExternals activeModal={activeModal} plugin={{ name: 'homebridge-example', displayName: 'Example' } as Plugin} />,
     )
     await act(async () => {})
     return view

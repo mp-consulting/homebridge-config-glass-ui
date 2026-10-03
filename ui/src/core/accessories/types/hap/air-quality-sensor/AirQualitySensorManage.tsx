@@ -3,9 +3,9 @@ import type { HapManageProps } from '@/core/accessories/types/hap/hap-tile'
 import { useTranslation } from 'react-i18next'
 
 import { AIR_QUALITY_LABELS, airQualityReadings } from '@/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.utils'
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { ManageHeader } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
+import { cx } from '@/core/utilities/cx'
 
 /** Read only: the overall rating and each concentration the sensor reports, kept live. */
 export function AirQualitySensorManage({ service: initialService, activeModal }: HapManageProps) {

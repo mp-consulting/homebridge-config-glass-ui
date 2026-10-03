@@ -78,15 +78,6 @@ export enum DoorLockState {
 }
 
 /**
- * Matter window covering position range constants
- * Note: Matter uses inverted percentage - 0 = open, 10000 = closed
- */
-export const MatterWindowCovering = {
-  FullyOpen: 0,
-  FullyClosed: 10000,
-} as const
-
-/**
  * Water Valve States (ValveConfigurationAndControl cluster)
  */
 export enum WaterValveState {

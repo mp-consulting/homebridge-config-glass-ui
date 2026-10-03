@@ -5,6 +5,7 @@ import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartH
 import { RE_COLON } from '@/core/regex.constants'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import { hasHideAlertsChanged, hasHideChildBridgeSetupChanged, saveHideAlerts, saveHideChildBridgeSetup } from './plugin-bridge.bridge-list'
 import { getHapNameValidationError, getHapPortValidationError, normalizeHapConfig } from './plugin-bridge.hap'
@@ -228,8 +229,7 @@ export async function save(ctx: SliceContext): Promise<void> {
     }
   } catch (error) {
     console.error(error)
-    const message = error instanceof Error ? error.message : t('config.failed_to_save_config')
-    toast.error(message, t('toast.title_error'))
+    toastApiError(error, 'config.failed_to_save_config')
   } finally {
     set({ saveInProgress: false })
   }

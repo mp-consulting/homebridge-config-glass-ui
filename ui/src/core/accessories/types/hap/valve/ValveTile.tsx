@@ -3,11 +3,12 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, cx, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
-import { useLatest } from '@/core/accessories/types/hap/use-latest'
+import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
 import { ValveManage } from '@/core/accessories/types/hap/valve/ValveManage'
+import { useLatest } from '@/core/hooks/use-latest'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './valve.scss'
 

@@ -6,9 +6,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
-import { useLatest } from '@/core/accessories/types/hap/use-latest'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
+import { useLatest } from '@/core/hooks/use-latest'
 
 function readState(service: ServiceTypeX): number {
   return 'Active' in service.values

@@ -2,6 +2,8 @@ import type { ComponentType, ReactNode } from 'react'
 
 import { createContext, createElement, use } from 'react'
 
+import { createEmitter } from '@/core/utilities/emitter'
+
 /**
  * A port of the parts of NgbModal the app uses: `openModal()` here, rendered
  * by `<ModalHost/>` (`ModalHost.tsx`) with ng-bootstrap's markup, so
@@ -80,17 +82,12 @@ const DEFAULT_OPTIONS: ModalOptions = {
 
 class ModalStack {
   private views: ModalView[] = []
-  private listeners = new Set<() => void>()
+  private readonly changes = createEmitter()
   private hosts = 0
   private nextId = 0
   private scrollBarRestore: (() => void) | null = null
 
-  public subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
+  public subscribe = (listener: () => void): (() => void) => this.changes.subscribe(listener)
 
   public getSnapshot = (): ModalView[] => this.views
 
@@ -159,7 +156,7 @@ class ModalStack {
   }
 
   private emit(): void {
-    this.listeners.forEach(listener => listener())
+    this.changes.emit()
   }
 
   private hideScrollBar(): void {

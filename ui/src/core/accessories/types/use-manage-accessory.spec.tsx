@@ -1,12 +1,13 @@
 import type { ServiceTypeX } from '@/core/accessories/accessories.interfaces'
 import type { ManageAccessoriesSource, ManageAccessory } from '@/core/accessories/types/use-manage-accessory'
+import type { Emitter } from '@/core/utilities/emitter'
 
 import { act, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { Emitter } from '@/core/accessories/accessories'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { toast } from '@/core/ui/toast'
+import { createEmitter } from '@/core/utilities/emitter'
 import { activeModalStub, hapService } from '@/testing'
 
 vi.mock('@/core/ui/toast', () => ({
@@ -59,7 +60,7 @@ describe('useManageAccessory', () => {
   function create(options: CreateOptions = {}) {
     unmount?.()
     const service = 'service' in options ? options.service : hapService({ uniqueId: 'hap-1' })
-    accessoryData = new Emitter()
+    accessoryData = createEmitter<unknown>()
     source = { accessoryData, accessories: { services: service ? [service] : [] } }
     activeModal = activeModalStub()
     setupCalls = 0
@@ -99,7 +100,7 @@ describe('useManageAccessory', () => {
 
     it('runs the child setup exactly once', () => {
       act(() => {
-        accessoryData.next([])
+        accessoryData.emit([])
       })
       expect(setupCalls).toBe(1)
     })
@@ -134,7 +135,7 @@ describe('useManageAccessory', () => {
       source.accessories.services[0] = replacement
 
       act(() => {
-        accessoryData.next([replacement])
+        accessoryData.emit([replacement])
       })
 
       expect(api.service).toBe(replacement)
@@ -147,7 +148,7 @@ describe('useManageAccessory', () => {
       source.accessories.services[0] = replacement
 
       act(() => {
-        accessoryData.next([replacement])
+        accessoryData.emit([replacement])
       })
 
       expect(seenServices[0]).not.toBe(original)
@@ -160,7 +161,7 @@ describe('useManageAccessory', () => {
       source.accessories.services.length = 0
 
       act(() => {
-        accessoryData.next([])
+        accessoryData.emit([])
       })
 
       expect(api.service).toBe(original)
@@ -170,7 +171,7 @@ describe('useManageAccessory', () => {
     it('stops listening once the modal is destroyed', () => {
       unmount()
 
-      accessoryData.next([])
+      accessoryData.emit([])
 
       expect(seenServices).toHaveLength(0)
     })

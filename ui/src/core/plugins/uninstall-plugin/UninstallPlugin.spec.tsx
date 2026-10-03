@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ManagePlugin } from '@/core/plugins/manage-plugin/ManagePlugin'
 import { UninstallPlugin } from '@/core/plugins/uninstall-plugin/UninstallPlugin'
 import * as modalModule from '@/core/ui/modal'
-import { fakeApi, makeChildBridge, makePlugin, renderWithProviders, toastStub } from '@/testing'
+import { apiError, fakeApi, makeChildBridge, makePlugin, renderWithProviders, toastStub } from '@/testing'
 
 import '@/testing/i18n'
 
@@ -148,7 +148,7 @@ describe('uninstalling a plugin', () => {
     // its config already emptied, which is the worst of both
     const view = await openUninstall(
       { childBridges: [makeChildBridge()] },
-      () => api.fail('delete', /\/server\/pairings\//, new Error('pairing not found')),
+      () => api.fail('delete', /\/server\/pairings\//, apiError('pairing not found')),
     )
 
     await doUninstall(view)

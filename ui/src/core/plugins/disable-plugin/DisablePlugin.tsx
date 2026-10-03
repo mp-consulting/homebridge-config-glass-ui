@@ -3,6 +3,7 @@ import type { DisablePluginModalData } from '@/core/ui/modal-data'
 
 import { useTranslation } from 'react-i18next'
 
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 export type DisablePluginProps = DisablePluginModalData & ModalComponentProps
@@ -25,17 +26,7 @@ export function DisablePlugin({
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{pluginName}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={pluginName} onClose={dismissModal} />
       <div className="modal-body">
         <div className="mb-3 text-center">
           <i className="fas fa-circle-pause primary-text icon-xl"></i>
@@ -77,7 +68,7 @@ export function DisablePlugin({
           </p>
         </div>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -95,7 +86,7 @@ export function DisablePlugin({
             {t('plugins.manage.disable')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

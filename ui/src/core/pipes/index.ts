@@ -1,3 +1,4 @@
+export * from './bytes'
 export * from './convert-mired'
 export * from './convert-temp'
 export * from './date'

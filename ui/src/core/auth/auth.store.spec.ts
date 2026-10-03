@@ -1,13 +1,13 @@
-import type { FakeApi } from '@/core/api/api.fake'
+import type { FakeApi } from '@/testing/fakes/api.fake'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { fakeApi } from '@/core/api/api.fake'
 import { authActions, resetAuthStore, useAuthStore } from '@/core/auth/auth.store'
 import { makeJwt, stubLocationReload, TEST_INSTANCE_ID } from '@/core/auth/auth.testing'
 import { getStoredToken } from '@/core/auth/token-store'
 import { notifications } from '@/core/notifications'
 import { resetSettingsStore, settingsActions, useSettingsStore } from '@/core/settings'
+import { fakeApi } from '@/testing/fakes/api.fake'
 
 vi.mock('@/core/ui/toast', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() },

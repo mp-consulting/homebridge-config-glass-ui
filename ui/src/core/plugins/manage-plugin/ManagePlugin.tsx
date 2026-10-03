@@ -20,11 +20,13 @@ import { PluginLogs } from '@/core/plugins/plugin-logs/PluginLogs'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
 import { childBridges as childBridgesService } from '@/core/utilities/child-bridges'
+import { cx } from '@/core/utilities/cx'
 import { fileSaver } from '@/core/utilities/file-saver'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { xtermFactory } from '@/core/utilities/terminal/terminal.factory'
 import { ws } from '@/core/ws'
 
@@ -119,7 +121,6 @@ export function ManagePlugin(props: ManagePluginProps) {
   const io = () => ioRef.current!
 
   const toastSuccess = () => i18n.t('toast.title_success')
-  const toastError = () => i18n.t('toast.title_error')
 
   function speakAction(messageKey: string, suppressTerminalMs = 2000): void {
     setTerminalAriaHidden(true)
@@ -216,7 +217,7 @@ export function ManagePlugin(props: ManagePluginProps) {
       setActionFailed(true)
       console.error(error)
       void navigate('/plugins')
-      toast.error(toToastMessage(error), toastError())
+      toastApiError(error)
     })
   }
 
@@ -239,7 +240,7 @@ export function ManagePlugin(props: ManagePluginProps) {
       speakAction('plugins.a11y.uninstall_failed', 3000)
       setActionFailed(true)
       console.error(error)
-      toast.error(toToastMessage(error), toastError())
+      toastApiError(error)
     })
   }
 
@@ -279,8 +280,7 @@ export function ManagePlugin(props: ManagePluginProps) {
       }, (error) => {
         setActionFailed(true)
         console.error(error)
-        const message = error instanceof Error ? error.message : toastError()
-        toast.error(message, toastError())
+        toastApiError(error, 'toast.title_error')
         closeModal()
       })
     } else {
@@ -463,7 +463,7 @@ export function ManagePlugin(props: ManagePluginProps) {
       speakAction('plugins.a11y.update_failed', 3000)
       setActionFailed(true)
       console.error(error)
-      toast.error(toToastMessage(error), toastError())
+      toastApiError(error)
     })
   }
 
@@ -503,8 +503,7 @@ export function ManagePlugin(props: ManagePluginProps) {
       await backupService.downloadBackup()
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : t('toast.title_error')
-      toast.error(message, t('toast.title_error'))
+      toastApiError(error, 'toast.title_error')
     } finally {
       if (!unmountedRef.current) {
         setDownloadingBackup(false)
@@ -599,17 +598,7 @@ export function ManagePlugin(props: ManagePluginProps) {
 
   return (
     <div className={`modal-content hb-manage-plugin${isLightTerminalTheme ? ' terminal-light-theme' : ''}`}>
-      <div className="modal-header">
-        <h5 className="modal-title">{pluginDisplayName}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={pluginDisplayName} onClose={dismissModal} />
       <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
         {actionLiveMessage}
       </span>
@@ -658,13 +647,13 @@ export function ManagePlugin(props: ManagePluginProps) {
         <div className="modal-body">
           <div className="mb-3 text-center">
             <i
-              className={[
+              className={cx(
                 'fas primary-text icon-xl',
                 action === 'Install' && 'fa-arrow-alt-circle-down',
                 action === 'Update' && installedVersion && 'fa-code-compare',
                 action === 'Update' && !installedVersion && 'fa-arrow-alt-circle-up',
                 action === 'Uninstall' && 'fa-trash',
-              ].filter(Boolean).join(' ')}
+              )}
               aria-hidden="true"
             >
             </i>
@@ -684,13 +673,13 @@ hb-service start`}
         <div className="modal-body plugin-modal-body">
           <div className="mb-3 text-center">
             <i
-              className={[
+              className={cx(
                 'far primary-text icon-xl',
                 action === 'Install' && !installedVersion && 'fa-arrow-alt-circle-down',
                 action === 'Install' && installedVersion && 'fa-code-compare',
                 action === 'Update' && 'fa-arrow-alt-circle-up',
                 action === 'Uninstall' && 'fa-trash',
-              ].filter(Boolean).join(' ')}
+              )}
               aria-hidden="true"
             >
             </i>
@@ -763,7 +752,7 @@ hb-service start`}
         </div>
       )}
       {(!onlineUpdateOk || actionComplete || releaseNotesShow || actionFailed) && (
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start">
             {((!justUpdatedPlugin && onlineUpdateOk) || (justUpdatedPlugin && (!isDisabled || actionFailed))) && (
               <button
@@ -811,7 +800,7 @@ hb-service start`}
               </button>
             )}
           </div>
-        </div>
+        </ModalFooter>
       )}
     </div>
   )

@@ -7,6 +7,7 @@ import type { WidgetVisibilityEntry } from './widget-visibility.entries'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 import { visibilityEntries } from './widget-visibility.entries'
@@ -51,10 +52,7 @@ export function WidgetVisibility({ activeModal, dashboard, resetLayout }: Widget
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('status.widget.show_hide')}</h5>
-        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label={t('form.button_close')} onClick={dismissModal}></button>
-      </div>
+      <ModalHeader title={t('status.widget.show_hide')} onClose={dismissModal} />
       <div className="modal-body">
         {availableWidgets.length > 0 && (
           <ul className="list-group list-group-box mb-4">
@@ -116,7 +114,7 @@ export function WidgetVisibility({ activeModal, dashboard, resetLayout }: Widget
           </li>
         </ul>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" aria-label={t('form.button_close')} onClick={dismissModal}>
             {t('form.button_close')}
@@ -128,7 +126,7 @@ export function WidgetVisibility({ activeModal, dashboard, resetLayout }: Widget
             {t('form.button_save')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

@@ -11,13 +11,14 @@ import type { MouseEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { useAdaptiveLighting } from '@/core/accessories/types/hap/lightbulb/adaptive-lighting'
-import { useLatest } from '@/core/accessories/types/hap/use-latest'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
+import { useLatest } from '@/core/hooks/use-latest'
 import { convertMired } from '@/core/pipes/convert-mired'
+import { ModalHeader } from '@/core/ui/ModalParts'
 import { colour } from '@/core/utilities/colour'
+import { cx } from '@/core/utilities/cx'
 
 export type LightbulbManageProps = HapManageProps & {
   /** Only passed for a bulb with adaptive lighting: the tile's live "is it on" signal. */
@@ -174,17 +175,7 @@ export function LightbulbManage({ service: initialService, activeModal, adaptive
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{service.customName || service.serviceName}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={m.dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
       <div className="modal-body text-center px-5">
         <div
           className="btn-group-vertical d-flex justify-content-center mb-0 p-0"

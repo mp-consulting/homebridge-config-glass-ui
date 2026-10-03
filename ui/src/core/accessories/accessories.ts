@@ -13,6 +13,7 @@ import { serverPairingsCache } from '@/core/caching/server-pairings-cache'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
+import { createEmitter } from '@/core/utilities/emitter'
 import { toToastMessage } from '@/core/utilities/http-error'
 import { ws } from '@/core/ws'
 
@@ -29,26 +30,6 @@ export interface AccessoriesState {
   /** Mirrors of the service's ready flags, so tiles re-render when a protocol becomes controllable. */
   hapReadyForControl: boolean
   matterReadyForControl: boolean
-}
-
-/** A Subject of the service's public streams (`accessoryData`, `layoutSaved`). */
-export class Emitter<T = unknown> {
-  private listeners = new Set<(value: T) => void>()
-
-  public next(value: T): void {
-    // A snapshot: a listener may unsubscribe itself while being called
-    for (const listener of Array.from(this.listeners)) {
-      listener(value)
-    }
-  }
-
-  /** Returns the unsubscribe function. */
-  public subscribe(listener: (value: T) => void): () => void {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
 }
 
 /** A field of the store with the call / `set` / `update` shape of an Angular signal. */
@@ -121,8 +102,8 @@ export class AccessoriesService {
     matterReadyForControl: false,
   }))
 
-  public layoutSaved = new Emitter<void>()
-  public accessoryData = new Emitter<unknown>()
+  public layoutSaved = createEmitter()
+  public accessoryData = createEmitter<unknown>()
   public get hapReadyForControl(): boolean {
     return this.store.getState().hapReadyForControl
   }
@@ -376,7 +357,7 @@ export class AccessoriesService {
         this.lastOrderedLayout = this.accessoryLayout
         this.lastChangedIds = changed
 
-        this.accessoryData.next(data)
+        this.accessoryData.emit(data)
       },
 
       // When a new instance is discovered, reload accessory data over the
@@ -469,7 +450,7 @@ export class AccessoriesService {
       .then(
         () => {
           if (session === this.session) {
-            this.layoutSaved.next(undefined)
+            this.layoutSaved.emit()
           }
         },
         (error: unknown) => {

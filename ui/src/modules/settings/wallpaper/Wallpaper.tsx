@@ -5,10 +5,12 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
+import { formatMegabytes } from '@/core/pipes/bytes'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { environment } from '@/environments/environment'
 
 import './wallpaper.scss'
@@ -40,7 +42,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
         toast.error(
           i18n.t('backup.backup_exceeds_max_size', {
             maxBackupSizeText: maxFileSizeText,
-            size: `${(file.size / (1024 * 1024)).toFixed(1)}MB`,
+            size: formatMegabytes(file.size),
           }),
           i18n.t('toast.title_error'),
         )
@@ -74,7 +76,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
       }
     } catch (error) {
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
       setClicked(false)
     }
   }
@@ -91,18 +93,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content hb-wallpaper">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('settings.display.wallpaper')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('settings.display.wallpaper')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center mb-3">
           <i className="fas fa-image primary-text icon-xl"></i>
@@ -144,7 +135,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
           />
         </div>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -168,7 +159,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
             {t('form.button_save')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

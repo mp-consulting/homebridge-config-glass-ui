@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { ttlCache } from '@/core/caching'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 
 /**
@@ -43,18 +44,7 @@ export function ResetAllBridges({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('reset.bridge_all.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('reset.bridge_all.title')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center mb-4"><i className="fas fa-bridge primary-text icon-xl"></i></div>
         <ul className={confirmMode ? 'opacity-muted mb-4' : 'mb-0'}>
@@ -71,7 +61,7 @@ export function ResetAllBridges({ activeModal }: ModalComponentProps) {
           </div>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -109,7 +99,7 @@ export function ResetAllBridges({ activeModal }: ModalComponentProps) {
                 </button>
               )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

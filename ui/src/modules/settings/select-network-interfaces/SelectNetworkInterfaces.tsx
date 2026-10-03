@@ -4,6 +4,8 @@ import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/modules/
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+
 export interface SelectNetworkInterfacesProps extends ModalComponentProps<string[]> {
   adaptersAvailable: NetworkAdapterAvailable[]
   adaptersSelected: NetworkAdapterSelected[]
@@ -38,17 +40,7 @@ export function SelectNetworkInterfaces({ activeModal, adaptersAvailable, adapte
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('settings.network.title_network_interfaces')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={closeAndReset}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('settings.network.title_network_interfaces')} onClose={closeAndReset} />
       <div className="modal-body">
         <div className="text-center mb-3"><i className="fas fa-ethernet primary-text icon-xl"></i></div>
         <ul className="mb-3">
@@ -81,7 +73,7 @@ export function SelectNetworkInterfaces({ activeModal, adaptersAvailable, adapte
         </ul>
       </div>
 
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -105,7 +97,7 @@ export function SelectNetworkInterfaces({ activeModal, adaptersAvailable, adapte
             {t('form.button_save')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

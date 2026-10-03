@@ -10,14 +10,15 @@ import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
 import { MonacoEditor } from '@/core/monaco'
 import { interpolateMd } from '@/core/pipes/interpolate-md'
-import { cls } from '@/core/plugins/class-names'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { ManualConfigController } from '@/core/plugins/manual-config/manual-config.controller'
 import { useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
+import { cx } from '@/core/utilities/cx'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
 
 import './manual-config.scss'
@@ -79,22 +80,17 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
 
   return (
     <div className="modal-content hb-manual-config">
-      <div className="modal-header">
-        <h5 className="modal-title">
-          {plugin?.displayName || plugin?.name}
-          {' - '}
-          {pluginType}
-        </h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={ctrl.saveInProgress}
-          onClick={() => activeModal.close()}
-        >
-        </button>
-      </div>
+      <ModalHeader
+        title={(
+          <>
+            {plugin?.displayName || plugin?.name}
+            {' - '}
+            {pluginType}
+          </>
+        )}
+        closeDisabled={ctrl.saveInProgress}
+        onClose={() => activeModal.close()}
+      />
       <div className="modal-body pb-0">
         {ctrl.loading && (
           <div className="text-center primary-text my-5 w-100">
@@ -138,7 +134,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                               <HoverTooltip text={t('form.button_edit')}>
                                 <button
                                   type="button"
-                                  className={cls('btn btn-primary m-0 ms-2 me-2', !open && 'collapsed')}
+                                  className={cx('btn btn-primary m-0 ms-2 me-2', !open && 'collapsed')}
                                   id={`${id}-toggle`}
                                   aria-controls={`${id}-collapse`}
                                   aria-expanded={open}
@@ -152,7 +148,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                           {!schema?.singular && (
                             <HoverTooltip text={t(validityLabel(valid, strict))} placement="left">
                               <i
-                                className={cls(
+                                className={cx(
                                   'fas fa-xl',
                                   valid && 'fa-circle-check green-text',
                                   !valid && 'fa-circle-exclamation',
@@ -167,7 +163,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                       </div>
                     </div>
                     <div
-                      className={cls('accordion-collapse collapse', open && 'show')}
+                      className={cx('accordion-collapse collapse', open && 'show')}
                       id={`${id}-collapse`}
                       role="region"
                       aria-labelledby={`${id}-toggle`}
@@ -191,7 +187,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
           </>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -212,7 +208,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                     ? (
                         <HoverTooltip text={t(validityLabel(ctrl.formIsValid, strict))}>
                           <i
-                            className={cls(
+                            className={cx(
                               'fas fa-xl me-2',
                               ctrl.formIsValid && 'fa-circle-check green-text',
                               !ctrl.formIsValid && 'fa-circle-exclamation',
@@ -247,7 +243,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                 </button>
               )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

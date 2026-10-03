@@ -4,6 +4,7 @@ import type { InformationModalData } from '@/core/ui/modal-data'
 import { useTranslation } from 'react-i18next'
 
 import { Markdown } from '@/core/components/markdown/Markdown'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 export type InformationProps = InformationModalData & ModalComponentProps
@@ -27,17 +28,7 @@ export function Information({ activeModal, title, subtitle, message, markdownMes
 
   return (
     <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="information-modal-title">
-      <div className="modal-header">
-        <h5 className="modal-title" id="information-modal-title">{title}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={title} titleId="information-modal-title" onClose={dismissModal} />
       <div className="modal-body text-center">
         {faIconClass && <i aria-hidden="true" className={`fas ${faIconClass} mb-3 icon-xl`}></i>}
         {subtitle && <SafeHtml as="h5" className="mb-3" html={subtitle} />}
@@ -48,7 +39,7 @@ export function Information({ activeModal, title, subtitle, message, markdownMes
           </div>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {ctaButtonLink && closeButton}
         </div>
@@ -69,7 +60,7 @@ export function Information({ activeModal, title, subtitle, message, markdownMes
             </a>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

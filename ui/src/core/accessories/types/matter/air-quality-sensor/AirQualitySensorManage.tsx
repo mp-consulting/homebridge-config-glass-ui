@@ -15,8 +15,8 @@ import {
   hasConcentrationData,
 } from '@/core/accessories/types/matter/matter-device.utils'
 import { MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
-import { classes } from '@/core/accessories/types/matter/matter-tile'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
+import { cx } from '@/core/utilities/cx'
 
 /** The Matter air quality modal (Angular `AirQualitySensorManageComponent`): read only. */
 export function AirQualitySensorManage({ service: initial, activeModal }: AccessoryManageModalProps) {
@@ -52,7 +52,7 @@ export function AirQualitySensorManage({ service: initial, activeModal }: Access
       <div className="modal-body px-4">
         <div className="text-center mb-3">
           <span
-            className={classes(
+            className={cx(
               'badge rounded-pill fs-6',
               [1, 2].includes(airQuality) && 'bg-success',
               [3, 4].includes(airQuality) && 'bg-warning',

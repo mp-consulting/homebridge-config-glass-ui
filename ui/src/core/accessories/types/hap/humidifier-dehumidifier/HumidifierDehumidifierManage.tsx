@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next'
 import { linkedFan, loadRotationSpeed } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { humidifierFanGradient, humidifierStatusClass } from '@/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.utils'
 import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
-import { useLatest } from '@/core/accessories/types/hap/use-latest'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
+import { useLatest } from '@/core/hooks/use-latest'
 
 const HUMIDITY_GRADIENT = 'linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))'
 

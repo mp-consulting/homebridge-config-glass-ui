@@ -42,7 +42,7 @@ export function createLoadingSlice(ctx: PageContext) {
 
       load('hbName', env.homebridgeInstanceName)
       load('uiLang', env.lang ?? null)
-      load('uiTheme', settings.theme)
+      load('uiTheme', settings.theme ?? null)
       load('uiLight', settings.lightingMode)
       load('uiGlass', settings.glassMode)
       load('uiMenu', settings.menuMode)

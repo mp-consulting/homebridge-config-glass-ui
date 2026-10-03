@@ -9,12 +9,13 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { escapeHtml } from '@/core/helpers/html.helper'
-import { cls } from '@/core/plugins/class-names'
 import { RE_ANSI } from '@/core/regex.constants'
 import { settingsActions, useSettingsStore } from '@/core/settings'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
-import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { fileSaver } from '@/core/utilities/file-saver'
+import { toastApiError, toToastMessage } from '@/core/utilities/http-error'
 import { hideXtermInputFromScreenReader, xtermFactory } from '@/core/utilities/terminal'
 import { ws } from '@/core/ws'
 
@@ -139,10 +140,9 @@ export function SwitchToScoped({ activeModal, plugin }: SwitchToScopedProps) {
         setRestarting(false)
       }
 
-      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-      setFailure(message)
+      setFailure(toToastMessage(error))
       console.error(error)
-      toast.error(message, t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -159,18 +159,7 @@ export function SwitchToScoped({ activeModal, plugin }: SwitchToScopedProps) {
 
   return (
     <div className="modal-content hb-switch-to-scoped">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('plugins.manage.scoped.switch')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={busy}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('plugins.manage.scoped.switch')} closeDisabled={busy} onClose={dismissModal} />
       <div className="modal-body">
         <div className="mb-3 text-center">
           <i className="fas fa-arrow-right-arrow-left primary-text icon-xl"></i>
@@ -201,7 +190,7 @@ hb-service start`}
             <ul className="d-inline-block text-start mt-3 mb-3 switch-steps-list">
               <li>
                 <i
-                  className={cls(
+                  className={cx(
                     'fa',
                     !installing && !installed && !failure && 'fa-circle-o',
                     installing && 'fa-circle-notch fa-spin',
@@ -217,7 +206,7 @@ hb-service start`}
               </li>
               <li>
                 <i
-                  className={cls(
+                  className={cx(
                     'fa',
                     !uninstalling && !uninstalled && !failure && 'fa-circle-o',
                     uninstalling && 'fa-circle-notch fa-spin',
@@ -233,7 +222,7 @@ hb-service start`}
               </li>
               <li>
                 <i
-                  className={cls(
+                  className={cx(
                     'fa',
                     !restarting && !failure && 'fa-circle-o',
                     restarting && 'fa-circle-notch fa-spin',
@@ -258,13 +247,13 @@ hb-service start`}
         )}
         <div
           ref={outputRef}
-          className={cls('mb-0', !isLightTerminalTheme && 'terminal-dark-bg', isLightTerminalTheme && 'terminal-light-bg')}
+          className={cx('mb-0', !isLightTerminalTheme && 'terminal-dark-bg', isLightTerminalTheme && 'terminal-light-bg')}
           id="plugin-output"
           hidden={!onlineUpdateOk || Boolean(failure)}
         >
         </div>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {onlineUpdateOk && (
             <button
@@ -307,7 +296,7 @@ hb-service start`}
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

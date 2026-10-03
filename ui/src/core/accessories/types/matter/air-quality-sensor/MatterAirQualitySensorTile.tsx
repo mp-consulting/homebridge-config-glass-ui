@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next'
 import { AIR_QUALITY_LABELS } from '@/core/accessories/types/matter/air-quality-sensor/air-quality-sensor'
 import { AirQualitySensorManage } from '@/core/accessories/types/matter/air-quality-sensor/AirQualitySensorManage'
 import { getAirQualityValue, hasConcentrationData } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './air-quality-sensor.scss'
 
@@ -38,7 +39,7 @@ export function MatterAirQualitySensorTile({ service }: MatterTileProps) {
   return (
     <div
       ref={pressRef}
-      className={classes(
+      className={cx(
         'accessory-box hb-matter-air-quality-sensor',
         canShowModal && 'cursor-pointer',
         aq === 5 && 'accessory-on',
@@ -92,7 +93,7 @@ export function MatterAirQualitySensorTile({ service }: MatterTileProps) {
           </svg>
         </div>
         <div className="accessory-label mt-auto" aria-hidden="true">{service.customName || service.displayName}</div>
-        <div className={classes('accessory-label', aq < 5 && 'grey-text', aq === 5 && 'red-text')} aria-hidden="true">
+        <div className={cx('accessory-label', aq < 5 && 'grey-text', aq === 5 && 'red-text')} aria-hidden="true">
           {aqLabel}
         </div>
       </div>

@@ -1,14 +1,14 @@
-import type { FakeApi } from '@/core/api/api.fake'
+import type { FakeApi } from '@/testing/fakes/api.fake'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { fakeApi } from '@/core/api/api.fake'
 import { resetAuthStore, useAuthStore } from '@/core/auth/auth.store'
 import { accessoryOverviewCache } from '@/core/caching/accessory-overview-cache'
 import { cachedAccessoriesCache } from '@/core/caching/cached-accessories-cache'
 import { pluginsCache } from '@/core/caching/plugins-cache'
 import { serverPairingsCache } from '@/core/caching/server-pairings-cache'
 import { ttlCache } from '@/core/caching/ttl-cache'
+import { fakeApi } from '@/testing/fakes/api.fake'
 
 vi.mock('@/core/ui/toast', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() },

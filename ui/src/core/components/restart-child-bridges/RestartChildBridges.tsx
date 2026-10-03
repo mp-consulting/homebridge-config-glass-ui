@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { useSettingsStore } from '@/core/settings'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 
 export type RestartChildBridgesProps = RestartChildBridgesModalData & ModalComponentProps
@@ -42,17 +43,7 @@ export function RestartChildBridges({ activeModal, bridges }: RestartChildBridge
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('platform.version.service_restart_required')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('platform.version.service_restart_required')} onClose={dismissModal} />
       <div className="modal-body text-center">
         <i className="fas fa-power-off primary-text mb-3 icon-xl"></i>
         <p className="w-100">{t('restart.child_bridge_list')}</p>
@@ -80,7 +71,7 @@ export function RestartChildBridges({ activeModal, bridges }: RestartChildBridge
           </ul>
         </div>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -98,7 +89,7 @@ export function RestartChildBridges({ activeModal, bridges }: RestartChildBridge
             {t('menu.tooltip_restart')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

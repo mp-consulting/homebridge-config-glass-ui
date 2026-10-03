@@ -11,8 +11,7 @@ import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import { Users2faDisable } from './users-2fa-disable/Users2faDisable'
 import { Users2faEnable } from './users-2fa-enable/Users2faEnable'
@@ -42,7 +41,7 @@ export function Users() {
       // pre-mutation snapshot — the user just added a person who appears to
       // have vanished.
       console.error(error)
-      toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+      toastApiError(error)
     }
   }
 

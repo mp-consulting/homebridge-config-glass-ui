@@ -6,6 +6,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { RequiredIndicator } from '@/core/components/required-indicator/RequiredIndicator'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 import { deleteTargets, isRoomNameValid } from '@/modules/accessories/room-name'
 
 export type EditRoomProps = EditRoomModalData & ModalComponentProps<EditRoomResult>
@@ -50,22 +52,12 @@ export function EditRoom({ activeModal, roomName: initialName, isDefault: initia
     }
   }
 
-  const listClass = ['list-group list-group-box', deleteMode && 'opacity-muted', deleteMode ? 'mb-4' : 'mb-0'].filter(Boolean).join(' ')
+  const listClass = cx('list-group list-group-box', deleteMode && 'opacity-muted', deleteMode ? 'mb-4' : 'mb-0')
 
   return (
     <div className="modal-content">
       <form onSubmit={closeModal}>
-        <div className="modal-header">
-          <h5 className="modal-title">{t('accessories.button_edit_room')}</h5>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="modal"
-            aria-label={t('form.button_close')}
-            onClick={dismissModal}
-          >
-          </button>
-        </div>
+        <ModalHeader title={t('accessories.button_edit_room')} onClose={dismissModal} />
         <div className="modal-body">
           <div className="text-center mb-4">
             <i className="fas fa-pen primary-text icon-xl"></i>
@@ -121,7 +113,7 @@ export function EditRoom({ activeModal, roomName: initialName, isDefault: initia
             </div>
           )}
         </div>
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start">
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
               {t('form.button_close')}
@@ -147,7 +139,7 @@ export function EditRoom({ activeModal, roomName: initialName, isDefault: initia
               {t(deleteMode ? 'form.button_delete' : 'form.button_save')}
             </button>
           </div>
-        </div>
+        </ModalFooter>
       </form>
     </div>
   )

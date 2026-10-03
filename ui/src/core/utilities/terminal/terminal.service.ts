@@ -4,7 +4,9 @@ import type { TouchEvent as ReactTouchEvent } from 'react'
 
 import type { ResizeSource, TerminalApi, TerminalFactory, TerminalNamespace, TerminalWs } from './types'
 
-import { debounce, subscribeResize } from './types'
+import { debounce } from '@/core/utilities/debounce'
+
+import { subscribeResize } from './types'
 
 export interface TerminalServiceDeps {
   terminals: TerminalFactory

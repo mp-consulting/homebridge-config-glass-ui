@@ -5,14 +5,11 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
 import { useSettingsStore } from '@/core/settings'
+import { cx } from '@/core/utilities/cx'
 
 /** Just the parts of a child bridge these icons read - so a caller holding a partial record can still use them */
 export type ChildBridgeIconSource = Pick<ChildBridgeStatusResponse, 'status' | 'hap' | 'matterConfig'> & {
   restarting?: boolean
-}
-
-function classes(base: string, flags: Record<string, boolean>): string {
-  return [base, ...Object.entries(flags).filter(([, on]) => on).map(([name]) => name)].join(' ')
 }
 
 /** The ngbTooltip the icons had: on hover only, to the right, after 150ms. */
@@ -81,7 +78,7 @@ export function ChildBridgeStatusIcons({ bridge, serverRestarting = false }: {
       <WithTooltip text={t(hapTooltipKey)}>
         <i
           aria-hidden="true"
-          className={classes('fas fa-hap fa-sm', {
+          className={cx('fas fa-hap fa-sm', {
             'green-text': hapColoured && isUp,
             'text-warning': hapColoured && inTransition,
             'red-text': hapColoured && isDown,
@@ -96,7 +93,7 @@ export function ChildBridgeStatusIcons({ bridge, serverRestarting = false }: {
         <WithTooltip text={t(matterTooltipKey)}>
           <i
             aria-hidden="true"
-            className={classes('fas fa-matter fa-sm ms-2', {
+            className={cx('fas fa-matter fa-sm ms-2', {
               'green-text': matterColoured && isUp,
               'text-warning': matterColoured && inTransition,
               'red-text': matterColoured && isDown,

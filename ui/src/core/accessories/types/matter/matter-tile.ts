@@ -42,11 +42,6 @@ export function onEnterOrSpace(handler: () => void) {
   }
 }
 
-/** `[class.x]="cond"` bindings on top of fixed classes. */
-export function classes(...names: (string | false | null | undefined)[]): string {
-  return names.filter(Boolean).join(' ')
-}
-
 /**
  * Open a tile's manage modal, the way every Matter tile opened it
  * (`size: 'md'`, `backdrop: 'static'`).

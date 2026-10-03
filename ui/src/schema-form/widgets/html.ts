@@ -41,34 +41,6 @@ export function htmlToText(value: unknown): string {
 }
 
 /**
- * Join class fragments the way Angular combines a static `class`, a `[class]`
- * binding and `[class.name]` toggles: empty fragments are dropped and
- * duplicate names collapse.
- */
-export function cx(...parts: Array<string | false | null | undefined | Record<string, unknown>>): string | undefined {
-  const names: string[] = []
-  for (const part of parts) {
-    if (!part) {
-      continue
-    }
-    if (typeof part === 'string') {
-      for (const name of part.split(/\s+/)) {
-        if (name && !names.includes(name)) {
-          names.push(name)
-        }
-      }
-    } else {
-      for (const [name, on] of Object.entries(part)) {
-        if (on && !names.includes(name)) {
-          names.push(name)
-        }
-      }
-    }
-  }
-  return names.length ? names.join(' ') : undefined
-}
-
-/**
  * Angular's `[attr.x]="value"`: the attribute is removed for null/undefined
  * and otherwise set to the stringified value (so `false` becomes "false").
  */

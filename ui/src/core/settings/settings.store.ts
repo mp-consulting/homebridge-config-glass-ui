@@ -8,6 +8,7 @@ import { create } from 'zustand'
 import { api } from '@/core/api'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
+import { createEmitter } from '@/core/utilities/emitter'
 
 /**
  * The UI settings from GET /auth/settings, plus the theme / lighting state the
@@ -17,13 +18,17 @@ import { toast } from '@/core/ui/toast'
  */
 export interface SettingsState {
   env: EnvInterface
-  host: string
-  proxyHost: string
+  /** Unset until the settings load */
+  host?: string
+  /** Unset until the settings load */
+  proxyHost?: string
   formAuth: boolean
   sessionTimeout: number
   sessionTimeoutInactivityBased: boolean
-  uiVersion: string
-  theme: string
+  /** Unset until the settings load */
+  uiVersion?: string
+  /** Unset until the settings load */
+  theme?: string
   lightingMode: 'auto' | 'light' | 'dark'
   currentLightingMode: 'auto' | 'light' | 'dark'
   actualLightingMode: 'light' | 'dark'
@@ -31,12 +36,14 @@ export interface SettingsState {
   glassMode: boolean
   menuMode: 'default' | 'freeze'
   keepOrphans: boolean
-  wallpaper: string
+  /** Unset until the settings load */
+  wallpaper?: string
   serverTimeOffset: number
   /** True when the current translation is right to left (set by the shell). */
   rtl: boolean
   /** The browser language, e.g. `pt-BR`. */
-  browserLang: string
+  /** Unset until the settings load */
+  browserLang?: string
   settingsLoaded: boolean
   /**
    * Set while the very first settings load is failing and being retried, so the
@@ -73,13 +80,13 @@ const RETRY_DELAYS_MS = [1000, 2000, 5000]
 export function initialSettingsState(): SettingsState {
   return {
     env: {} as EnvInterface,
-    host: undefined as unknown as string,
-    proxyHost: undefined as unknown as string,
+    host: undefined,
+    proxyHost: undefined,
     formAuth: true,
     sessionTimeout: 28800,
     sessionTimeoutInactivityBased: false,
-    uiVersion: undefined as unknown as string,
-    theme: undefined as unknown as string,
+    uiVersion: undefined,
+    theme: undefined,
     lightingMode: undefined as unknown as 'auto',
     currentLightingMode: undefined as unknown as 'auto',
     actualLightingMode: undefined as unknown as 'light',
@@ -87,10 +94,10 @@ export function initialSettingsState(): SettingsState {
     glassMode: true,
     menuMode: undefined as unknown as 'default',
     keepOrphans: undefined as unknown as boolean,
-    wallpaper: undefined as unknown as string,
+    wallpaper: undefined,
     serverTimeOffset: 0,
     rtl: false,
-    browserLang: undefined as unknown as string,
+    browserLang: undefined,
     settingsLoaded: false,
     serverUnreachable: false,
   }
@@ -109,7 +116,7 @@ export interface TerminalSettingsChange {
 
 type Listener<T> = (value: T) => void
 
-const terminalListeners = new Set<Listener<TerminalSettingsChange>>()
+const terminalSettingsChanges = createEmitter<TerminalSettingsChange>()
 
 let loadedResolve: () => void = () => {}
 let loadedPromise = new Promise<void>((resolve) => {
@@ -119,7 +126,8 @@ let loadStarted = false
 let destroyed = false
 let restartToastRef: ActiveToast | null = null
 let restartToastComponent: ToastOverrides['toastComponent']
-let serverTimeToastTap: { unsubscribe: () => void } | null = null
+/** The newest server time warning: only its tap opens the explanation. */
+let serverTimeWarning: ActiveToast | null = null
 
 // Terminal configuration constants
 const TERMINAL_DEFAULTS = {
@@ -169,21 +177,21 @@ function checkServerTime(timestamp: string) {
   const diff = serverTime.diff(dayjs(), 'hour')
   set({ serverTimeOffset: diff * 60 * 60 })
   if (diff >= 8 || diff <= -8) {
-    // Clean up the previous warning's tap handler if there is one
-    serverTimeToastTap?.unsubscribe()
-
-    const warning = toast.warning(
+    const warning: ActiveToast = toast.warning(
       i18n.t('settings.datetime.incorrect'),
       i18n.t('toast.title_warning'),
       {
         timeOut: 20000,
         tapToDismiss: false,
+        onTap: () => {
+          // A previous warning still on screen has lost its tap handler
+          if (serverTimeWarning === warning) {
+            window.open('https://homebridge.io/w/JqTFs', '_blank')
+          }
+        },
       },
     )
-
-    serverTimeToastTap = warning.onTap.subscribe(() => {
-      window.open('https://homebridge.io/w/JqTFs', '_blank')
-    })
+    serverTimeWarning = warning
   }
 }
 
@@ -292,8 +300,9 @@ export const settingsActions = {
       currentLightingMode: lightingMode,
       actualLightingMode: lightingMode === 'auto' ? get().browserLightingMode : lightingMode,
     })
-    if (get().theme) {
-      settingsActions.setTheme(get().theme)
+    const theme = get().theme
+    if (theme) {
+      settingsActions.setTheme(theme)
     }
   },
 
@@ -468,12 +477,11 @@ export const settingsActions = {
         tapToDismiss: false,
         disableTimeOut: true,
         positionClass: 'toast-bottom-right',
+        onHidden: () => {
+          restartToastRef = null
+        },
       },
     )
-
-    restartToastRef.onHidden?.subscribe(() => {
-      restartToastRef = null
-    })
   },
 
   /**
@@ -506,17 +514,11 @@ export const settingsActions = {
 
   /** Listen for terminal look changes (font, lighting). Returns the unsubscribe. */
   onTerminalSettingsChanged(listener: Listener<TerminalSettingsChange>): () => void {
-    terminalListeners.add(listener)
-    return () => {
-      terminalListeners.delete(listener)
-    }
+    return terminalSettingsChanges.subscribe(listener)
   },
 
   emitTerminalSettingsChanged(change: TerminalSettingsChange): void {
-    // A snapshot, so a listener may unsubscribe itself while being called
-    for (const listener of Array.from(terminalListeners)) {
-      listener(change)
-    }
+    terminalSettingsChanges.emit(change)
   },
 
   /**
@@ -599,9 +601,8 @@ export function resetSettingsStore(): void {
   destroyed = true
   loadStarted = false
   restartToastRef = null
-  serverTimeToastTap?.unsubscribe()
-  serverTimeToastTap = null
-  terminalListeners.clear()
+  serverTimeWarning = null
+  terminalSettingsChanges.clear()
   loadedPromise = new Promise<void>((resolve) => {
     loadedResolve = resolve
   })

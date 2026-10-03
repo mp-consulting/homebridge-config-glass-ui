@@ -1,3 +1,4 @@
+import type { Plugin } from '@/core/plugins/manage-plugins.interfaces'
 import type { ActiveModal } from '@/core/ui/modal'
 import type { Mock } from 'vitest'
 
@@ -108,7 +109,7 @@ describe('plugin dialog modals', () => {
 
     it('dismisses itself without a plugin', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      renderWithProviders(<PluginCompatibility activeModal={activeModal} plugin={undefined} />)
+      renderWithProviders(<PluginCompatibility activeModal={activeModal} plugin={undefined as unknown as Plugin} />)
 
       expect(activeModal.dismiss).toHaveBeenCalledWith('Missing required data')
     })

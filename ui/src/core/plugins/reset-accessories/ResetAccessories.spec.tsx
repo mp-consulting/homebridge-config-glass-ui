@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { accessoryOverviewCache } from '@/core/caching'
 import { ResetAccessories } from '@/core/plugins/reset-accessories/ResetAccessories'
 import { useSettingsStore } from '@/core/settings'
-import { fakeApi, makeEnv, renderWithProviders, toastStub } from '@/testing'
+import { apiError, fakeApi, makeEnv, renderWithProviders, toastStub } from '@/testing'
 
 import '@/testing/i18n'
 
@@ -128,7 +128,7 @@ describe('resetting individual accessory pairings', () => {
   })
 
   it('closes and complains when the pairings cannot be read', async () => {
-    const { getByText } = await openModal(new Error('server unavailable'))
+    const { getByText } = await openModal(apiError('server unavailable'))
 
     expect(getByText('reset.bridge_accessories.empty')).toBeTruthy()
     expect(toast.current!.error).toHaveBeenCalledWith('server unavailable', 'toast.title_error')
@@ -217,7 +217,7 @@ describe('resetting individual accessory pairings', () => {
     it('re-enables the button when the reset fails', async () => {
       // It used to stay disabled, so the only way to retry was to close the
       // modal and open it again
-      fakeApi().fail('delete', '/server/pairings/accessories', new Error('permission denied'))
+      fakeApi().fail('delete', '/server/pairings/accessories', apiError('permission denied'))
       const view = await openModal(one())
 
       await chooseAndReset(view)

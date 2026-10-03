@@ -16,10 +16,12 @@ import type { WidgetProps } from './context'
 
 import { useEffect, useState } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { cleanSectionTitle } from './a11y'
 import { useJsfContext } from './context'
 import { useWidgetCtx } from './hooks'
-import { cx, htmlToText, safeHtml } from './html'
+import { htmlToText, safeHtml } from './html'
 import { RootWidget } from './RootWidget'
 
 const FIELDSET_TYPES = ['fieldset', 'array', 'tab', 'advancedfieldset', 'authfieldset', 'optionfieldset', 'selectfieldset']

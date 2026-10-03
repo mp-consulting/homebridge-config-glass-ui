@@ -79,27 +79,3 @@ export function subscribeResize(source: ResizeSource, cb: () => void): () => voi
   const sub = source.subscribe(cb)
   return typeof sub === 'function' ? sub : () => sub.unsubscribe()
 }
-
-/**
- * A trailing debounce, the plain-timer equivalent of rxjs `debounceTime`.
- * `cancel()` drops a pending call (the `takeUntil(destroy$)` half).
- */
-export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: number) {
-  let timer: ReturnType<typeof setTimeout> | undefined
-  const debounced = (...args: A) => {
-    if (timer !== undefined) {
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => {
-      timer = undefined
-      fn(...args)
-    }, ms)
-  }
-  debounced.cancel = () => {
-    if (timer !== undefined) {
-      clearTimeout(timer)
-      timer = undefined
-    }
-  }
-  return debounced
-}

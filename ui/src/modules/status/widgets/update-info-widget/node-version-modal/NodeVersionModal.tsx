@@ -10,7 +10,9 @@ import { api } from '@/core/api'
 import { pluginsCache } from '@/core/caching'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { useDebouncedCallback } from '@/core/utilities/debounce'
 
 export interface PluginNodeCheck {
   displayName: string
@@ -62,7 +64,7 @@ async function loadInstalledPlugins(latestVersion: string, homebridgePkg: NodeVe
     })
 
   // Insert an item for Homebridge at the beginning of the list
-  const hbIsSupported = satisfies(latestVersion, homebridgePkg.engines.node, { includePrerelease: true })
+  const hbIsSupported = satisfies(latestVersion, homebridgePkg.engines!.node!, { includePrerelease: true })
     ? 'yes'
     : 'no'
   processedPlugins.unshift({
@@ -148,20 +150,18 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
   }
 
   // The control's valueChanges pipe: debounceTime(500) + distinctUntilChanged
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const lastEmittedRef = useRef<NodeUpdatePolicy | undefined>(undefined)
-  useEffect(() => () => clearTimeout(debounceRef.current), [])
+  const policyChanged = useDebouncedCallback((value: NodeUpdatePolicy) => {
+    if (value === lastEmittedRef.current) {
+      return
+    }
+    lastEmittedRef.current = value
+    void updateNodeUpdatePolicy(value)
+  }, 500)
 
   const choosePolicy = (value: NodeUpdatePolicy) => {
     setNodeUpdatePolicy(value)
-    clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      if (value === lastEmittedRef.current) {
-        return
-      }
-      lastEmittedRef.current = value
-      void updateNodeUpdatePolicy(value)
-    }, 500)
+    policyChanged(value)
   }
 
   const dismissModal = () => activeModal.dismiss('Dismiss')
@@ -172,17 +172,7 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">Node.js</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title="Node.js" onClose={dismissModal} />
       <div className="modal-body">
         {loading
           ? (
@@ -300,7 +290,7 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -325,7 +315,7 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
             <i className="fas fa-external-link-alt" aria-hidden="true"></i>
           </a>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react'
-import type { Observable } from 'rxjs'
 
-import { Subject } from 'rxjs'
+import { createEmitter } from '@/core/utilities/emitter'
 
 /**
  * A port of the parts of ngx-toastr the app uses: the same service API
@@ -41,6 +40,12 @@ export interface ToastOptions {
   toastComponent?: ComponentType<ToastComponentProps>
   /** Opaque data for a custom `toastComponent`. */
   payload?: unknown
+  /** Called when the toast is clicked (ngx-toastr `onTap`). */
+  onTap?: () => void
+  /** Called with what a custom `toastComponent` reports through `triggerAction` (ngx-toastr `onAction`). */
+  onAction?: (action: unknown) => void
+  /** Called once the toast has been removed (ngx-toastr `onHidden`). */
+  onHidden?: () => void
 }
 
 /** The service-wide options (ngx-toastr `GlobalConfig`). */
@@ -59,16 +64,20 @@ export type ToastOverrides = Partial<ToastOptions>
 
 export type ToastState = 'inactive' | 'active' | 'removed'
 
-/** What a raised toast hands back (ngx-toastr `ActiveToast`). */
+/** What a raised toast hands back (ngx-toastr `ActiveToast`, its observables now the `on*` options). */
 export interface ActiveToast {
   toastId: number
   title: string
   message: string
   toastRef: ToastRef
-  onShown: Observable<void>
-  onHidden: Observable<void>
-  onTap: Observable<void>
-  onAction: Observable<unknown>
+}
+
+/** What the rendered toast does when the service asks; `<ToastContainer/>` binds these. */
+export interface ToastRefHandlers {
+  manualClose: () => void
+  resetTimeout: () => void
+  countDuplicate: (count: number) => void
+  activate: () => void
 }
 
 /** The link between the service and one rendered toast (ngx-toastr `ToastRef`). */
@@ -76,18 +85,30 @@ export class ToastRef {
   public duplicatesCount = 0
   /** Set once the toast may start showing; it waits while `maxOpened` toasts are on screen. */
   public activated = false
-  public readonly afterClosed$ = new Subject<void>()
-  public readonly activate$ = new Subject<void>()
-  public readonly manualClose$ = new Subject<void>()
-  public readonly resetTimeout$ = new Subject<void>()
-  public readonly countDuplicate$ = new Subject<number>()
   private closed = false
+  private handlers: Partial<ToastRefHandlers> = {}
 
-  constructor(private readonly detach: () => void) {}
+  constructor(private readonly detach: () => void, private readonly onHidden?: () => void) {}
+
+  /**
+   * Bind the rendered toast. Returns the unbind. Calls made while nothing is
+   * bound are dropped (as a Subject with no subscriber dropped them).
+   * @param handlers - what the toast does on each request
+   */
+  public bind(handlers: ToastRefHandlers): () => void {
+    this.handlers = handlers
+    return () => {
+      if (this.handlers === handlers) {
+        this.handlers = {}
+      }
+    }
+  }
 
   /** Ask the toast to animate out and remove itself. */
   public manualClose(): void {
-    this.manualClose$.next()
+    if (!this.closed) {
+      this.handlers.manualClose?.()
+    }
   }
 
   /** Remove the toast at once. */
@@ -97,12 +118,8 @@ export class ToastRef {
     }
     this.closed = true
     this.detach()
-    this.afterClosed$.next()
-    this.afterClosed$.complete()
-    this.manualClose$.complete()
-    this.activate$.complete()
-    this.resetTimeout$.complete()
-    this.countDuplicate$.complete()
+    this.handlers = {}
+    this.onHidden?.()
   }
 
   public activate(): void {
@@ -110,16 +127,20 @@ export class ToastRef {
       return
     }
     this.activated = true
-    this.activate$.next()
-    this.activate$.complete()
+    if (!this.closed) {
+      this.handlers.activate?.()
+    }
   }
 
   public onDuplicate(resetTimeout: boolean, countDuplicate: boolean): void {
+    if (this.closed) {
+      return
+    }
     if (resetTimeout) {
-      this.resetTimeout$.next()
+      this.handlers.resetTimeout?.()
     }
     if (countDuplicate) {
-      this.countDuplicate$.next(++this.duplicatesCount)
+      this.handlers.countDuplicate?.(++this.duplicatesCount)
     }
   }
 }
@@ -132,8 +153,6 @@ export interface ToastPackage {
   title: string | null | undefined
   toastType: string
   toastRef: ToastRef
-  tap$: Subject<void>
-  action$: Subject<unknown>
 }
 
 const DEFAULT_CONFIG: ToastGlobalConfig = {
@@ -192,7 +211,7 @@ export class ToastService {
   private currentlyActive = 0
   private toasts: ToastEntry[] = []
   private index = 0
-  private listeners = new Set<() => void>()
+  private readonly changes = createEmitter()
   private attached: ToastPackage[] = []
   private positions: string[] = []
 
@@ -277,12 +296,7 @@ export class ToastService {
 
   // ----- for <ToastContainer/> -----
 
-  public subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
+  public subscribe = (listener: () => void): (() => void) => this.changes.subscribe(listener)
 
   public getSnapshot = (): ToastPackage[] => this.attached
 
@@ -292,7 +306,7 @@ export class ToastService {
   }
 
   private emit(): void {
-    this.listeners.forEach(listener => listener())
+    this.changes.emit()
   }
 
   private applyConfig(override: ToastOverrides): ToastOptions {
@@ -342,7 +356,7 @@ export class ToastService {
     const toastRef = new ToastRef(() => {
       this.attached = this.attached.filter(pkg => pkg.toastId !== toastId)
       this.emit()
-    })
+    }, config.onHidden)
     const pkg: ToastPackage = {
       toastId,
       config,
@@ -350,8 +364,6 @@ export class ToastService {
       title,
       toastType,
       toastRef,
-      tap$: new Subject<void>(),
-      action$: new Subject<unknown>(),
     }
     this.attached = this.toastrConfig.newestOnTop ? [pkg, ...this.attached] : [...this.attached, pkg]
 
@@ -360,17 +372,12 @@ export class ToastService {
       title: title || '',
       message: message || '',
       toastRef,
-      onShown: toastRef.activate$.asObservable(),
-      onHidden: toastRef.afterClosed$.asObservable(),
-      onTap: pkg.tap$.asObservable(),
-      onAction: pkg.action$.asObservable(),
     }
     const entry: ToastEntry = { toastId, title: title || '', message: message || '', toastRef, pkg, active }
 
     if (!keepInactive) {
       this.currentlyActive = this.currentlyActive + 1
-      // Activated on the next tick like ngx-toastr, so a caller can subscribe
-      // to `onShown` first
+      // Activated on the next tick like ngx-toastr
       setTimeout(() => toastRef.activate())
     }
     this.toasts.push(entry)

@@ -11,9 +11,10 @@ import { cachedAccessoriesCache } from '@/core/caching/cached-accessories-cache'
 import { postCustomUiStyles } from '@/core/plugins/custom-ui-styles'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { useSettingsStore } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
+import { i18n, t } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
+import { createEmitter } from '@/core/utilities/emitter'
 import { ws } from '@/core/ws'
 import { environment } from '@/environments/environment'
 import en from '@/i18n/en.json'
@@ -48,8 +49,6 @@ export interface CustomPluginsControllerOptions {
   getIframe: () => HTMLIFrameElement | null
 }
 
-const t = (key: string) => i18n.t(key)
-
 /**
  * The plugin-ui-utils host: everything CustomPluginsComponent did, minus the
  * template. This is a frozen contract with `@homebridge/plugin-ui-utils`
@@ -70,7 +69,7 @@ export class CustomPluginsController {
   public readonly strictValidation: boolean
 
   private state: CustomPluginsViewState
-  private listeners = new Set<() => void>()
+  private readonly changes = createEmitter()
   private activeModal: Pick<ActiveModal, 'close' | 'dismiss'>
   private getIframe: () => HTMLIFrameElement | null
 
@@ -122,16 +121,11 @@ export class CustomPluginsController {
 
   public getState = (): CustomPluginsViewState => this.state
 
-  public subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
+  public subscribe = (listener: () => void): (() => void) => this.changes.subscribe(listener)
 
   public setState(patch: Partial<CustomPluginsViewState>): void {
     this.state = { ...this.state, ...patch }
-    this.listeners.forEach(listener => listener())
+    this.changes.emit()
   }
 
   // ===== Lifecycle =====

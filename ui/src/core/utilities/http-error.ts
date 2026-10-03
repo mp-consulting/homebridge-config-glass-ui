@@ -1,4 +1,7 @@
+import type { ActiveToast } from '@/core/ui/toast'
+
 import { i18n } from '@/core/ui/i18n'
+import { toast } from '@/core/ui/toast'
 
 /**
  * Build a user-facing toast message for a caught error.
@@ -16,14 +19,25 @@ import { i18n } from '@/core/ui/i18n'
  *
  * Callers should still log the raw error to console for debugging.
  * @param err - whatever was caught
+ * @param fallbackKey - the i18n key used when there is no server message
  */
-export function toToastMessage(err: unknown): string {
+export function toToastMessage(err: unknown, fallbackKey = 'toast.api_error_generic'): string {
   const candidate = err as { error?: { message?: unknown } } | null
   const serverMessage = candidate?.error?.message
   if (typeof serverMessage === 'string' && serverMessage.trim().length > 0) {
     return serverMessage
   }
-  return i18n.t('toast.api_error_generic')
+  return i18n.t(fallbackKey)
+}
+
+/**
+ * Raise the standard error toast for a caught API error: the message from
+ * `toToastMessage` under the translated "Error" title.
+ * @param err - whatever was caught
+ * @param fallbackKey - the i18n key used when there is no server message
+ */
+export function toastApiError(err: unknown, fallbackKey?: string): ActiveToast {
+  return toast.error(toToastMessage(err, fallbackKey), i18n.t('toast.title_error'))
 }
 
 /** The same function under the old service's shape, so ported call sites read the same. */

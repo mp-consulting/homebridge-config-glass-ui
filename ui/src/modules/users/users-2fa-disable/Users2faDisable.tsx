@@ -11,6 +11,7 @@ import { authActions } from '@/core/auth'
 import { RequiredIndicator } from '@/core/components/required-indicator/RequiredIndicator'
 import { notifications } from '@/core/notifications'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 
 import './users-2fa-disable.scss'
@@ -57,17 +58,7 @@ export function Users2faDisable({ activeModal }: Users2faDisableProps) {
 
   return (
     <div className="modal-content modal-content-min-h">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('users.setup_2fa_disable')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('users.setup_2fa_disable')} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center mb-3">
           <i className="fas fa-key primary-text icon-xl"></i>
@@ -102,7 +93,7 @@ export function Users2faDisable({ activeModal }: Users2faDisableProps) {
           </div>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -126,7 +117,7 @@ export function Users2faDisable({ activeModal }: Users2faDisableProps) {
             {t('form.button_continue')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

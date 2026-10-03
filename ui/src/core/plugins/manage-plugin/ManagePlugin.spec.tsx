@@ -19,7 +19,7 @@ import { childBridges } from '@/core/utilities/child-bridges'
 import { fileSaver } from '@/core/utilities/file-saver'
 import { xtermFactory } from '@/core/utilities/terminal/terminal.factory'
 import { ws as realWs } from '@/core/ws'
-import { activeModalStub, fakeApi, makeChildBridge, makePlugin, makeSettingsState, renderWithProviders } from '@/testing'
+import { activeModalStub, apiError, fakeApi, makeChildBridge, makePlugin, makeSettingsState, renderWithProviders } from '@/testing'
 
 vi.mock('@/core/ws', async () => ({ ws: (await import('@/testing')).fakeWs() }))
 vi.mock('@/core/ui/toast', async () => ({ toast: (await import('@/testing')).toastStub() }))
@@ -708,7 +708,7 @@ describe('managePlugin', () => {
     })
 
     it('puts the button back when the download fails', async () => {
-      backup.downloadBackup.mockRejectedValueOnce(new Error('too big'))
+      backup.downloadBackup.mockRejectedValueOnce(apiError('too big'))
       await open({ action: 'Update', pluginName: 'homebridge', targetVersion: '1.8.6', installedVersion: '1.8.5' })
 
       fireEvent.click(screen.getByRole('button', { name: 'form.button_download' }))

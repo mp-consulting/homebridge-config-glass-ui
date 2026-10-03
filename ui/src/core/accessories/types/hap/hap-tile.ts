@@ -27,14 +27,6 @@ export function currentConsumption(service: ServiceTypeX): number | undefined {
 }
 
 /**
- * Join class names, dropping the falsy ones (the `[class.x]="cond"` bindings).
- * @param names - class names, or false/undefined/null for the ones that are off
- */
-export function cx(...names: Array<string | false | null | undefined>): string {
-  return names.filter(Boolean).join(' ')
-}
-
-/**
  * What every HAP manage modal takes: the modal data plus `activeModal`.
  * (`AccessoryManageModalProps` narrows `activeModal` to close/dismiss, which
  * `openModal` does not accept as a component type.)

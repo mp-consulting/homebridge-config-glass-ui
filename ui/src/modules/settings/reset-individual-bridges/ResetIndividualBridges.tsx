@@ -9,6 +9,7 @@ import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { splitPairings } from '@/modules/settings/reset-individual-bridges/split-pairings'
 import { titleCase } from '@/modules/settings/title-case'
@@ -107,18 +108,7 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content hb-reset-individual-bridges">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('reset.bridge_ind.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('reset.bridge_ind.title')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         {!any && (
           <>
@@ -202,7 +192,7 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
           </>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {any && (
             <button
@@ -238,7 +228,7 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

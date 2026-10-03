@@ -3,6 +3,7 @@ import type { ChildBridgeStatusResponse, HomebridgeStatusResponse } from '@/core
 import type { IoNamespace } from '@/core/ws'
 
 import { HomebridgeStatus } from '@/core/interfaces/server.interfaces'
+import { createEmitter } from '@/core/utilities/emitter'
 
 /** Extends ChildBridgeStatusResponse with UI-only state */
 export interface ChildBridgeWithUIState extends ChildBridgeStatusResponse {
@@ -58,25 +59,18 @@ export class BridgesController {
   // Every other timer, so none fires into a destroyed widget
   private timers = new Set<ReturnType<typeof setTimeout>>()
 
-  private listeners = new Set<() => void>()
+  private readonly changes = createEmitter()
   private version = 0
 
   constructor(private readonly deps: BridgesDeps) {}
 
-  public subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
+  public subscribe = (listener: () => void): (() => void) => this.changes.subscribe(listener)
 
   public getVersion = (): number => this.version
 
   private changed(): void {
     this.version += 1
-    for (const listener of Array.from(this.listeners)) {
-      listener()
-    }
+    this.changes.emit()
   }
 
   private later(fn: () => void, ms: number): ReturnType<typeof setTimeout> {

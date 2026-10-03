@@ -3,6 +3,7 @@ import type { ModalComponentProps } from '@/core/ui/modal'
 import { useTranslation } from 'react-i18next'
 
 import { SupportBanner } from '@/core/components/support-banner/SupportBanner'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 
 /** The help modal of the accessories page. */
 export function AccessorySupport({ activeModal }: ModalComponentProps) {
@@ -12,17 +13,7 @@ export function AccessorySupport({ activeModal }: ModalComponentProps) {
   return (
     <div className="modal-content">
       <form>
-        <div className="modal-header">
-          <h5 className="modal-title">{t('support.title')}</h5>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="modal"
-            aria-label={t('form.button_close')}
-            onClick={dismissModal}
-          >
-          </button>
-        </div>
+        <ModalHeader title={t('support.title')} onClose={dismissModal} />
         <div className="modal-body">
           <div className="text-center mb-4">
             <i className="far fa-circle-question primary-text icon-xl"></i>
@@ -40,7 +31,7 @@ export function AccessorySupport({ activeModal }: ModalComponentProps) {
           </ul>
           <SupportBanner />
         </div>
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start"></div>
           <div className="text-center">
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
@@ -48,7 +39,7 @@ export function AccessorySupport({ activeModal }: ModalComponentProps) {
             </button>
           </div>
           <div className="text-end"></div>
-        </div>
+        </ModalFooter>
       </form>
     </div>
   )

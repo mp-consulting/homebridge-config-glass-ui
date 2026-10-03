@@ -1,3 +1,5 @@
+import type { Plugin } from '@/core/plugins/manage-plugins.interfaces'
+
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { PluginInfo } from '@/core/plugins/plugin-info/PluginInfo'
@@ -14,7 +16,7 @@ describe('pluginInfo', () => {
   })
 
   it('gives the icon-only scoped and verified wiki links translated names', () => {
-    const plugin = { name: 'homebridge-example', displayName: 'Example', links: {} }
+    const plugin = { name: 'homebridge-example', displayName: 'Example', links: {} } as Plugin
     const view = renderWithProviders(<PluginInfo activeModal={activeModalStub() as any} plugin={plugin} />)
 
     const scoped = view.getByRole('link', { name: 'About scoped plugins (opens in a new tab)' })

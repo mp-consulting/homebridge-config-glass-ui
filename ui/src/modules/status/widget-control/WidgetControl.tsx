@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { formatDatePattern } from '@/core/pipes/date-pattern'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { ws } from '@/core/ws'
 
 import { dateFormats, findOpenWeatherMapCity, hasChanges, searchCountryCodeFormatter, timeFormats } from './widget-control.helpers'
@@ -353,16 +354,13 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
 
   return (
     <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="widget-control-modal-title">
-      <div className="modal-header">
-        <h5 className="modal-title" id="widget-control-modal-title">{t('status.widget.title_manage_widget')}</h5>
-        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label={t('form.button_close')} onClick={dismissModal}></button>
-      </div>
+      <ModalHeader title={t('status.widget.title_manage_widget')} titleId="widget-control-modal-title" onClose={dismissModal} />
       <div className="modal-body">
         <ul className="list-group list-group-box mb-0">
           {renderBody()}
         </ul>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" aria-label={t('form.button_close')} onClick={dismissModal}>
             {t('form.button_close')}
@@ -374,7 +372,7 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
             {t('form.button_save')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

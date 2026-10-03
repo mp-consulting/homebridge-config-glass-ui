@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import { DimmableLightManage } from '@/core/accessories/types/matter/dimmable-light/DimmableLightManage'
 import { getBrightnessPercentage, getDeviceActiveState, toggleDimmableLight } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 export function DimmableLightTile({ service, readyForControl = false }: MatterTileProps) {
   const { t } = useTranslation()
@@ -35,7 +36,7 @@ export function DimmableLightTile({ service, readyForControl = false }: MatterTi
   return (
     <div
       ref={pressRef}
-      className={classes('accessory-box', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box', on && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="switch"
       tabIndex={0}
       aria-checked={on}

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '@/core/api'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { isSslFormInvalid } from '@/modules/settings/ssl-settings-modal/ssl-settings'
 
@@ -198,17 +199,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('settings.security.https_configure')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('settings.security.https_configure')} onClose={dismissModal} />
       <div className="modal-body">
         {/* SSL Mode Selection */}
         <ul
@@ -302,7 +293,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
           </ul>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <button type="button" className="btn btn-elegant" disabled={isSaving} onClick={dismissModal}>
           {t('form.button_close')}
         </button>
@@ -315,7 +306,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
           {isSaving && <i className="fas fa-spinner fa-spin me-2"></i>}
           {t('form.button_save')}
         </button>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

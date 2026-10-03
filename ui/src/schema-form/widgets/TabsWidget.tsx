@@ -11,12 +11,13 @@ import type { WidgetProps } from './context'
 import { isEqual as isEqual$2, isObject as isObject$1, pick } from 'lodash-es'
 import { useState } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { path2ControlKey } from '../engine/form-group.functions'
 import { JsonPointer } from '../engine/jsonpointer.functions'
 import { hasNonNullValue, hasOwn } from '../engine/utility.functions'
 import { useJsfContext } from './context'
 import { guard, useWidgetCtx } from './hooks'
-import { cx } from './html'
 import { layoutKey } from './keys'
 import { SelectFrameworkWidget } from './SelectFrameworkWidget'
 

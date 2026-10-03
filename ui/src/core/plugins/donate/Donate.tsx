@@ -5,6 +5,7 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getIconClass, normaliseFunding } from '@/core/plugins/donate/funding'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 
 import './donate.scss'
 
@@ -31,17 +32,7 @@ export function Donate({ activeModal, plugin }: DonateProps) {
 
   return (
     <div className="modal-content hb-donate">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('plugins.donate.tile_donate_to', { author: `@${authorName}` })}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('plugins.donate.tile_donate_to', { author: `@${authorName}` })} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center pink-text mb-3">
           <i className="fas fa-heart icon-xl"></i>
@@ -60,7 +51,7 @@ export function Donate({ activeModal, plugin }: DonateProps) {
           ))}
         </ul>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start"></div>
         <div className="text-center">
           <button
@@ -74,7 +65,7 @@ export function Donate({ activeModal, plugin }: DonateProps) {
           </button>
         </div>
         <div className="text-end"></div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

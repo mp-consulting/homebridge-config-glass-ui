@@ -65,7 +65,7 @@ export function renderManage(Component: ComponentType<AccessoryManageModalProps>
 export function changedElsewhere(updated: ServiceTypeX) {
   accessories.accessories.services[0] = updated
   act(() => {
-    accessories.accessoryData.next([updated])
+    accessories.accessoryData.emit([updated])
   })
 }
 

@@ -8,13 +8,14 @@ import { Subject } from 'rxjs'
 
 import { api, ApiError } from '@/core/api'
 import { Confirm } from '@/core/components/confirm/Confirm'
-import { cls } from '@/core/plugins/class-names'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { fileSaver } from '@/core/utilities/file-saver'
+import { toastApiError } from '@/core/utilities/http-error'
 import { createLogService } from '@/core/utilities/terminal'
 
 import { filterPluginLog, patchXtermLiveRegion } from './plugin-logs.helpers'
@@ -64,8 +65,7 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
           return
         }
         console.error(error)
-        const message = error instanceof Error ? (error as any).error?.message || error.message : i18n.t('toast.title_error')
-        toast.error(message, i18n.t('toast.title_error'))
+        toastApiError(error, 'toast.title_error')
         activeModal.dismiss()
       }
     }
@@ -140,23 +140,12 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
   const restartLabel = t(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart')
 
   return (
-    <div className={cls('modal-content', isLightTerminalTheme && 'terminal-light-theme')}>
-      <div className="modal-header">
-        <h5 className="modal-title">{plugin?.displayName || plugin?.name}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={midAction}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+    <div className={cx('modal-content', isLightTerminalTheme && 'terminal-light-theme')}>
+      <ModalHeader title={plugin?.displayName || plugin?.name} closeDisabled={midAction} onClose={dismissModal} />
       <div className="modal-body d-flex flex-row flex-grow-1 w-100 p-0">
         <div
           ref={termTargetRef}
-          className={cls(
+          className={cx(
             'w-100 plugin-log-output terminal align-self-end w-100 h-100 mb-0',
             !isLightTerminalTheme && 'terminal-dark-bg',
             isLightTerminalTheme && 'terminal-light-bg',
@@ -164,7 +153,7 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
         >
         </div>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -204,7 +193,7 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
             </HoverTooltip>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

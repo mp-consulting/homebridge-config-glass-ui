@@ -122,18 +122,18 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
     let timerPending = true
     const timer = setTimeout(() => {
       timerPending = false
-      const warning = toast.warning(
+      toast.warning(
         t('users.toast_legacy_otp_message'),
         t('users.toast_legacy_otp_title'),
         {
           timeOut: 0,
           tapToDismiss: true,
           disableTimeOut: true,
+          onTap: () => {
+            void navigate('/users')
+          },
         },
       )
-      warning?.onTap?.subscribe(() => {
-        void navigate('/users')
-      })
     }, 3000)
     return () => {
       // Torn down before it showed: let a remount show it instead

@@ -12,7 +12,7 @@ import type { ScheduleActions } from './plugin-bridge.schedule'
 import type { EditorActions } from './plugin-bridge.store'
 
 import { settingsActions } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 
 /** The part of a checkbox change event the toggles read. */
 export interface CheckboxEvent {
@@ -132,7 +132,7 @@ export interface SliceContext {
   deps: PluginBridgeDeps
 }
 
-export const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
+export { t }
 
 export const defaultIcon = 'assets/hb-icon.png'
 

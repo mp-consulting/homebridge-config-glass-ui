@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next'
 
 import { MatterFanManage } from '@/core/accessories/types/matter/fan/MatterFanManage'
 import { getFanPercentSetting, isFanOn, toggleFan } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './fan.scss'
 
@@ -37,7 +38,7 @@ export function MatterFanTile({ service, readyForControl = false }: MatterTilePr
   return (
     <div
       ref={pressRef}
-      className={classes('accessory-box hb-matter-fan', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box hb-matter-fan', on && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="switch"
       tabIndex={0}
       aria-checked={on}
@@ -48,7 +49,7 @@ export function MatterFanTile({ service, readyForControl = false }: MatterTilePr
         {srText}
       </span>
       <div className="d-flex flex-column h-100">
-        <div className={classes('accessory-svg', on && 'spin')} aria-hidden="true">
+        <div className={cx('accessory-svg', on && 'spin')} aria-hidden="true">
           <svg
             width="32px"
             height="32px"

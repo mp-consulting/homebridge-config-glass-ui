@@ -4,7 +4,8 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { hasCoAlarm, hasSmokeAlarm, isSmokeCoAlarmTriggered } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, sensorSrText } from '@/core/accessories/types/matter/matter-tile'
+import { sensorSrText } from '@/core/accessories/types/matter/matter-tile'
+import { cx } from '@/core/utilities/cx'
 
 import './smoke-co-alarm.scss'
 
@@ -40,7 +41,7 @@ export function MatterSmokeCoAlarmTile({ service }: Pick<MatterTileProps, 'servi
   const srText = sensorSrText(service, t(typeKey), stateText)
 
   return (
-    <div className={classes('accessory-box hb-matter-smoke-co-alarm', triggered && 'accessory-on')}>
+    <div className={cx('accessory-box hb-matter-smoke-co-alarm', triggered && 'accessory-on')}>
       <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
         {srText}
       </span>

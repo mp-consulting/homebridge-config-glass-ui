@@ -5,9 +5,7 @@ import type { MouseEvent as ReactMouseEvent } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { accessories as accessoriesSingleton } from '@/core/accessories/accessories'
-import { i18n } from '@/core/ui/i18n'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 
 /**
  * The props every accessory manage modal is opened with
@@ -136,7 +134,7 @@ export function useManageAccessory(service: ServiceTypeX | undefined, options: U
     if (error !== undefined) {
       console.error(error)
     }
-    toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+    toastApiError(error)
   }, [])
 
   const debounce = useCallback(<T>(key: string, value: T, callback: (value: T) => void, debounceMs = 500) => {

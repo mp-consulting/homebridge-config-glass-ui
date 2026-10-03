@@ -4,26 +4,14 @@ import type { MouseEvent, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { tileName } from '@/core/accessories/types/matter/matter-tile'
+import { ModalHeader } from '@/core/ui/ModalParts'
 
 /**
  * The `.modal-header` every Matter manage modal opens with: the accessory's
  * name and a close button.
  */
 export function MatterManageHeader({ service, onDismiss }: { service: ServiceTypeX, onDismiss: () => void }) {
-  const { t } = useTranslation()
-  return (
-    <div className="modal-header">
-      <h5 className="modal-title">{tileName(service)}</h5>
-      <button
-        type="button"
-        className="btn-close"
-        data-bs-dismiss="modal"
-        aria-label={t('form.button_close')}
-        onClick={onDismiss}
-      >
-      </button>
-    </div>
-  )
+  return <ModalHeader title={tileName(service)} onClose={onDismiss} />
 }
 
 /**

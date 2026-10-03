@@ -12,7 +12,9 @@ import { pluginsCache } from '@/core/caching/plugins-cache'
 import { getCurrentUpdatePreference } from '@/core/plugins/manage-version/update-preference'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import './manage-version.scss'
 
@@ -93,8 +95,7 @@ export function ManageVersion({ activeModal, plugin, onRefreshPluginList, onSett
         setLoading(false)
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? (error as any).error?.message || error.message : i18n.t('toast.title_error')
-        toast.error(message, i18n.t('toast.title_error'))
+        toastApiError(error, 'toast.title_error')
         latestRef.current.activeModal.dismiss()
       }
     })()
@@ -177,8 +178,7 @@ export function ManageVersion({ activeModal, plugin, onRefreshPluginList, onSett
       toast.success(i18n.t('config.config_saved'), i18n.t('toast.title_success'))
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : i18n.t('toast.title_error')
-      toast.error(message, i18n.t('toast.title_error'))
+      toastApiError(error, 'toast.title_error')
       // Revert on error
       setUpdatePreference(getCurrentUpdatePreference(plugin))
     }
@@ -233,17 +233,7 @@ export function ManageVersion({ activeModal, plugin, onRefreshPluginList, onSett
 
   return (
     <div className="modal-content hb-manage-version">
-      <div className="modal-header">
-        <h5 className="modal-title">{plugin?.displayName || plugin?.name}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={plugin?.displayName || plugin?.name} onClose={dismissModal} />
       <div className="modal-body d-flex flex-row flex-grow-1 w-100">
         {loading
           ? (
@@ -341,7 +331,7 @@ export function ManageVersion({ activeModal, plugin, onRefreshPluginList, onSett
               </div>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start"></div>
         <div className="text-center">
           <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
@@ -349,7 +339,7 @@ export function ManageVersion({ activeModal, plugin, onRefreshPluginList, onSett
           </button>
         </div>
         <div className="text-end"></div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

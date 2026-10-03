@@ -6,8 +6,7 @@ import { createStore } from 'zustand/vanilla'
 import { api } from '@/core/api'
 import { formatLocale } from '@/core/pipes/date'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { terminalService } from '@/core/utilities/terminal'
 import { FIELDS, initialValues } from '@/modules/settings/settings-page/fields'
 import { createGeneralSlice } from '@/modules/settings/settings-page/general'
@@ -18,7 +17,7 @@ import { createModalsSlice } from '@/modules/settings/settings-page/modals'
 import { createNetworkSlice } from '@/modules/settings/settings-page/network'
 import { createSearchSlice } from '@/modules/settings/settings-page/search'
 import { createSecuritySlice } from '@/modules/settings/settings-page/security'
-import { SAVED_SPINNER_MS, t } from '@/modules/settings/settings-page/shared'
+import { SAVED_SPINNER_MS } from '@/modules/settings/settings-page/shared'
 import { createStartupSlice } from '@/modules/settings/settings-page/startup'
 import { createTerminalSlice } from '@/modules/settings/settings-page/terminal'
 
@@ -290,7 +289,7 @@ export function createSettingsPage(deps: SettingsPageDeps) {
     },
     reportError(error) {
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     },
     fullServiceRestartThenToast() {
       api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})

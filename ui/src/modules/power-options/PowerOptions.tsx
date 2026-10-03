@@ -8,8 +8,7 @@ import { Confirm } from '@/core/components/confirm/Confirm'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 
 /** The ways to restart: Homebridge, the hb-service, the host, the container. */
 export function PowerOptions() {
@@ -38,7 +37,7 @@ export function PowerOptions() {
       void navigate('/restart')
     } catch (error) {
       console.error(error)
-      toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+      toastApiError(error)
     }
   }
 

@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { buildAccessoryInfo, fallbackCopyToClipboard, getEnumLabel, keyValue } from '@/core/accessories/accessory-info/accessory-info.helpers'
 import { convertMired, convertTemp, prettify, serviceToTranslationString } from '@/core/pipes'
 import { openModal } from '@/core/ui/modal'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { RemoveIndividualAccessories } from '@/modules/settings/remove-individual-accessories/RemoveIndividualAccessories'
 
@@ -265,19 +266,7 @@ export function AccessoryInfo({ activeModal, service, accessoryCache, pairingCac
 
   return (
     <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="accessory-info-modal-title">
-      <div className="modal-header">
-        <h5 className="modal-title" id="accessory-info-modal-title">
-          {service.customName || service.serviceName}
-        </h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={service.customName || service.serviceName} titleId="accessory-info-modal-title" onClose={dismissModal} />
       <div className="modal-body">
         <ul className="list-group list-group-box mb-3">
           <li className="list-group-item text-center grey-text small">
@@ -439,7 +428,7 @@ export function AccessoryInfo({ activeModal, service, accessoryCache, pairingCac
           )}
         </ul>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -463,7 +452,7 @@ export function AccessoryInfo({ activeModal, service, accessoryCache, pairingCac
             {t('form.button_save')}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

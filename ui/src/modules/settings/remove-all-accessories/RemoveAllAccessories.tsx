@@ -8,6 +8,7 @@ import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 
 /** Remove every cached accessory, HAP and (with matter support) Matter. */
@@ -57,18 +58,7 @@ export function RemoveAllAccessories({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('reset.accessory_all.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('reset.accessory_all.title')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         {empty
           ? (
@@ -96,7 +86,7 @@ export function RemoveAllAccessories({ activeModal }: ModalComponentProps) {
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {!empty && (
             <button
@@ -137,7 +127,7 @@ export function RemoveAllAccessories({ activeModal }: ModalComponentProps) {
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

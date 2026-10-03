@@ -46,18 +46,3 @@ export function cachedAccessoriesStub(hap: any = [], matter: any = []) {
     invalidateMatter: vi.fn(),
   }
 }
-
-/**
- * A pass-through stand-in for the ttl cache: every `get` runs its loader.
- *
- * Use this where the code under test caches through the ttl cache itself
- * (child bridges, the wrappers) and the spec is about the loader, not the
- * caching. For the caching rules themselves, test the real cache.
- */
-export function ttlCacheStub() {
-  return {
-    get: vi.fn((_key: string, loader: () => Promise<any>) => loader()),
-    invalidate: vi.fn(),
-    invalidateAll: vi.fn(),
-  }
-}

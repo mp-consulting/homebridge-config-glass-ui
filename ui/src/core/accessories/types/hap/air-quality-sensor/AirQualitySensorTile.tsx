@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 
 import { AIR_QUALITY_LABELS, airQualityHasReadings } from '@/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.utils'
 import { AirQualitySensorManage } from '@/core/accessories/types/hap/air-quality-sensor/AirQualitySensorManage'
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './air-quality-sensor.scss'
 

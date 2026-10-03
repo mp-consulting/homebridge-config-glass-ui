@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next'
 
 import { ExtendedColorLightManage } from '@/core/accessories/types/matter/extended-color-light/ExtendedColorLightManage'
 import { getBrightnessPercentage, getColorMode, getColorTemperatureMireds, getDeviceActiveState, getHue, getSaturation, hasClusterFeature, hasColorTemperature, toggleDimmableLight } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { colour } from '@/core/utilities/colour'
+import { cx } from '@/core/utilities/cx'
 
 /**
  * Get the light color for the icon
@@ -79,7 +80,7 @@ export function ExtendedColorLightTile({ service, readyForControl = false }: Mat
   return (
     <div
       ref={pressRef}
-      className={classes('accessory-box', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box', on && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="switch"
       tabIndex={0}
       aria-checked={on}

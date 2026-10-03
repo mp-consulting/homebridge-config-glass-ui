@@ -5,11 +5,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradientDefs'
-import { currentConsumption, cx, formatTemp, hasCurrentConsumption, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
+import { currentConsumption, formatTemp, hasCurrentConsumption, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
 import { heaterCoolerStatusFill, toggleActiveOrOn } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { HeaterCoolerManage } from '@/core/accessories/types/hap/heater-cooler/HeaterCoolerManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 export interface HeaterCoolerTileProps extends HapTileProps {
   /** Set when the accessory was published as a dedicated heater or cooler. */

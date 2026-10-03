@@ -12,10 +12,12 @@ import type { WidgetProps } from './context'
 
 import { useEffect } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { hasOwn } from '../engine/utility.functions'
 import { useJsfContext } from './context'
 import { guard, useOnDestroy, useWidgetCtx } from './hooks'
-import { cx, safeHtml } from './html'
+import { safeHtml } from './html'
 
 export function AddReferenceWidget(props: WidgetProps) {
   const { jsf, refresh } = useJsfContext()

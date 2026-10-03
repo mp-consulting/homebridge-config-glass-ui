@@ -1,12 +1,12 @@
-import type { FakeSocket } from '@/core/ws/socket.fake'
+import type { FakeSocket } from '@/testing/fakes/ws.fake'
 
 import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useAuthStore } from '@/core/auth/auth.store'
 import { useNamespace, useNamespaceConnected, useSocketEvent } from '@/core/ws/hooks'
-import { fakeSocket } from '@/core/ws/socket.fake'
 import { ReplayOne, WsService } from '@/core/ws/ws'
+import { fakeSocket } from '@/testing/fakes/ws.fake'
 
 vi.mock('@/core/ui/toast', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() },

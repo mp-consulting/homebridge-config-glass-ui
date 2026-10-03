@@ -147,7 +147,7 @@ describe('toast', () => {
     it('fades out after the timeout and is gone after the fade', async () => {
       const hidden = vi.fn()
       act(() => {
-        toast.info('x').onHidden.subscribe(hidden)
+        toast.info('x', undefined, { onHidden: hidden })
       })
       await tick()
 
@@ -298,7 +298,7 @@ describe('toast', () => {
     it('reports its actions and removes itself', async () => {
       const action = vi.fn()
       act(() => {
-        toast.info('m', 't', { toastComponent: Custom, disableTimeOut: true }).onAction.subscribe(action)
+        toast.info('m', 't', { toastComponent: Custom, disableTimeOut: true, onAction: action })
       })
       await tick()
 

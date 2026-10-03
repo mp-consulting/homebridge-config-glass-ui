@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next'
 import json5 from 'json5'
 
 import { createChildBridgeSchema } from '@/core/helpers/child-bridges-schema.helper'
+import { createEmitter } from '@/core/utilities/emitter'
 
 /** What the controller needs from the outside world (injected in Angular). */
 export interface ManualConfigDeps {
@@ -71,7 +72,7 @@ export class ManualConfigController {
   private validationTimers = new Set<ReturnType<typeof setTimeout>>()
   private editorDisposers: Array<() => void> = []
   private destroyed = false
-  private listeners = new Set<() => void>()
+  private readonly changes = createEmitter()
   private version = 0
 
   constructor(
@@ -82,18 +83,13 @@ export class ManualConfigController {
   ) {}
 
   // ----- store plumbing for useSyncExternalStore
-  public subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
+  public subscribe = (listener: () => void): (() => void) => this.changes.subscribe(listener)
 
   public getVersion = (): number => this.version
 
   private changed(): void {
     this.version += 1
-    this.listeners.forEach(listener => listener())
+    this.changes.emit()
   }
 
   public get arrayKey(): 'accessories' | 'platforms' {

@@ -21,7 +21,7 @@ import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartH
 import { MonacoDiffEditor, MonacoEditor } from '@/core/monaco'
 import { settingsActions } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
+import { i18n, t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
@@ -39,8 +39,6 @@ declare global {
     editor?: any
   }
 }
-
-const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params)
 
 function readPlainTextPreference(): boolean {
   try {

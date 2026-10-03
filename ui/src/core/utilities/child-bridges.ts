@@ -4,10 +4,8 @@ import type { ComponentType } from 'react'
 
 import { api } from '@/core/api'
 import { ttlCache } from '@/core/caching/ttl-cache'
-import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 
 const CACHE_KEY = 'status-child-bridges'
 
@@ -101,7 +99,7 @@ async function getChildBridgesForPlugin(pluginName: string): Promise<ChildBridge
     return data.filter(bridge => pluginName === bridge.plugin)
   } catch (error: any) {
     console.error(error)
-    toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+    toastApiError(error)
     return []
   }
 }

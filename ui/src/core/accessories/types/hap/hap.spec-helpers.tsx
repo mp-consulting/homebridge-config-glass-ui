@@ -142,7 +142,7 @@ export function renderManage<P extends object>(Manage: ComponentType<P>, service
     pushUpdate: (next: ServiceTypeX = service) => {
       accessories.accessories = { services: [next] }
       act(() => {
-        accessories.accessoryData.next({})
+        accessories.accessoryData.emit({})
       })
     },
   }

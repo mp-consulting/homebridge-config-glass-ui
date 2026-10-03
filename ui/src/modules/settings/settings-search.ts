@@ -1,4 +1,4 @@
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 
 /**
  * The search index of the settings page, shared by every section: which rows
@@ -110,8 +110,6 @@ export const sectionItems: Record<string, string[]> = {
     'setting-reset-bridge-all',
   ],
 }
-
-const t = (key: string) => i18n.t(key)
 
 /** The text a whole section is matched on: its title, and its description where it has one. */
 export function getSectionContent(): Record<string, string> {

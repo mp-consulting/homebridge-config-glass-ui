@@ -1,4 +1,5 @@
 import { api } from '@/core/api'
+import { formatMegabytes } from '@/core/pipes/bytes'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
@@ -19,7 +20,7 @@ export const backupService = {
     if (sizeInBytes > globalThis.backup.maxBackupSize) {
       const message = i18n.t('backup.backup_exceeds_max_size', {
         maxBackupSizeText: globalThis.backup.maxBackupSizeText,
-        size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
+        size: formatMegabytes(sizeInBytes),
       })
       toast.warning(message, i18n.t('toast.title_warning'))
     }

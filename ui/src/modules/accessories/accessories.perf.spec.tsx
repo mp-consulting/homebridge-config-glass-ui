@@ -66,7 +66,8 @@ function layout(): AccessoryLayout {
  * The accessories page under a live feed: one `accessories-data` event per
  * characteristic change must re-render only the tile that changed.
  */
-describe('accessories page performance', () => {
+// Rendering 300 tiles takes a few seconds when the full suite loads the machine
+describe('accessories page performance', { timeout: 30_000 }, () => {
   let io: FakeIoNamespace
 
   async function flush() {

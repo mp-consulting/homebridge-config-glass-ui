@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { useJsfContext } from './context'
-import { cx } from './html'
 import { layoutKey } from './keys'
 import { SelectFrameworkWidget } from './SelectFrameworkWidget'
 

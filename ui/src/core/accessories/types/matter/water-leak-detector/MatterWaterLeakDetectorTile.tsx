@@ -3,7 +3,8 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { getWaterLeakState } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, sensorSrText } from '@/core/accessories/types/matter/matter-tile'
+import { sensorSrText } from '@/core/accessories/types/matter/matter-tile'
+import { cx } from '@/core/utilities/cx'
 
 import './water-leak-detector.scss'
 
@@ -16,7 +17,7 @@ export function MatterWaterLeakDetectorTile({ service }: Pick<MatterTileProps, '
   const srText = sensorSrText(service, t('accessories.core.leak_sensor'), stateText)
 
   return (
-    <div className={classes('accessory-box hb-matter-water-leak-detector', leaking && 'accessory-on')}>
+    <div className={cx('accessory-box hb-matter-water-leak-detector', leaking && 'accessory-on')}>
       <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
         {srText}
       </span>

@@ -11,6 +11,7 @@ import { pluginsCache } from '@/core/caching/plugins-cache'
 import { Confirm } from '@/core/components/confirm/Confirm'
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
 import { escapeHtml } from '@/core/helpers/html.helper'
+import { formatDatePattern } from '@/core/pipes/date-pattern'
 import { DisablePlugin } from '@/core/plugins/disable-plugin/DisablePlugin'
 import { Donate } from '@/core/plugins/donate/Donate'
 import { managePlugins } from '@/core/plugins/manage-plugins'
@@ -21,6 +22,7 @@ import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
 import { ws } from '@/core/ws'
 
@@ -49,16 +51,6 @@ function WithTooltip({ text, placement = 'top', children }: { text: string, plac
       {children}
     </OverlayTrigger>
   )
-}
-
-/** The `date: 'yyyy-MM-dd'` pipe, in local time. */
-function formatDate(value: string): string {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
 /**
@@ -246,18 +238,18 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
   const restartKey = childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart'
   const isUi = plugin.name === UI_PLUGIN_NAME
 
-  const shieldClass = [
+  const shieldClass = cx(
     'fas fa-shield-alt fa-lg me-1',
     plugin.isHbScoped && 'purple-text',
     !plugin.isHbScoped && verified && 'green-text',
     !plugin.isHbScoped && !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin && 'orange-text',
-  ].filter(Boolean).join(' ')
+  )
 
-  const bridgeStatusClass = [
+  const bridgeStatusClass = cx(
     'fas fa-lg ms-3',
     childBridgeStatus === 'pending' && 'fa-bridge-circle-exclamation orange-text',
     childBridgeStatus === 'down' && 'fa-bridge-circle-xmark red-text',
-  ].filter(Boolean).join(' ')
+  )
 
   return (
     <div className="hb-plugin-card">
@@ -470,7 +462,7 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
                           {plugin.lastUpdated && (
                             <span>
                               (
-                              {formatDate(plugin.lastUpdated)}
+                              {formatDatePattern(plugin.lastUpdated, 'yyyy-MM-dd')}
                               )
                             </span>
                           )}

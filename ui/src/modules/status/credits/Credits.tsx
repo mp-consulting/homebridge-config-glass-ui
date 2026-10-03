@@ -2,6 +2,7 @@ import type { ModalComponentProps } from '@/core/ui/modal'
 
 import { useTranslation } from 'react-i18next'
 
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 const translators = [
@@ -26,10 +27,7 @@ export function Credits({ activeModal }: ModalComponentProps) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('status.credits.title')}</h5>
-        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label={t('form.button_close')} onClick={dismissModal}></button>
-      </div>
+      <ModalHeader title={t('status.credits.title')} onClose={dismissModal} />
       <div className="modal-body align-items-center w-100 pb-0">
         <div className="w-100 text-center primary-text mb-3">
           <i className="fas fa-heart icon-xl"></i>
@@ -72,7 +70,7 @@ export function Credits({ activeModal }: ModalComponentProps) {
           <li>{t('status.credits.plugins_thanks')}</li>
         </ul>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start"></div>
         <div className="text-center">
           <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" aria-label={t('form.button_close')} onClick={dismissModal}>
@@ -80,7 +78,7 @@ export function Credits({ activeModal }: ModalComponentProps) {
           </button>
         </div>
         <div className="text-end"></div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

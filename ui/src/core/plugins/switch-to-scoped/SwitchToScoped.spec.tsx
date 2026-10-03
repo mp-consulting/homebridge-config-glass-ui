@@ -1,4 +1,5 @@
 import type { ActiveModal } from '@/core/ui/modal'
+import type { SwitchToScopedModalData } from '@/core/ui/modal-data'
 import type { FakeTerminals, FakeWs } from '@/testing'
 import type { Mock } from 'vitest'
 
@@ -32,7 +33,7 @@ describe('switching a plugin to its scoped name', () => {
   const plugin = {
     name: 'homebridge-example',
     newHbScope: { from: 'homebridge-example', to: '@homebridge-plugins/homebridge-example', switch: '2.0.0' },
-  }
+  } as SwitchToScopedModalData['plugin']
 
   beforeEach(() => {
     vi.restoreAllMocks()

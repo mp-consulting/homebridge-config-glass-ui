@@ -8,9 +8,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
-import { i18n } from '@/core/ui/i18n'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import { validateUserForm } from '../user-form'
 import { AdminField, UserField } from '../UserFields'
@@ -39,7 +38,7 @@ export function UsersAdd({ activeModal, existingUsers }: UsersAddProps) {
       await api.post('/users', value)
       activeModal.close()
     } catch (error) {
-      toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -48,17 +47,7 @@ export function UsersAdd({ activeModal, existingUsers }: UsersAddProps) {
   return (
     <div className="modal-content">
       <form noValidate onSubmit={event => void onSubmit(event)}>
-        <div className="modal-header">
-          <h5 className="modal-title">{t('users.title_add_user')}</h5>
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="modal"
-            aria-label={t('form.button_close')}
-            onClick={dismissModal}
-          >
-          </button>
-        </div>
+        <ModalHeader title={t('users.title_add_user')} onClose={dismissModal} />
         <div className="modal-body">
           <div className="text-center mb-4">
             <i className="fas fa-user-plus primary-text icon-xl"></i>
@@ -108,7 +97,7 @@ export function UsersAdd({ activeModal, existingUsers }: UsersAddProps) {
             <AdminField label={t('users.label_admin_user')} checked={value.admin} onChange={set('admin')} />
           </ul>
         </div>
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start">
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
               {t('form.button_close')}
@@ -120,7 +109,7 @@ export function UsersAdd({ activeModal, existingUsers }: UsersAddProps) {
               {t('form.button_save')}
             </button>
           </div>
-        </div>
+        </ModalFooter>
       </form>
     </div>
   )

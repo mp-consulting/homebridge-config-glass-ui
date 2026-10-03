@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { minVersion } from 'semver'
 
 import { useSettingsStore } from '@/core/settings'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 
 import './plugin-compatibility.scss'
 
@@ -90,17 +91,7 @@ export function PluginCompatibility({
 
   return (
     <div className="modal-content modal-min-height">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('plugins.compat.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('plugins.compat.title')} onClose={dismissModal} />
       <div className="modal-body">
         {/* plugins */}
         {isOther && (
@@ -160,7 +151,7 @@ export function PluginCompatibility({
         {/* homebridge ui */}
         {plugin && plugin.name === '@mp-consulting/homebridge-config-glass-ui' && nodeTooLow('Homebridge Glass UI')}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {isOther && (
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
@@ -182,7 +173,7 @@ export function PluginCompatibility({
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

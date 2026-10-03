@@ -1,13 +1,13 @@
-import type { FakeApi } from '@/core/api/api.fake'
 import type { ChildBridge } from '@/core/plugins/manage-plugins.interfaces'
+import type { FakeApi } from '@/testing/fakes/api.fake'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { fakeApi } from '@/core/api/api.fake'
 import { ttlCache } from '@/core/caching/ttl-cache'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
+import { fakeApi } from '@/testing/fakes/api.fake'
 
 vi.mock('@/core/ui/toast', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() },

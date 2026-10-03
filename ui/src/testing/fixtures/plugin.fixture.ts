@@ -1,4 +1,4 @@
-import type { ChildBridge, DeviceInfo, Plugin } from '@/core/plugins/manage-plugins.interfaces'
+import type { ChildBridge, Plugin } from '@/core/plugins/manage-plugins.interfaces'
 
 /**
  * A plugin as the plugins page receives it.
@@ -58,28 +58,6 @@ export function makeChildBridge(overrides: Partial<ChildBridge> = {}): ChildBrid
     setupUri: 'X-HM://0024K0RR0TEST',
     status: 'ok',
     username: '0E:12:34:56:78:9A',
-    ...overrides,
-  }
-}
-
-/**
- * A paired bridge as GET /server/pairings reports it.
- * @param overrides - fields to change
- */
-export function makePairing(overrides: Partial<DeviceInfo> = {}): DeviceInfo {
-  return {
-    category: 2,
-    configVersion: 1,
-    displayName: 'Homebridge Test',
-    lastFirmwareVersion: '2.0.0',
-    pincode: '031-45-154',
-    setupID: 'TEST',
-    _category: 'bridge',
-    _id: 'test-pairing-id',
-    _isPaired: true,
-    _main: true,
-    _setupCode: 'X-HM://0024K0RR0TEST',
-    _username: '0E:12:34:56:78:9A',
     ...overrides,
   }
 }

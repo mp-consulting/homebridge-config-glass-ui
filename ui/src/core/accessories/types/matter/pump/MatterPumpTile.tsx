@@ -3,7 +3,8 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { controlOnOffDevice, getOnOffState } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { cx } from '@/core/utilities/cx'
 
 import './pump.scss'
 
@@ -24,7 +25,7 @@ export function MatterPumpTile({ service, readyForControl = false }: MatterTileP
 
   return (
     <div
-      className={classes('accessory-box hb-matter-pump', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box hb-matter-pump', on && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="switch"
       tabIndex={0}
       aria-checked={on}

@@ -7,7 +7,7 @@ import { pluginsCache as realPluginsCache } from '@/core/caching/plugins-cache'
 import { ManageVersion } from '@/core/plugins/manage-version/ManageVersion'
 import { useSettingsStore } from '@/core/settings'
 import { toast } from '@/core/ui/toast'
-import { activeModalStub, fakeApi, makePlugin, makeSettingsState, renderWithProviders } from '@/testing'
+import { activeModalStub, apiError, fakeApi, makePlugin, makeSettingsState, renderWithProviders } from '@/testing'
 
 vi.mock('@/core/ui/toast', async () => ({ toast: (await import('@/testing')).toastStub() }))
 vi.mock('@/core/caching/plugins-cache', async () => ({ pluginsCache: (await import('@/testing')).cacheStub<any[]>([]) }))
@@ -155,7 +155,7 @@ describe('manageVersion', () => {
     })
 
     it('closes itself when the versions cannot be looked up', async () => {
-      const { container } = await open(makePlugin(), () => api.fail('get', /\/plugins\/lookup\//, new Error('npm unreachable')))
+      const { container } = await open(makePlugin(), () => api.fail('get', /\/plugins\/lookup\//, apiError('npm unreachable')))
 
       expect(activeModal.dismiss).toHaveBeenCalled()
       expect(container.querySelector('.fa-circle-notch')).not.toBeNull()

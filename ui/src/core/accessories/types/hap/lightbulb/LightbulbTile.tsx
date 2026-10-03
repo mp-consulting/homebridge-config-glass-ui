@@ -3,13 +3,13 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { createAdaptiveLightingSignal, useAdaptiveLighting } from '@/core/accessories/types/hap/lightbulb/adaptive-lighting'
 import { getBrightnessLabel, getBulbFill, getOnOffLabel } from '@/core/accessories/types/hap/lightbulb/lightbulb.utils'
 import { LightbulbManage } from '@/core/accessories/types/hap/lightbulb/LightbulbManage'
 import { openModal } from '@/core/ui/modal'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 export function LightbulbTile({ service, readyForControl = false }: HapTileProps) {
   const { t } = useTranslation()

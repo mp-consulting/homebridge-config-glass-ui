@@ -17,35 +17,31 @@ import { ResetAccessories } from '@/core/plugins/reset-accessories/ResetAccessor
 import { SwitchToScoped } from '@/core/plugins/switch-to-scoped/SwitchToScoped'
 import { UninstallPlugin } from '@/core/plugins/uninstall-plugin/UninstallPlugin'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { UpdateAllModal } from '@/core/update-all/UpdateAllModal'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { createEmitter } from '@/core/utilities/emitter'
+import { toastApiError } from '@/core/utilities/http-error'
 
 /** `Subject.asObservable()` of the Angular service: `subscribe(cb)` returns its unsubscribe. */
 export interface PluginListRefresh {
   subscribe: (listener: () => void) => (() => void) & { unsubscribe: () => void }
 }
 
-const refreshListeners = new Set<() => void>()
+const pluginListRefresh = createEmitter()
 
 function emitPluginListRefresh(): void {
-  ;[...refreshListeners].forEach(listener => listener())
+  pluginListRefresh.emit()
 }
 
 const onPluginListRefresh: PluginListRefresh = {
   subscribe(listener) {
-    refreshListeners.add(listener)
-    const unsubscribe = (() => {
-      refreshListeners.delete(listener)
-    }) as (() => void) & { unsubscribe: () => void }
+    const unsubscribe = pluginListRefresh.subscribe(listener) as (() => void) & { unsubscribe: () => void }
     unsubscribe.unsubscribe = unsubscribe
     return unsubscribe
   },
 }
-
-const t = (key: string) => i18n.t(key)
 
 // The modal components are typed by their own props; this facade only hands
 // them data, so it opens them through one loosely typed alias.
@@ -347,7 +343,7 @@ export const managePlugins = {
       }
     } catch (error: any) {
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
       return false
     }
 

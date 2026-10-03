@@ -7,10 +7,11 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { ManagePlugin } from '@/core/plugins/manage-plugin/ManagePlugin'
-import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import './uninstall-plugin.scss'
 
@@ -82,8 +83,7 @@ export function UninstallPlugin({
         setRemoveChildBridges(nextRemoveConfig)
       } catch (error) {
         console.error('Failed to initialize:', error)
-        const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-        toast.error(message, i18n.t('toast.title_error'))
+        toastApiError(error)
       } finally {
         if (!cancelled) {
           setLoading(false)
@@ -124,8 +124,7 @@ export function UninstallPlugin({
       await api.delete(`/server/pairings/${id}`)
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-      toast.error(message, t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -138,8 +137,7 @@ export function UninstallPlugin({
         await removePluginConfig()
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-        toast.error(message, t('toast.title_error'))
+        toastApiError(error)
       }
     }
 
@@ -181,18 +179,7 @@ export function UninstallPlugin({
 
   return (
     <div className="modal-content modal-min-height">
-      <div className="modal-header">
-        <h5 className="modal-title">{plugin?.displayName || plugin?.name}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={uninstalling}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={plugin?.displayName || plugin?.name} closeDisabled={uninstalling} onClose={dismissModal} />
       <div className="modal-body">
         {loading
           ? (
@@ -263,7 +250,7 @@ export function UninstallPlugin({
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -290,7 +277,7 @@ export function UninstallPlugin({
               : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

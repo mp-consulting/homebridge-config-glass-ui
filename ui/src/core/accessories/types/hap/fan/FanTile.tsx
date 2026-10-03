@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { FanManage } from '@/core/accessories/types/hap/fan/FanManage'
-import { currentConsumption, cx, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './fan.scss'
 

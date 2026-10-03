@@ -1,11 +1,11 @@
-import type { FakeSocket } from '@/core/ws/socket.fake'
+import type { FakeSocket } from '@/testing/fakes/ws.fake'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useAuthStore } from '@/core/auth/auth.store'
-import { fakeSocket } from '@/core/ws/socket.fake'
 import { ws, WsService } from '@/core/ws/ws'
 import { environment } from '@/environments/environment'
+import { fakeSocket } from '@/testing/fakes/ws.fake'
 
 const io = vi.fn()
 

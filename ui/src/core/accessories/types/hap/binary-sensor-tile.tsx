@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
+import { cx } from '@/core/utilities/cx'
 
 export interface BinarySensorTileProps {
   service: ServiceTypeX

@@ -3,12 +3,13 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { getThermostatLocalTemperature, getThermostatSystemMode, isThermostatOn } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
 import { MatterThermostatManage } from '@/core/accessories/types/matter/thermostat/MatterThermostatManage'
 import { convertTemp } from '@/core/pipes/convert-temp'
 import { formatDecimal } from '@/core/pipes/decimal'
 import { useSettingsStore } from '@/core/settings/settings.store'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 function statusFill(mode: number): string {
   if (mode === 3) {
@@ -63,7 +64,7 @@ export function MatterThermostatTile({ service, readyForControl = false }: Matte
   return (
     <div
       ref={pressRef}
-      className={classes('accessory-box', isThermostatOn(service) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box', isThermostatOn(service) && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="button"
       tabIndex={0}
       aria-label={srText}

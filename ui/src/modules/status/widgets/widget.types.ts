@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { createEmitter } from '@/core/utilities/emitter'
+
 /**
  * The contract between the status dashboard (`StatusPage`) and its widgets.
  *
@@ -28,22 +30,11 @@ export interface WidgetEvent<T = unknown> {
 /* eslint-enable ts/method-signature-style */
 
 export function createWidgetEvent<T = unknown>(): WidgetEvent<T> {
-  const listeners = new Set<(value: T) => void>()
+  const events = createEmitter<T>()
   return {
-    subscribe(cb) {
-      listeners.add(cb)
-      return () => {
-        listeners.delete(cb)
-      }
-    },
-    next(value) {
-      for (const cb of listeners) {
-        cb(value as T)
-      }
-    },
-    complete() {
-      listeners.clear()
-    },
+    subscribe: events.subscribe,
+    next: value => events.emit(value as T),
+    complete: events.clear,
   }
 }
 

@@ -14,8 +14,9 @@ import type {
 } from './types'
 
 import { RE_ANSI_SIMPLE, RE_BRACKET_TAG } from '@/core/regex.constants'
+import { debounce } from '@/core/utilities/debounce'
 
-import { debounce, subscribeResize } from './types'
+import { subscribeResize } from './types'
 
 /**
  * xterm.js always renders a hidden <textarea class="xterm-helper-textarea"> to

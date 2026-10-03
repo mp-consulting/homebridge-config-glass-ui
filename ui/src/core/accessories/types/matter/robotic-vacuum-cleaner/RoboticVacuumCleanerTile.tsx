@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import { RvcOperationalState } from '@/core/accessories/types/matter/matter-device.constants'
 import { controlDevice, getDeviceActiveState, getDeviceStatusText, getRvcOperationalState, isOnOffDevice } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal } from '@/core/accessories/types/matter/matter-tile'
 import { RoboticVacuumCleanerManage } from '@/core/accessories/types/matter/robotic-vacuum-cleaner/RoboticVacuumCleanerManage'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './robotic-vacuum-cleaner.scss'
 
@@ -46,7 +47,7 @@ export function RoboticVacuumCleanerTile({ service, readyForControl = false }: M
   return (
     <div
       ref={pressRef}
-      className={classes('accessory-box hb-matter-robotic-vacuum-cleaner', active && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box hb-matter-robotic-vacuum-cleaner', active && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="switch"
       tabIndex={0}
       aria-checked={active}
@@ -101,7 +102,7 @@ export function RoboticVacuumCleanerTile({ service, readyForControl = false }: M
               <line x1="30" y1="16" x2="31.5" y2="14" stroke="#7f7f7f" strokeWidth="1" />
             </g>
             <g
-              className={classes('motion-lines', isRunning && 'is-running')}
+              className={cx('motion-lines', isRunning && 'is-running')}
               clipPath="url(#motionClip)"
               stroke="#7f7f7f"
               strokeLinecap="round"

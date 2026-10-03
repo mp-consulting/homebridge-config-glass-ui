@@ -3,6 +3,8 @@ import type { Plugin } from '@/core/plugins/manage-plugins.interfaces'
 import type { IoNamespace } from '@/core/ws'
 import type { NodeJsInfo, ServerInfo } from '@/modules/status/widgets/system-info-widget/system-info.interfaces'
 
+import { createEmitter } from '@/core/utilities/emitter'
+
 export interface DockerDetails {
   currentVersion?: string
   latestVersion: string | null
@@ -149,7 +151,7 @@ export class UpdateInfoController {
   private offConnected: (() => void) | null = null
   public destroyed = false
 
-  private listeners = new Set<() => void>()
+  private readonly changes = createEmitter()
   private version = 0
 
   constructor(private readonly deps: UpdateInfoDeps) {
@@ -159,20 +161,13 @@ export class UpdateInfoController {
     this.runningInDocker = env.runningInDocker
   }
 
-  public subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
+  public subscribe = (listener: () => void): (() => void) => this.changes.subscribe(listener)
 
   public getVersion = (): number => this.version
 
   private changed(): void {
     this.version += 1
-    for (const listener of Array.from(this.listeners)) {
-      listener()
-    }
+    this.changes.emit()
   }
 
   /**

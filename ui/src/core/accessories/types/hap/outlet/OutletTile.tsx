@@ -2,10 +2,11 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, cx, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
 import { switchIsOn, switchToggle } from '@/core/accessories/types/hap/switch/switch.utils'
 import { useSettingsStore } from '@/core/settings/settings.store'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './outlet.scss'
 

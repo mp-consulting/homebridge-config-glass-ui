@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from 'zustand'
 
 import { useSettingsStore } from '@/core/settings'
+import { cx } from '@/core/utilities/cx'
 
 import { GRID_COLS, GRID_MAX_ROWS, GRID_MOBILE_BREAKPOINT, GRID_ROW_HEIGHT, gridMargin, RESIZE_HANDLES, toGridItem } from './grid'
 import { WIDGETS_WITH_SETTINGS } from './widgets/widget.types'
@@ -215,7 +216,7 @@ export function DashboardGrid({ store, hidden }: DashboardGridProps) {
         {visible.map(item => (
           <gridster-item
             key={item.component}
-            className={['widget-item', moving === item.component ? 'gridster-item-moving' : '', resizing === item.component ? 'gridster-item-resizing' : ''].filter(Boolean).join(' ')}
+            className={cx('widget-item', moving === item.component ? 'gridster-item-moving' : '', resizing === item.component ? 'gridster-item-resizing' : '')}
             id={item.component}
           >
             <ItemBody store={store} widget={item} showSettings={showSettingsFor(item)} isUnlocked={isUnlocked} />

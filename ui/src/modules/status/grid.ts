@@ -12,7 +12,6 @@ import type { Widget } from './widgets/widget.types'
  */
 export const GRID_COLS = 20
 export const GRID_ROW_HEIGHT = 36
-export const GRID_MIN_ROWS = 20
 export const GRID_MAX_ROWS = 40
 export const GRID_MOBILE_BREAKPOINT = 1023
 export const RESIZE_HANDLES: ResizeHandleAxis[] = ['s', 'e', 'se']

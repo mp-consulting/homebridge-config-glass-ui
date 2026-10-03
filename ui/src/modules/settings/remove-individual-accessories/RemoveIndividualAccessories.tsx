@@ -11,6 +11,7 @@ import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { groupAccessories, splitDeletions } from '@/modules/settings/remove-individual-accessories/group-accessories'
 
@@ -136,18 +137,7 @@ export function RemoveIndividualAccessories({ activeModal, selectedBridge: selec
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('reset.accessory_ind.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('reset.accessory_ind.title')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         {!accessoriesExist
           ? (
@@ -229,7 +219,7 @@ export function RemoveIndividualAccessories({ activeModal, selectedBridge: selec
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {accessoriesExist && (
             <button
@@ -265,7 +255,7 @@ export function RemoveIndividualAccessories({ activeModal, selectedBridge: selec
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

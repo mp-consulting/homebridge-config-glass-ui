@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { RequiredIndicator } from '@/core/components/required-indicator/RequiredIndicator'
+import { ModalFooter } from '@/core/ui/ModalParts'
 import { isRoomNameValid } from '@/modules/accessories/room-name'
 
 export type AddRoomProps = AddRoomModalData & ModalComponentProps<AddRoomResult>
@@ -97,7 +98,7 @@ export function AddRoom({ activeModal, existingRooms }: AddRoomProps) {
             </li>
           </ul>
         </div>
-        <div className="modal-footer justify-content-between">
+        <ModalFooter>
           <div className="text-start">
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
               {t('form.button_close')}
@@ -109,7 +110,7 @@ export function AddRoom({ activeModal, existingRooms }: AddRoomProps) {
               {t('form.button_save')}
             </button>
           </div>
-        </div>
+        </ModalFooter>
       </form>
     </div>
   )

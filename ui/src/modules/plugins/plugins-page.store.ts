@@ -10,14 +10,11 @@ import { serverPairingsCache } from '@/core/caching/server-pairings-cache'
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { settingsActions, useSettingsStore } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
-import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 import { PluginSupport } from '@/modules/plugins/plugin-support/PluginSupport'
 
 const UI_PLUGIN_NAME = '@mp-consulting/homebridge-config-glass-ui'
-
-const t = (key: string, params?: Record<string, unknown>) => i18n.t(key, params as any) as string
 
 const body = () => window.document.querySelector('body')!
 
@@ -328,8 +325,7 @@ export function createPluginsPageStore() {
         return sortedList
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? error.message : t('plugins.toast_failed_to_load_plugins')
-        toast.error(message, t('toast.title_error'))
+        toastApiError(error, 'plugins.toast_failed_to_load_plugins')
         set({ mainError: true })
         return undefined
       } finally {
@@ -444,8 +440,7 @@ export function createPluginsPageStore() {
         } catch (error) {
           set({ isSearchMode: false })
           console.error(error)
-          const message = error instanceof Error ? error.message : t('plugins.toast_failed_to_search_plugins')
-          toast.error(message, t('toast.title_error'))
+          toastApiError(error, 'plugins.toast_failed_to_search_plugins')
           void get().loadInstalledPlugins()
         } finally {
           set({ loading: false })

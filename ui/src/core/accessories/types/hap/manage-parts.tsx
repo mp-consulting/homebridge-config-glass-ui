@@ -1,25 +1,11 @@
 import type { MouseEvent, ReactNode } from 'react'
 
-import { useTranslation } from 'react-i18next'
-
-import { cx } from '@/core/accessories/types/hap/hap-tile'
+import { ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 
 /** The `.modal-header` every HAP manage modal opens with: the accessory name and a close button. */
 export function ManageHeader({ title, onClose }: { title: string | undefined, onClose: () => void }) {
-  const { t } = useTranslation()
-  return (
-    <div className="modal-header">
-      <h5 className="modal-title">{title}</h5>
-      <button
-        type="button"
-        className="btn-close"
-        data-bs-dismiss="modal"
-        aria-label={t('form.button_close')}
-        onClick={onClose}
-      >
-      </button>
-    </div>
-  )
+  return <ModalHeader title={title} onClose={onClose} />
 }
 
 /**

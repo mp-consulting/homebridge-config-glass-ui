@@ -2,12 +2,12 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { PositionLabel } from '@/core/accessories/types/hap/position-tile'
 import { positionStyle, togglePosition } from '@/core/accessories/types/hap/position.utils'
 import { WindowManage } from '@/core/accessories/types/hap/window/WindowManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './window.scss'
 

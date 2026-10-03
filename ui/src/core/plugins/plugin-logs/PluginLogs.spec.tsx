@@ -11,7 +11,7 @@ import { PluginLogs } from '@/core/plugins/plugin-logs/PluginLogs'
 import { settingsActions } from '@/core/settings'
 import * as modalModule from '@/core/ui/modal'
 import { fileSaver } from '@/core/utilities/file-saver'
-import { fakeApi, makeChildBridge, makePlugin, renderWithProviders, toastStub } from '@/testing'
+import { apiError, fakeApi, makeChildBridge, makePlugin, renderWithProviders, toastStub } from '@/testing'
 
 import '@/testing/i18n'
 
@@ -115,7 +115,7 @@ describe('viewing a plugin log', () => {
   })
 
   it('closes itself when the config cannot be read', async () => {
-    await openLogs({}, () => api.fail('get', '/config-editor/plugin/homebridge-test', new Error('offline')))
+    await openLogs({}, () => api.fail('get', '/config-editor/plugin/homebridge-test', apiError('offline')))
 
     expect(activeModal.dismiss).toHaveBeenCalled()
     expect(log.startTerminal).not.toHaveBeenCalled()

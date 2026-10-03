@@ -10,6 +10,7 @@ import { PluginBridgeAdvanced } from '@/core/plugins/plugin-bridge/PluginBridgeA
 import { PluginBridgeHap } from '@/core/plugins/plugin-bridge/PluginBridgeHap'
 import { PluginBridgeMatter } from '@/core/plugins/plugin-bridge/PluginBridgeMatter'
 import { usePluginBridge } from '@/core/plugins/plugin-bridge/usePluginBridge'
+import { ModalFooter } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 import './plugin-bridge.scss'
@@ -343,7 +344,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         {invalidBridge && (
           <div className="w-100 text-center small text-danger mb-1">
             <i aria-hidden="true" className="fas fa-fw fa-triangle-exclamation me-1"></i>
@@ -408,7 +409,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                 )
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

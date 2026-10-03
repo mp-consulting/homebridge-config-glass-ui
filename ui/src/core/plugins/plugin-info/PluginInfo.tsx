@@ -5,8 +5,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { escapeHtml } from '@/core/helpers/html.helper'
-import { cls } from '@/core/plugins/class-names'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 
 import './plugin-info.scss'
 
@@ -32,17 +33,7 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
 
   return (
     <div className="modal-content hb-plugin-info">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('plugins.manage.information')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('plugins.manage.information')} onClose={dismissModal} />
       <div className="modal-body text-center">
         <img alt="Plugin Icon" className="mb-3 plugin-icon-card" src={pluginIcon} onError={() => setIconError(true)} />
         <h4 className="mb-1">{plugin.displayName}</h4>
@@ -54,12 +45,12 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
         <p className="mb-3">{plugin.description}</p>
         <i
           aria-hidden="true"
-          className={cls('fas fa-shield-alt mb-3 shield-icon', !verified && 'orange-text', verified && 'grey-text', verified && 'opacity-muted')}
+          className={cx('fas fa-shield-alt mb-3 shield-icon', !verified && 'orange-text', verified && 'grey-text', verified && 'opacity-muted')}
         >
         </i>
         <i
           aria-hidden="true"
-          className={cls(
+          className={cx(
             'fas fa-shield-alt mb-3 shield-icon',
             !plugin.isHbScoped && verified && 'green-text',
             (plugin.isHbScoped || !verified) && 'grey-text',
@@ -69,7 +60,7 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
         </i>
         <i
           aria-hidden="true"
-          className={cls(
+          className={cx(
             'fas fa-shield-alt mb-3 shield-icon',
             plugin.isHbScoped && 'purple-text',
             !plugin.isHbScoped && 'grey-text',
@@ -105,7 +96,7 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
           })}
         />
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {hasLink && (
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" onClick={dismissModal}>
@@ -134,7 +125,7 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
             </a>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

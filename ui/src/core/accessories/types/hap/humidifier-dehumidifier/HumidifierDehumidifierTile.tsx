@@ -5,12 +5,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradientDefs'
-import { currentConsumption, cx, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
 import { toggleActiveOrOn } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { humidifierStatusFill } from '@/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.utils'
 import { HumidifierDehumidifierManage } from '@/core/accessories/types/hap/humidifier-dehumidifier/HumidifierDehumidifierManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 export interface HumidifierDehumidifierTileProps extends HapTileProps {
   /** Set when the accessory was published as a dedicated humidifier or dehumidifier. */

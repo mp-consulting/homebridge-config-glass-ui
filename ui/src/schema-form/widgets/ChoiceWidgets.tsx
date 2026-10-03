@@ -14,12 +14,14 @@ import type { WidgetProps } from './context'
 
 import { useLayoutEffect, useMemo, useRef } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { buildTitleMap } from '../engine/layout.functions'
 import { isArray } from '../engine/utility.functions'
 import { getLabelText } from './a11y'
 import { useJsfContext } from './context'
 import { buildOptionValueString, guard, ngStatusClasses, useBasicControlName, useDomProperty, useFormControlBinding, useOnDestroy, useWidgetCtx } from './hooks'
-import { cx, htmlToText, safeHtml } from './html'
+import { htmlToText, safeHtml } from './html'
 import { WidgetLabel } from './InputWidgets'
 
 /**

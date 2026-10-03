@@ -16,11 +16,13 @@ import type { WidgetCtx } from './hooks'
 import { cloneDeep, isEmpty } from 'lodash-es'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { addClasses, inArray } from '../engine/utility.functions'
 import { cssFrameworkCfgBootstrap5, cssFrameworkDefaultStyling } from './bootstrap5-config'
 import { useJsfContext } from './context'
 import { guard, useDeleteButtonName, useWidgetCtx } from './hooks'
-import { cx, safeHtml } from './html'
+import { safeHtml } from './html'
 import { SelectWidgetWidget } from './SelectWidgetWidget'
 
 const INPUT_WIDGETS = [

@@ -11,9 +11,11 @@ import type { WidgetProps } from './context'
 
 import { useRef } from 'react'
 
+import { cx } from '@/core/utilities/cx'
+
 import { useJsfContext } from './context'
 import { guard, ngStatusClasses, useBasicControlName, useDomProperty, useFormControlBinding, useOnDestroy, useWidgetCtx } from './hooks'
-import { attr, cx, safeHtml } from './html'
+import { attr, safeHtml } from './html'
 
 /** ElementAttributeDirective: `x-inputAttributes`, truthy values only */
 function inputAttributes(options: any): Record<string, string> {

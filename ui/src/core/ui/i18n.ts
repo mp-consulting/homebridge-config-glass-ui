@@ -71,4 +71,14 @@ void i18n
     react: { useSuspense: false },
   })
 
+/**
+ * Translate outside React (stores, services, controllers). Components use
+ * `useTranslation()` so they re-render when the language changes.
+ * @param key - the flat translation key
+ * @param params - interpolation values
+ */
+export function t(key: string, params?: Record<string, unknown>): string {
+  return i18n.t(key, params)
+}
+
 export { i18n }

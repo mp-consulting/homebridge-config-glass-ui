@@ -9,9 +9,8 @@ import { useTranslation } from 'react-i18next'
 import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
 import { settingsActions } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { toastApiError } from '@/core/utilities/http-error'
 import { titleCase } from '@/modules/settings/title-case'
 
 export type AccessoryControlListsProps = AccessoryControlListsModalData & ModalComponentProps
@@ -81,7 +80,7 @@ export function AccessoryControlLists({ activeModal, existingBlacklist }: Access
         }
       } catch (error) {
         console.error(error)
-        toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+        toastApiError(error)
         activeModal.close()
       }
     })()
@@ -109,7 +108,7 @@ export function AccessoryControlLists({ activeModal, existingBlacklist }: Access
     } catch (error) {
       setClicked(false)
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -117,18 +116,7 @@ export function AccessoryControlLists({ activeModal, existingBlacklist }: Access
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('settings.security.ui_control')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('settings.security.ui_control')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center mb-3"><i className="fas fa-list-check primary-text icon-xl"></i></div>
         <ul className="mb-3">
@@ -197,7 +185,7 @@ export function AccessoryControlLists({ activeModal, existingBlacklist }: Access
           ))}
         </ul>
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -221,7 +209,7 @@ export function AccessoryControlLists({ activeModal, existingBlacklist }: Access
             {!clicked ? t('form.button_save') : <i className="fas fa-circle-notch fa-spin"></i>}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

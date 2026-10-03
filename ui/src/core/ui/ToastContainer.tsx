@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 
 import './toast.scss'
 
@@ -132,18 +133,17 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
 
   useEffect(() => {
     const { toastRef } = pkg
-    const subscriptions = [
-      toastRef.manualClose$.subscribe(remove),
-      toastRef.resetTimeout$.subscribe(resetTimeout),
-      toastRef.countDuplicate$.subscribe(setDuplicatesCount),
-    ]
+    const unbind = toastRef.bind({
+      manualClose: remove,
+      resetTimeout,
+      countDuplicate: setDuplicatesCount,
+      activate: activateToast,
+    })
     if (toastRef.activated) {
       activateToast()
-    } else {
-      subscriptions.push(toastRef.activate$.subscribe(activateToast))
     }
     return () => {
-      subscriptions.forEach(subscription => subscription.unsubscribe())
+      unbind()
       clearTimeout(timeoutRef.current)
       clearInterval(intervalRef.current)
     }
@@ -154,7 +154,7 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     if (stateRef.current === 'removed') {
       return
     }
-    pkg.tap$.next()
+    pkg.config.onTap?.()
     if (optionsRef.current.tapToDismiss) {
       remove()
     }
@@ -188,7 +188,7 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     }
   }, [remove, updateOptions, updateProgress, updateWidth])
 
-  const triggerAction = useCallback((action?: unknown) => pkg.action$.next(action), [pkg])
+  const triggerAction = useCallback((action?: unknown) => pkg.config.onAction?.(action), [pkg])
 
   return {
     toastId: pkg.toastId,
@@ -215,11 +215,11 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
 export function ToastFrame({ toast: controller, onClick, children }: { toast: ToastController, onClick?: () => void, children?: ReactNode }) {
   const [entering, setEntering] = useState(true)
   const { options, state } = controller
-  const className = [
+  const className = cx(
     `${controller.toastType} ${options.toastClass}`,
     entering && state !== 'removed' ? 'toast-in' : '',
     state === 'removed' ? 'toast-out' : '',
-  ].filter(Boolean).join(' ')
+  )
 
   const style = {
     '--animation-easing': options.easing,

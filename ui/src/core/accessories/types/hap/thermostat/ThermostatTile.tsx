@@ -3,11 +3,12 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useTranslation } from 'react-i18next'
 
 import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradientDefs'
-import { cx, formatTemp, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
+import { formatTemp, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
 import { thermostatStatusFill } from '@/core/accessories/types/hap/thermostat/thermostat.utils'
 import { ThermostatManage } from '@/core/accessories/types/hap/thermostat/ThermostatManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 export function ThermostatTile({ service, readyForControl = false }: HapTileProps) {
   const { t } = useTranslation()

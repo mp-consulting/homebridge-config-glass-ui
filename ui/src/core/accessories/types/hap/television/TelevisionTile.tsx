@@ -3,11 +3,12 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, cx, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
 import { televisionInputs } from '@/core/accessories/types/hap/television/television.utils'
 import { TelevisionManage } from '@/core/accessories/types/hap/television/TelevisionManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './television.scss'
 

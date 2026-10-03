@@ -10,7 +10,7 @@ import { api } from '@/core/api'
 import { MonacoEditor } from '@/core/monaco'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
 
 type MonacoInstance = Parameters<OnMount>[0]
@@ -110,7 +110,7 @@ export function StartupScript() {
         toast.success(i18n.t('platform.docker.restart_required'), i18n.t('platform.docker.script_saved'))
       } catch (error) {
         console.error(error)
-        toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+        toastApiError(error)
       }
     } finally {
       saveInProgressRef.current = false

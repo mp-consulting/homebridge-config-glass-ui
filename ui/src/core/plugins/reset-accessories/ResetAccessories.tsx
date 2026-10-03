@@ -9,11 +9,12 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
-import { cls } from '@/core/plugins/class-names'
 import { buildResetPairings } from '@/core/plugins/reset-accessories/reset-accessories.helpers'
 import { useSettingsStore } from '@/core/settings'
-import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import './reset-accessories.scss'
 
@@ -39,8 +40,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
         }
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-        toast.error(message, i18n.t('toast.title_error'))
+        toastApiError(error)
         activeModal.close()
       }
     }
@@ -72,8 +72,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
     } catch (error) {
       setClicked(false)
       console.error(error)
-      const message = error instanceof Error ? error.message : t('toast.api_error_generic')
-      toast.error(message, t('toast.title_error'))
+      toastApiError(error)
     }
   }
 
@@ -81,18 +80,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
 
   return (
     <div className="modal-content hb-reset-accessories">
-      <div className="modal-header">
-        <h5 className="modal-title">{t('child_bridge.reset_accessories')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={clicked}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={t('child_bridge.reset_accessories')} closeDisabled={clicked} onClose={dismissModal} />
       <div className="modal-body">
         {pairings.length === 0
           ? (
@@ -119,8 +107,8 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
                           {isMatterSupported
                             ? (
                                 <>
-                                  <i className={cls('fas fa-lg fa-hap me-2', item._protocol === 'matter' && 'opacity-muted')} aria-hidden="true"></i>
-                                  <i className={cls('fas fa-lg fa-matter', item._protocol !== 'matter' && 'opacity-muted')} aria-hidden="true"></i>
+                                  <i className={cx('fas fa-lg fa-hap me-2', item._protocol === 'matter' && 'opacity-muted')} aria-hidden="true"></i>
+                                  <i className={cx('fas fa-lg fa-matter', item._protocol !== 'matter' && 'opacity-muted')} aria-hidden="true"></i>
                                 </>
                               )
                             : <i className="fas fa-lg fa-hap" aria-hidden="true"></i>}
@@ -134,13 +122,13 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
                         </span>
                         <button
                           type="button"
-                          className={cls('btn', !inList && 'btn-danger', 'm-0 ms-3', inList && 'btn-elegant')}
+                          className={cx('btn', !inList && 'btn-danger', 'm-0 ms-3', inList && 'btn-elegant')}
                           disabled={clicked}
                           aria-label={t('form.button_delete')}
                           onClick={() => toggleList(item._id, item._protocol)}
                         >
                           <i
-                            className={cls(
+                            className={cx(
                               'fas',
                               !inList && 'fa-broom',
                               inList && !clicked && 'fa-undo',
@@ -158,7 +146,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           {pairings.length > 0 && (
             <button type="button" className="btn btn-elegant" data-bs-dismiss="modal" disabled={clicked} onClick={dismissModal}>
@@ -193,7 +181,7 @@ export function ResetAccessories({ activeModal, childBridges: childBridgesProp }
             </button>
           )}
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

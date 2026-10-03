@@ -1,9 +1,7 @@
 import { redirect } from 'react-router'
 
 import { api } from '@/core/api'
-import { i18n } from '@/core/ui/i18n'
-import { toast } from '@/core/ui/toast'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 
 export interface StartupScriptResponse {
   script: string
@@ -18,7 +16,7 @@ export async function startupScriptLoader(): Promise<StartupScriptResponse | Res
     return await api.get<StartupScriptResponse>('/platform-tools/docker/startup-script')
   } catch (error) {
     console.error(error)
-    toast.error(toToastMessage(error), i18n.t('toast.title_error'))
+    toastApiError(error)
     return redirect('/')
   }
 }

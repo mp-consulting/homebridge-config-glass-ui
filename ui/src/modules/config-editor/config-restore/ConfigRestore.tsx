@@ -9,15 +9,14 @@ import { useNavigate } from 'react-router'
 import { api } from '@/core/api'
 import { formatDate } from '@/core/pipes/date'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
+import { t } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
-import { toToastMessage } from '@/core/utilities/http-error'
+import { toastApiError } from '@/core/utilities/http-error'
 
 /** Closes with the id of the backup to load into the editor. */
 export type ConfigRestoreProps = ConfigRestoreModalData & ModalComponentProps<string>
-
-const t = (key: string) => i18n.t(key)
 
 /** The list of config.json backups: load one into the editor, download or delete them. */
 export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSettingsProp }: ConfigRestoreProps) {
@@ -44,7 +43,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
     } catch (error) {
       setLoading(false)
       console.error(error)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
       dismissModal()
     }
   }
@@ -66,7 +65,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
       setClicked(false)
     } catch (error) {
       setClicked(false)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
       console.error(error)
     }
   }
@@ -89,7 +88,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
       setDeleting(null)
     } catch (error) {
       setDeleting(null)
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
       console.error(error)
     }
   }
@@ -102,7 +101,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
       setBackupList([])
       setDeleting(null)
     } catch (error) {
-      toast.error(toToastMessage(error), t('toast.title_error'))
+      toastApiError(error)
       console.error(error)
       setDeleting(null)
     }
@@ -113,18 +112,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title">{translate('config.restore.title')}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={translate('form.button_close')}
-          disabled={busy}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={translate('config.restore.title')} closeDisabled={busy} onClose={dismissModal} />
       <div className="modal-body">
         <div className="text-center mb-3">
           <i className="fas fa-history primary-text icon-xl" aria-hidden="true"></i>
@@ -227,7 +215,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
             </ul>
           )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start"></div>
         <div className="text-center">
           <button
@@ -242,7 +230,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
           </button>
         </div>
         <div className="text-end"></div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

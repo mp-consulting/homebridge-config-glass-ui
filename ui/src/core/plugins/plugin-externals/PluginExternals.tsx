@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next'
 
 import { serverPairingsCache } from '@/core/caching'
 import { QrCode } from '@/core/components/qrcode/QrCode'
-import { cls } from '@/core/plugins/class-names'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 
 import './plugin-externals.scss'
 
@@ -127,7 +128,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
             <p className="grey-text mx-auto small mb-1 qr-code-info">
               <i
                 aria-hidden="true"
-                className={cls('fas fa-link', accessory._isPaired && 'green-text', !accessory._isPaired && 'grey-text')}
+                className={cx('fas fa-link', accessory._isPaired && 'green-text', !accessory._isPaired && 'grey-text')}
               >
               </i>
               {' '}
@@ -156,19 +157,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
 
   return (
     <div className="modal-content hb-plugin-externals">
-      <div className="modal-header">
-        <h5 className="modal-title">
-          {plugin.displayName || plugin.name}
-        </h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          onClick={closeModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={plugin.displayName || plugin.name} onClose={closeModal} />
       <div className="modal-body">
         {loading
           ? (
@@ -201,7 +190,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
               </>
             )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start"></div>
         <div className="text-center">
           <button
@@ -215,7 +204,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
           </button>
         </div>
         <div className="text-end"></div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

@@ -3,9 +3,10 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { controlDevice, getActivePowerWatts, getDeviceActiveState } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { formatDecimal } from '@/core/pipes/decimal'
 import { useSettingsStore } from '@/core/settings/settings.store'
+import { cx } from '@/core/utilities/cx'
 
 import './on-off-plug-in-unit.scss'
 
@@ -30,7 +31,7 @@ export function OnOffPlugInUnitTile({ service, readyForControl = false }: Matter
 
   return (
     <div
-      className={classes('accessory-box hb-matter-on-off-plug-in-unit', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      className={cx('accessory-box hb-matter-on-off-plug-in-unit', on && 'accessory-on', readyForControl && 'cursor-pointer')}
       role="switch"
       tabIndex={0}
       aria-checked={on}

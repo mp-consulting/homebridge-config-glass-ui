@@ -1,24 +1,23 @@
-import type { FakeApi } from '@/core/api/api.fake'
+import type { ToastOverrides } from '@/core/ui/toast'
+import type { FakeApi } from '@/testing/fakes/api.fake'
 
-import { Subject } from 'rxjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { fakeApi } from '@/core/api/api.fake'
 import { resetSettingsStore, settingsActions, useSettingsStore } from '@/core/settings/settings.store'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
+import { fakeApi } from '@/testing/fakes/api.fake'
 
-vi.mock('@/core/ui/toast', async () => {
-  const { Subject: RxSubject } = await import('rxjs')
-  const raise = () => ({ onHidden: new RxSubject<void>(), onTap: new RxSubject<void>() })
+vi.mock('@/core/ui/toast', () => {
+  const raise = () => ({})
   return {
     toast: { success: vi.fn(raise), error: vi.fn(raise), info: vi.fn(raise), warning: vi.fn(raise) },
   }
 })
 
-/** What the mocked toast call handed back. */
+/** The options (and so the callbacks) the mocked toast call was given. */
 function raised(method: 'info' | 'warning', index = 0) {
-  return vi.mocked(toast[method]).mock.results[index].value as unknown as { onHidden: Subject<void>, onTap: Subject<void> }
+  return vi.mocked(toast[method]).mock.calls[index][2] as ToastOverrides
 }
 
 vi.mock('@/core/ui/i18n', () => ({
@@ -196,7 +195,7 @@ describe('settings store', () => {
       expect(state().serverTimeOffset).toBe(10 * 3600)
 
       // Tapping it opens the help page
-      raised('warning').onTap.next()
+      raised('warning').onTap!()
       expect(open).toHaveBeenCalledWith('https://homebridge.io/w/JqTFs', '_blank')
     })
 
@@ -660,7 +659,7 @@ describe('settings store', () => {
 
     it('can be shown again once the first one has gone', () => {
       settingsActions.showRestartToast()
-      raised('info').onHidden.next()
+      raised('info').onHidden!()
       settingsActions.showRestartToast()
 
       expect(toast.info).toHaveBeenCalledTimes(2)

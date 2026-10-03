@@ -4,9 +4,9 @@ import type { MouseEvent } from 'react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
 import { ManageHeader } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
+import { cx } from '@/core/utilities/cx'
 
 export function GarageDoorOpenerManage({ service: initialService, activeModal }: HapManageProps) {
   const { t } = useTranslation()

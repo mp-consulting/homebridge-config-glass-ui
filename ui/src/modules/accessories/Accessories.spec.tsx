@@ -506,7 +506,7 @@ describe('accessories page', () => {
       await open({ rooms: [room('Kitchen', { services: [makeService()] })] })
 
       act(() => {
-        accessories.accessoryData.next([])
+        accessories.accessoryData.emit([])
       })
 
       expect(accessories.availableBridges()).toEqual(['Homebridge'])
@@ -518,7 +518,7 @@ describe('accessories page', () => {
       const { unmount } = await open({ rooms: [room('Kitchen', { services: [makeService()] })] })
       unmount()
 
-      accessories.accessoryData.next([])
+      accessories.accessoryData.emit([])
 
       expect(accessories.availableBridges()).toEqual([])
     })

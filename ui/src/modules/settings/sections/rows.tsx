@@ -47,17 +47,6 @@ export const INNER_FLEX = 'setting-row-inner d-flex justify-content-between alig
 /** The wrapper of a text, number or select control. */
 export const CONTROL_WRAP = 'my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center'
 
-/** A label with its description under it. */
-export function RowLabel({ label, desc, className }: { label: ReactNode, desc?: ReactNode, className?: string }) {
-  return (
-    <span className={className}>
-      {label}
-      <br />
-      <small className="grey-text pe-2">{desc}</small>
-    </span>
-  )
-}
-
 /**
  * A section: the disclosure heading, then its list of rows.
  */
@@ -176,21 +165,6 @@ export function NumberInput({ field, ...rest }: InputProps & { field: FieldKey }
         change(next as never)
       }}
     />
-  )
-}
-
-/** The arrow button that opens a modal or another page. */
-export function ArrowButton({ label, onClick, disabled }: { label?: string, onClick: () => void, disabled?: boolean }) {
-  return (
-    <button
-      type="button"
-      className="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
-      disabled={disabled}
-      aria-label={label}
-      onClick={onClick}
-    >
-      <i aria-hidden="true" className="fas fa-arrow-right"></i>
-    </button>
   )
 }
 

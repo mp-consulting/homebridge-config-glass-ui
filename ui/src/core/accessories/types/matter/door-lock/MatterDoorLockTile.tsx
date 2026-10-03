@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next'
 
 import { DoorLockManage } from '@/core/accessories/types/matter/door-lock/DoorLockManage'
 import { getDoorLockState, toggleDoorLock } from '@/core/accessories/types/matter/matter-device.utils'
-import { classes, onEnterOrSpace, openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
+import { onEnterOrSpace, openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'
+import { cx } from '@/core/utilities/cx'
 
 import './door-lock.scss'
 
@@ -49,7 +50,7 @@ export function MatterDoorLockTile({ service, readyForControl = false }: MatterT
   return (
     <div
       ref={pressRef}
-      className={classes(
+      className={cx(
         'accessory-box hb-matter-door-lock',
         state !== 1 && 'accessory-on',
         state === 2 && 'unlocked',

@@ -15,8 +15,10 @@ import { managePlugins } from '@/core/plugins/manage-plugins'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { i18n } from '@/core/ui/i18n'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { childBridges as childBridgesService } from '@/core/utilities/child-bridges'
+import { cx } from '@/core/utilities/cx'
 import { SchemaForm } from '@/schema-form'
 
 import './plugin-config.scss'
@@ -218,13 +220,13 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
     return null
   }
 
-  const validityClass = (valid: boolean | undefined) => [
+  const validityClass = (valid: boolean | undefined) => cx(
     'fas fa-xl',
     valid === true && 'fa-circle-check green-text',
     valid === false && 'fa-circle-exclamation',
     strictValidation && valid === false && 'red-text',
     !strictValidation && valid === false && 'orange-text',
-  ].filter(Boolean).join(' ')
+  )
 
   const validityLabel = (valid: boolean | undefined) => t(valid
     ? 'form.label_valid'
@@ -246,18 +248,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
 
   return (
     <div className="modal-content hb-plugin-config" aria-labelledby="plugin-config-title">
-      <div className="modal-header">
-        <h5 className="modal-title" id="plugin-config-title">{plugin.displayName || plugin.name}</h5>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="modal"
-          aria-label={t('form.button_close')}
-          disabled={saveInProgress}
-          onClick={dismissModal}
-        >
-        </button>
-      </div>
+      <ModalHeader title={plugin.displayName || plugin.name} titleId="plugin-config-title" closeDisabled={saveInProgress} onClose={dismissModal} />
       <div className="modal-body pb-0">
         {schema.headerDisplay && <Markdown className="plugin-md" data={interpolateMd(schema.headerDisplay)} />}
 
@@ -333,7 +324,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
           </div>
         )}
       </div>
-      <div className="modal-footer justify-content-between">
+      <ModalFooter>
         <div className="text-start">
           <button
             type="button"
@@ -376,7 +367,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
               : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
           </button>
         </div>
-      </div>
+      </ModalFooter>
     </div>
   )
 }

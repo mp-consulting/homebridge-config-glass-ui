@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
+import { createEmitter } from '@/core/utilities/emitter'
+
 /**
  * A boolean the lightbulb tile keeps up to date and its manage modal reads
  * live (Angular handed the modal the tile's `isAdaptiveLightingEnabled`
@@ -14,21 +16,16 @@ export interface AdaptiveLightingSignal {
 
 export function createAdaptiveLightingSignal(initial: boolean): AdaptiveLightingSignal {
   let value = initial
-  const listeners = new Set<() => void>()
+  const changes = createEmitter()
   return {
     get: () => value,
     set: (next) => {
       if (next !== value) {
         value = next
-        listeners.forEach(listener => listener())
+        changes.emit()
       }
     },
-    subscribe: (listener) => {
-      listeners.add(listener)
-      return () => {
-        listeners.delete(listener)
-      }
-    },
+    subscribe: changes.subscribe,
   }
 }
 

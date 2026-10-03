@@ -2,7 +2,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { cx } from '@/core/accessories/types/hap/hap-tile'
+import { cx } from '@/core/utilities/cx'
 
 import './battery.scss'
 
