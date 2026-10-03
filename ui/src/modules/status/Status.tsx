@@ -8,6 +8,7 @@ import { useAuthStore } from '@/core/auth'
 import { Spinner } from '@/core/components/spinner/Spinner'
 import { settingsActions } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
+import { cx } from '@/core/utilities/cx'
 import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 import { ws } from '@/core/ws'
 
@@ -166,7 +167,7 @@ export function Status({ store: givenStore }: StatusProps = {}) {
                     aria-pressed={reorderMode}
                     onClick={() => actions.toggleReorderMode()}
                   >
-                    <i aria-hidden="true" className={`fas fa-arrow-down-up-across-line${reorderMode ? ' primary-text' : ''}`}></i>
+                    <i aria-hidden="true" className={cx('fas fa-arrow-down-up-across-line', reorderMode && 'primary-text')}></i>
                   </button>
                 </HoverTooltip>
               )}
@@ -174,7 +175,7 @@ export function Status({ store: givenStore }: StatusProps = {}) {
             <HoverTooltip text={t(isUnlocked ? 'status.layout.done' : 'status.layout.edit')} placement="bottom">
               <button
                 type="button"
-                className={`btn btn-elegant my-0 ms-2 d-none d-sm-inline-flex layout-edit-toggle${isUnlocked ? ' active' : ''}`}
+                className={cx('btn btn-elegant my-0 ms-2 d-none d-sm-inline-flex layout-edit-toggle', isUnlocked && 'active')}
                 aria-label={t(isUnlocked ? 'status.layout.done' : 'status.layout.edit')}
                 aria-pressed={isUnlocked}
                 onClick={() => actions.toggleLayoutEditing()}

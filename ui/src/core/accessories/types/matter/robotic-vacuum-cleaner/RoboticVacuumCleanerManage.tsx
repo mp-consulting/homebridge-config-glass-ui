@@ -18,6 +18,7 @@ import {
 import { MatterManageModal, ModeButton } from '@/core/accessories/types/matter/matter-manage'
 import { useStateRef } from '@/core/accessories/types/matter/use-state-ref'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
+import { cx } from '@/core/utilities/cx'
 
 import './robotic-vacuum-cleaner-manage.scss'
 
@@ -252,7 +253,7 @@ export function RoboticVacuumCleanerManage({ service: initial, activeModal }: Ac
                 return (
                   <button key={area.areaId} type="button" className="btn mb-0 mx-0 p-3 btn-control" onClick={() => void toggleAreaSelection(area.areaId)}>
                     <div className="float-start primary-text">
-                      <i className={`fas fa-xl ${selected ? 'fa-check-circle' : 'fa-blank'}`}></i>
+                      <i className={cx('fas fa-xl', selected ? 'fa-check-circle' : 'fa-blank')}></i>
                     </div>
                     {area.name}
                     <div className="float-end">

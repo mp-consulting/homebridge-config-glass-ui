@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router'
 import { useStore } from 'zustand'
 
 import { Spinner } from '@/core/components/spinner/Spinner'
+import { cx } from '@/core/utilities/cx'
 import { CacheSection } from '@/modules/settings/sections/CacheSection'
 import { DisplaySection } from '@/modules/settings/sections/DisplaySection'
 import { GeneralSection } from '@/modules/settings/sections/GeneralSection'
@@ -125,7 +126,7 @@ export function Settings({ deps }: SettingsProps) {
               aria-expanded={showSearchBar}
               onClick={() => page.toggleSearch()}
             >
-              <i aria-hidden="true" className={`fas fa-search${showSearchBar ? ' primary-text' : ''}`}></i>
+              <i aria-hidden="true" className={cx('fas fa-search', showSearchBar && 'primary-text')}></i>
             </button>
           </div>
         </div>
@@ -166,7 +167,7 @@ export function Settings({ deps }: SettingsProps) {
                     <button
                       key={section.key}
                       type="button"
-                      className={`settings-nav-item${activeSection === section.key ? ' active' : ''}`}
+                      className={cx('settings-nav-item', activeSection === section.key && 'active')}
                       aria-current={activeSection === section.key ? 'true' : undefined}
                       onClick={() => page.scrollToSection(section.key)}
                     >
@@ -175,7 +176,7 @@ export function Settings({ deps }: SettingsProps) {
                     </button>
                   ))}
                 </nav>
-                <div className={`settings-content${isThemeTransitioning ? ' theme-transitioning' : ''}`}>
+                <div className={cx('settings-content', isThemeTransitioning && 'theme-transitioning')}>
                   {isSectionVisible('general') && <GeneralSection />}
                   {isSectionVisible('display') && <DisplaySection />}
                   {isSectionVisible('startup') && <StartupSection />}

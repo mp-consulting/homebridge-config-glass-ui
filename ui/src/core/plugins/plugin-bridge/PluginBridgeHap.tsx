@@ -7,6 +7,7 @@ import { QrCode } from '@/core/components/qrcode/QrCode'
 import { isUnpairingHidden } from '@/core/plugins/plugin-bridge/plugin-bridge.bridge-list'
 import { getHapPortValidationError } from '@/core/plugins/plugin-bridge/plugin-bridge.hap'
 import { numberValue } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
+import { cx } from '@/core/utilities/cx'
 
 /** The HomeKit (HAP) section of the selected child bridge: toggles, QR code and port. */
 export function PluginBridgeHap({ store }: { store: PluginBridgeStore }) {
@@ -35,25 +36,25 @@ export function PluginBridgeHap({ store }: { store: PluginBridgeStore }) {
         <span className="text-start d-flex align-items-center flex-grow-1 me-3">
           <i
             aria-hidden="true"
-            className={`fas fa-xl fa-hap protocol-icon my-2${hapEnabled ? ' green-text' : ' grey-text'}`}
+            className={cx('fas fa-xl fa-hap protocol-icon my-2', hapEnabled ? 'green-text' : 'grey-text')}
           >
           </i>
           <span>{t('child_bridge.config.enable_hap')}</span>
         </span>
         <div
-          className={`text-end grey-text d-flex align-items-center${isAccessory ? ' hap-toggle-disabled' : ''}`}
+          className={cx('text-end grey-text d-flex align-items-center', isAccessory && 'hap-toggle-disabled')}
           title={isAccessory ? t('child_bridge.config.hap_disabled_for_accessory') : ''}
         >
           <input
             type="checkbox"
-            className={`rendux-input${isAccessory ? ' pointer-events-none' : ''}`}
+            className={cx('rendux-input', isAccessory && 'pointer-events-none')}
             id={`toggleHapInput_${sel}`}
             checked={!!hapEnabled}
             disabled={isAccessory}
             onChange={event => void actions.toggleHapBridge(block, !hapEnabled, sel, event)}
           />
           <label
-            className={`rendux-label${isAccessory ? ' cursor-not-allowed' : ''}`}
+            className={cx('rendux-label', isAccessory && 'cursor-not-allowed')}
             aria-hidden="true"
             htmlFor={`toggleHapInput_${sel}`}
           >
@@ -73,7 +74,7 @@ export function PluginBridgeHap({ store }: { store: PluginBridgeStore }) {
           <span className="text-start d-flex align-items-center flex-grow-1 me-3">
             <i
               aria-hidden="true"
-              className={`fas fa-xl fa-hap protocol-icon my-2${hapExternalsOnly ? ' text-info' : ' grey-text'}`}
+              className={cx('fas fa-xl fa-hap protocol-icon my-2', hapExternalsOnly ? 'text-info' : 'grey-text')}
             >
             </i>
             <span>
@@ -109,7 +110,7 @@ export function PluginBridgeHap({ store }: { store: PluginBridgeStore }) {
           <span className="text-start d-flex align-items-center flex-grow-1 me-3">
             <i
               aria-hidden="true"
-              className={`fas fa-xl fa-hap protocol-icon my-2${hapDisableIdentifyingMaterial ? ' text-warning' : ' grey-text'}`}
+              className={cx('fas fa-xl fa-hap protocol-icon my-2', hapDisableIdentifyingMaterial ? 'text-warning' : 'grey-text')}
             >
             </i>
             <span>
@@ -201,7 +202,7 @@ export function PluginBridgeHap({ store }: { store: PluginBridgeStore }) {
               <input
                 id="bridge-hap-port"
                 type="number"
-                className={`form-control custom-input font-monospace${portError ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input font-monospace', portError && 'is-invalid')}
                 min="1025"
                 max="65533"
                 value={block._bridge.port ?? ''}

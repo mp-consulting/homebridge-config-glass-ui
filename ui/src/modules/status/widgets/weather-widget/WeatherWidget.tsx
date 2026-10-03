@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { convertTemp, formatDecimal } from '@/core/pipes'
 import { useSettingsStore } from '@/core/settings'
+import { cx } from '@/core/utilities/cx'
 import { useNamespace, useNamespaceConnected } from '@/core/ws'
 import { environment } from '@/environments/environment'
 
@@ -148,7 +149,7 @@ export function WeatherWidget({ widget, configureEvent }: WidgetProps) {
 
   return (
     <div className="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>
         {`${currentWeather?.name ?? ''} ${t('status.widget.weather.title_weather')}`.trim()}
       </div>
       {!locationId

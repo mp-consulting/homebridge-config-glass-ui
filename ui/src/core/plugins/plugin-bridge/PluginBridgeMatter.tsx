@@ -7,6 +7,7 @@ import { QrCode } from '@/core/components/qrcode/QrCode'
 import { isUnpairingHidden } from '@/core/plugins/plugin-bridge/plugin-bridge.bridge-list'
 import { getMatterFabricLabel, getMatterPortValidationError } from '@/core/plugins/plugin-bridge/plugin-bridge.matter'
 import { numberValue } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
+import { cx } from '@/core/utilities/cx'
 
 /** The Matter section of the selected child bridge (platform plugins only). */
 export function PluginBridgeMatter({ store }: { store: PluginBridgeStore }) {
@@ -35,7 +36,7 @@ export function PluginBridgeMatter({ store }: { store: PluginBridgeStore }) {
         <span className="text-start d-flex align-items-center flex-grow-1 me-3">
           <i
             aria-hidden="true"
-            className={`fas fa-xl fa-matter protocol-icon my-2${matterEnabled ? ' green-text' : ' grey-text'}`}
+            className={cx('fas fa-xl fa-matter protocol-icon my-2', matterEnabled ? 'green-text' : 'grey-text')}
           >
           </i>
           <span>
@@ -70,7 +71,7 @@ export function PluginBridgeMatter({ store }: { store: PluginBridgeStore }) {
           <span className="text-start d-flex align-items-center flex-grow-1 me-3">
             <i
               aria-hidden="true"
-              className={`fas fa-xl fa-matter protocol-icon my-2${matterExternalsOnly ? ' text-info' : ' grey-text'}`}
+              className={cx('fas fa-xl fa-matter protocol-icon my-2', matterExternalsOnly ? 'text-info' : 'grey-text')}
             >
             </i>
             <span>
@@ -112,7 +113,7 @@ export function PluginBridgeMatter({ store }: { store: PluginBridgeStore }) {
                   <div className="mx-auto qr-code-size"><QrCode data={info.setupUri} /></div>
                   <p className="mx-auto mt-3 mb-1 font-monospace">{info.pin}</p>
                   <p className="grey-text mx-auto small mb-1 qr-code-info">
-                    <i aria-hidden="true" className={`fas fa-link${info.commissioned ? ' green-text' : ' grey-text'}`}></i>
+                    <i aria-hidden="true" className={cx('fas fa-link', info.commissioned ? 'green-text' : 'grey-text')}></i>
                     {' '}
                     {t(info.commissioned ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired')}
                     {!info.commissioned && (
@@ -180,7 +181,7 @@ export function PluginBridgeMatter({ store }: { store: PluginBridgeStore }) {
               <input
                 id="bridge-matter-port"
                 type="number"
-                className={`form-control custom-input font-monospace${portError ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input font-monospace', portError && 'is-invalid')}
                 min="1024"
                 max="65535"
                 placeholder={t('common.labels.example_value', { value: '5540' })}

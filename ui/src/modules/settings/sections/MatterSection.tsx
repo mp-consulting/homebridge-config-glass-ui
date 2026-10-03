@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { cx } from '@/core/utilities/cx'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_BLOCK, INNER_FLEX, NumberInput, SaveIndicator, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useField, useInvalid, useSaving, useSettingsPageState } from '@/modules/settings/settings-page.context'
 
@@ -69,7 +70,7 @@ export function MatterSection() {
             <div className={CONTROL_WRAP}>
               <NumberInput
                 field="matterPort"
-                className={`form-control custom-input resp-input order-1 order-md-2 font-monospace${matterPortIsInvalid ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input resp-input order-1 order-md-2 font-monospace', matterPortIsInvalid && 'is-invalid')}
                 min="1024"
                 max="65535"
                 placeholder="5540"
@@ -92,7 +93,7 @@ export function MatterSection() {
             <div className="d-flex gap-2 order-1 order-md-2 resp-select-width">
               <NumberInput
                 field="matterStartPort"
-                className={`form-control custom-input font-monospace flex-fill${matterStartPortIsInvalid ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input font-monospace flex-fill', matterStartPortIsInvalid && 'is-invalid')}
                 min="1025"
                 max="65533"
                 placeholder="5530"
@@ -100,7 +101,7 @@ export function MatterSection() {
               />
               <NumberInput
                 field="matterEndPort"
-                className={`form-control custom-input font-monospace flex-fill${matterEndPortIsInvalid ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input font-monospace flex-fill', matterEndPortIsInvalid && 'is-invalid')}
                 min="1025"
                 max="65533"
                 placeholder="5541"

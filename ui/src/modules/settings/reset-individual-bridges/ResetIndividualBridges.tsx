@@ -11,6 +11,7 @@ import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { splitPairings } from '@/modules/settings/reset-individual-bridges/split-pairings'
 import { titleCase } from '@/modules/settings/title-case'
 
@@ -82,7 +83,7 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
     return (
       <button
         type="button"
-        className={`btn m-0 ms-3 ${inList ? 'btn-elegant' : 'btn-danger'}`}
+        className={cx('btn m-0 ms-3', inList ? 'btn-elegant' : 'btn-danger')}
         disabled={clicked}
         aria-label={t('form.button_unpair')}
         onClick={() => toggleList(item._id, resetPairingInfo)}
@@ -99,7 +100,7 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
         ? (
             <>
               <i className="fas fa-lg fa-hap me-2"></i>
-              <i className={`fas fa-lg fa-matter${!item._matter ? ' opacity-muted' : ''}`}></i>
+              <i className={cx('fas fa-lg fa-matter', !item._matter && 'opacity-muted')}></i>
             </>
           )
         : <i className="fas fa-lg fa-hap"></i>}
@@ -133,8 +134,8 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
                       {isMatterSupported
                         ? (
                             <>
-                              <i className={`fas fa-lg fa-hap me-2${item._matterOnly ? ' opacity-muted' : ''}`}></i>
-                              <i className={`fas fa-lg fa-matter${!item._matter ? ' opacity-muted' : ''}`}></i>
+                              <i className={cx('fas fa-lg fa-hap me-2', item._matterOnly && 'opacity-muted')}></i>
+                              <i className={cx('fas fa-lg fa-matter', !item._matter && 'opacity-muted')}></i>
                             </>
                           )
                         : <i className="fas fa-lg fa-hap"></i>}

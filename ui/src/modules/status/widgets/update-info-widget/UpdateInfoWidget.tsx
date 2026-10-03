@@ -14,6 +14,7 @@ import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { toToastMessage } from '@/core/utilities/http-error'
 import { useNamespace } from '@/core/ws'
 import { environment } from '@/environments/environment'
@@ -180,7 +181,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                           onClick={readyForV2Modal}
                         >
                           <i
-                            className={`fas fa-info-circle ${ctrl.isHbV2Ready ? 'green-text' : 'orange-text'}`}
+                            className={cx('fas fa-info-circle', ctrl.isHbV2Ready ? 'green-text' : 'orange-text')}
                             aria-hidden="true"
                           >
                           </i>
@@ -326,7 +327,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
       <div className="drag-handler p-2 d-flex align-items-center justify-content-between">
         <span>{t('status.services.updates')}</span>
         {isAdmin && ctrl.updateAllCount() >= 2 && (
-          <div className={`d-flex gap-1 widget-toolbar${widget.draggable ? ' with-gear' : ''}`}>
+          <div className={cx('d-flex gap-1 widget-toolbar', widget.draggable && 'with-gear')}>
             <HoverTooltip text={t('update_all.title')} placement="bottom">
               <button
                 type="button"
@@ -365,7 +366,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                   <div className="align-self-center px-3">
                     Docker-Homebridge
                     {' '}
-                    <i className={`fas fa-chevron-down ms-2${!widget.dockerExpanded ? ' fa-rotate-180' : ''}`} aria-hidden="true"></i>
+                    <i className={cx('fas fa-chevron-down ms-2', !widget.dockerExpanded && 'fa-rotate-180')} aria-hidden="true"></i>
                     <br />
                     {!ctrl.dockerStatusDone
                       ? checking

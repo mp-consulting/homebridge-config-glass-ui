@@ -133,7 +133,7 @@ export function EditRoom({ activeModal, roomName: initialName, isDefault: initia
             <button
               type="submit"
               data-bs-dismiss="modal"
-              className={`btn ${deleteMode ? 'btn-danger' : 'btn-primary'}`}
+              className={cx('btn', deleteMode ? 'btn-danger' : 'btn-primary')}
               disabled={!deleteMode && (invalid || isFormUnchanged)}
             >
               {t(deleteMode ? 'form.button_delete' : 'form.button_save')}

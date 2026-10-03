@@ -9,6 +9,7 @@ import { Link } from 'react-router'
 import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
+import { cx } from '@/core/utilities/cx'
 import { useDebouncedCallback } from '@/core/utilities/debounce'
 import { useLog } from '@/core/utilities/terminal'
 import { patchXtermLiveRegion } from '@/modules/logs/terminal-page'
@@ -185,11 +186,11 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
   return (
     <div
       ref={widgetContainerRef}
-      className={`hb-homebridge-logs-widget flex-column d-flex align-items-stretch h-100 w-100${dark ? ' widget-container-dark' : ''}`}
+      className={cx('hb-homebridge-logs-widget flex-column d-flex align-items-stretch h-100 w-100', dark && 'widget-container-dark')}
     >
       <div
         ref={titleRef}
-        className={`drag-handler logs-card-header d-flex align-items-center justify-content-between${dark ? ' terminal-title-dark' : ''}`}
+        className={cx('drag-handler logs-card-header d-flex align-items-center justify-content-between', dark && 'terminal-title-dark')}
       >
         <span className="logs-card-title" aria-hidden="true">
           <i className="fas fa-wave-square" aria-hidden="true"></i>
@@ -207,7 +208,7 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
           {t('status.widget.homebridge_logs')}
         </button>
         {isAdmin && widget.showToolbar && (
-          <div className={`d-flex gap-1 widget-toolbar logs-toolbar${widget.draggable ? ' with-gear' : ''}`}>
+          <div className={cx('d-flex gap-1 widget-toolbar logs-toolbar', widget.draggable && 'with-gear')}>
             <HoverTooltip text={t('status.widget.logs_open_page')} placement="bottom">
               <Link
                 className="widget-toolbar-button"
@@ -228,7 +229,7 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
                 onTouchStart={stopPropagation}
                 onClick={showSearch}
               >
-                <i aria-hidden="true" className={`fas fa-search${showSearchBar ? ' primary-text' : ''}`}></i>
+                <i aria-hidden="true" className={cx('fas fa-search', showSearchBar && 'primary-text')}></i>
               </button>
             </HoverTooltip>
             <HoverTooltip text={t('form.button_download')} placement="bottom">
@@ -264,7 +265,7 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
             <input
               ref={searchInputRef}
               type="text"
-              className={`search-bar${theme === 'light' ? ' search-bar-light' : ''}${searchInputInvalid ? ' is-invalid' : ''}`}
+              className={cx('search-bar', theme === 'light' && 'search-bar-light', searchInputInvalid && 'is-invalid')}
               name="query"
               aria-label={t('logs.placeholder_search_logs')}
               placeholder={t('logs.placeholder_search_logs')}

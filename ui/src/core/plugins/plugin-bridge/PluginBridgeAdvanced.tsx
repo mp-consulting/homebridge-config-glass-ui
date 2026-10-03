@@ -6,6 +6,7 @@ import { useStore } from 'zustand'
 import { linkDebug } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 import { PluginBridgeSchedule } from '@/core/plugins/plugin-bridge/PluginBridgeSchedule'
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 
 /** The selected child bridge's advanced options: accessory information, restart schedule, debug and environment. */
 export function PluginBridgeAdvanced({ store }: { store: PluginBridgeStore }) {
@@ -58,7 +59,7 @@ export function PluginBridgeAdvanced({ store }: { store: PluginBridgeStore }) {
           <input
             id="bridge-firmware"
             type="text"
-            className={`form-control custom-input${bridge.firmwareRevision ? ' font-monospace' : ''}`}
+            className={cx('form-control custom-input', bridge.firmwareRevision && 'font-monospace')}
             placeholder={t('form.optional')}
             value={bridge.firmwareRevision ?? ''}
             onChange={event => setBridgeField('firmwareRevision', event.target.value)}

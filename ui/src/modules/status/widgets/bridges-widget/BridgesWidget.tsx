@@ -10,6 +10,7 @@ import { ChildBridgeStatusIcons } from '@/core/components/child-bridge-status-ic
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { ws } from '@/core/ws'
 
 import { BridgesController } from './bridges.controller'
@@ -49,7 +50,7 @@ export function BridgesWidget({ widget }: WidgetProps) {
           {ctrl.childBridgeLiveMessages[bridge.username || bridge.name]}
         </span>
       ))}
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>
         {t('child_bridge.bridges')}
       </div>
       <div className="d-flex flex-wrap w-100 mt-0 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center">

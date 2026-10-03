@@ -263,13 +263,13 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
             {isSearchResult && (
               <div className="transport-icons flex-grow-1 d-flex align-items-center justify-content-center">
                 <WithTooltip text={t(hapTooltip, { protocol: t('plugins.label_hap') })}>
-                  <span className={`transport-icon${supportsHap ? ' enabled' : ''}`}>
+                  <span className={cx('transport-icon', supportsHap && 'enabled')}>
                     <i className="fas fa-hap" aria-hidden="true"></i>
                     <span className="visually-hidden">{t('plugins.label_hap')}</span>
                   </span>
                 </WithTooltip>
                 <WithTooltip text={t(matterTooltip, { protocol: t('plugins.label_matter') })}>
-                  <span className={`transport-icon${supportsMatter ? ' enabled' : ''}`}>
+                  <span className={cx('transport-icon', supportsMatter && 'enabled')}>
                     <i className="fas fa-matter" aria-hidden="true"></i>
                     <span className="visually-hidden">{t('plugins.label_matter')}</span>
                   </span>

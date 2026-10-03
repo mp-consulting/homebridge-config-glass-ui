@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 import { INNER_BLOCK, INNER_FLEX, NumberInput, SaveIndicator, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useField, useInvalid, useSaving, useSettingsPage, useSettingsPageState } from '@/modules/settings/settings-page.context'
 import { linkRaspbianSsl } from '@/modules/settings/settings-page.store'
@@ -18,7 +19,7 @@ function SessionTimeoutBox({ field, id, max, placeholder, unit }: {
     <div className="d-flex align-items-center">
       <NumberInput
         field={field}
-        className={`form-control custom-input font-monospace text-end-input${invalid ? ' is-invalid' : ''}`}
+        className={cx('form-control custom-input font-monospace text-end-input', invalid && 'is-invalid')}
         min="0"
         max={max}
         placeholder={placeholder}

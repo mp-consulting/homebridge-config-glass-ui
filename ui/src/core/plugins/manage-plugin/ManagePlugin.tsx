@@ -598,7 +598,7 @@ export function ManagePlugin(props: ManagePluginProps) {
   ]
 
   return (
-    <div className={`modal-content hb-manage-plugin${isLightTerminalTheme ? ' terminal-light-theme' : ''}`}>
+    <div className={cx('modal-content hb-manage-plugin', isLightTerminalTheme && 'terminal-light-theme')}>
       <ModalHeader title={pluginDisplayName} onClose={dismissModal} />
       <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
         {actionLiveMessage}
@@ -606,7 +606,7 @@ export function ManagePlugin(props: ManagePluginProps) {
       <div
         ref={termTargetRef}
         id="plugin-log-output"
-        className={`modal-body ${isLightTerminalTheme ? 'terminal-light-bg' : 'terminal-dark-bg'}`}
+        className={cx('modal-body', isLightTerminalTheme ? 'terminal-light-bg' : 'terminal-dark-bg')}
         hidden={!onlineUpdateOk || actionComplete || releaseNotesShow}
         aria-hidden={terminalAriaHidden ? 'true' : undefined}
       >
@@ -704,7 +704,7 @@ hb-service start`}
               <li key={tab.id} className="w-50 m-0 nav-item" role="presentation">
                 <button
                   type="button"
-                  className={`w-100 release-tab nav-link${releaseNotesTab === tab.id ? ' active' : ''}`}
+                  className={cx('w-100 release-tab nav-link', releaseNotesTab === tab.id && 'active')}
                   role="tab"
                   id={`manage-plugin-nav-${tab.id}`}
                   aria-controls={`manage-plugin-nav-${tab.id}-panel`}

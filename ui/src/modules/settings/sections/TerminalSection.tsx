@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { cx } from '@/core/utilities/cx'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_BLOCK, INNER_FLEX, NumberInput, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useField, useInvalid, useSettingsPageState } from '@/modules/settings/settings-page.context'
 
@@ -27,7 +28,7 @@ export function TerminalSection() {
           <div className={CONTROL_WRAP}>
             <NumberInput
               field="hbLogSize"
-              className={`${MONO_INPUT}${hbLogSizeIsInvalid ? ' is-invalid' : ''}`}
+              className={cx(MONO_INPUT, hbLogSizeIsInvalid && 'is-invalid')}
               min="-1"
               placeholder="1000000"
               aria-label={t('settings.terminal.log_max')}
@@ -47,7 +48,7 @@ export function TerminalSection() {
             <div className={CONTROL_WRAP}>
               <NumberInput
                 field="hbLogTruncate"
-                className={`${MONO_INPUT}${hbLogTruncateIsInvalid ? ' is-invalid' : ''}`}
+                className={cx(MONO_INPUT, hbLogTruncateIsInvalid && 'is-invalid')}
                 min="0"
                 placeholder="200000"
                 aria-label={t('settings.terminal.log_truncate')}
@@ -92,7 +93,7 @@ export function TerminalSection() {
                     <div className={CONTROL_WRAP}>
                       <NumberInput
                         field="uiTerminalBufferSize"
-                        className={`${MONO_INPUT}${bufferSizeIsInvalid ? ' is-invalid' : ''}`}
+                        className={cx(MONO_INPUT, bufferSizeIsInvalid && 'is-invalid')}
                         min="10000"
                         max="100000"
                         step="10000"

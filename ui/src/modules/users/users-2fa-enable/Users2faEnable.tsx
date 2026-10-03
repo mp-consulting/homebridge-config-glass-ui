@@ -13,6 +13,7 @@ import { RequiredIndicator } from '@/core/components/required-indicator/Required
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 
 import './users-2fa-enable.scss'
 
@@ -184,7 +185,7 @@ export function Users2faEnable({ activeModal }: Users2faEnableProps) {
                     <input
                       id="enable-2fa-code"
                       type="text"
-                      className={`form-control custom-input${codeTouched && codeInvalid ? ' is-invalid' : ''}`}
+                      className={cx('form-control custom-input', codeTouched && codeInvalid && 'is-invalid')}
                       placeholder={t('common.labels.example_value', { value: '123456' })}
                       autoComplete="one-time-code"
                       autoCapitalize="none"

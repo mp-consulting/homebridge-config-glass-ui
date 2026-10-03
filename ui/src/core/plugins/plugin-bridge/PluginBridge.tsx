@@ -13,6 +13,7 @@ import { PluginBridgeMatter } from '@/core/plugins/plugin-bridge/PluginBridgeMat
 import { usePluginBridge } from '@/core/plugins/plugin-bridge/usePluginBridge'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 
 import './plugin-bridge.scss'
 
@@ -234,7 +235,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                               <input
                                 id="bridge-name"
                                 type="text"
-                                className={`form-control custom-input${nameError ? ' is-invalid' : ''}`}
+                                className={cx('form-control custom-input', nameError && 'is-invalid')}
                                 value={bridge.name ?? ''}
                                 onChange={event => setBridgeField('name', event.target.value)}
                               />
@@ -258,7 +259,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                             }}
                           >
                             <span className="text-start">{t('common.labels.advanced')}</span>
-                            <i aria-hidden="true" className={`fa grey-text${showAdvanced ? ' fa-chevron-down' : ' fa-chevron-left'}`}></i>
+                            <i aria-hidden="true" className={cx('fa grey-text', showAdvanced ? 'fa-chevron-down' : 'fa-chevron-left')}></i>
                           </li>
                           {showAdvanced && <PluginBridgeAdvanced store={store} />}
                         </>

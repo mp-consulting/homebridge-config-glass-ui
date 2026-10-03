@@ -266,7 +266,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
               const collapseId = `${block.__uuid__}-collapse`
               return (
                 <div key={block.__uuid__} className="card accordion-item" id={block.__uuid__}>
-                  <div className={`card-header accordion-header${expanded ? '' : ' collapsed'}`} role="heading">
+                  <div className={cx('card-header accordion-header', !expanded && 'collapsed')} role="heading">
                     <div className="d-flex align-items-center justify-content-between">
                       <h5 className="m-0">{block.name}</h5>
                       <div className="d-flex align-items-center">
@@ -284,7 +284,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
                         )}
                         <HoverTooltip text={t('form.button_edit')} placement="left">
                           <button
-                            className={`btn btn-primary ms-2 me-2${expanded ? '' : ' collapsed'}`}
+                            className={cx('btn btn-primary ms-2 me-2', !expanded && 'collapsed')}
                             type="button"
                             id={toggleId}
                             aria-controls={collapseId}

@@ -41,9 +41,9 @@ export function ModeButton({ selected, onClick, className, children }: {
   children: ReactNode
 }) {
   return (
-    <button type="button" className={`btn mb-0 mx-0 p-3 btn-control${className ? ` ${className}` : ''}`} onClick={onClick}>
+    <button type="button" className={cx('btn mb-0 mx-0 p-3 btn-control', className)} onClick={onClick}>
       <div className="float-start primary-text">
-        <i className={`fas fa-xl ${selected ? 'fa-check-circle' : 'fa-blank'}`}></i>
+        <i className={cx('fas fa-xl', selected ? 'fa-check-circle' : 'fa-blank')}></i>
       </div>
       {children}
       <div className="float-end"><i className="fas fa-xl fa-blank"></i></div>
