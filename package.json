@@ -101,7 +101,7 @@
     "unzipper": "0.12.5"
   },
   "optionalDependencies": {
-    "macos-temperature-sensor": "2.0.0",
+    "macos-temperature-sensor": "2.1.1",
     "osx-temperature-sensor": "1.0.8"
   },
   "devDependencies": {
