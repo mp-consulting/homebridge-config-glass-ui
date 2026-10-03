@@ -60,9 +60,13 @@ test('the skip link is the first stop and lands on the page', async ({ page }) =
 })
 
 test('the hamburger opens the menu', async ({ page }) => {
-  await page.getByRole('button', { name: 'Menu' }).click()
   const sidebar = page.locator('#sidebar')
-  await expect(sidebar).toHaveClass(/expanded/)
+  // The menu ignores taps for 750 ms after a navigation (Sidebar.tsx), and on a
+  // slow runner the page can still be inside that window: retry the tap
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Menu' }).click()
+    await expect(sidebar).toHaveClass(/expanded/, { timeout: 1000 })
+  }).toPass({ timeout: 10_000 })
   await expect(sidebar).not.toHaveAttribute('inert')
   await expect(sidebar.getByRole('button', { name: 'Settings' })).toBeVisible()
 })

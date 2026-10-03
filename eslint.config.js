@@ -2,7 +2,7 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    ignores: ['dist', 'info', 'ui/src/scss/vendor'],
+    ignores: ['dist', 'info', 'ui/src/scss/vendor', 'ui/src/scss/generated'],
     typescript: true,
     react: true,
     formatters: {

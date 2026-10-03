@@ -160,7 +160,7 @@ function writeIconsPartial(used) {
   }
   const mapOf = (variable, entries) => [
     `fa-vars.$${variable}: (`,
-    ...entries.map(e => `  "${e.name}": fa-vars.$${e.variable},`),
+    ...entries.map(e => `  '${e.name}': fa-vars.$${e.variable},`),
     ');',
   ].join('\n')
 
