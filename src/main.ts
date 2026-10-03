@@ -1,7 +1,6 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
-import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -18,8 +17,9 @@ import { API_PREFIX } from './core/api.constants.js'
 import { ConfigService } from './core/config/config.service.js'
 import { getStartupConfig } from './core/config/config.startup.js'
 import { devServerCorsConfig } from './core/cors.config.js'
+import { helmetOptions } from './core/helmet.config.js'
 import { Logger } from './core/logger/logger.service.js'
-import { SpaFilter } from './core/spa/spa.filter.js'
+import { IndexHtmlCache, sendIndexHtml, SpaFilter } from './core/spa/spa.filter.js'
 import { staticAssetOptions } from './core/static-assets.js'
 
 import './env-setup.js'
@@ -49,54 +49,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   })
 
   // (3) Register helmet with custom CSP
-  fAdapter.register(helmet, {
-    hsts: false,
-    frameguard: false,
-    referrerPolicy: {
-      policy: 'no-referrer',
-    },
-    crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: false,
-    crossOriginResourcePolicy: false,
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ['\'self\''],
-        // No 'unsafe-inline': the built index.html loads only external module
-        // scripts and carries no inline <script> body, so nothing here needs
-        // it. Dropping it is what stops an injected event handler (e.g.
-        // `<img src=x onerror=...>`) from running at all. 'unsafe-eval' stays
-        // because the Monaco editor genuinely needs it. Plugin custom UIs are
-        // served with their own, looser policy in plugins-settings-ui.service.
-        scriptSrc: ['\'self\'', '\'unsafe-eval\''],
-        // The Vite dev server injects styles as inline <style> blocks, and
-        // react-bootstrap / the grid set inline style attributes.
-        styleSrc: ['\'self\'', '\'unsafe-inline\''],
-        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
-        connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {
-          return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOverride || ''}`
-        }],
-        frameSrc: ['\'self\'', 'data:', 'https://developers.homebridge.io'],
-        workerSrc: ['\'self\'', 'blob:'], // required for web-workers for monaco editor
-        fontSrc: ['\'self\'', 'data:'], // required for web-workers for monaco editor
-        // Inline event-handler attributes are never used by the app, and this
-        // says so explicitly rather than relying on the script-src fallback.
-        scriptSrcAttr: ['\'none\''],
-        objectSrc: null,
-        // Block clickjacking: only same-origin pages may frame the UI (this
-        // still allows the app's own same-origin plugin-UI iframes). Admins who
-        // embed the dashboard in a third-party page can widen this with the
-        // `allowFrameAncestors` config option. Was previously unset (any origin
-        // could frame the authenticated UI). X-Frame-Options stays off
-        // (frameguard: false) because it cannot express an allowlist; modern
-        // browsers honour this CSP directive instead.
-        frameAncestors: ['\'self\'', ...(startupConfig.allowedFrameAncestors ?? [])],
-        formAction: null,
-        baseUri: null,
-        upgradeInsecureRequests: null,
-        blockAllMixedContent: null,
-      },
-    },
-  })
+  fAdapter.register(helmet, helmetOptions(startupConfig))
 
   // (4) Create nest app with fastify adapter
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -117,12 +70,10 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   const logger: Logger = app.get(Logger)
 
   // Serve index.html without a cache
+  // (the same in-memory copy the SPA filter serves for client-side routes)
+  const indexHtml = new IndexHtmlCache()
   app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {
-    res.type('text/html')
-    res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    res.header('Pragma', 'no-cache')
-    res.header('Expires', '0')
-    res.send(await readFile(resolve(process.env.UIX_BASE_PATH, 'public/index.html')))
+    sendIndexHtml(res, await indexHtml.get())
   })
 
   // (7) Serve static assets. Content-hashed build output (chunk-B3-qTyJy.js,
@@ -190,7 +141,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   }
 
   // (12) Use the spa filter to serve index.html for any non-api routes
-  app.useGlobalFilters(new SpaFilter())
+  app.useGlobalFilters(new SpaFilter(indexHtml))
 
   // (13) Start listening - woohoo!
   logger.success(`Homebridge Glass UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
