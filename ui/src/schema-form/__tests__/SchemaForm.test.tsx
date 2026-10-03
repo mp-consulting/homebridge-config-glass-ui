@@ -342,13 +342,20 @@ describe('schemaForm', () => {
     })
 
     it('stops reporting once unmounted', async () => {
-      const form = renderSchemaForm(requiredSchema, {})
-      form.unmount()
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 120))
-      })
+      // Validity is reported from a timer: run it on a fake clock, past the
+      // point where it would have fired
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+      try {
+        const form = renderSchemaForm(requiredSchema, {})
+        form.unmount()
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(500)
+        })
 
-      expect(form.validity).toEqual([])
+        expect(form.validity).toEqual([])
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 })

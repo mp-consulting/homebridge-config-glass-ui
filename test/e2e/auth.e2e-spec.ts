@@ -653,16 +653,25 @@ describe('AuthController (e2e)', () => {
     }
     const token = await signIn()
     const here = await socket(token)
-    // Signed a second later, so it is a distinct token for the same account
-    await new Promise(resolve => setTimeout(resolve, 1100))
-    const elsewhere = await socket(await signIn())
+    // Signed a second later (iat has 1s resolution), so it is a distinct token
+    // for the same account. Only Date is faked: the login's hashing and the
+    // request handling still run on real timers.
+    const later = Date.now() + 1100
+    vi.useFakeTimers({ toFake: ['Date'] })
+    let elsewhere: Awaited<ReturnType<typeof socket>>
+    try {
+      vi.setSystemTime(later)
+      elsewhere = await socket(await signIn())
 
-    await app.inject({
-      method: 'POST',
-      path: '/auth/logout',
-      payload: { scope: 'local' },
-      headers: { authorization: `Bearer ${token}` },
-    })
+      await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        payload: { scope: 'local' },
+        headers: { authorization: `Bearer ${token}` },
+      })
+    } finally {
+      vi.useRealTimers()
+    }
 
     expect(here.disconnect).toHaveBeenCalledWith(true)
     expect(elsewhere.disconnect).not.toHaveBeenCalled()

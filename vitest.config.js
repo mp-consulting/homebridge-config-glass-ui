@@ -5,6 +5,14 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**/*.ts'],
+      // Enforced on `--coverage` runs (CI runs one). About two points under
+      // the measured levels; raise them as coverage grows.
+      thresholds: {
+        statements: 66,
+        branches: 63,
+        functions: 73,
+        lines: 66,
+      },
     },
     // Each spec file gets its own storage directory (test/storage-path.ts)
     // under a temp root created by the global setup, so files run in parallel

@@ -617,18 +617,19 @@ describe('the terminal-owning services', () => {
     })
 
     it('stops watching the whole subtree once the textarea is patched', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
       const { element, textarea } = withHelperTextarea()
       const rows = document.createElement('div')
       element.appendChild(rows)
       const dispose = hideXtermInputFromScreenReader(element)
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await vi.advanceTimersByTimeAsync(300)
       const query = vi.spyOn(element, 'querySelector')
 
       // xterm's renderer rewrites its rows on every frame
       for (let index = 0; index < 5; index += 1) {
         rows.appendChild(document.createElement('span'))
       }
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await vi.advanceTimersByTimeAsync(0)
 
       expect(query).not.toHaveBeenCalled()
       expect(textarea.getAttribute('aria-hidden')).toBe('true')
@@ -658,18 +659,19 @@ describe('the terminal-owning services', () => {
     })
 
     it('stops watching once disposed', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
       const element = document.createElement('div')
       document.body.appendChild(element)
       const dispose = hideXtermInputFromScreenReader(element)
       // Past the three catch-up timers it schedules, so only the observer is
       // left to prove anything
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await vi.advanceTimersByTimeAsync(300)
       dispose()
 
       const textarea = document.createElement('textarea')
       textarea.className = 'xterm-helper-textarea'
       element.appendChild(textarea)
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await vi.advanceTimersByTimeAsync(0)
 
       expect(textarea.getAttribute('aria-hidden')).toBeNull()
       element.remove()

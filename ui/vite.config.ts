@@ -115,5 +115,16 @@ export default defineConfig({
     isolate: true,
     // Node 25+ ships its own localStorage, which hides jsdom's.
     execArgv: ['--no-experimental-webstorage'],
+    coverage: {
+      provider: 'v8',
+      // Enforced on `--coverage` runs (CI runs one). About two points under
+      // the levels measured without the golden corpus; raise them as coverage grows.
+      thresholds: {
+        statements: 83,
+        branches: 72,
+        functions: 85,
+        lines: 83,
+      },
+    },
   },
 })
