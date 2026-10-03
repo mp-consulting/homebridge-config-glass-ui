@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## [2.0.0-beta.3] - 2026-10-03
+
+### Security
+
+- **Dependencies:** fastify 5.12.5 and Nest 12.1.2 fix an authentication bypass through malformed URLs and a middleware bypass. `node-forge` (an advisory with no fix) is gone: the self-signed certificate is now made with Node's own crypto.
+- **Sign-in floods are capped per address.** One address that keeps failing gets a `429` after 20 failures in 15 minutes whichever usernames it tries, and at most two password checks run at once, so a burst of guesses can no longer stall the server on a Raspberry Pi.
+- **The setup wizard stays closed** when `auth.json` exists but cannot be read or parsed (only a missing file opens it), and its token now only works for the wizard's own restore steps.
+- **Child bridge `NODE_OPTIONS` are checked.** A plugin block's `_bridge.env.NODE_OPTIONS` gets the same rules as the service's own: unsafe values are refused on save and removed from restored backups.
+- **Log commands cannot read the UI's secrets** (`.uix-secrets`, `auth.json` and the like), as `log.path` already could not.
+- **New installs show the Homebridge log to administrators only** (`restrictLogsToAdmins`). Existing installs keep their setting.
+- **`hb-service install` no longer grants `SETENV` in sudoers**, which let a caller pass `NODE_OPTIONS` or `APT_CONFIG` to commands run as root. An existing entry is replaced. Plugin installs with `sudo` now pass npm's settings as options instead.
+- Uploaded SSL keys and certificates are saved readable by the owner only (0600, in a 0700 folder).
+- Forms in the page can only submit to the UI itself (`form-action 'self'`), and plugin release notes, changelogs and settings-form text can no longer contain forms, inputs or inline styles. Links that open a new tab do so without access to the UI.
+- The WebSocket no longer accepts a sign-in token in its URL, where proxies would log it.
+- Messages from plugin settings pages are checked before they are acted on.
+
+### Fixed
+
+- **Plugin menus and tooltips are readable on mobile.** In glass mode the ⋮ menu of a plugin card let the next card's text show through when the browser did not blur it (notably iOS Safari).
+- **Plugin install, update and Update All show their output on a black terminal** in glass mode, instead of a see-through pane.
+- Uploading an SSL key and certificate, or a PFX file, no longer hangs.
+- A corrupt, mismatched or expired self-signed certificate is replaced instead of stopping the UI from starting.
+- An invalid scheduled restart (cron) is reported in the log instead of silently doing nothing.
+- Pressing Enter on a switch, door, garage door or air purifier tile (and several Matter tiles) no longer fires the action twice.
+- The uploaded login wallpaper shows in glass mode.
+- Plugin settings forms: a satisfied `dependencies` rule no longer marks the form invalid, `uniqueItems` rejects duplicates, `exclusiveMinimum` is no longer inverted, and the French "maximum items" message shows the number.
+- Closing a live view (logs, status, terminal, accessories) no longer removes the server's own clean-up for that connection.
+
+### Accessibility
+
+- Every accessory tile has a role, a name and its state for screen readers, and Shift+Enter (or the context-menu key) opens its settings, which used to need a long press.
+- Config validity icons and icon-only buttons are named, and the "valid" check stays green in glass mode whatever the theme colour.
+- Glass mode follows the system's reduced transparency (opaque surfaces, no blur), reduced motion and high-contrast (forced colours) settings.
+- Loading indicators are announced, and the startup script, wallpaper upload and statistics frame are labelled.
+
+### Performance
+
+- CPU, network and default-interface readings no longer run shell commands that block the server every few seconds on Linux.
+- Accessory pages and widgets opened together share one load from Homebridge, and installed plugins are scanned once for simultaneous requests.
+- Several log viewers share one `tail` or `journalctl` process, and the native log follows the file without polling five times a second.
+- The dashboard, plugins, settings and config editor pages load about 80–90 KB (gzipped) less: the terminal loads only where it is used. Accessory settings dialogs and their sliders load when opened.
+- In glass mode only the sidebar, header, menus and dialogs are blurred; cards and tiles use a plain translucent fill, which scrolls much more smoothly with many accessories.
+- A plugin's child bridge status update re-renders only that plugin's card.
+
 ## [2.0.0-beta.2] - 2026-10-03
 
 ### Added
