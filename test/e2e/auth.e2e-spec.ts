@@ -22,6 +22,8 @@ import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
 import { authorizeWsGuardClient } from '../../src/core/auth/guards/ws-auth.js'
 import { WsLogGuard } from '../../src/core/auth/guards/ws-log.guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
+import { LoginThrottle } from '../../src/core/auth/login-throttle.js'
+import { PasswordHasher } from '../../src/core/auth/password-hasher.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
 import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
@@ -37,6 +39,8 @@ describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication
 
   let authService: AuthService
+  let passwordHasher: PasswordHasher
+  let loginThrottle: LoginThrottle
   let configService: ConfigService
 
   let authFilePath: string
@@ -72,6 +76,8 @@ describe('AuthController (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready()
 
     authService = app.get(AuthService)
+    passwordHasher = app.get(PasswordHasher)
+    loginThrottle = app.get(LoginThrottle)
     configService = app.get(ConfigService)
   })
 
@@ -1411,7 +1417,7 @@ describe('AuthController (e2e)', () => {
   // These run ten or more full-strength password hashes each
   describe('credential hardening', { timeout: 30_000 }, () => {
     beforeEach(() => {
-      ;(authService as any).loginFailureCache.flushAll()
+      ;(loginThrottle as any).loginFailureCache.flushAll()
     })
 
     it('does not bring a deleted user\'s tokens back when the username is created again', async () => {
@@ -1427,7 +1433,7 @@ describe('AuthController (e2e)', () => {
     })
 
     it('spends a password hash on an unknown username, as it does on a wrong password', async () => {
-      const hashSpy = vi.spyOn(authService as any, 'hashPassword')
+      const hashSpy = vi.spyOn(passwordHasher, 'hash')
 
       await expect(authService.authenticate('no-such-user', 'guess', undefined, '192.0.2.1')).rejects.toThrow()
 
@@ -1448,7 +1454,7 @@ describe('AuthController (e2e)', () => {
     describe('per-username budget across addresses', () => {
       // Each failure is a full-strength hash; make the wrong guesses cheap
       const failFrom = async (username: string, count: number, address = (i: number) => `198.51.100.${i % 250}`) => {
-        const hashSpy = vi.spyOn(authService as any, 'hashPassword').mockResolvedValue('not-the-hash')
+        const hashSpy = vi.spyOn(passwordHasher, 'hash').mockResolvedValue('not-the-hash')
         const results = []
         for (let i = 0; i < count; i++) {
           results.push(await authService.authenticate(username, 'wrong', undefined, address(i)).catch((e: any) => e))
@@ -1458,14 +1464,14 @@ describe('AuthController (e2e)', () => {
       }
 
       beforeEach(() => {
-        ;(authService as any).usernameFailureCache.flushAll()
-        ;(authService as any).knownLoginSources.flushAll()
+        ;(loginThrottle as any).usernameFailureCache.flushAll()
+        ;(loginThrottle as any).knownLoginSources.flushAll()
       })
 
       afterEach(() => {
         vi.restoreAllMocks()
-        ;(authService as any).usernameFailureCache.flushAll()
-        ;(authService as any).knownLoginSources.flushAll()
+        ;(loginThrottle as any).usernameFailureCache.flushAll()
+        ;(loginThrottle as any).knownLoginSources.flushAll()
       })
 
       it('slows a username down once guesses spread over many addresses pass the budget', async () => {
@@ -1474,7 +1480,7 @@ describe('AuthController (e2e)', () => {
         expect(results.every(e => e instanceof HttpException && e.getStatus() === 403)).toBe(true)
 
         // A new address is now refused with the right password, before any hash
-        const hashSpy = vi.spyOn(authService as any, 'hashPassword')
+        const hashSpy = vi.spyOn(passwordHasher, 'hash')
         await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.200'))
           .rejects
           .toMatchObject({ status: 429 })
@@ -1497,7 +1503,7 @@ describe('AuthController (e2e)', () => {
       it('is time-bounded, and each further failure doubles the cooldown up to a cap', async () => {
         const start = Date.now()
         const now = vi.spyOn(Date, 'now').mockReturnValue(start)
-        const lockedFor = () => ((authService as any).usernameFailureCache.get('admin').lockedUntil - Date.now()) / 1000
+        const lockedFor = () => ((loginThrottle as any).usernameFailureCache.get('admin').lockedUntil - Date.now()) / 1000
 
         await failFrom('admin', 50, i => `203.0.113.${i}`)
         expect(lockedFor()).toBe(60)
@@ -1513,20 +1519,20 @@ describe('AuthController (e2e)', () => {
         // ... capped at 15 minutes
         for (let i = 0; i < 10; i++) {
           now.mockReturnValue(Date.now() + 3_600_000 - 1)
-          ;(authService as any).usernameFailureCache.set('admin', { ...(authService as any).usernameFailureCache.get('admin'), lockedUntil: 0 })
+          ;(loginThrottle as any).usernameFailureCache.set('admin', { ...(loginThrottle as any).usernameFailureCache.get('admin'), lockedUntil: 0 })
           await failFrom('admin', 1, () => `203.0.113.${210 + i}`)
         }
         expect(lockedFor()).toBe(900)
       })
 
       it('does not count a 2FA prompt as a failure', async () => {
-        const hashSpy = vi.spyOn(authService as any, 'checkPassword').mockResolvedValue(undefined)
+        const hashSpy = vi.spyOn(passwordHasher, 'verify').mockResolvedValue(undefined)
         vi.spyOn(authService, 'findByUsername').mockResolvedValue({ username: 'otp-user', otpActive: true } as any)
         for (let i = 0; i < 60; i++) {
           await expect(authService.authenticate('otp-user', 'pw', undefined, `203.0.113.${i}`)).rejects.toMatchObject({ status: 412 })
         }
         hashSpy.mockRestore()
-        expect((authService as any).usernameFailureCache.get('otp-user')).toBeUndefined()
+        expect((loginThrottle as any).usernameFailureCache.get('otp-user')).toBeUndefined()
       })
     })
 

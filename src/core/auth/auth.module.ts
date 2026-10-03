@@ -15,6 +15,11 @@ import { WsAdminGuard } from './guards/ws-admin-guard.js'
 import { WsLogGuard } from './guards/ws-log.guard.js'
 import { WsGuard } from './guards/ws.guard.js'
 import { JwtStrategy } from './jwt.strategy.js'
+import { LoginThrottle } from './login-throttle.js'
+import { OtpService } from './otp.service.js'
+import { PasswordHasher } from './password-hasher.js'
+import { TokenService } from './token.service.js'
+import { UserRepository } from './user.repository.js'
 
 @Module({
   imports: [
@@ -37,6 +42,11 @@ import { JwtStrategy } from './jwt.strategy.js'
   ],
   providers: [
     AuthService,
+    LoginThrottle,
+    PasswordHasher,
+    TokenService,
+    UserRepository,
+    OtpService,
     JwtStrategy,
     WsGuard,
     WsAdminGuard,
