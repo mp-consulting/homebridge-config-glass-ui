@@ -2,7 +2,7 @@
   "name": "@mp-consulting/homebridge-config-glass-ui",
   "displayName": "Homebridge Glass UI",
   "type": "module",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "A web based management, configuration and control platform for Homebridge, with a liquid glass interface.",
   "author": "Mickael Palma",
   "license": "MIT",
