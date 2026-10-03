@@ -14,9 +14,10 @@ import { SharedSampler } from '../../src/modules/status/shared-sampler.js'
 import { requestedIntervalMs, StatusService } from '../../src/modules/status/status.service.js'
 import { testStoragePath } from '../storage-path.js'
 
-const { networkStatsMock, networkInterfaceDefaultMock, currentLoadMock } = vi.hoisted(() => ({
+const { networkStatsMock, networkInterfaceDefaultMock, networkInterfacesMock, currentLoadMock } = vi.hoisted(() => ({
   networkStatsMock: vi.fn(),
   networkInterfaceDefaultMock: vi.fn(),
+  networkInterfacesMock: vi.fn(),
   currentLoadMock: vi.fn(),
 }))
 
@@ -26,6 +27,7 @@ vi.mock('systeminformation', async (importOriginal) => {
     ...actual,
     networkStats: networkStatsMock,
     networkInterfaceDefault: networkInterfaceDefaultMock,
+    networkInterfaces: networkInterfacesMock,
     currentLoad: currentLoadMock,
   }
 })
@@ -300,6 +302,7 @@ describe('StatusService - shared metric sampling', () => {
     vi.resetAllMocks()
     currentLoadMock.mockResolvedValue({ currentLoad: 12 })
     networkInterfaceDefaultMock.mockResolvedValue('eth0')
+    networkInterfacesMock.mockResolvedValue([{ iface: 'eth0' }, { iface: 'wlan0' }])
 
     statusService = new StatusService(
       new HttpService(),
@@ -356,6 +359,22 @@ describe('StatusService - shared metric sampling', () => {
 
     await vi.advanceTimersByTimeAsync(10_000)
     expect(networkStatsMock).toHaveBeenCalledTimes(6)
+  })
+
+  it('only hands systeminformation an interface name the host has, else uses the default', async () => {
+    networkStatsMock.mockImplementation(async (iface: string) => netStats(iface, 0))
+
+    for (const name of ['eth0; rm -rf /', '../../etc/passwd', 'nope0', 42, { iface: 'eth0' }]) {
+      const usage = await statusService.getCurrentNetworkUsage([name as any])
+      expect(usage.net.iface).toBe('eth0')
+    }
+    await statusService.getCurrentNetworkUsage('wlan0' as any)
+
+    // Every unknown name shared the default interface's sampler
+    expect(networkStatsMock.mock.calls.map(([iface]) => iface)).toEqual(['eth0'])
+    expect([...(statusService as any).networkSamplers.keys()]).toEqual([''])
+    // The interface list is read once and cached
+    expect(networkInterfacesMock).toHaveBeenCalledTimes(1)
   })
 
   it('samples cpu load, temperature and network at a widget\'s 1 s refresh, and slows down after it leaves', async () => {

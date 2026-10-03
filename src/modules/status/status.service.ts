@@ -88,6 +88,57 @@ export function withoutPairingCodes<T extends { pin?: unknown, setupUri?: unknow
 }
 
 /**
+ * Server details only an administrator gets: filesystem paths, the account the
+ * service runs as and the host's network addresses help an attacker map the
+ * host and are of no use on a non-admin dashboard (the system info widget
+ * shows only what it is given). The OS serial (a machine identifier) goes too.
+ * `network` is left as an empty object rather than removed, as the widget reads
+ * its fields.
+ */
+export function serverInfoForUser<T extends Record<string, any>>(info: T, admin: boolean): T {
+  if (admin || !info || typeof info !== 'object') {
+    return info
+  }
+  const redacted: Record<string, any> = { ...info }
+  for (const key of ['serviceUser', 'homebridgeConfigJsonPath', 'homebridgeStoragePath', 'homebridgeCustomPluginPath', 'homebridgePluginPath']) {
+    delete redacted[key]
+  }
+  if ('network' in info) {
+    redacted.network = {}
+  }
+  if (info.os && typeof info.os === 'object') {
+    redacted.os = { ...info.os }
+    delete redacted.os.serial
+  }
+  return redacted as T
+}
+
+/** An object without its `installPath` for a non-admin, as with the server paths above. */
+export function withoutInstallPath<T>(info: T, admin: boolean): T {
+  if (admin || !info || typeof info !== 'object' || !('installPath' in info)) {
+    return info
+  }
+  const rest: Record<string, unknown> = { ...info }
+  delete rest.installPath
+  return rest as T
+}
+
+/** The version overview as a user may see it: paths for administrators only. */
+export function versionOverviewForUser<T extends { serverInfo?: any, node?: any, outOfDatePlugins?: any[] }>(overview: T, admin: boolean): T {
+  if (admin) {
+    return overview
+  }
+  return {
+    ...overview,
+    serverInfo: overview.serverInfo ? serverInfoForUser(overview.serverInfo, false) : overview.serverInfo,
+    node: withoutInstallPath(overview.node, false),
+    outOfDatePlugins: Array.isArray(overview.outOfDatePlugins)
+      ? overview.outOfDatePlugins.map(plugin => withoutInstallPath(plugin, false))
+      : overview.outOfDatePlugins,
+  }
+}
+
+/**
  * A widget's refresh interval (seconds, from the request payload) as a sampler
  * period: undefined - the sampler default - when absent or not a number, else
  * clamped to the 1-60 s a widget can be set to.
@@ -324,8 +375,12 @@ export class StatusService {
    * Returns the current network usage
    */
   public async getCurrentNetworkUsage(netInterfaces?: string[], interval?: number): Promise<NetworkUsage> {
-    // Only the first interface's stats are returned, so only it is sampled
-    const iface = netInterfaces?.find(Boolean) ?? ''
+    // Only the first interface's stats are returned, so only it is sampled.
+    // The name comes from the client and is handed to systeminformation (which
+    // builds commands and paths from it on some platforms), so only a name the
+    // host actually has is used - anything else gets the default interface.
+    const requested = Array.isArray(netInterfaces) ? netInterfaces.find(Boolean) : undefined
+    const iface = typeof requested === 'string' && (await this.getInterfaceNames()).has(requested) ? requested : ''
 
     let sampler = this.networkSamplers.get(iface)
     if (!sampler) {
@@ -341,6 +396,25 @@ export class StatusService {
       this.networkSamplers.set(iface, sampler)
     }
     return sampler.get(requestedIntervalMs(interval))
+  }
+
+  /**
+   * The host's network interface names, cached for a minute (an interface
+   * that comes up later is picked up then)
+   */
+  private async getInterfaceNames(): Promise<Set<string>> {
+    const cached = this.statusCache.get<string[]>('interfaceNames')
+    if (cached) {
+      return new Set(cached)
+    }
+    try {
+      const names = (await networkInterfaces()).map(x => x.iface).filter(Boolean)
+      this.statusCache.set('interfaceNames', names, 60)
+      return new Set(names)
+    } catch (e) {
+      this.logger.debug(`Failed to list network interfaces as ${e.message}.`)
+      return new Set()
+    }
   }
 
   private async sampleNetworkUsage(iface: string): Promise<NetworkUsage> {

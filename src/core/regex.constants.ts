@@ -19,7 +19,6 @@ export const RE_GITHUB_REPO = /https:\/\/github.com\/([^/]+)\/([^/#]+)/
 // Encoding
 export const RE_ENCODED_AT = /%40/g
 export const RE_WORD_SEQUENCE = /\w\S*/g
-export const RE_NON_NUMERIC_DOT = /[^0-9.]/g
 
 // CORS
 export const RE_DEV_SERVER_ORIGIN = /^https?:\/\/[^:]+:(?:4200|8080)$/

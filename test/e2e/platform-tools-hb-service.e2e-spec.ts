@@ -239,6 +239,28 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(await readFile(logFilePath, 'utf8')).toBe('')
   })
 
+  it('refuses to download or truncate a log path that points at the secrets in the storage directory', async () => {
+    const authPath = resolve(configService.storagePath, 'auth.json')
+    const before = await readFile(authPath, 'utf8')
+    configService.ui.log = { method: 'file', path: authPath }
+
+    const download = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=no',
+      headers: { authorization },
+    })
+    expect(download.statusCode).toBe(400)
+    expect(download.body).not.toContain('hashedPassword')
+
+    const truncateRes = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/hb-service/log/truncate',
+      headers: { authorization },
+    })
+    expect(truncateRes.statusCode).toBe(400)
+    expect(await readFile(authPath, 'utf8')).toBe(before)
+  })
+
   afterAll(async () => {
     await app.close()
   })

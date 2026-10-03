@@ -214,7 +214,7 @@ describe('StatusGateway (e2e)', () => {
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(response) as any)
 
-      const result = await statusGateway.nodeVersionCheck()
+      const result = await statusGateway.nodeVersionCheck(authorizeWsClient({}))
       expect(result).toHaveProperty('currentVersion')
       expect(result).toHaveProperty('latestVersion')
       expect(result).toHaveProperty('updateAvailable')
@@ -224,7 +224,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return WsException when nodejs version check fails', async () => {
       vi.spyOn(statusService, 'getNodeVersionInfo').mockRejectedValue(new Error('node error'))
 
-      const result = await statusGateway.nodeVersionCheck()
+      const result = await statusGateway.nodeVersionCheck(authorizeWsClient({}))
       expect((result as any).message).toBe('node error')
     })
 
@@ -296,7 +296,7 @@ describe('StatusGateway (e2e)', () => {
     it('should return all version fields on happy path', async () => {
       mockAllForHappyPath()
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.serverInfo).toEqual(mockServerInfo)
       expect(result.node).toEqual(mockNode)
       expect(result.homebridge).toEqual(mockHomebridge)
@@ -316,7 +316,7 @@ describe('StatusGateway (e2e)', () => {
       vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
       vi.spyOn(statusService, 'getDockerDetails').mockResolvedValue(mockDocker as any)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.docker).toEqual(mockDocker)
     })
 
@@ -328,7 +328,7 @@ describe('StatusGateway (e2e)', () => {
       vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockRejectedValue(new Error('outdated down'))
       vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.node).toBeNull()
       expect(result.homebridgeUi).toBeNull()
       expect(result.outOfDatePlugins).toEqual([])
@@ -349,7 +349,7 @@ describe('StatusGateway (e2e)', () => {
         { name: 'homebridge-bar', engines: { homebridge: '^1.6.0' } },
       ] as any)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.hbV2Ready).toBe(false)
     })
 
@@ -365,21 +365,21 @@ describe('StatusGateway (e2e)', () => {
         { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
       ] as any)
 
-      const result = await statusGateway.getVersionOverview() as any
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({})) as any
       expect(result.hbV2Ready).toBe(true)
     })
 
     it('should return WsException when the aggregator itself throws', async () => {
       vi.spyOn(statusService, 'getVersionOverview').mockRejectedValue(new Error('overview error'))
 
-      const result = await statusGateway.getVersionOverview()
+      const result = await statusGateway.getVersionOverview(authorizeWsClient({}))
       expect((result as any).message).toBe('overview error')
     })
   })
 
   describe('Server Info', () => {
     it('should return homebridge server info', async () => {
-      const result = await statusGateway.getHomebridgeServerInfo()
+      const result = await statusGateway.getHomebridgeServerInfo(authorizeWsClient({}))
       expect(result).toHaveProperty('serviceUser')
       expect(result).toHaveProperty('homebridgeStoragePath')
       expect(result).toHaveProperty('nodeVersion')
@@ -388,10 +388,80 @@ describe('StatusGateway (e2e)', () => {
       expect(result).toHaveProperty('network')
     }, 30000)
 
+    describe('for non-admin users', () => {
+      const nonAdmin = () => authorizeWsClient({}, { username: 'viewer', admin: false })
+      const fullServerInfo = () => ({
+        serviceUser: 'homebridge',
+        homebridgeConfigJsonPath: '/var/lib/homebridge/config.json',
+        homebridgeStoragePath: '/var/lib/homebridge',
+        homebridgeCustomPluginPath: '/opt/plugins',
+        homebridgePluginPath: '/opt/homebridge/lib/node_modules',
+        homebridgeInsecureMode: false,
+        homebridgeRunningInDocker: true,
+        homebridgeRunningInSynologyPackage: false,
+        homebridgeRunningInPackageMode: false,
+        nodeVersion: 'v22.12.0',
+        os: { platform: 'linux', distro: 'Debian', arch: 'arm64', hostname: 'hb', serial: 'abc123' },
+        time: { timezone: 'Europe/Paris' },
+        network: { iface: 'eth0', ip4: '192.168.1.10', ip6: 'fe80::1', mac: 'aa:bb:cc:dd:ee:ff' },
+      })
+      const expectRedacted = (info: any) => {
+        for (const key of ['serviceUser', 'homebridgeConfigJsonPath', 'homebridgeStoragePath', 'homebridgeCustomPluginPath', 'homebridgePluginPath']) {
+          expect(info).not.toHaveProperty(key)
+        }
+        expect(info.network).toEqual({})
+        expect(info.os).not.toHaveProperty('serial')
+        // What the non-admin dashboard still uses
+        expect(info.os.arch).toBe('arm64')
+        expect(info.time.timezone).toBe('Europe/Paris')
+        expect(info.nodeVersion).toBe('v22.12.0')
+        expect(info.homebridgeRunningInDocker).toBe(true)
+        expect(info).toHaveProperty('homebridgeRunningInSynologyPackage')
+      }
+
+      it('leaves paths, the service user and network details out of the server info', async () => {
+        vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(fullServerInfo() as any)
+
+        const info = await statusGateway.getHomebridgeServerInfo(nonAdmin()) as any
+        expect(info).not.toHaveProperty('serviceUser')
+        expectRedacted(info)
+      })
+
+      it('leaves them out of the version overview', async () => {
+        vi.spyOn(statusService, 'getVersionOverview').mockResolvedValue({ serverInfo: fullServerInfo(), node: null } as any)
+
+        const result = await statusGateway.getVersionOverview(nonAdmin()) as any
+        expect(result.serverInfo).not.toHaveProperty('homebridgeStoragePath')
+        expectRedacted(result.serverInfo)
+      })
+
+      it('leaves install paths out of the node and plugin details', async () => {
+        const node = { currentVersion: 'v22.12.0', installPath: '/usr/local/bin', npmVersion: '10.9.0' }
+        vi.spyOn(statusService, 'getVersionOverview').mockResolvedValue({
+          serverInfo: fullServerInfo(),
+          node,
+          outOfDatePlugins: [{ name: 'homebridge-example', installPath: '/opt/homebridge/lib/node_modules' }],
+        } as any)
+        vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(node as any)
+
+        const overview = await statusGateway.getVersionOverview(nonAdmin()) as any
+        expect(overview.node).toEqual({ currentVersion: 'v22.12.0', npmVersion: '10.9.0' })
+        expect(overview.outOfDatePlugins).toEqual([{ name: 'homebridge-example' }])
+        expect(await statusGateway.nodeVersionCheck(nonAdmin())).not.toHaveProperty('installPath')
+        expect(await statusGateway.nodeVersionCheck(authorizeWsClient({}))).toHaveProperty('installPath', '/usr/local/bin')
+      })
+
+      it('still gives an admin everything', async () => {
+        vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(fullServerInfo() as any)
+
+        expect(await statusGateway.getHomebridgeServerInfo(authorizeWsClient({}))).toEqual(fullServerInfo())
+      })
+    })
+
     it('should return WsException when server info fails', async () => {
       vi.spyOn(statusService, 'getHomebridgeServerInfo').mockRejectedValue(new Error('server error'))
 
-      const result = await statusGateway.getHomebridgeServerInfo()
+      const result = await statusGateway.getHomebridgeServerInfo(authorizeWsClient({}))
       expect((result as any).message).toBe('server error')
     })
 

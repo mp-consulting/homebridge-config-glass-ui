@@ -365,6 +365,10 @@ export class ServerController {
       await this.serverWallpaperService.uploadWallpaper(data)
     } catch (err) {
       this.logger.error(`Wallpaper upload failed as ${err.message}`)
+      // A refused file type is the client's error, not the server's
+      if (err instanceof BadRequestException) {
+        throw err
+      }
       throw new InternalServerErrorException(err.message)
     }
   }

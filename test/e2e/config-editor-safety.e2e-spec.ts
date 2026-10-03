@@ -6,10 +6,12 @@ import { BadRequestException } from '@nestjs/common'
 import { pathExists, remove } from 'fs-extra'
 import { describe, expect, it, vi } from 'vitest'
 
+import { isValidWallpaperName, resolveWallpaperPath, wallpaperExtension } from '../../src/core/config/wallpaper.js'
 import {
   findUnsafeNodeOption,
   findUnsafeUiValues,
   isLogCommandAllowed,
+  isProtectedStoragePath,
   sanitiseStartupEnv,
 } from '../../src/modules/config-editor/config-safety.js'
 import { HbServiceService } from '../../src/modules/platform-tools/hb-service/hb-service.service.js'
@@ -69,6 +71,85 @@ describe('config-safety', () => {
     expect(findUnsafeUiValues({ ...old }, old, { terminalEnabled: false })).toEqual([])
     expect(findUnsafeUiValues({ restart: 'other.sh', log: { command: 'other-viewer' } }, old, { terminalEnabled: false }).map(x => x.path))
       .toEqual(['restart', 'log.command'])
+  })
+
+  describe('wallpaper', () => {
+    it.each(['ui-wallpaper.jpg', 'ui-wallpaper.jpeg', 'ui-wallpaper.png', 'ui-wallpaper.webp', 'ui-wallpaper.gif', 'ui-wallpaper.JPG'])('accepts %s', (value) => {
+      expect(isValidWallpaperName(value)).toBe(true)
+      expect(resolveWallpaperPath('/hb', value)).toBe(join('/hb', value))
+    })
+
+    it.each([
+      'auth.json',
+      '.uix-secrets',
+      '../auth.json',
+      '/etc/passwd',
+      'ui-wallpaper.png/../auth.json',
+      'sub/ui-wallpaper.png',
+      '..\\ui-wallpaper.png',
+      'ui-wallpaper.svg',
+      'ui-wallpaper.html',
+      'ui-wallpaper.png\n',
+      42,
+    ])('refuses %s', (value) => {
+      expect(isValidWallpaperName(value)).toBe(false)
+      expect(resolveWallpaperPath('/hb', value)).toBeUndefined()
+    })
+
+    it('takes the upload extension from an image file name only', () => {
+      expect(wallpaperExtension('photo.PNG')).toBe('.PNG')
+      expect(wallpaperExtension('photo.jpeg')).toBe('.jpeg')
+      expect(wallpaperExtension('evil.html')).toBeUndefined()
+      expect(wallpaperExtension('evil.png.js')).toBeUndefined()
+      expect(wallpaperExtension('noext')).toBeUndefined()
+      expect(wallpaperExtension(undefined)).toBeUndefined()
+    })
+
+    it('findUnsafeUiValues refuses a new wallpaper value that is not an uploaded wallpaper', () => {
+      expect(findUnsafeUiValues({ wallpaper: '../auth.json' }, {}, { terminalEnabled: true }).map(x => x.path)).toEqual(['wallpaper'])
+      expect(findUnsafeUiValues({ wallpaper: '/etc/shadow' }, {}, { terminalEnabled: true }).map(x => x.path)).toEqual(['wallpaper'])
+      expect(findUnsafeUiValues({ wallpaper: 'ui-wallpaper.png' }, {}, { terminalEnabled: false })).toEqual([])
+      expect(findUnsafeUiValues({ wallpaper: '' }, {}, { terminalEnabled: false })).toEqual([])
+      // grandfathered when unchanged
+      expect(findUnsafeUiValues({ wallpaper: '/legacy/wall.jpg' }, { wallpaper: '/legacy/wall.jpg' }, { terminalEnabled: false })).toEqual([])
+    })
+  })
+
+  describe('log path', () => {
+    const storagePath = join(tmpdir(), 'hb-storage')
+
+    it.each([
+      join(storagePath, 'auth.json'),
+      join(storagePath, '.uix-secrets'),
+      join(storagePath, 'persist', 'AccessoryInfo.0EAABBCCDDEE.json'),
+      join(storagePath, 'ssl-certs', 'key.pem'),
+      join(storagePath, 'config.json'),
+      join(storagePath, 'matter', 'x', 'keys.json'),
+      join(storagePath, 'backups', 'config-backups', 'config.json.1'),
+      join(storagePath, 'logs', '..', 'auth.json'),
+      join(storagePath.toUpperCase(), 'AUTH.JSON'),
+      'auth.json',
+      './persist/x.json',
+    ])('refuses %s', (path) => {
+      expect(isProtectedStoragePath(path, storagePath)).toBe(true)
+      expect(findUnsafeUiValues({ log: { method: 'file', path } }, {}, { terminalEnabled: true, storagePath }).map(x => x.path)).toEqual(['log.path'])
+    })
+
+    it.each([
+      join(storagePath, 'homebridge.log'),
+      join(storagePath, 'logs', 'homebridge.log'),
+      join(storagePath, 'auth.json.log'),
+      '/var/log/homebridge.log',
+      join(tmpdir(), 'auth.json'),
+    ])('allows %s', (path) => {
+      expect(isProtectedStoragePath(path, storagePath)).toBe(false)
+      expect(findUnsafeUiValues({ log: { method: 'file', path } }, {}, { terminalEnabled: true, storagePath })).toEqual([])
+    })
+
+    it('grandfathers an unchanged value at save time', () => {
+      const path = join(storagePath, 'auth.json')
+      expect(findUnsafeUiValues({ log: { method: 'file', path } }, { log: { method: 'file', path } }, { terminalEnabled: true, storagePath })).toEqual([])
+    })
   })
 
   describe('hb-service startup settings save', () => {

@@ -1,10 +1,12 @@
 import { resolve } from 'node:path'
 import process from 'node:process'
 
+import Fastify from 'fastify'
 import { writeJson } from 'fs-extra'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { getStartupConfig } from '../../src/core/config/config.startup.js'
+import { parseTrustProxy } from '../../src/core/config/trust-proxy.js'
 import { testStoragePath } from '../storage-path.js'
 
 describe('getStartupConfig', () => {
@@ -31,5 +33,72 @@ describe('getStartupConfig', () => {
     const config = await startupWith({})
 
     expect(config.sslError).toBeUndefined()
+  })
+
+  describe('trustProxy', () => {
+    it('trusts no proxy headers by default', async () => {
+      expect((await startupWith({})).trustProxy).toBeUndefined()
+    })
+
+    it('passes a list of proxy addresses through', async () => {
+      expect((await startupWith({ trustProxy: ['127.0.0.1', '10.0.0.0/8'] })).trustProxy).toEqual(['127.0.0.1', '10.0.0.0/8'])
+      expect((await startupWith({ trustProxy: 'loopback, fd00::/8' })).trustProxy).toEqual(['loopback', 'fd00::/8'])
+    })
+
+    it('ignores an invalid value as a whole instead of failing to start', async () => {
+      expect((await startupWith({ trustProxy: ['127.0.0.1', 'not-an-ip'] })).trustProxy).toBeUndefined()
+      expect((await startupWith({ trustProxy: true })).trustProxy).toBeUndefined()
+    })
+  })
+})
+
+describe('parseTrustProxy', () => {
+  it.each([
+    [['127.0.0.1'], ['127.0.0.1']],
+    ['127.0.0.1,::1', ['127.0.0.1', '::1']],
+    ['192.168.1.0/24 10.0.0.0/255.0.0.0', ['192.168.1.0/24', '10.0.0.0/255.0.0.0']],
+    [['loopback', 'uniquelocal', 'linklocal'], ['loopback', 'uniquelocal', 'linklocal']],
+    [['2001:db8::/32'], ['2001:db8::/32']],
+  ])('accepts %j', (value, expected) => {
+    const onInvalid = vi.fn()
+    expect(parseTrustProxy(value, onInvalid)).toEqual(expected)
+    expect(onInvalid).not.toHaveBeenCalled()
+    // fastify (proxy-addr) accepts what passes, so a valid value cannot stop the server starting
+    expect(() => Fastify({ trustProxy: expected })).not.toThrow()
+  })
+
+  it('makes the client address the forwarded one only for a trusted proxy', async () => {
+    const app = Fastify({ trustProxy: parseTrustProxy(['127.0.0.1']) })
+    app.get('/ip', async req => ({ ip: req.ip }))
+
+    const viaProxy = await app.inject({ method: 'GET', url: '/ip', remoteAddress: '127.0.0.1', headers: { 'x-forwarded-for': '198.51.100.7' } })
+    const direct = await app.inject({ method: 'GET', url: '/ip', remoteAddress: '203.0.113.9', headers: { 'x-forwarded-for': '198.51.100.7' } })
+
+    expect(viaProxy.json().ip).toBe('198.51.100.7')
+    expect(direct.json().ip).toBe('203.0.113.9')
+    await app.close()
+  })
+
+  it.each([undefined, null, '', false, []])('treats %j as not set', (value) => {
+    const onInvalid = vi.fn()
+    expect(parseTrustProxy(value, onInvalid)).toBeUndefined()
+    expect(onInvalid).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    true,
+    1,
+    { a: 1 },
+    'everyone',
+    ['127.0.0.1', '*'],
+    ['10.0.0.0/33'],
+    ['::/129'],
+    ['10.0.0.0/8/1'],
+    ['fe80::1%en0'],
+    [42],
+  ])('refuses %j', (value) => {
+    const onInvalid = vi.fn()
+    expect(parseTrustProxy(value, onInvalid)).toBeUndefined()
+    expect(onInvalid).toHaveBeenCalledOnce()
   })
 })

@@ -6,6 +6,32 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { RE_CHAR_PAIRS } from '../../core/regex.constants.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 
+type ChildBridgePairingCodes = Partial<Pick<ChildBridgeMetadata, 'pin' | 'setupUri' | 'matterPin' | 'matterSetupUri'>>
+
+/**
+ * Drop a child bridge's pairing codes (HomeKit PIN and setup URI, Matter
+ * manual code and setup URI) for anyone but an administrator - the per-bridge
+ * equivalent of withoutPairingCodes() for the main bridge. Whoever holds them
+ * can add an unpaired bridge to their own Home. Returns a copy, so the IPC
+ * payload other (admin) listeners receive is left intact.
+ */
+export function withoutChildBridgePairingCodes<T extends ChildBridgePairingCodes>(bridge: T, admin: boolean): T {
+  if (admin || !bridge || typeof bridge !== 'object') {
+    return bridge
+  }
+  const redacted = { ...bridge }
+  delete redacted.pin
+  delete redacted.setupUri
+  delete redacted.matterPin
+  delete redacted.matterSetupUri
+  return redacted
+}
+
+/** The verified user on a socket (set by the WS guards) is an administrator */
+function isAdminClient(client: any): boolean {
+  return client?.data?.user?.admin === true
+}
+
 @Injectable()
 export class ChildBridgesService {
   // Sockets already watching child bridge status, as LogService.activeClients
@@ -28,6 +54,15 @@ export class ChildBridgesService {
   }
 
   /**
+   * The child bridges as the given user may see them: an administrator gets
+   * everything, anyone else gets them without their pairing codes
+   */
+  public async getChildBridgesForUser(admin: boolean): Promise<ChildBridgeMetadata[]> {
+    const bridges = await this.getChildBridges()
+    return Array.isArray(bridges) ? bridges.map(bridge => withoutChildBridgePairingCodes(bridge, admin)) : bridges
+  }
+
+  /**
    * Socket Handler - Per Client
    * Start watching for child bridge status events
    * @param client
@@ -40,8 +75,12 @@ export class ChildBridgesService {
     }
     this.watchingClients.add(client)
 
+    // Read per update from the user the WS guards verified on this socket
     const listener = (data) => {
-      client.emit('child-bridge-status-update', data)
+      const admin = isAdminClient(client)
+      client.emit('child-bridge-status-update', Array.isArray(data)
+        ? data.map(bridge => withoutChildBridgePairingCodes(bridge, admin))
+        : withoutChildBridgePairingCodes(data, admin))
     }
 
     this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() + 1)

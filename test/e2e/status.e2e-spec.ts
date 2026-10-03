@@ -14,6 +14,7 @@ import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { AuthService } from '../../src/core/auth/auth.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -64,6 +65,24 @@ describe('StatusController (e2e)', () => {
 
     ipcService = app.get(HomebridgeIpcService)
   })
+
+  let nonAdminAuth: string | undefined
+  async function nonAdminAuthorization(): Promise<string> {
+    if (!nonAdminAuth) {
+      await app.get(AuthService).addUser({
+        name: 'Status Viewer',
+        username: 'status-viewer',
+        password: 'status-viewer',
+        admin: false,
+      } as any)
+      nonAdminAuth = `bearer ${(await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'status-viewer', password: 'status-viewer' },
+      })).json().access_token}`
+    }
+    return nonAdminAuth
+  }
 
   beforeEach(async () => {
     vi.resetAllMocks()
@@ -180,6 +199,24 @@ describe('StatusController (e2e)', () => {
     expect(res.json().homebridgeStoragePath).toBe(process.env.UIX_STORAGE_PATH)
   }, 30000)
 
+  it('GET /status/server-information leaves paths, the service user and network details out for a non-admin', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/server-information',
+      headers: { authorization: await nonAdminAuthorization() },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const info = res.json()
+    expect(info).not.toHaveProperty('serviceUser')
+    expect(info).not.toHaveProperty('homebridgeConfigJsonPath')
+    expect(info).not.toHaveProperty('homebridgeStoragePath')
+    expect(info).not.toHaveProperty('homebridgePluginPath')
+    expect(info.network).toEqual({})
+    expect(info).toHaveProperty('nodeVersion')
+    expect(info).toHaveProperty('os')
+  }, 30000)
+
   it('GET /status/nodejs - basic properties', async () => {
     const data = [
       {
@@ -240,6 +277,45 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(Array.isArray(res.json())).toBe(true)
+  })
+
+  describe('GET /status/homebridge/child-bridges pairing codes', () => {
+    const bridgeWithCodes = () => ({
+      status: 'ok',
+      username: '0E:AA:BB:CC:DD:EE',
+      name: 'Test Bridge',
+      plugin: 'test-plugin',
+      identifier: 'test',
+      pin: '123-45-678',
+      setupUri: 'X-HM://0024SETUP',
+      matterPin: '12345678901',
+      matterSetupUri: 'MT:ABC',
+      manuallyStopped: false,
+    })
+
+    it('gives an admin the codes', async () => {
+      vi.spyOn(app.get(ChildBridgesService), 'getChildBridges').mockResolvedValue([bridgeWithCodes()] as any)
+
+      const res = await app.inject({ method: 'GET', path: '/status/homebridge/child-bridges', headers: { authorization } })
+
+      expect(res.statusCode).toBe(200)
+      expect(res.json()[0].pin).toBe('123-45-678')
+      expect(res.json()[0].matterSetupUri).toBe('MT:ABC')
+    })
+
+    it('leaves the HomeKit and Matter codes out for a non-admin', async () => {
+      vi.spyOn(app.get(ChildBridgesService), 'getChildBridges').mockResolvedValue([bridgeWithCodes()] as any)
+
+      const res = await app.inject({ method: 'GET', path: '/status/homebridge/child-bridges', headers: { authorization: await nonAdminAuthorization() } })
+
+      expect(res.statusCode).toBe(200)
+      const [bridge] = res.json()
+      expect(bridge.name).toBe('Test Bridge')
+      expect(bridge).not.toHaveProperty('pin')
+      expect(bridge).not.toHaveProperty('setupUri')
+      expect(bridge).not.toHaveProperty('matterPin')
+      expect(bridge).not.toHaveProperty('matterSetupUri')
+    })
   })
 
   it('GET /status/homebridge-version', async () => {

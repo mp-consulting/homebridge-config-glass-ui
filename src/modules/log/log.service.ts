@@ -15,7 +15,7 @@ import { createAuthorizedRunner } from '../../core/auth/guards/ws-auth.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
-import { isLogCommandAllowed, LOG_COMMAND_RULE } from '../config-editor/config-safety.js'
+import { isLogCommandAllowed, isProtectedStoragePath, LOG_COMMAND_RULE, LOG_PATH_RULE } from '../config-editor/config-safety.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 
 // How long a trailing partial line is held back waiting for its terminator
@@ -30,6 +30,8 @@ export class LogService {
   private commandEnv: Record<string, string> = {}
   // Set when a custom log command was refused, to explain why to the client
   private refusedCommand: string | undefined
+  // Set when the log path points at secrets in the storage directory
+  private refusedPath: string | undefined
   private useNative = false
   private nativeTail: Tail
   private activeClients = new WeakSet<EventEmitter>()
@@ -49,7 +51,12 @@ export class LogService {
     this.useNative = false
     this.commandEnv = {}
     this.refusedCommand = undefined
+    this.refusedPath = undefined
     if (typeof this.configService.ui.log !== 'object') {
+      this.logNotConfigured()
+    } else if (['file', 'native'].includes(this.configService.ui.log.method) && isProtectedStoragePath(this.configService.ui.log.path, this.configService.storagePath)) {
+      // A value saved before the check existed: checked again here, on use
+      this.refusedPath = this.configService.ui.log.path
       this.logNotConfigured()
     } else if (this.configService.ui.log.method === 'file' && this.configService.ui.log.path) {
       this.logFromFile()
@@ -99,6 +106,9 @@ export class LogService {
       client.emit('stdout', cyan('Loading logs using native method...\r\n'))
       client.emit('stdout', cyan(`File: ${this.configService.ui.log.path}\r\n\r\n`))
       this.tailLogFromFileNative(client)
+    } else if (this.refusedPath !== undefined) {
+      client.emit('stdout', red(`Refusing to show the log file "${this.refusedPath}". ${LOG_PATH_RULE}\r\n\r\n`))
+      this.activeClients.delete(client)
     } else if (this.refusedCommand !== undefined) {
       client.emit('stdout', red(`Refusing to run the custom log command "${this.refusedCommand}". ${LOG_COMMAND_RULE}\r\n\r\n`))
       this.activeClients.delete(client)

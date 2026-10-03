@@ -36,6 +36,8 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   const fAdapter = new FastifyAdapter({
     https: startupConfig.httpsOptions,
     logger: startupConfig.debug || false,
+    // Off unless `ui.trustProxy` names the reverse proxies (see trust-proxy.ts)
+    ...(startupConfig.trustProxy ? { trustProxy: startupConfig.trustProxy } : {}),
   })
 
   // (2) Register multipart with file size limit

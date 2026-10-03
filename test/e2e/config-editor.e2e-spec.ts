@@ -1331,6 +1331,54 @@ describe('ConfigEditorController (e2e)', () => {
       expect(res2.body).toContain('log.path')
     })
 
+    it('PATCH refuses a log path that points at the secrets in the storage directory', async () => {
+      for (const path of [resolve(process.env.UIX_STORAGE_PATH, 'auth.json'), resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')]) {
+        const res = await app.inject({
+          method: 'PATCH',
+          url: '/config-editor/ui',
+          headers: { authorization },
+          payload: { 'log.method': 'file', 'log.path': path },
+        })
+
+        expect(res.statusCode).toBe(400)
+        expect(res.body).toContain('log.path')
+      }
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(String(uiBlock.log?.path)).not.toContain('auth.json')
+    })
+
+    it('PATCH and full save refuse a wallpaper that is not an uploaded wallpaper file', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { wallpaper: '../auth.json' },
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('wallpaper')
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.wallpaper = '.uix-secrets'
+      const res2 = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res2.statusCode).toBe(400)
+      expect(res2.body).toContain('wallpaper')
+
+      const ok = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: { wallpaper: 'ui-wallpaper.jpg' },
+      })
+      expect(ok.statusCode).toBe(200)
+    })
+
     it('PUT /config-editor/ui refuses an unsafe linux.shutdown command', async () => {
       const res = await app.inject({
         method: 'PUT',

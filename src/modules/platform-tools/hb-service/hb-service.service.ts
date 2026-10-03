@@ -9,7 +9,7 @@ import { pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
 import { RE_ANSI_COLOUR } from '../../../core/regex.constants.js'
-import { findUnsafeNodeOption, NODE_OPTIONS_RULE } from '../../config-editor/config-safety.js'
+import { findUnsafeNodeOption, isProtectedStoragePath, LOG_PATH_RULE, NODE_OPTIONS_RULE } from '../../config-editor/config-safety.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 
 @Injectable()
@@ -91,6 +91,7 @@ export class HbServiceService {
    * Stream the full log file to the client
    */
   async downloadLogFile(shouldRemoveColour: boolean) {
+    this.assertLogPathAllowed()
     if (!await pathExists(this.configService.ui.log.path)) {
       this.logger.error(`Cannot download log file ${this.configService.ui.log.path} as it does not exist.`)
       throw new BadRequestException('Log file not found on disk.')
@@ -117,9 +118,21 @@ export class HbServiceService {
   }
 
   /**
+   * Refuse a log path that points at secrets in the storage directory (a
+   * value saved before the config check existed is checked again here)
+   */
+  private assertLogPathAllowed() {
+    if (isProtectedStoragePath(this.configService.ui.log?.path, this.configService.storagePath)) {
+      this.logger.error(`Refusing to use the log file ${this.configService.ui.log.path}.`)
+      throw new BadRequestException(LOG_PATH_RULE)
+    }
+  }
+
+  /**
    * Truncate the log file
    */
   async truncateLogFile(username?: string) {
+    this.assertLogPathAllowed()
     if (!await pathExists(this.configService.ui.log.path)) {
       this.logger.error(`Cannot truncate log file ${this.configService.ui.log.path} as it does not exist.`)
       throw new BadRequestException('Log file not found on disk.')

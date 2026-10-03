@@ -5,6 +5,9 @@
  * viewer, hb-service). Pure functions only, so `src/bin` can import it too.
  */
 
+import { isAbsolute, relative, resolve, sep } from 'node:path'
+
+import { isValidWallpaperName, WALLPAPER_RULE } from '../../core/config/wallpaper.js'
 import { RE_SAFE_RESTART_CMD } from '../../core/regex.constants.js'
 
 /**
@@ -47,6 +50,7 @@ const RE_CONTROL_CHARS = /[\u0000-\u001F\u007F]/
 
 export const RESTART_COMMAND_RULE = 'The command must use systemctl, service, shutdown, reboot, poweroff, halt, or init, optionally prefixed with sudo, and may not contain shell metacharacters.'
 export const NODE_OPTIONS_RULE = 'NODE_OPTIONS may not use --require, --import, --loader, --inspect or other flags that load code, open a debugger or read/write files.'
+export const LOG_PATH_RULE = 'The log path may not point at the UI secrets, users, config.json, HomeKit or Matter pairing data, SSL certificates, backups or hb-service startup settings in the Homebridge storage directory.'
 export const LOG_COMMAND_RULE = 'With terminal access disabled, a custom log command must be tail, journalctl, cat, docker logs or podman logs (optionally prefixed with "sudo -n") with plain arguments.'
 
 /**
@@ -105,6 +109,44 @@ export function isLogCommandAllowed(command: unknown, terminalEnabled: boolean):
   return terminalEnabled || RE_SAFE_LOG_CMD.test(command)
 }
 
+/**
+ * Entries of the storage directory (matched case-insensitively, as the first
+ * path segment below it) that the log viewer must never read or truncate:
+ * the log is shown to every signed-in user unless restricted, and the hb-service
+ * log tools truncate it.
+ */
+export const PROTECTED_STORAGE_NAMES: readonly string[] = [
+  '.uix-secrets', // JWT signing secret
+  'auth.json', // users, password hashes, OTP secrets
+  'config.json', // plugin credentials
+  'persist', // HomeKit pairing keys
+  'matter', // Matter fabric keys
+  'ssl-certs', // uploaded / generated private keys
+  'backups', // full backups (include all of the above)
+  '.uix-hb-service-homebridge-startup.json', // hb-service startup env
+]
+
+/**
+ * Whether a log path points at (or inside) one of PROTECTED_STORAGE_NAMES.
+ * A relative path is checked both against the storage directory and the
+ * process working directory, since either may be what it resolves against.
+ * Compared case-insensitively, for case-insensitive filesystems (macOS, Windows).
+ */
+export function isProtectedStoragePath(path: unknown, storagePath: string | undefined): boolean {
+  if (typeof path !== 'string' || !path || !storagePath) {
+    return false
+  }
+  const root = resolve(storagePath).toLowerCase()
+  const candidates = isAbsolute(path) ? [resolve(path)] : [resolve(storagePath, path), resolve(path)]
+  return candidates.some((candidate) => {
+    const rel = relative(root, candidate.toLowerCase())
+    if (!rel || rel.startsWith('..') || isAbsolute(rel)) {
+      return false
+    }
+    return PROTECTED_STORAGE_NAMES.includes(rel.split(sep)[0])
+  })
+}
+
 export function isSafeRestartCommand(command: unknown): boolean {
   return typeof command === 'string' && RE_SAFE_RESTART_CMD.test(command)
 }
@@ -120,7 +162,7 @@ export interface UnsafeUiValue {
  * one in `oldUi` (the running config) is grandfathered, so a legacy value
  * does not block unrelated saves - it is still checked again when it is used.
  */
-export function findUnsafeUiValues(newUi: any, oldUi: any, opts: { terminalEnabled: boolean }): UnsafeUiValue[] {
+export function findUnsafeUiValues(newUi: any, oldUi: any, opts: { terminalEnabled: boolean, storagePath?: string }): UnsafeUiValue[] {
   if (!newUi || typeof newUi !== 'object') {
     return []
   }
@@ -147,7 +189,15 @@ export function findUnsafeUiValues(newUi: any, oldUi: any, opts: { terminalEnabl
     }
     if (newLog.path !== oldLog?.path && !isEmpty(newLog.path) && (typeof newLog.path !== 'string' || RE_CONTROL_CHARS.test(newLog.path))) {
       unsafe.push({ path: 'log.path', reason: 'The log path must be a plain file path without control characters.' })
+    } else if (newLog.path !== oldLog?.path && isProtectedStoragePath(newLog.path, opts.storagePath)) {
+      unsafe.push({ path: 'log.path', reason: LOG_PATH_RULE })
     }
+  }
+
+  // Served without authentication and deleted when replaced, so it may only
+  // name a wallpaper the upload wrote (see core/config/wallpaper.ts)
+  if (newUi.wallpaper !== oldUi?.wallpaper && !isEmpty(newUi.wallpaper) && !isValidWallpaperName(newUi.wallpaper)) {
+    unsafe.push({ path: 'wallpaper', reason: WALLPAPER_RULE })
   }
 
   return unsafe

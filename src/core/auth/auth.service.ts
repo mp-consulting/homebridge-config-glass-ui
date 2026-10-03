@@ -39,6 +39,33 @@ const LEGACY_PBKDF2_ITERATIONS = 1000
 const MAX_LOGIN_FAILURES = 10
 const LOGIN_LOCKOUT_SECONDS = 300
 
+// Per-username budget across every source address. The per-source limit above
+// does nothing against guesses spread over many addresses (or IPv6 networks),
+// so once a username has this many failures from anywhere, further attempts
+// for it are slowed by a cooldown that doubles on each further failure, from
+// USERNAME_COOLDOWN_MIN_SECONDS up to USERNAME_COOLDOWN_MAX_SECONDS. It is
+// never a permanent lock: the cooldown is bounded, the count is forgotten
+// after USERNAME_FAILURE_WINDOW_SECONDS without a failure, and a source that
+// has signed in as that user before (KNOWN_SOURCE_SECONDS) is exempt - so an
+// attacker hammering the admin username cannot keep the admin out from their
+// usual address. The per-source limit still applies to everyone.
+const USERNAME_MAX_FAILURES = 50
+const USERNAME_FAILURE_WINDOW_SECONDS = 3600
+const USERNAME_COOLDOWN_MIN_SECONDS = 60
+const USERNAME_COOLDOWN_MAX_SECONDS = 900
+const KNOWN_SOURCE_SECONDS = 30 * 24 * 60 * 60
+// Bounds the memory a flood of made-up usernames can take; past it, only
+// usernames already being counted are tracked (the per-source limit still applies)
+const USERNAME_FAILURE_MAX_ENTRIES = 10_000
+
+interface UsernameFailureState {
+  failures: number
+  // Cooldowns started so far, for the doubling
+  cooldowns: number
+  // Epoch ms until which attempts from unknown sources are refused
+  lockedUntil: number
+}
+
 /**
  * Salt for the hash computed when a login names a user that does not exist,
  * so that failure costs the same time as a wrong password (no username
@@ -100,6 +127,15 @@ export class AuthService {
   // locked; the count clears after LOGIN_LOCKOUT_SECONDS of no attempts.
   private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
 
+  // Failed logins per normalised username, from every source (see
+  // USERNAME_MAX_FAILURES). Refreshed on each failure.
+  private usernameFailureCache = new NodeCache({ stdTTL: USERNAME_FAILURE_WINDOW_SECONDS, useClones: false })
+
+  // `username|source` pairs that have completed a sign-in, exempt from the
+  // per-username cooldown. In memory only, so a restart forgets them and the
+  // worst case for a legitimate user is one bounded cooldown.
+  private knownLoginSources = new NodeCache({ stdTTL: KNOWN_SOURCE_SECONDS, useClones: false })
+
   // Short-lived cache of the auth file, so validating a token on every request
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
   private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
@@ -133,11 +169,13 @@ export class AuthService {
    * the throttle key alongside the username
    */
   async authenticate(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
-    const throttleKey = `${(username || '').toLowerCase()}|${loginThrottleSource(clientId)}`
+    const normalisedUsername = String(username || '').toLowerCase()
+    const throttleKey = `${normalisedUsername}|${loginThrottleSource(clientId)}`
 
     // Reject before doing any work once the failure threshold is reached, so
     // password and 2FA guessing cannot run unbounded.
     this.assertNotLockedOut(throttleKey, username)
+    this.assertUsernameNotCoolingDown(normalisedUsername, throttleKey, username)
 
     try {
       const user = await this.findByUsername(username)
@@ -163,8 +201,11 @@ export class AuthService {
       // password hash to the current work factor before returning.
       await this.upgradePasswordHashIfNeeded(user, password)
 
-      // Success clears the failure count for this key.
+      // Success clears the failure count for this key, and exempts this
+      // source from the per-username cooldown. The per-username count is
+      // left alone: it counts guesses from everywhere else as well.
       this.loginFailureCache.del(throttleKey)
+      this.knownLoginSources.set(throttleKey, true)
 
       if (user) {
         return {
@@ -182,6 +223,7 @@ export class AuthService {
       const is2faPrompt = e instanceof HttpException && e.getStatus() === 412 && e.message === '2FA Code Required'
       if (!is2faPrompt) {
         this.recordFailedAttempt(throttleKey)
+        this.recordUsernameFailure(normalisedUsername)
       }
 
       if (e instanceof ForbiddenException) {
@@ -211,6 +253,41 @@ export class AuthService {
 
   private recordFailedAttempt(throttleKey: string) {
     this.loginFailureCache.set(throttleKey, (this.loginFailureCache.get<number>(throttleKey) || 0) + 1)
+  }
+
+  /**
+   * Throw a 429 while a username's cooldown runs, unless this source has
+   * signed in as that user before (see USERNAME_MAX_FAILURES)
+   */
+  private assertUsernameNotCoolingDown(normalisedUsername: string, throttleKey: string, username: string) {
+    const state = this.usernameFailureCache.get<UsernameFailureState>(normalisedUsername)
+    if (!state || state.lockedUntil <= Date.now() || this.knownLoginSources.has(throttleKey)) {
+      return
+    }
+    const seconds = Math.ceil((state.lockedUntil - Date.now()) / 1000)
+    this.logger.warn(`Too many failed login attempts for '${username}' from several addresses - slowing down sign-in attempts for ${seconds}s.`)
+    throw new HttpException(`Too many failed attempts. Please wait ${seconds} seconds and try again.`, 429)
+  }
+
+  /**
+   * Count a failure against the username. From the threshold on, every
+   * further failure starts a cooldown twice as long as the one before, up to
+   * the cap - roughly one guess per USERNAME_COOLDOWN_MAX_SECONDS at worst.
+   */
+  private recordUsernameFailure(normalisedUsername: string) {
+    const existing = this.usernameFailureCache.get<UsernameFailureState>(normalisedUsername)
+    if (!existing && this.usernameFailureCache.getStats().keys >= USERNAME_FAILURE_MAX_ENTRIES) {
+      return
+    }
+    const state = existing ?? { failures: 0, cooldowns: 0, lockedUntil: 0 }
+    state.failures++
+    if (state.failures >= USERNAME_MAX_FAILURES) {
+      const seconds = Math.min(USERNAME_COOLDOWN_MAX_SECONDS, USERNAME_COOLDOWN_MIN_SECONDS * 2 ** state.cooldowns)
+      state.cooldowns++
+      state.lockedUntil = Date.now() + seconds * 1000
+    }
+    // Re-set to refresh the window
+    this.usernameFailureCache.set(normalisedUsername, state)
   }
 
   /**

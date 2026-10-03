@@ -776,6 +776,105 @@ describe('ServerController (e2e)', () => {
     expect(config.platforms[0].wallpaper).toBeUndefined()
   })
 
+  describe('wallpaper file name hardening', () => {
+    const uploadWallpaper = async (fileName: string) => {
+      const payload = new FormData()
+      payload.append('wallpaper', await readFile(resolve(__dirname, '../mocks/persist/wallpaper.png')), fileName)
+      const headers = payload.getHeaders()
+      headers.authorization = authorization
+      return app.inject({ method: 'POST', path: '/server/wallpaper', headers, payload })
+    }
+
+    // Write `ui.wallpaper` straight into config.json and the running config,
+    // the way a hand edit (or a value saved before the check existed) would
+    const setWallpaperInConfig = async (value: string) => {
+      const config: HomebridgeConfig = await readJson(configService.configPath)
+      ;(config.platforms.find((p: any) => p.platform === 'config') as any).wallpaper = value
+      await writeJson(configService.configPath, config)
+      configService.ui.wallpaper = value
+    }
+
+    afterAll(async () => {
+      await remove(resolve(process.env.UIX_STORAGE_PATH, 'victim.txt'))
+    })
+
+    it('refuses to upload a file that is not an allowed image type', async () => {
+      const res = await uploadWallpaper('evil.html')
+
+      expect(res.statusCode).toBe(400)
+      expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.html'))).toBe(false)
+      const config = await readJson(configService.configPath)
+      expect(config.platforms[0].wallpaper).not.toBe('ui-wallpaper.html')
+    })
+
+    it('refuses to upload a file without an extension', async () => {
+      const res = await uploadWallpaper('wallpaper')
+      expect(res.statusCode).toBe(400)
+    })
+
+    it('accepts an upper-case image extension and keeps its case', async () => {
+      const res = await uploadWallpaper('Photo.JPG')
+
+      expect(res.statusCode).toBe(201)
+      const config = await readJson(configService.configPath)
+      expect(config.platforms[0].wallpaper).toBe('ui-wallpaper.JPG')
+      expect(await pathExists(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.JPG'))).toBe(true)
+      await remove(resolve(process.env.UIX_STORAGE_PATH, 'ui-wallpaper.JPG'))
+    })
+
+    it('does not delete the file a hand-edited wallpaper value names when a new one is uploaded', async () => {
+      const victim = resolve(process.env.UIX_STORAGE_PATH, 'victim.txt')
+      await writeJson(victim, { keep: true })
+      await setWallpaperInConfig('victim.txt')
+
+      const res = await uploadWallpaper('wallpaper.png')
+
+      expect(res.statusCode).toBe(201)
+      expect(await pathExists(victim)).toBe(true)
+    })
+
+    it('does not delete the file a hand-edited wallpaper value names on DELETE, but clears the value', async () => {
+      const victim = resolve(process.env.UIX_STORAGE_PATH, 'victim.txt')
+      await writeJson(victim, { keep: true })
+      await setWallpaperInConfig('../storage/victim.txt')
+
+      const res = await app.inject({ method: 'DELETE', path: '/server/wallpaper', headers: { authorization } })
+
+      expect(res.statusCode).toBe(204)
+      expect(await pathExists(victim)).toBe(true)
+      const config = await readJson(configService.configPath)
+      expect(config.platforms[0].wallpaper).toBeUndefined()
+    })
+
+    it('GET /auth/wallpaper/:hash serves an uploaded wallpaper without authentication', async () => {
+      expect((await uploadWallpaper('wallpaper.png')).statusCode).toBe(201)
+      configService.ui.wallpaper = 'ui-wallpaper.png'
+
+      const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/any.jpg' })
+
+      expect(res.statusCode).toBe(200)
+      expect(res.rawPayload).toEqual(await readFile(resolve(__dirname, '../mocks/persist/wallpaper.png')))
+    })
+
+    it.each([
+      'auth.json',
+      '.uix-secrets',
+      '../auth.json',
+      '/etc/passwd',
+      'ui-wallpaper.png/../auth.json',
+      'sub/ui-wallpaper.png',
+    ])('GET /auth/wallpaper/:hash does not serve a wallpaper value of %s', async (value) => {
+      configService.ui.wallpaper = value
+
+      const res = await app.inject({ method: 'GET', path: '/auth/wallpaper/any.jpg' })
+
+      expect(res.statusCode).toBe(404)
+      expect(res.body).not.toContain('hashedPassword')
+      expect(res.body).not.toContain('secretKey')
+      expect(res.body).not.toContain('root:')
+    })
+  })
+
   it('GET /server/matter-accessories (should return empty array when no Matter storage)', async () => {
     // Ensure no Matter directory exists
     const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')

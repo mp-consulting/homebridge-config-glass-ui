@@ -5,7 +5,7 @@ import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { PluginsService } from '../plugins/plugins.service.js'
-import { StatusService, withoutPairingCodes } from './status.service.js'
+import { serverInfoForUser, StatusService, versionOverviewForUser, withoutInstallPath, withoutPairingCodes } from './status.service.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -93,9 +93,9 @@ export class StatusGateway {
   }
 
   @SubscribeMessage('nodejs-version-check')
-  async nodeVersionCheck() {
+  async nodeVersionCheck(client) {
     try {
-      return await this.statusService.getNodeVersionInfo()
+      return withoutInstallPath(await this.statusService.getNodeVersionInfo(), client?.data?.user?.admin === true)
     } catch (e) {
       return new WsException(e.message)
     }
@@ -116,19 +116,20 @@ export class StatusGateway {
     }
   }
 
+  // Paths, service user and network details for administrators only (see versionOverviewForUser)
   @SubscribeMessage('get-version-overview')
-  async getVersionOverview() {
+  async getVersionOverview(client) {
     try {
-      return await this.statusService.getVersionOverview()
+      return versionOverviewForUser(await this.statusService.getVersionOverview(), client?.data?.user?.admin === true)
     } catch (e) {
       return new WsException(e.message)
     }
   }
 
   @SubscribeMessage('get-homebridge-server-info')
-  async getHomebridgeServerInfo() {
+  async getHomebridgeServerInfo(client) {
     try {
-      return await this.statusService.getHomebridgeServerInfo()
+      return serverInfoForUser(await this.statusService.getHomebridgeServerInfo(), client?.data?.user?.admin === true)
     } catch (e) {
       return new WsException(e.message)
     }

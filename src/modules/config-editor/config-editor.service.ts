@@ -87,6 +87,7 @@ export class ConfigEditorService {
     const newUi = config.platforms?.find(p => p?.platform === 'config')
     const unsafe = findUnsafeUiValues(newUi, this.configService.ui, {
       terminalEnabled: this.configService.enableTerminalAccess,
+      storagePath: this.configService.storagePath,
     })
     if (unsafe.length) {
       const { path, reason } = unsafe[0]

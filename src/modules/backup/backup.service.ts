@@ -1068,6 +1068,7 @@ export class BackupService {
     for (const uiBlock of restoredConfig.platforms.filter(x => x?.platform === 'config')) {
       const unsafe = findUnsafeUiValues(uiBlock, this.configService.ui, {
         terminalEnabled: this.configService.enableTerminalAccess,
+        storagePath: this.configService.storagePath,
       })
       if (!unsafe.length) {
         continue

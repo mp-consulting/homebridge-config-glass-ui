@@ -20,6 +20,7 @@ import { API_PREFIX } from '../../src/core/api.constants.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { setStaticAssetCacheHeaders } from '../../src/core/static-assets.js'
+import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
 import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
@@ -1157,6 +1158,50 @@ process.on('message', (request) => {
 
         client.emit('end')
       })
+    })
+  })
+
+  describe('ticket and asset session lifetimes', () => {
+    let tickets: PluginsSettingsUiTicketService
+
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      tickets = new PluginsSettingsUiTicketService()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('refuses a ticket redeemed after its minute is up', () => {
+      const ticket = tickets.issue('homebridge-example', 'admin')
+
+      vi.advanceTimersByTime(61_000)
+
+      expect(() => tickets.consume(ticket, 'homebridge-example')).toThrow()
+    })
+
+    it('redeems a ticket within its minute', () => {
+      const ticket = tickets.issue('homebridge-example', 'admin')
+
+      vi.advanceTimersByTime(59_000)
+
+      expect(tickets.consume(ticket, 'homebridge-example')).toMatchObject({ pluginName: 'homebridge-example', username: 'admin' })
+    })
+
+    it('keeps an asset session alive while it is used, and drops it once idle', () => {
+      const ttl = PluginsSettingsUiTicketService.assetSessionTtl * 1000
+      const token = tickets.issueAssetSession('homebridge-example', 'admin', '')
+
+      vi.advanceTimersByTime(ttl - 1000)
+      expect(tickets.validateAssetSession(token, 'homebridge-example').username).toBe('admin')
+
+      // The use above restarted the clock
+      vi.advanceTimersByTime(ttl - 1000)
+      expect(tickets.validateAssetSession(token, 'homebridge-example').username).toBe('admin')
+
+      vi.advanceTimersByTime(ttl + 1000)
+      expect(() => tickets.validateAssetSession(token, 'homebridge-example')).toThrow()
     })
   })
 

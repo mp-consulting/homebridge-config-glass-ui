@@ -10,12 +10,13 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 import { isDeepStrictEqual } from 'node:util'
 
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
 import { satisfies } from 'semver'
 
 import { revalidateWsClients } from '../auth/guards/ws-auth.js'
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+import { resolveWallpaperPath } from './wallpaper.js'
 
 @Injectable()
 export class ConfigService {
@@ -420,8 +421,11 @@ export class ConfigService {
    */
   private async getCustomWallpaperHash(): Promise<void> {
     try {
-      if (this.ui.wallpaper) {
-        const filePath = resolve(this.storagePath, this.ui.wallpaper)
+      const filePath = this.customWallpaperPath()
+      if (!filePath) {
+        // None set, or not a valid wallpaper name: the UI shows no wallpaper
+        this.customWallpaperHash = undefined
+      } else {
         const fileStat = await stat(filePath)
         const hash = createHash('sha256')
         hash.update(`${fileStat.birthtime}${fileStat.ctime}${fileStat.size}${fileStat.blocks}`)
@@ -440,7 +444,30 @@ export class ConfigService {
    * Stream the custom wallpaper
    */
   public streamCustomWallpaper(): ReadStream {
-    return createReadStream(resolve(this.storagePath, this.ui.wallpaper))
+    const filePath = this.customWallpaperPath()
+    if (!filePath) {
+      throw new NotFoundException()
+    }
+    return createReadStream(filePath)
+  }
+
+  /**
+   * The full path of the custom wallpaper, or undefined when none is set or
+   * `ui.wallpaper` is not a name the upload produces (see wallpaper.ts) - the
+   * file is served without authentication, so the config value must not be
+   * able to point it at anything else. The Docker image's
+   * HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER is set by whoever runs the
+   * container, not through the UI, so it is used as given.
+   */
+  public customWallpaperPath(): string | undefined {
+    const value = this.ui?.wallpaper
+    if (!value) {
+      return undefined
+    }
+    if (this.runningInDocker && process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER && value === process.env.HOMEBRIDGE_CONFIG_UI_LOGIN_WALLPAPER) {
+      return resolve(this.storagePath, value)
+    }
+    return resolveWallpaperPath(this.storagePath, value)
   }
 
   /**

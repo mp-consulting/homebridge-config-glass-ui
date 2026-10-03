@@ -301,6 +301,22 @@ describe('LogGateway (e2e)', () => {
     })
   })
 
+  it.each(['file', 'native'])('refuses a %s log path that points at the secrets in the storage directory', async (method) => {
+    const secretPath = resolve(configService.storagePath, 'auth.json')
+    configService.ui.log = { method, path: secretPath } as any
+    logService.setLogMethod()
+
+    expect((logService as any).command).toBeNull()
+    expect((logService as any).useNative).toBe(false)
+    const ptySpawn = vi.spyOn(nodePtyService, 'spawn')
+
+    logGateway.connect(client, size)
+
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining(`Refusing to show the log file "${secretPath}"`))
+    expect(ptySpawn).not.toHaveBeenCalled()
+    expect((logService as any).activeClients.has(client)).toBe(false)
+  })
+
   it('ON /log/tail-log (not configured)', async () => {
     logGateway.connect(client, size)
 

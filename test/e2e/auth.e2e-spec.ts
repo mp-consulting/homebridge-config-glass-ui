@@ -1430,6 +1430,91 @@ describe('AuthController (e2e)', () => {
         .toMatchObject({ status: 429 })
     })
 
+    describe('per-username budget across addresses', () => {
+      // Each failure is a full-strength hash; make the wrong guesses cheap
+      const failFrom = async (username: string, count: number, address = (i: number) => `198.51.100.${i % 250}`) => {
+        const hashSpy = vi.spyOn(authService as any, 'hashPassword').mockResolvedValue('not-the-hash')
+        const results = []
+        for (let i = 0; i < count; i++) {
+          results.push(await authService.authenticate(username, 'wrong', undefined, address(i)).catch((e: any) => e))
+        }
+        hashSpy.mockRestore()
+        return results
+      }
+
+      beforeEach(() => {
+        ;(authService as any).usernameFailureCache.flushAll()
+        ;(authService as any).knownLoginSources.flushAll()
+      })
+
+      afterEach(() => {
+        vi.restoreAllMocks()
+        ;(authService as any).usernameFailureCache.flushAll()
+        ;(authService as any).knownLoginSources.flushAll()
+      })
+
+      it('slows a username down once guesses spread over many addresses pass the budget', async () => {
+        // 50 failures, each from a fresh address: no single address is locked
+        const results = await failFrom('admin', 50, i => `203.0.113.${i}`)
+        expect(results.every(e => e instanceof HttpException && e.getStatus() === 403)).toBe(true)
+
+        // A new address is now refused with the right password, before any hash
+        const hashSpy = vi.spyOn(authService as any, 'hashPassword')
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.200'))
+          .rejects
+          .toMatchObject({ status: 429 })
+        expect(hashSpy).not.toHaveBeenCalled()
+        // Other usernames are not affected
+        await expect(authService.authenticate('someone-else', 'x', undefined, '192.0.2.200'))
+          .rejects
+          .toMatchObject({ status: 403 })
+      })
+
+      it('lets an address that has signed in as the user before through the cooldown', async () => {
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.50')).resolves.toBeTruthy()
+
+        await failFrom('admin', 50, i => `203.0.113.${i}`)
+
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.200')).rejects.toMatchObject({ status: 429 })
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.50')).resolves.toBeTruthy()
+      })
+
+      it('is time-bounded, and each further failure doubles the cooldown up to a cap', async () => {
+        const start = Date.now()
+        const now = vi.spyOn(Date, 'now').mockReturnValue(start)
+        const lockedFor = () => ((authService as any).usernameFailureCache.get('admin').lockedUntil - Date.now()) / 1000
+
+        await failFrom('admin', 50, i => `203.0.113.${i}`)
+        expect(lockedFor()).toBe(60)
+
+        // After the cooldown the user can sign in again (from anywhere)
+        now.mockReturnValue(start + 61_000)
+        await expect(authService.authenticate('admin', 'admin', undefined, '192.0.2.201')).resolves.toBeTruthy()
+
+        // Another failure past the budget: twice as long
+        await failFrom('admin', 1, () => '203.0.113.200')
+        expect(lockedFor()).toBe(120)
+
+        // ... capped at 15 minutes
+        for (let i = 0; i < 10; i++) {
+          now.mockReturnValue(Date.now() + 3_600_000 - 1)
+          ;(authService as any).usernameFailureCache.set('admin', { ...(authService as any).usernameFailureCache.get('admin'), lockedUntil: 0 })
+          await failFrom('admin', 1, () => `203.0.113.${210 + i}`)
+        }
+        expect(lockedFor()).toBe(900)
+      })
+
+      it('does not count a 2FA prompt as a failure', async () => {
+        const hashSpy = vi.spyOn(authService as any, 'checkPassword').mockResolvedValue(undefined)
+        vi.spyOn(authService, 'findByUsername').mockResolvedValue({ username: 'otp-user', otpActive: true } as any)
+        for (let i = 0; i < 60; i++) {
+          await expect(authService.authenticate('otp-user', 'pw', undefined, `203.0.113.${i}`)).rejects.toMatchObject({ status: 412 })
+        }
+        hashSpy.mockRestore()
+        expect((authService as any).usernameFailureCache.get('otp-user')).toBeUndefined()
+      })
+    })
+
     it('throttles an IPv6 client per /64, so rotating addresses does not grant fresh guesses', async () => {
       for (let host = 1; host <= 10; host++) {
         await expect(authService.authenticate('admin', 'wrong', undefined, `2001:db8:1:2::${host.toString(16)}`)).rejects.toThrow()
