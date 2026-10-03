@@ -27,6 +27,23 @@ import './plugins.scss'
 // keeps the same reference instead of receiving a new `[]` every render
 const noChildBridges: ChildBridge[] = []
 
+/**
+ * The child bridges by plugin, regrouped when the list changes but keeping the
+ * previous array for every plugin whose bridges did not change: a status update
+ * for one bridge then re-renders only that plugin's (memoised) card.
+ * @param childBridges - the store's bridge list
+ */
+function useStableChildBridgeGroups(childBridges: ChildBridge[]): Map<string, ChildBridge[]> {
+  const [grouped, setGrouped] = useState(() => ({ source: childBridges, groups: groupChildBridgesByPlugin(childBridges) }))
+  if (grouped.source !== childBridges) {
+    // Adjusting state while rendering, as React documents for derived state
+    const next = { source: childBridges, groups: groupChildBridgesByPlugin(childBridges, grouped.groups) }
+    setGrouped(next)
+    return next.groups
+  }
+  return grouped.groups
+}
+
 /** The ngbTooltip of the toolbar buttons: on hover, below, after 150ms. */
 function ToolbarTooltip({ text, children }: { text: string, children: ReactElement }) {
   return (
@@ -94,7 +111,7 @@ export function PluginsPage() {
   const isSearchMode = useStore(store, s => s.isSearchMode)
   const uiUpdateAvailable = useStore(store, s => s.uiUpdateAvailable)
 
-  const childBridgesByPlugin = useMemo(() => groupChildBridgesByPlugin(childBridges), [childBridges])
+  const childBridgesByPlugin = useStableChildBridgeGroups(childBridges)
   const pluginSummary = useMemo(() => summarise(installedPlugins), [installedPlugins])
   const availableUpdateCount = countAvailableUpdates({ installedPlugins, uiUpdateAvailable })
 

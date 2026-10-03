@@ -16,6 +16,7 @@ import { PluginSupport } from '@/modules/plugins/plugin-support/PluginSupport'
 import {
   availableUpdateCount,
   createPluginsPageStore,
+  groupChildBridgesByPlugin,
   sortPlugins,
 } from '@/modules/plugins/plugins-page.store'
 import { fakeApi, fakeIoNamespace, makeAuthState, makePlugin, makeSettingsState, toastStub } from '@/testing'
@@ -965,6 +966,25 @@ describe('the plugins page', () => {
       io.socket.fire('child-bridge-status-update', { username: 'B', status: 'down' })
 
       expect(page().childBridges).not.toBe(before)
+    })
+
+    it('keeps the other plugins\' bridge lists when one bridge reports, so their cards skip the render', async () => {
+      create()
+      await settle()
+      const a = { username: 'A', plugin: 'homebridge-example', status: 'up' } as any
+      const b = { username: 'B', plugin: 'homebridge-other', status: 'up' } as any
+      store.setState({ childBridges: [a, b] })
+      const before = groupChildBridgesByPlugin(page().childBridges)
+
+      io.socket.fire('child-bridge-status-update', { username: 'B', status: 'down' })
+      const after = groupChildBridgesByPlugin(page().childBridges, before)
+
+      expect(page().childBridges[0]).toBe(a)
+      expect(after.get('homebridge-example')).toBe(before.get('homebridge-example'))
+      expect(after.get('homebridge-other')).not.toBe(before.get('homebridge-other'))
+      expect(after.get('homebridge-other')![0].status).toBe('down')
+      // The old object is left as it was
+      expect(b.status).toBe('up')
     })
 
     it('gives a plugin only its own bridges', () => {

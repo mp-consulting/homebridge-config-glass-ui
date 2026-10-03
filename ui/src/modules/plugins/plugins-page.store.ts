@@ -102,8 +102,12 @@ export function availableUpdateCount(state: Pick<PluginsPageState, 'installedPlu
 /**
  * Child bridges grouped by plugin name. Bound into each plugin card, so it
  * has to be a stable reference between renders (memoise it on `childBridges`).
+ * @param childBridges - every reported child bridge
+ * @param previous - the last grouping: a plugin whose bridges are the same
+ * objects as before keeps its old array, so its memoised card skips the
+ * render when another plugin's bridge reports a status change
  */
-export function groupChildBridgesByPlugin(childBridges: ChildBridge[]): Map<string, ChildBridge[]> {
+export function groupChildBridgesByPlugin(childBridges: ChildBridge[], previous?: Map<string, ChildBridge[]>): Map<string, ChildBridge[]> {
   const byPlugin = new Map<string, ChildBridge[]>()
   for (const bridge of childBridges) {
     const list = byPlugin.get(bridge.plugin)
@@ -111,6 +115,14 @@ export function groupChildBridgesByPlugin(childBridges: ChildBridge[]): Map<stri
       list.push(bridge)
     } else {
       byPlugin.set(bridge.plugin, [bridge])
+    }
+  }
+  if (previous) {
+    for (const [name, list] of byPlugin) {
+      const before = previous.get(name)
+      if (before && before.length === list.length && before.every((bridge, i) => bridge === list[i])) {
+        byPlugin.set(name, before)
+      }
     }
   }
   return byPlugin
@@ -419,9 +431,11 @@ export function createPluginsPageStore() {
         const bridges = get().childBridges
         const existingBridge = bridges.find(x => x.username === data.username)
         if (existingBridge) {
-          Object.assign(existingBridge, data)
-          // A new array, so the cards re-render
-          set({ childBridges: [...bridges] })
+          // A new object for the bridge that changed (and a new array), the
+          // others untouched: only the card of the plugin it belongs to
+          // re-renders (see groupChildBridgesByPlugin)
+          const updated = { ...existingBridge, ...data }
+          set({ childBridges: bridges.map(bridge => (bridge === existingBridge ? updated : bridge)) })
         } else {
           set({ childBridges: [...bridges, data] })
         }
