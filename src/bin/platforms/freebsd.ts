@@ -9,6 +9,7 @@ import { outputFile } from 'fs-extra/esm'
 
 import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
+import { buildSudoersEntry, updateSudoersContent } from './sudoers.js'
 
 export class FreeBSDInstaller extends BasePlatform {
   private get rcServiceName() {
@@ -244,16 +245,18 @@ export class FreeBSDInstaller extends BasePlatform {
       }
 
       const npmPath = execSync('which npm').toString('utf8').trim()
-      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${npmPath}, /usr/local/bin/npm`
+      // No SETENV - see sudoers.ts
+      const sudoersEntry = buildSudoersEntry(this.hbService.asUser, [npmPath, '/usr/local/bin/npm'])
 
-      // Check if the sudoers file already contains the entry
-      const sudoers = readFileSync('/usr/local/etc/sudoers', 'utf-8')
-      if (sudoers.includes(sudoersEntry)) {
+      // Add the entry, replacing one an earlier version wrote with SETENV
+      const sudoers = updateSudoersContent(readFileSync('/usr/local/etc/sudoers', 'utf-8'), this.hbService.asUser, sudoersEntry)
+      if (sudoers === undefined) {
         return
       }
 
-      // Grant the user restricted sudo privileges to /sbin/shutdown
-      execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`)
+      // Grant the user restricted sudo privileges to npm. visudo checks the
+      // syntax before installing the file.
+      execSync('sudo EDITOR=\'tee\' visudo', { input: sudoers, stdio: ['pipe', 'ignore', 'inherit'] })
     } catch (e) {
       this.hbService.logger.warn('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge Glass UI.')
     }

@@ -13,6 +13,7 @@ import { getUiNodeModulesPath } from '../../core/install-paths.js'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
 import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
+import { buildSudoersEntry, updateSudoersContent } from './sudoers.js'
 
 export class LinuxInstaller extends BasePlatform {
   private get systemdServiceName() {
@@ -637,16 +638,25 @@ export class LinuxInstaller extends BasePlatform {
 
       const npmPath = execSync('which npm').toString('utf8').trim()
       const shutdownPath = execSync('which shutdown').toString('utf8').trim()
-      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/bin/npm, /usr/local/bin/npm, /usr/bin/apt-get update, /usr/bin/apt-get install --only-upgrade -y homebridge`
+      // No SETENV - see sudoers.ts
+      const sudoersEntry = buildSudoersEntry(this.hbService.asUser, [
+        shutdownPath,
+        npmPath,
+        '/usr/bin/npm',
+        '/usr/local/bin/npm',
+        '/usr/bin/apt-get update',
+        '/usr/bin/apt-get install --only-upgrade -y homebridge',
+      ])
 
-      // Check if the sudoers file already contains the entry
-      const sudoers = readFileSync('/etc/sudoers', 'utf-8')
-      if (sudoers.includes(sudoersEntry)) {
+      // Add the entry, replacing one an earlier version wrote with SETENV
+      const sudoers = updateSudoersContent(readFileSync('/etc/sudoers', 'utf-8'), this.hbService.asUser, sudoersEntry)
+      if (sudoers === undefined) {
         return
       }
 
-      // Grant the user restricted sudo privileges to /sbin/shutdown
-      execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`)
+      // Grant the user restricted sudo privileges to shutdown, npm and apt-get.
+      // visudo checks the syntax before installing the file.
+      execSync('sudo EDITOR=\'tee\' visudo', { input: sudoers, stdio: ['pipe', 'ignore', 'inherit'] })
     } catch (e) {
       this.hbService.logger.warn('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge Glass UI.')
     }

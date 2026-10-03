@@ -236,8 +236,21 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
 
     await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' })
 
-    // Expect the npm command to be spawned with sudo
-    expect(mockSpawn).toHaveBeenCalledWith('sudo', ['-E', '-n', 'npm', 'install', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
+    // Expect the npm command to be spawned with plain `sudo -n` (`-E` needs
+    // SETENV, which the hb-service sudoers entry no longer grants) and npm's
+    // settings passed as options, since sudo drops the environment
+    expect(mockSpawn).toHaveBeenCalledWith('sudo', [
+      '-n',
+      'npm',
+      'install',
+      '--omit=dev',
+      'homebridge-mock-plugin@latest',
+      '--global-style=true',
+      '--update-notifier=false',
+      '--prefer-online=true',
+      '--foreground-scripts=true',
+      '--loglevel=error',
+    ], expect.anything())
 
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
