@@ -14,7 +14,6 @@ import type { BasePlatform } from './base-platform.js'
 
 import { Buffer } from 'node:buffer'
 import { execFileSync, execSync, fork } from 'node:child_process'
-import { randomInt } from 'node:crypto'
 import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
 import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
@@ -31,9 +30,10 @@ import { gt, gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
 import { extract } from 'tar'
-import { check as tcpCheck } from 'tcp-port-used'
 
+import { generatePin, generateUsername } from '../core/hap-identity.js'
 import { getUiNodeModulesPath } from '../core/install-paths.js'
+import { findFreePort, isPortInUse } from '../core/net/port.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { sanitiseStartupEnv } from '../modules/config-editor/config-safety.js'
 import { Logger } from './logger.js'
@@ -747,7 +747,7 @@ export class HomebridgeServiceHelper {
    * Checks if the port is currently in use by another process
    */
   public async portCheck() {
-    const inUse = await tcpCheck(this.uiPort)
+    const inUse = await isPortInUse(this.uiPort)
     if (inUse) {
       this.logger.error(`Port ${this.uiPort} is already in use by another process on this host.`)
       this.logger.error('You can specify another port using the --port flag, e.g.:')
@@ -902,10 +902,10 @@ export class HomebridgeServiceHelper {
    * Create a default Homebridge bridge config
    */
   private async generateBridgeConfig() {
-    const username = this.generateUsername()
+    const username = generateUsername()
     const port = await this.generatePort()
     const name = `Homebridge ${username.substring(username.length - 5).replace(RE_COLON, '')}`
-    const pin = this.generatePin()
+    const pin = generatePin()
     const advertiser = await this.isAvahiDaemonRunning() ? 'avahi' : 'bonjour-hap'
 
     return {
@@ -959,45 +959,10 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Generates a new random pin
-   */
-  private generatePin() {
-    let code: string | Array<any> = `${randomInt(10000000, 100000000)}`
-    code = code.split('')
-    code.splice(3, 0, '-')
-    code.splice(6, 0, '-')
-    code = code.join('')
-    return code
-  }
-
-  /**
-   * Generates a new random username
-   */
-  private generateUsername() {
-    const hexDigits = '0123456789ABCDEF'
-    let username = '0E:'
-    for (let i = 0; i < 5; i += 1) {
-      username += hexDigits.charAt(randomInt(0, 16))
-      username += hexDigits.charAt(randomInt(0, 16))
-      if (i !== 4) {
-        username += ':'
-      }
-    }
-    return username
-  }
-
-  /**
    * Generate a random port for Homebridge
    */
   private async generatePort() {
-    const randomPort = () => randomInt(51000, 52001)
-
-    let port = randomPort()
-    while (await tcpCheck(port)) {
-      port = randomPort()
-    }
-
-    return port
+    return findFreePort(51000, 52000)
   }
 
   private avahiDaemonRunning: boolean | undefined
@@ -1062,7 +1027,7 @@ export class HomebridgeServiceHelper {
       }
 
       // Check if port is still in use
-      if (!await tcpCheck(Number.parseInt(currentConfig.bridge.port.toString(), 10))) {
+      if (!await isPortInUse(Number.parseInt(currentConfig.bridge.port.toString(), 10))) {
         return
       }
 

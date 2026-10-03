@@ -1,7 +1,8 @@
-import { randomInt } from 'node:crypto'
-
 import { HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
+import { generatePin, generateUsername } from '../../core/hap-identity.js'
 import { RE_COLON, RE_PIN, RE_USERNAME } from '../../core/regex.constants.js'
+
+export { generatePin, generateUsername }
 
 /**
  * Normalise a config object in place: ensure the bridge block is complete
@@ -105,34 +106,6 @@ export function normaliseConfig(
   }
 
   return config
-}
-
-/**
- * Generates a new random pin
- */
-export function generatePin(): string {
-  let code: string | Array<any> = `${randomInt(10000000, 100000000)}`
-  code = code.split('')
-  code.splice(3, 0, '-')
-  code.splice(6, 0, '-')
-  code = code.join('')
-  return code
-}
-
-/**
- * Generates a new random username
- */
-export function generateUsername(): string {
-  const hexDigits = '0123456789ABCDEF'
-  let username = '0E:'
-  for (let i = 0; i < 5; i += 1) {
-    username += hexDigits.charAt(randomInt(0, 16))
-    username += hexDigits.charAt(randomInt(0, 16))
-    if (i !== 4) {
-      username += ':'
-    }
-  }
-  return username
 }
 
 /**
