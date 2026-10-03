@@ -124,6 +124,10 @@ describe('AccessoriesController (e2e)', () => {
     // Enable insecure mode
     configService.homebridgeInsecureMode = true
 
+    // Every test starts from a cold shared load and may refresh discovery
+    ;(accessoriesService as any).sharedHapLoad = null
+    ;(accessoriesService as any).lastInstanceRefresh = 0
+
     // Setup mocks
     hapClientMock = vi.spyOn(accessoriesService.hapClient, 'getAllServices')
       .mockResolvedValue(mockedServices as any)
@@ -677,7 +681,12 @@ describe('AccessoriesController (e2e)', () => {
     monitor.finish = vi.fn()
     vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
     vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
-    hapClientMock.mockResolvedValue([{ uniqueId: 'a', serviceCharacteristics: [{ type: 'On', value: false }] }] as any)
+    // An instance announced while setup runs is what makes the second load worth it
+    let current: any = [{ uniqueId: 'a', serviceCharacteristics: [{ type: 'On', value: false }] }]
+    hapClientMock.mockImplementation(async () => {
+      accessoriesService.hapClient.emit('instance-discovered', {})
+      return current
+    })
 
     vi.useFakeTimers()
     const unchanged = authorizeWsClient(new EventEmitter() as any)
@@ -697,16 +706,93 @@ describe('AccessoriesController (e2e)', () => {
       await vi.waitFor(() => expect(unchanged.emit).toHaveBeenCalledWith('accessories-data', expect.anything()))
       unchanged.emit('disconnect')
 
+      // (past the shared load's lifetime, so this tab runs a load of its own)
+      await vi.advanceTimersByTimeAsync(AccessoriesService.SHARED_LOAD_TTL_MS)
       changed.emit = vi.fn(changed.emit.bind(changed))
       await accessoriesService.connect(changed)
       vi.mocked(changed.emit).mockClear()
       const next = [{ uniqueId: 'a', serviceCharacteristics: [{ type: 'On', value: true }] }]
-      hapClientMock.mockResolvedValue(next as any)
+      current = next
       await vi.advanceTimersByTimeAsync(3000)
       expect(changed.emit).toHaveBeenCalledWith('accessories-data', next)
     } finally {
       unchanged.emit('disconnect')
       changed.emit('disconnect')
+      vi.useRealTimers()
+    }
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
+  it('service.connect skips the delayed second load when nothing was discovered during setup', async () => {
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+
+    vi.useFakeTimers()
+    const client = authorizeWsClient(new EventEmitter() as any)
+    try {
+      await accessoriesService.connect(client)
+      await vi.advanceTimersByTimeAsync(5000)
+      expect(hapClientMock).toHaveBeenCalledTimes(1)
+      expect(accessoriesService.hapClient.listenerCount('instance-discovered')).toBe(1)
+    } finally {
+      client.emit('disconnect')
+      vi.useRealTimers()
+    }
+    expect(accessoriesService.hapClient.listenerCount('instance-discovered')).toBe(0)
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
+  it('service.connect shares one HAP load between clients, and refreshes discovery at most every 30 s', async () => {
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    const refreshInstances = vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+
+    vi.useFakeTimers()
+    const clients = [0, 1, 2].map(() => authorizeWsClient(new EventEmitter() as any))
+    try {
+      // three tabs connecting together: one getAllServices, one discovery refresh
+      await Promise.all(clients.map(client => accessoriesService.connect(client)))
+      expect(hapClientMock).toHaveBeenCalledTimes(1)
+      expect(refreshInstances).toHaveBeenCalledTimes(1)
+
+      // a tab connecting shortly after reuses the finished load
+      const late = authorizeWsClient(new EventEmitter() as any)
+      clients.push(late)
+      await vi.advanceTimersByTimeAsync(1000)
+      await accessoriesService.connect(late)
+      expect(hapClientMock).toHaveBeenCalledTimes(1)
+
+      // but an explicit refresh always reads current data
+      late.emit('accessory-control', { refresh: true })
+      await vi.waitFor(() => expect(hapClientMock).toHaveBeenCalledTimes(2))
+
+      // past the shared-load lifetime a new tab loads again; discovery is
+      // only refreshed again once 30 s have passed
+      await vi.advanceTimersByTimeAsync(AccessoriesService.SHARED_LOAD_TTL_MS)
+      const next = authorizeWsClient(new EventEmitter() as any)
+      clients.push(next)
+      await accessoriesService.connect(next)
+      expect(hapClientMock).toHaveBeenCalledTimes(3)
+      expect(refreshInstances).toHaveBeenCalledTimes(1)
+
+      await vi.advanceTimersByTimeAsync(AccessoriesService.REFRESH_INSTANCES_MIN_INTERVAL_MS)
+      const later = authorizeWsClient(new EventEmitter() as any)
+      clients.push(later)
+      await accessoriesService.connect(later)
+      expect(refreshInstances).toHaveBeenCalledTimes(2)
+    } finally {
+      for (const client of clients) {
+        client.emit('disconnect')
+      }
       vi.useRealTimers()
     }
     ;(accessoriesService as any).hapMonitorPromise = null

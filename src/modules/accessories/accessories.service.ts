@@ -33,6 +33,10 @@ class MatterIpcTimeoutError extends Error {}
 export class AccessoriesService {
   /** How long a burst of instance discoveries is coalesced before the client is told to reload. */
   static readonly INSTANCE_RELOAD_DEBOUNCE_MS = 1000
+  /** How long a finished HAP load is handed to the clients that connect after it. */
+  static readonly SHARED_LOAD_TTL_MS = 2000
+  /** The least time between two discovery refreshes triggered by client connects. */
+  static readonly REFRESH_INSTANCES_MIN_INTERVAL_MS = 30_000
 
   public hapClient: HapClient
   // Read-only: the cached list is only ever emitted, never mutated, so the
@@ -65,6 +69,15 @@ export class AccessoriesService {
   // waiter instead of every request registering its own listener.
   private matterRequests = new Map<string, { eventType: string, resolve: (v: any) => void, reject: (e: Error) => void, timer: ReturnType<typeof setTimeout> }>()
   private matterDispatcherInstalled = false
+  // The HAP load shared by every client: the one in flight, or the last one
+  // for SHARED_LOAD_TTL_MS after it finished. getAllServices() reads every
+  // accessory of every bridge, and each tab used to run its own.
+  private sharedHapLoad: { promise: Promise<ServiceType[]>, settledAt: number | null } | null = null
+  private lastInstanceRefresh = 0
+  // A loaded list's change signature, computed once per list however many
+  // clients compare against it - taken when the list is first sent, which is
+  // what every client sharing that load received
+  private listSignatures = new WeakMap<object, string>()
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -163,6 +176,12 @@ export class AccessoriesService {
     let lastSent: { hap: string, matter: string } | null = null
     // Bound once setup completes, so `onEnd` can detach exactly this listener
     let controlListener: ((msg?: AccessoryControlMessage) => void) | null = null
+    // An instance found while setup ran may be missing from the initial load,
+    // and no reload request would be sent for it (that listener comes later)
+    let discoveredDuringSetup = false
+    const setupDiscoveryHandler = () => {
+      discoveredDuringSetup = true
+    }
 
     const updateHandler = (data: ServiceType | MatterService) => {
       client.emit('accessories-data', data)
@@ -212,6 +231,7 @@ export class AccessoriesService {
       // the UI process, and hap-client refreshes its connections itself as
       // instances come and go).
       monitor?.removeListener('service-update', updateHandler)
+      this.hapClient.removeListener('instance-discovered', setupDiscoveryHandler)
       this.hapClient.removeListener('instance-discovered', instanceUpdateHandler)
 
       // Remove client from active clients
@@ -228,7 +248,10 @@ export class AccessoriesService {
 
     client.on('disconnect', onEnd)
     client.on('end', onEnd)
+    this.hapClient.on('instance-discovered', setupDiscoveryHandler)
 
+    // `refresh`: the client asked for current data, so a recent shared load
+    // is not reused (one still in flight is joined).
     // `skipUnchanged`: leave out the data the client already has from the
     // previous load (the ready events are still sent - they are idempotent)
     const loadAllAccessories = async (refresh: boolean, skipUnchanged = false) => {
@@ -244,14 +267,14 @@ export class AccessoriesService {
 
       // Load HAP accessories first. getAllServices() already returns every
       // characteristic's current value, so no per-service refresh is needed.
-      const hapServices = await this.loadAccessories()
+      const hapServices = await this.loadAccessoriesShared(refresh)
       if (disconnected) {
         return
       }
 
       // Emit HAP ready immediately so HAP accessories can be controlled
       client.emit('hap-accessories-ready-for-control')
-      const hapSignature = JSON.stringify(hapServices)
+      const hapSignature = this.listSignature(hapServices)
       if (!skipUnchanged || hapSignature !== lastSent?.hap) {
         client.emit('accessories-data', hapServices)
       }
@@ -264,7 +287,7 @@ export class AccessoriesService {
 
       // Emit Matter ready
       client.emit('matter-accessories-ready-for-control')
-      const matterSignature = JSON.stringify(matterServices)
+      const matterSignature = this.listSignature(matterServices)
       if (matterServices.length > 0 && (!skipUnchanged || matterSignature !== lastSent?.matter)) {
         client.emit('accessories-data', matterServices)
       }
@@ -365,19 +388,68 @@ export class AccessoriesService {
     client.on('accessory-control', controlListener)
 
     monitor.on('service-update', updateHandler)
+    this.hapClient.removeListener('instance-discovered', setupDiscoveryHandler)
     this.hapClient.on('instance-discovered', instanceUpdateHandler)
 
-    // Load a second time in case anything was missed: an instance discovered
-    // while the initial load ran (before the instance-discovered listener
-    // above was attached) never triggers a reload of its own. Most of the time
-    // nothing changed, so the data is only sent when it differs.
-    secondaryLoadTimeout = setTimeout(async () => {
-      secondaryLoadTimeout = null
-      await loadAllAccessories(true, true)
-    }, 3000)
+    // Load a second time only when something may have been missed: an
+    // instance discovered while the initial load ran (before the
+    // instance-discovered listener above was attached) never triggers a
+    // reload of its own. The data is only sent when it differs.
+    if (discoveredDuringSetup) {
+      secondaryLoadTimeout = setTimeout(async () => {
+        secondaryLoadTimeout = null
+        await loadAllAccessories(true, true)
+      }, 3000)
+    }
 
-    // Send a refresh instances request
-    this.hapClient.refreshInstances()
+    // Ask for a discovery refresh - at most every 30 s, however many tabs
+    // connect; instances found later still reach every client through the
+    // instance-discovered listener above
+    const now = Date.now()
+    if (now - this.lastInstanceRefresh >= AccessoriesService.REFRESH_INSTANCES_MIN_INTERVAL_MS) {
+      this.lastInstanceRefresh = now
+      this.hapClient.refreshInstances()
+    }
+  }
+
+  /**
+   * The HAP services, from one load shared by every client: a load in flight
+   * is joined, and a finished one is reused for SHARED_LOAD_TTL_MS unless
+   * `fresh` data is asked for.
+   */
+  private loadAccessoriesShared(fresh: boolean): Promise<ServiceType[]> {
+    const current = this.sharedHapLoad
+    if (current && (current.settledAt === null
+      || (!fresh && Date.now() - current.settledAt < AccessoriesService.SHARED_LOAD_TTL_MS))) {
+      return current.promise
+    }
+
+    const entry: { promise: Promise<ServiceType[]>, settledAt: number | null } = { promise: null, settledAt: null }
+    entry.promise = this.loadAccessories().then(
+      (services) => {
+        entry.settledAt = Date.now()
+        return services
+      },
+      (e) => {
+        // A failed load is not handed to anyone else
+        if (this.sharedHapLoad === entry) {
+          this.sharedHapLoad = null
+        }
+        throw e
+      },
+    )
+    this.sharedHapLoad = entry
+    return entry.promise
+  }
+
+  /** A loaded list's change signature, computed once per list. */
+  private listSignature(list: object[]): string {
+    let signature = this.listSignatures.get(list)
+    if (signature === undefined) {
+      signature = JSON.stringify(list)
+      this.listSignatures.set(list, signature)
+    }
+    return signature
   }
 
   /**
@@ -611,6 +683,8 @@ export class AccessoriesService {
    */
   public resetInstancePool() {
     if (this.configService.homebridgeInsecureMode) {
+      // The instances are about to be rediscovered: do not hand out a load of the old ones
+      this.sharedHapLoad = null
       this.hapClient.resetInstancePool()
     }
   }
