@@ -2,6 +2,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
+import { tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { securityTransition } from '@/core/accessories/types/hap/security-system/security-system.utils'
 import { SecuritySystemManage } from '@/core/accessories/types/hap/security-system/SecuritySystemManage'
 import { openModal } from '@/core/ui/modal'
@@ -26,10 +27,13 @@ export function SecuritySystemTile({ service, readyForControl = false }: HapTile
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick: onClick })
 
   let label = null
+  let stateText = ''
   if (isArming) {
-    label = <div className="accessory-label red-text">{`${t('accessories.control.arming')}...`}</div>
+    stateText = t('accessories.control.arming')
+    label = <div className="accessory-label red-text">{`${stateText}...`}</div>
   } else if (isDisarming) {
-    label = <div className="accessory-label grey-text">{`${t('accessories.control.disarming')}...`}</div>
+    stateText = t('accessories.control.disarming')
+    label = <div className="accessory-label grey-text">{`${stateText}...`}</div>
   } else {
     const states: Record<number, [string, string]> = {
       0: ['grey-text', 'accessories.control.home'],
@@ -40,9 +44,12 @@ export function SecuritySystemTile({ service, readyForControl = false }: HapTile
     }
     const state = states[current]
     if (state) {
+      stateText = t(state[1])
       label = <div className={`accessory-label ${state[0]}`}>{t(state[1])}</div>
     }
   }
+
+  const srText = tileLabel(service.customName || service.serviceName, t('accessories.core.security_system'), stateText)
 
   return (
     <div
@@ -56,7 +63,9 @@ export function SecuritySystemTile({ service, readyForControl = false }: HapTile
         current === 4 && 'triggered',
         readyForControl && 'cursor-pointer',
       )}
+      role="button"
       tabIndex={0}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.security_system')}>

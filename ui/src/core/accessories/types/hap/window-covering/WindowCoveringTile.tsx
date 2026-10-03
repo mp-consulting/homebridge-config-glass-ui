@@ -2,8 +2,9 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
+import { tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { PositionLabel } from '@/core/accessories/types/hap/position-tile'
-import { positionStyle, togglePosition } from '@/core/accessories/types/hap/position.utils'
+import { positionStateText, positionStyle, togglePosition } from '@/core/accessories/types/hap/position.utils'
 import { WindowCoveringManage } from '@/core/accessories/types/hap/window-covering/WindowCoveringManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
@@ -29,12 +30,15 @@ export function WindowCoveringTile({ service, readyForControl = false }: HapTile
   }
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick })
+  const srText = tileLabel(service.customName || service.serviceName, t('accessories.core.window_covering'), positionStateText(service, t))
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box hb-window-covering', service.values?.CurrentPosition && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="button"
       tabIndex={0}
+      aria-label={srText}
       style={positionStyle(service)}
     >
       <div className="d-flex flex-column h-100">

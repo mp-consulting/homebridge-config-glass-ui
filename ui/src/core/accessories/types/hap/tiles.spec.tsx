@@ -142,6 +142,19 @@ describe('the HAP accessory tiles', () => {
       expect(writesTo(service)).toEqual([{ type: tile.write[0], value: tile.write[1] }])
     })
 
+    it('tells a screen reader what it is and what state it is in', () => {
+      // A focusable div with no role or name reads as an empty "group"
+      const service = serviceWith(tile.chars)
+      service.customName = 'Hallway'
+      const box = renderTile(tile.type, service, true).box()
+
+      expect(['switch', 'button']).toContain(box.getAttribute('role'))
+      expect(box.getAttribute('aria-label')).toMatch(/^Hallway, /)
+      if (box.getAttribute('role') === 'switch') {
+        expect(box).toHaveAttribute('aria-checked', 'false')
+      }
+    })
+
     it('writes nothing on the keyboard long press', () => {
       const service = serviceWith(tile.chars)
       const view = renderTile(tile.type, service, true)
@@ -183,6 +196,15 @@ describe('the HAP accessory tiles', () => {
       view.tap()
 
       expect(modal.opened).toEqual([])
+    })
+
+    it('is announced as a button with its name', () => {
+      const service = serviceWith(tile.chars)
+      service.customName = 'Hallway'
+      const box = renderTile(tile.type, service, true).box()
+
+      expect(box).toHaveAttribute('role', 'button')
+      expect(box.getAttribute('aria-label')).toMatch(/^Hallway, /)
     })
 
     it('opens its manage modal on a tap once the bridge is ready', () => {

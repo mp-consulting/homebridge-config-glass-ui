@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { FanManage } from '@/core/accessories/types/hap/fan/FanManage'
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
@@ -54,12 +54,22 @@ export function FanTile({ service, readyForControl = false }: HapTileProps) {
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick })
   const values = service.values
   const running = values?.On || values?.Active
+  const srText = tileLabel(
+    service.customName || service.serviceName,
+    t('accessories.core.fan'),
+    values?.On && values?.RotationSpeed
+      ? `${t('accessories.control.on')}, ${values.RotationSpeed}${rotationSpeedUnit}`
+      : running ? t('accessories.control.on') + consumptionSuffix(service) : t('accessories.control.off'),
+  )
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box hb-fan', (values.On || values.Active) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={!!running}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div
