@@ -53,7 +53,7 @@ jobs:
       # pinned by manifest.json. On CI the suite fails (rather than skips) when they are missing.
       - name: Cache schema corpus
         id: schema-corpus
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ui/src/schema-form/__corpus__/schemas
           key: schema-corpus-${{ hashFiles('ui/src/schema-form/__corpus__/manifest.json') }}
@@ -88,7 +88,7 @@ jobs:
         run: node e2e/build.mjs
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -101,7 +101,7 @@ jobs:
       # mock plugins in too, so they are part of the key.
       - name: Cache e2e plugins
         id: e2e-plugins
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: e2e/.run/plugins
           key: e2e-plugins-${{ hashFiles('e2e/install-plugins.mjs', 'test/mocks/plugins/**') }}
