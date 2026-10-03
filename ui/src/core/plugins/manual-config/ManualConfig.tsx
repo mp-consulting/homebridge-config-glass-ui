@@ -1,10 +1,11 @@
-import type { ManualConfigEditor, ManualConfigMonaco } from '@/core/plugins/manual-config/manual-config.controller'
+import type { ManualConfigActions, ManualConfigEditor, ManualConfigMonaco, ManualConfigSchema } from '@/core/plugins/manual-config/manual-config.store'
 import type { ModalComponentProps } from '@/core/ui/modal'
 import type { PluginModalData } from '@/core/ui/modal-data'
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
+import { useStore } from 'zustand'
 
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
@@ -12,7 +13,7 @@ import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { MonacoEditor } from '@/core/monaco'
 import { interpolateMd } from '@/core/pipes/interpolate-md'
 import { managePlugins } from '@/core/plugins/manage-plugins'
-import { ManualConfigController } from '@/core/plugins/manual-config/manual-config.controller'
+import { createManualConfigStore } from '@/core/plugins/manual-config/manual-config.store'
 import { useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { i18n } from '@/core/ui/i18n'
@@ -38,10 +39,10 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const [ctrl] = useState(() => {
+  const [store] = useState(() => {
     const { env } = useSettingsStore.getState()
     const flags = env.featureFlags ?? {}
-    return new ManualConfigController({
+    return createManualConfigStore({
       api,
       toastError: (message, title) => toast.error(message, title),
       t: i18n.t.bind(i18n),
@@ -60,20 +61,17 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
       recommendChildBridges: () => Boolean(useSettingsStore.getState().env.recommendChildBridges),
     }, plugin, schema, editorContext)
   })
-  useSyncExternalStore(ctrl.subscribe, ctrl.getVersion)
+  const ctrl = useStore(store)
 
-  useEffect(() => {
-    ctrl.init()
-    return () => ctrl.destroy()
-  }, [ctrl])
+  useEffect(() => store.getState().connect(), [store])
 
   const { pluginType, pluginAlias } = ctrl
   // Registered while an editor is mounted (Angular's setupSchemaValidation on editor init)
   const jsonSchema = useMemo(
     () => (pluginType ? ctrl.buildSchema() : null),
-    // buildSchema reads the alias and type off the (mutable) controller
+    // buildSchema reads the alias and type from the store
     // eslint-disable-next-line react/exhaustive-deps
-    [ctrl, pluginType, pluginAlias],
+    [store, pluginType, pluginAlias],
   )
 
   const strict = ctrl.strictValidation
@@ -265,9 +263,10 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
   )
 }
 
-/** The Monaco editor of the open block; hands itself to the controller while mounted. */
-function BlockEditor({ ctrl, jsonSchema }: { ctrl: ManualConfigController, jsonSchema: ReturnType<ManualConfigController['buildSchema']> | null }) {
-  useEffect(() => () => ctrl.detachEditor(), [ctrl])
+/** The Monaco editor of the open block; hands itself to the store while mounted. */
+function BlockEditor({ ctrl, jsonSchema }: { ctrl: Pick<ManualConfigActions, 'detachEditor' | 'onEditorInit'>, jsonSchema: ManualConfigSchema | null }) {
+  const { detachEditor } = ctrl
+  useEffect(() => () => detachEditor(), [detachEditor])
   return (
     <MonacoEditor
       options={EDITOR_OPTIONS}
