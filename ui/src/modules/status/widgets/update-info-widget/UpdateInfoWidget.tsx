@@ -2,31 +2,30 @@ import type { Plugin } from '@/core/plugins/manage-plugins.interfaces'
 import type { WidgetProps } from '@/modules/status/widgets/widget.types'
 import type { KeyboardEvent, SyntheticEvent } from 'react'
 
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { useStore } from 'zustand'
 
 import { useAuthStore } from '@/core/auth'
 import { HbV2Modal } from '@/core/components/hb-v2-modal/HbV2Modal'
 import { Information } from '@/core/components/information/Information'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
-import { toast } from '@/core/ui/toast'
 import { cx } from '@/core/utilities/cx'
-import { toToastMessage } from '@/core/utilities/http-error'
 import { useNamespace } from '@/core/ws'
 import { environment } from '@/environments/environment'
 
 import { NodeVersionModal } from './node-version-modal/NodeVersionModal'
 import {
+  createUpdateInfoStore,
   getHomebridgeIconClass,
   getHomebridgeUiIconClass,
   getNodejsIconClass,
   getPluginsIconClass,
-  UpdateInfoController,
-} from './update-info.controller'
+  selectUpdateAllCount,
+} from './update-info.store'
 
 import './update-info-widget.scss'
 
@@ -48,39 +47,35 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
   const isAdmin = useAuthStore(state => state.user.admin)
   const io = useNamespace('status')
 
-  const [ctrl] = useState(() => new UpdateInfoController({
+  const [store] = useState(() => createUpdateInfoStore({
     getEnv: () => useSettingsStore.getState().env,
     setEnvItem: (key, value) => settingsActions.setEnvItem(key, value),
     isAdmin: !!isAdmin,
     isProduction: () => environment.production,
-    toastError: (message, title) => toast.error(message, title),
-    toToastMessage,
-    t: key => i18n.t(key),
   }))
-  useSyncExternalStore(ctrl.subscribe, ctrl.getVersion)
+  const info = useStore(store)
 
   useEffect(() => {
     if (!io) {
       return undefined
     }
-    ctrl.init(io)
-    return () => ctrl.destroy()
-  }, [ctrl, io])
+    return store.getState().connect(io)
+  }, [store, io])
 
   const nodeVersionModal = (compareVersion: string): void => {
     openModal(NodeVersionModal, {
-      nodeVersion: ctrl.serverInfo!.nodeVersion,
+      nodeVersion: info.serverInfo!.nodeVersion,
       latestVersion: compareVersion,
-      showNodeUnsupportedWarning: ctrl.nodejsInfo!.showNodeUnsupportedWarning,
-      homebridgeRunningInSynologyPackage: ctrl.serverInfo!.homebridgeRunningInSynologyPackage,
-      homebridgeRunningInDocker: ctrl.serverInfo!.homebridgeRunningInDocker,
-      homebridgePkg: ctrl.homebridgePkg,
-      architecture: ctrl.nodejsInfo!.architecture,
-      supportsNodeJs24: ctrl.nodejsInfo!.supportsNodeJs24,
-      statusIo: ctrl.io,
+      showNodeUnsupportedWarning: info.nodejsInfo!.showNodeUnsupportedWarning,
+      homebridgeRunningInSynologyPackage: info.serverInfo!.homebridgeRunningInSynologyPackage,
+      homebridgeRunningInDocker: info.serverInfo!.homebridgeRunningInDocker,
+      homebridgePkg: info.homebridgePkg,
+      architecture: info.nodejsInfo!.architecture,
+      supportsNodeJs24: info.nodejsInfo!.supportsNodeJs24,
+      statusIo: info.io,
       onUpdate: async () => {
         // Reload to refresh the widget display
-        await ctrl.getNodeInfo()
+        await info.getNodeInfo()
       },
     }, { size: 'lg', backdrop: 'static' })
   }
@@ -92,7 +87,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
   const installAlternateVersion = async (pkg: Plugin): Promise<void> => {
     const managePlugins = await loadManagePlugins()
     // A callback to refresh the widget when the version changes
-    void managePlugins.installAlternateVersion(pkg, () => ctrl.refreshAfterVersionChange(pkg))
+    void managePlugins.installAlternateVersion(pkg, () => info.refreshAfterVersionChange(pkg))
   }
 
   const updatePackage = async (pkg: Plugin): Promise<void> => {
@@ -115,15 +110,15 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     // close is followed by the server going down and this widget being
     // destroyed, and a reload taken then hangs on a socket whose ack never comes
     ref.result.then((reason) => {
-      if (reason === 'handover' || ctrl.destroyed) {
+      if (reason === 'handover' || info.isDestroyed()) {
         return
       }
-      void ctrl.loadAllData()
+      void info.loadAllData()
     }, () => {})
   }
 
   const dockerUpdateModal = (): void => {
-    const dockerInfo = ctrl.dockerInfo
+    const dockerInfo = info.dockerInfo
     openModal(Information, {
       title: t('status.widget.info.docker_update_title'),
       message: t('status.widget.info.docker_update_message'),
@@ -144,13 +139,13 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     </button>
   )
 
-  const { homebridgePkg, homebridgeUiPkg, nodejsInfo, serverInfo } = ctrl
+  const { homebridgePkg, homebridgeUiPkg, nodejsInfo, serverInfo } = info
 
   const homebridgeTile = (className: string) => (
     <div className={className}>
       <div className="d-flex ps-3 py-1">
         <div className="mb-0 d-flex align-items-center">
-          <i aria-hidden="true" className={`fas fa-lg ${getHomebridgeIconClass(ctrl)}`}></i>
+          <i aria-hidden="true" className={`fas fa-lg ${getHomebridgeIconClass(info)}`}></i>
         </div>
         <div className="align-self-center px-3">
           {homebridgePkg.installedVersion
@@ -167,11 +162,11 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                         </button>
                       )
                     : 'Homebridge'}
-                  {ctrl.isHbV2Loaded
-                    && !ctrl.isRunningHbV2
+                  {info.isHbV2Loaded
+                    && !info.isRunningHbV2
                     && isAdmin
-                    && ctrl.homebridgeUpdatePolicy !== 'none'
-                    && ctrl.homebridgeUpdatePolicy !== 'major'
+                    && info.homebridgeUpdatePolicy !== 'none'
+                    && info.homebridgeUpdatePolicy !== 'major'
                     && (
                       <HoverTooltip text={t('status.readiness.title', { app: 'Homebridge v2' })} placement="top">
                         <button
@@ -181,7 +176,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                           onClick={readyForV2Modal}
                         >
                           <i
-                            className={cx('fas fa-info-circle', ctrl.isHbV2Ready ? 'green-text' : 'orange-text')}
+                            className={cx('fas fa-info-circle', info.isHbV2Ready ? 'green-text' : 'orange-text')}
                             aria-hidden="true"
                           >
                           </i>
@@ -196,7 +191,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
             ? checking
             : (
                 <>
-                  <span className="grey-text small">{`v${ctrl.homebridgeVersion}`}</span>
+                  <span className="grey-text small">{`v${info.homebridgeVersion}`}</span>
                   {homebridgePkg.multipleInstances && (
                     <>
                       {MIDDOT}
@@ -227,7 +222,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     <div className={className}>
       <div className="d-flex ps-3 py-1">
         <div className="mb-0 d-flex align-items-center">
-          <i aria-hidden="true" className={`fas fa-lg ${getHomebridgeUiIconClass(ctrl)}`}></i>
+          <i aria-hidden="true" className={`fas fa-lg ${getHomebridgeUiIconClass(info)}`}></i>
         </div>
         <div className="align-self-center px-3">
           {homebridgeUiPkg.installedVersion && isAdmin
@@ -246,7 +241,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
             ? checking
             : (
                 <>
-                  <span className="grey-text small">{`v${ctrl.packageVersion}`}</span>
+                  <span className="grey-text small">{`v${info.packageVersion}`}</span>
                   {homebridgeUiPkg.updateAvailable && isAdmin && (
                     <>
                       {MIDDOT}
@@ -260,12 +255,12 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     </div>
   )
 
-  const nodeReady = ctrl.nodejsStatusDone && !!serverInfo
+  const nodeReady = info.nodejsStatusDone && !!serverInfo
   const nodeTile = (className: string) => (
     <div className={className}>
       <div className="d-flex ps-3 py-1">
         <div className="mb-0 d-flex align-items-center">
-          <i aria-hidden="true" className={`fas fa-lg ${getNodejsIconClass(ctrl)}`}></i>
+          <i aria-hidden="true" className={`fas fa-lg ${getNodejsIconClass(info)}`}></i>
         </div>
         <div className="align-self-center px-3">
           {nodeReady
@@ -326,7 +321,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
     <div className="hb-update-info-widget flex-column d-flex align-items-stretch h-100 w-100 pb-2">
       <div className="drag-handler p-2 d-flex align-items-center justify-content-between">
         <span>{t('status.services.updates')}</span>
-        {isAdmin && ctrl.updateAllCount() >= 2 && (
+        {isAdmin && selectUpdateAllCount(info) >= 2 && (
           <div className={cx('d-flex gap-1 widget-toolbar', widget.draggable && 'with-gear')}>
             <HoverTooltip text={t('update_all.title')} placement="bottom">
               <button
@@ -344,7 +339,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
         )}
       </div>
       <div className="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-start">
-        {ctrl.runningInDocker
+        {info.runningInDocker
           ? (
               <div className="hb-status-item hb-status-item-docker d-flex flex-column mb-1">
                 <div
@@ -357,9 +352,9 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                   onKeyDown={onDockerKeyDown}
                 >
                   <div className="mb-0 d-flex align-items-center">
-                    {!ctrl.dockerStatusDone
+                    {!info.dockerStatusDone
                       ? <i className="fas fa-lg fa-circle-notch fa-spin primary-text" aria-hidden="true"></i>
-                      : ctrl.dockerInfo.updateAvailable
+                      : info.dockerInfo.updateAvailable
                         ? <i className="fas fa-lg fa-arrow-alt-circle-up orange-text" aria-hidden="true"></i>
                         : <i className="fas fa-lg fa-check-circle green-text" aria-hidden="true"></i>}
                   </div>
@@ -368,12 +363,12 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
                     {' '}
                     <i className={cx('fas fa-chevron-down ms-2', !widget.dockerExpanded && 'fa-rotate-180')} aria-hidden="true"></i>
                     <br />
-                    {!ctrl.dockerStatusDone
+                    {!info.dockerStatusDone
                       ? checking
                       : (
                           <>
-                            <span className="grey-text small">{ctrl.dockerInfo.currentVersion}</span>
-                            {ctrl.dockerInfo.updateAvailable && isAdmin && (
+                            <span className="grey-text small">{info.dockerInfo.currentVersion}</span>
+                            {info.dockerInfo.updateAvailable && isAdmin && (
                               <>
                                 {MIDDOT}
                                 <button
@@ -408,16 +403,16 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
         <div className={quarter}>
           <div className="d-flex ps-3 py-1">
             <div className="mb-0 d-flex align-items-center">
-              <i aria-hidden="true" className={`fas fa-lg ${getPluginsIconClass(ctrl)}`}></i>
+              <i aria-hidden="true" className={`fas fa-lg ${getPluginsIconClass(info)}`}></i>
             </div>
             <div className="align-self-center px-3">
               <Link to="/plugins" className="card-link card-link-title">
                 {t('menu.label_plugins')}
               </Link>
               <br />
-              {!ctrl.homebridgePluginStatusDone
+              {!info.homebridgePluginStatusDone
                 ? checking
-                : !ctrl.homebridgePluginStatus.length
+                : !info.homebridgePluginStatus.length
                     ? <span className="grey-text small">{t('status.homebridge.up_to_date')}</span>
                     : isAdmin
                       ? <Link to="/plugins" className="primary-text small">{t('plugins.button_update')}</Link>
@@ -425,7 +420,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
             </div>
           </div>
         </div>
-        {!ctrl.runningInDocker && nodeTile(quarter)}
+        {!info.runningInDocker && nodeTile(quarter)}
       </div>
     </div>
   )
