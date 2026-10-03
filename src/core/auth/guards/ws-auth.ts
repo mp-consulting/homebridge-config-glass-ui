@@ -4,6 +4,7 @@ import type { AuthService } from '../auth.service.js'
 
 import jwt from 'jsonwebtoken'
 
+import { isLiveSetupWizardToken, isSetupWizardToken, isSetupWizardTokenNamespace } from '../setup-wizard-token.js'
 import { extractWsToken } from './ws-token.js'
 
 export type WsUser = UserDto & { instanceId?: string, exp?: number }
@@ -32,10 +33,10 @@ export function currentWsToken(client: any): string | undefined {
  * Verify the token a socket connected with and check it against the stored
  * user. Throws if the token is invalid, stale or its user no longer matches.
  *
- * Mirrors JwtStrategy.validate: a mismatched instanceId is rejected so the
- * setup-wizard token (intentionally signed with a wrong instanceId) cannot
- * reach socket endpoints once the wizard has completed, and validateUser
- * catches a deleted or demoted user, or changed credentials.
+ * Mirrors JwtStrategy.validate: a mismatched instanceId is rejected, the
+ * setup-wizard token (intentionally signed with a wrong instanceId) is only
+ * accepted on the backup namespace while the wizard is in progress, and
+ * validateUser catches a deleted or demoted user, or changed credentials.
  */
 export async function verifyWsClient(
   client: any,
@@ -58,12 +59,13 @@ export async function verifyWsClient(
     throw new Error('Token expired')
   }
 
-  if (payload?.instanceId !== configService.instanceId) {
-    const isLiveWizardToken = payload?.username === 'setup-wizard'
-      && configService.setupWizardComplete === false
-    if (!isLiveWizardToken) {
-      throw new Error('Stale token')
+  if (isSetupWizardToken(payload)) {
+    // Only while the wizard runs, and only on the namespace its restore step uses
+    if (!isLiveSetupWizardToken(payload, configService) || !isSetupWizardTokenNamespace(client?.nsp?.name)) {
+      throw new Error('Setup wizard token not allowed here')
     }
+  } else if (payload?.instanceId !== configService.instanceId) {
+    throw new Error('Stale token')
   }
 
   if (!await authService.validateUser(payload)) {

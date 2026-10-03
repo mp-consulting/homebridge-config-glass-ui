@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { createGuardrails } from '@otplib/core'
-import { pathExists, readJson } from 'fs-extra/esm'
+import { readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { generateSecret, generateURI, verify } from 'otplib'
 
@@ -24,6 +24,7 @@ import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
 import { revalidateWsClients } from './guards/ws-auth.js'
+import { isLiveSetupWizardToken, SETUP_WIZARD_CLAIM, SETUP_WIZARD_USERNAME } from './setup-wizard-token.js'
 
 // OWASP-recommended PBKDF2-HMAC-SHA512 work factor. New and changed passwords
 // are hashed at this strength.
@@ -593,9 +594,9 @@ export class AuthService {
    */
   async validateUser(payload: any): Promise<any> {
     // The setup-wizard token deliberately has no user record behind it. It is
-    // already constrained to the live wizard by the instanceId checks in
+    // already constrained to the live wizard, and to the restore routes, by
     // JwtStrategy and the websocket guards.
-    if (payload?.username === 'setup-wizard' && this.configService.setupWizardComplete === false) {
+    if (isLiveSetupWizardToken(payload, this.configService)) {
       return payload
     }
 
@@ -778,10 +779,12 @@ export class AuthService {
     }
 
     // Generate a token
+    // Only usable for the wizard's restore step - see setup-wizard-token.ts
     const token = this.jwtService.sign({
-      username: 'setup-wizard',
-      name: 'setup-wizard',
+      username: SETUP_WIZARD_USERNAME,
+      name: SETUP_WIZARD_USERNAME,
       admin: true,
+      [SETUP_WIZARD_CLAIM]: true,
       instanceId: 'xxxxx', // intentionally wrong
     }, { expiresIn: '5m' })
 
@@ -796,19 +799,38 @@ export class AuthService {
    * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
-    if (!await pathExists(this.configService.authPath)) {
-      this.configService.setupWizardComplete = false
+    let authfile: unknown
+    try {
+      authfile = await readJson(this.configService.authPath)
+    } catch (e) {
+      // Only a missing file means "no users yet". Anything else - unreadable,
+      // half-written, corrupt - must fail closed: opening the wizard would let
+      // whoever reaches the page first create an administrator.
+      if (e?.code === 'ENOENT') {
+        this.configService.setupWizardComplete = false
+        return
+      }
+      this.failAuthFileClosed(`it could not be read (${e?.message ?? e})`)
       return
     }
-    try {
-      const authfile: UserDto[] = await readJson(this.configService.authPath)
-      // There must be at least one admin user
-      if (!authfile.some(x => x.admin === true)) {
-        this.configService.setupWizardComplete = false
-      }
-    } catch (e) {
+    if (!Array.isArray(authfile)) {
+      this.failAuthFileClosed('it does not contain a list of users')
+      return
+    }
+    // There must be at least one admin user
+    if (!authfile.some(x => x?.admin === true)) {
       this.configService.setupWizardComplete = false
     }
+  }
+
+  /**
+   * Keep the setup wizard closed when auth.json exists but is not usable, and
+   * say how to recover.
+   */
+  private failAuthFileClosed(reason: string) {
+    this.configService.setupWizardComplete = true
+    this.logger.error(`The users file ${this.configService.authPath} exists but ${reason}. Nobody can sign in until it is fixed. `
+      + 'To start again with the setup wizard, delete the file and restart Homebridge.')
   }
 
   /**
