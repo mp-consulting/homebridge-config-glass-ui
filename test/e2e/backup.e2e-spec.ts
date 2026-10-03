@@ -43,6 +43,7 @@ import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupGateway } from '../../src/modules/backup/backup.gateway.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -185,7 +186,7 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     schedulerService = app.get(SchedulerService)
 
     // Isolate plugin discovery to the test plugin path only
-    ;(pluginsService as any)._paths = [resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')]
+    ;(app.get(InstalledPluginsService) as any)._paths = [resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')]
   })
 
   beforeEach(async () => {

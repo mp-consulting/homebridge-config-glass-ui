@@ -29,9 +29,10 @@ import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
+import { ConfigBackupService } from '../../src/modules/config-editor/config-backup.service.js'
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 describe('ConfigEditorController (e2e)', () => {
@@ -46,6 +47,7 @@ describe('ConfigEditorController (e2e)', () => {
 
   let schedulerService: SchedulerService
   let configEditorService: ConfigEditorService
+  let configBackupService: ConfigBackupService
   let backupService: BackupService
   let homebridgeConfigService: ConfigService
   let originalHomebridgeVersion: string
@@ -89,17 +91,18 @@ describe('ConfigEditorController (e2e)', () => {
 
     schedulerService = app.get(SchedulerService)
     configEditorService = app.get(ConfigEditorService)
+    configBackupService = app.get(ConfigBackupService)
     backupService = app.get(BackupService)
     homebridgeConfigService = app.get(ConfigService)
     originalHomebridgeVersion = homebridgeConfigService.homebridgeVersion
 
     // Isolate plugin discovery to the test plugin path only - resolving the
     // global paths would spawn `npm -g prefix`
-    ;(app.get(PluginsService, { strict: false }) as any)._paths = [pluginsPath]
+    ;(app.get(InstalledPluginsService, { strict: false }) as any)._paths = [pluginsPath]
 
     // app.init() already ran onApplicationBootstrap (the backup migration);
     // this resolves once that start-up work is done
-    await (configEditorService as any).ready
+    await configBackupService.ready
   })
 
   beforeEach(async () => {
@@ -156,7 +159,7 @@ describe('ConfigEditorController (e2e)', () => {
     expect(backupsBeforeCleanup).toHaveLength(11)
 
     // Run cleanup job
-    await configEditorService.cleanupConfigBackups()
+    await configBackupService.cleanupConfigBackups()
 
     // There should only be 5 backups on disk now
     const backupsAfterJob = await readdir(backupFilePath)

@@ -9,9 +9,14 @@ import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.mo
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { NodePtyModule } from '../../core/node-pty/node-pty.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
+import { InstalledPluginsService } from './installed-plugins.service.js'
+import { PluginInstallerService } from './plugin-installer.service.js'
+import { PluginMetadataService } from './plugin-metadata.service.js'
+import { PluginRegistryService } from './plugin-registry.service.js'
 import { PluginsController } from './plugins.controller.js'
 import { PluginsGateway } from './plugins.gateway.js'
 import { PluginsService } from './plugins.service.js'
+import { UiUpdateService } from './ui-update.service.js'
 
 @Module({
   imports: [
@@ -30,6 +35,11 @@ import { PluginsService } from './plugins.service.js'
     ChildBridgesModule,
   ],
   providers: [
+    PluginRegistryService,
+    InstalledPluginsService,
+    PluginInstallerService,
+    PluginMetadataService,
+    UiUpdateService,
     PluginsService,
     PluginsGateway,
   ],

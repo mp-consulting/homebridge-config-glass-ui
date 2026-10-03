@@ -26,8 +26,10 @@ import {
 } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { ConfigBackupService } from './config-backup.service.js'
 import { PortRangeDto, SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
 import { ConfigEditorService } from './config-editor.service.js'
+import { ConfigProtocolService } from './config-protocol.service.js'
 
 function includesRestartInfo(include: string | undefined): boolean {
   return (include ?? '').split(',').map(s => s.trim()).includes('restart-info')
@@ -40,6 +42,8 @@ function includesRestartInfo(include: string | undefined): boolean {
 export class ConfigEditorController {
   constructor(
     @Inject(ConfigEditorService) private readonly configEditorService: ConfigEditorService,
+    @Inject(ConfigBackupService) private readonly configBackupService: ConfigBackupService,
+    @Inject(ConfigProtocolService) private readonly configProtocolService: ConfigProtocolService,
   ) {}
 
   @UseGuards(AdminGuard)
@@ -284,7 +288,7 @@ export class ConfigEditorController {
   @ApiOperation({ summary: 'List the available Homebridge `config.json` backups.' })
   @Get('/backups')
   listConfigBackups() {
-    return this.configEditorService.listConfigBackups()
+    return this.configBackupService.listConfigBackups()
   }
 
   @UseGuards(AdminGuard)
@@ -292,7 +296,7 @@ export class ConfigEditorController {
   @ApiParam({ name: 'backupId', type: 'number' })
   @Get('/backups/:backupId')
   getBackup(@Param('backupId', ParseIntPipe) backupId) {
-    return this.configEditorService.getConfigBackup(backupId)
+    return this.configBackupService.getConfigBackup(backupId)
   }
 
   @UseGuards(AdminGuard)
@@ -300,28 +304,28 @@ export class ConfigEditorController {
   @ApiParam({ name: 'backupId', type: 'number' })
   @Delete('/backups/:backupId')
   deleteBackup(@Param('backupId', ParseIntPipe) backupId) {
-    return this.configEditorService.deleteConfigBackup(backupId)
+    return this.configBackupService.deleteConfigBackup(backupId)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Delete all the Homebridge `config.json` backups.' })
   @Delete('/backups')
   deleteAllConfigBackups() {
-    return this.configEditorService.deleteAllConfigBackups()
+    return this.configBackupService.deleteAllConfigBackups()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the Matter port range configuration.' })
   @Get('/matter/ports')
   getMatterPortRange() {
-    return this.configEditorService.getMatterPortRange()
+    return this.configProtocolService.getMatterPortRange()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Set the Matter port range configuration.' })
   @Put('/matter/ports')
   setMatterPortRange(@Body() body: PortRangeDto) {
-    return this.configEditorService.setMatterPortRange(body)
+    return this.configProtocolService.setMatterPortRange(body)
   }
 
   @UseGuards(AdminGuard)
@@ -331,7 +335,7 @@ export class ConfigEditorController {
   })
   @Get('/matter')
   getMatterConfig() {
-    return this.configEditorService.getMatterConfig()
+    return this.configProtocolService.getMatterConfig()
   }
 
   @UseGuards(AdminGuard)
@@ -342,7 +346,7 @@ export class ConfigEditorController {
   @ApiBody({ description: 'Matter configuration', type: 'json' })
   @Put('/matter')
   updateMatterConfig(@Body() matterConfig) {
-    return this.configEditorService.updateMatterConfig(matterConfig)
+    return this.configProtocolService.updateMatterConfig(matterConfig)
   }
 
   @UseGuards(AdminGuard)
@@ -352,7 +356,7 @@ export class ConfigEditorController {
   })
   @Delete('/matter')
   deleteMatterConfig() {
-    return this.configEditorService.deleteMatterConfig()
+    return this.configProtocolService.deleteMatterConfig()
   }
 
   @UseGuards(AdminGuard)
@@ -363,7 +367,7 @@ export class ConfigEditorController {
   @ApiBody({ description: 'Matter enablement', type: 'json' })
   @Put('/matter/enabled')
   setMatterEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean }) {
-    return this.configEditorService.setMatterEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
+    return this.configProtocolService.setMatterEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
   }
 
   @UseGuards(AdminGuard)
@@ -373,7 +377,7 @@ export class ConfigEditorController {
   })
   @Get('/hap')
   getHapEnabled() {
-    return this.configEditorService.getHapEnabled()
+    return this.configProtocolService.getHapEnabled()
   }
 
   @UseGuards(AdminGuard)
@@ -384,6 +388,6 @@ export class ConfigEditorController {
   @ApiBody({ description: 'HAP configuration', type: 'json' })
   @Put('/hap')
   setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }) {
-    return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false, body.disableIdentifyingMaterial)
+    return this.configProtocolService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false, body.disableIdentifyingMaterial)
   }
 }

@@ -25,6 +25,7 @@ import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
 import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -912,7 +913,7 @@ describe('AuthController (e2e)', () => {
     // bootstrap/login path). Warm the cache first so the flag is exposed.
     // Scan this spec's own storage only - the default paths spawn a real `npm -g prefix`.
     const pluginsService = app.get(PluginsService, { strict: false })
-    ;(pluginsService as any)._paths = [resolve(testStoragePath, 'plugins', 'node_modules')]
+    ;(app.get(InstalledPluginsService, { strict: false }) as any)._paths = [resolve(testStoragePath, 'plugins', 'node_modules')]
     await pluginsService.getInstalledPlugins()
 
     const res = await app.inject({

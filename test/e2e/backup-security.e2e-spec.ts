@@ -20,6 +20,7 @@ import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-i
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -95,7 +96,7 @@ describe('Backup security (e2e)', { timeout: 30_000 }, () => {
     pluginsService = app.get(PluginsService)
     ipcService = app.get(HomebridgeIpcService)
     schedulerService = app.get(SchedulerService)
-    ;(pluginsService as any)._paths = [process.env.UIX_CUSTOM_PLUGIN_PATH]
+    ;(app.get(InstalledPluginsService) as any)._paths = [process.env.UIX_CUSTOM_PLUGIN_PATH]
 
     authorization = `bearer ${(await login()).json().access_token}`
   })

@@ -25,6 +25,10 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { RE_DEVICE_ID } from '../../core/regex.constants.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PortRangeDto } from '../config-editor/config-editor.dto.js'
+import { ServerCachedAccessoriesService } from './server-cached-accessories.service.js'
+import { ServerNetworkService } from './server-network.service.js'
+import { ServerPairingsService } from './server-pairings.service.js'
+import { ServerWallpaperService } from './server-wallpaper.service.js'
 import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto.js'
 import { ServerService } from './server.service.js'
 
@@ -35,6 +39,10 @@ import { ServerService } from './server.service.js'
 export class ServerController {
   constructor(
     @Inject(ServerService) private readonly serverService: ServerService,
+    @Inject(ServerPairingsService) private readonly serverPairingsService: ServerPairingsService,
+    @Inject(ServerCachedAccessoriesService) private readonly serverCachedAccessoriesService: ServerCachedAccessoriesService,
+    @Inject(ServerNetworkService) private readonly serverNetworkService: ServerNetworkService,
+    @Inject(ServerWallpaperService) private readonly serverWallpaperService: ServerWallpaperService,
     @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
     @Inject(Logger) private readonly logger: Logger,
   ) {}
@@ -93,14 +101,14 @@ export class ServerController {
   })
   @Put('/reset-cached-accessories')
   deleteAllCachedAccessories() {
-    return this.serverService.deleteAllCachedAccessories()
+    return this.serverCachedAccessoriesService.deleteAllCachedAccessories()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List cached Homebridge accessories.' })
   @Get('/cached-accessories')
   getCachedAccessories() {
-    return this.serverService.getCachedAccessories()
+    return this.serverCachedAccessoriesService.getCachedAccessories()
   }
 
   @UseGuards(AdminGuard)
@@ -112,7 +120,7 @@ export class ServerController {
   @Delete('/cached-accessories/:uuid')
   @HttpCode(204)
   deleteCachedAccessory(@Param('uuid') uuid: string, @Query('cacheFile') cacheFile?: string) {
-    return this.serverService.deleteCachedAccessory(uuid, cacheFile)
+    return this.serverCachedAccessoriesService.deleteCachedAccessory(uuid, cacheFile)
   }
 
   @UseGuards(AdminGuard)
@@ -123,14 +131,14 @@ export class ServerController {
   @Delete('/cached-accessories')
   @HttpCode(204)
   deleteCachedAccessories(@Body() accessories?: { uuid: string, cacheFile: string }[]) {
-    return this.serverService.deleteCachedAccessories(accessories)
+    return this.serverCachedAccessoriesService.deleteCachedAccessories(accessories)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List cached Matter accessories.' })
   @Get('/matter-accessories')
   getMatterAccessories() {
-    return this.serverService.getMatterAccessories()
+    return this.serverCachedAccessoriesService.getMatterAccessories()
   }
 
   @UseGuards(AdminGuard)
@@ -142,7 +150,7 @@ export class ServerController {
   @Delete('/matter-accessories/:deviceId/:uuid')
   @HttpCode(204)
   deleteMatterAccessory(@Param('deviceId') deviceId: string, @Param('uuid') uuid: string) {
-    return this.serverService.deleteMatterAccessory(deviceId, uuid)
+    return this.serverCachedAccessoriesService.deleteMatterAccessory(deviceId, uuid)
   }
 
   @UseGuards(AdminGuard)
@@ -153,14 +161,14 @@ export class ServerController {
   @Delete('/matter-accessories')
   @HttpCode(204)
   deleteMatterAccessories(@Body() accessories?: { deviceId: string, uuid: string }[]) {
-    return this.serverService.deleteMatterAccessories(accessories)
+    return this.serverCachedAccessoriesService.deleteMatterAccessories(accessories)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List all paired accessories (main bridge, external cameras, TVs etc).' })
   @Get('/pairings')
   getDevicePairings() {
-    return this.serverService.getDevicePairings()
+    return this.serverPairingsService.getDevicePairings()
   }
 
   @UseGuards(AdminGuard)
@@ -170,7 +178,7 @@ export class ServerController {
   })
   @Get('/accessory-overview')
   getAccessoryOverview() {
-    return this.serverService.getAccessoryOverview()
+    return this.serverCachedAccessoriesService.getAccessoryOverview()
   }
 
   @UseGuards(AdminGuard)
@@ -182,7 +190,7 @@ export class ServerController {
     if (!RE_DEVICE_ID.test(deviceId)) {
       throw new BadRequestException('Invalid device ID.')
     }
-    return this.serverService.getDevicePairingById(deviceId)
+    return this.serverPairingsService.getDevicePairingById(deviceId)
   }
 
   @UseGuards(AdminGuard)
@@ -195,7 +203,7 @@ export class ServerController {
   @HttpCode(204)
   deleteDevicePairing(@Param('deviceId') deviceId: string, @Query('resetPairingInfo') resetPairingInfo?: string) {
     const resetPairingInfoBool = resetPairingInfo === 'true'
-    return this.serverService.deleteDevicePairing(deviceId, resetPairingInfoBool)
+    return this.serverPairingsService.deleteDevicePairing(deviceId, resetPairingInfoBool)
   }
 
   @UseGuards(AdminGuard)
@@ -206,7 +214,7 @@ export class ServerController {
   @Delete('/pairings/:deviceId/matter')
   @HttpCode(204)
   deleteDeviceMatterConfig(@Param('deviceId') deviceId: string) {
-    return this.serverService.deleteDeviceMatterConfig(deviceId)
+    return this.serverPairingsService.deleteDeviceMatterConfig(deviceId)
   }
 
   @UseGuards(AdminGuard)
@@ -217,7 +225,7 @@ export class ServerController {
   @Delete('/pairings')
   @HttpCode(204)
   deleteDevicesPairings(@Body() bridges?: { id: string, resetPairingInfo: boolean }[]) {
-    return this.serverService.deleteDevicesPairing(bridges)
+    return this.serverPairingsService.deleteDevicesPairing(bridges)
   }
 
   @UseGuards(AdminGuard)
@@ -228,7 +236,7 @@ export class ServerController {
   @Delete('/pairings/:deviceId/accessories')
   @HttpCode(204)
   deleteDeviceAccessories(@Param('deviceId') deviceId: string) {
-    return this.serverService.deleteDeviceAccessories(deviceId)
+    return this.serverPairingsService.deleteDeviceAccessories(deviceId)
   }
 
   @UseGuards(AdminGuard)
@@ -239,98 +247,98 @@ export class ServerController {
   @Delete('/pairings/accessories')
   @HttpCode(204)
   deleteDevicesAccessories(@Body() bridges?: { id: string, protocol?: 'hap' | 'matter' | 'both' }[]) {
-    return this.serverService.deleteDevicesAccessories(bridges)
+    return this.serverPairingsService.deleteDevicesAccessories(bridges)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get a unified network overview of all port assignments, Matter diagnostics, and conflict detection.' })
   @Get('/network/overview')
   getNetworkOverview() {
-    return this.serverService.getNetworkOverview()
+    return this.serverNetworkService.getNetworkOverview()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return a random, unused port.' })
   @Get('/port/new')
   lookupUnusedPort() {
-    return this.serverService.lookupUnusedPort()
+    return this.serverNetworkService.lookupUnusedPort()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return a random, unused port from the Matter port range (5530-5541).' })
   @Get('/port/new/matter')
   lookupUnusedMatterPort() {
-    return this.serverService.lookupUnusedMatterPort()
+    return this.serverNetworkService.lookupUnusedMatterPort()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return a list of available network interfaces on the server.' })
   @Get('/network-interfaces/system')
   getSystemNetworkInterfaces() {
-    return this.serverService.getSystemNetworkInterfaces()
+    return this.serverNetworkService.getSystemNetworkInterfaces()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return a list of the network interface names assigned to Homebridge.' })
   @Get('/network-interfaces/bridge')
   getHomebridgeNetworkInterfaces() {
-    return this.serverService.getHomebridgeNetworkInterfaces()
+    return this.serverNetworkService.getHomebridgeNetworkInterfaces()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Set a list of the network interface names assigned to Homebridge.' })
   @Put('/network-interfaces/bridge')
   setHomebridgeNetworkInterfaces(@Body() body: HomebridgeNetworkInterfacesDto) {
-    return this.serverService.setHomebridgeNetworkInterfaces(body.adapters)
+    return this.serverNetworkService.setHomebridgeNetworkInterfaces(body.adapters)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return the current mDNS advertiser settings.' })
   @Get('/mdns-advertiser')
   getHomebridgeMdnsSetting(): Promise<HomebridgeMdnsSettingDto> {
-    return this.serverService.getHomebridgeMdnsSetting()
+    return this.serverNetworkService.getHomebridgeMdnsSetting()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Set the mDNS advertiser settings.' })
   @Put('/mdns-advertiser')
   setHomebridgeMdnsSetting(@Body() body: HomebridgeMdnsSettingDto) {
-    return this.serverService.setHomebridgeMdnsSetting(body)
+    return this.serverNetworkService.setHomebridgeMdnsSetting(body)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Set the Homebridge name.' })
   @Put('/name')
   setHomebridgeName(@Body() body: { name: string }) {
-    return this.serverService.setHomebridgeName(body.name)
+    return this.serverNetworkService.setHomebridgeName(body.name)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the Homebridge port.' })
   @Get('/port')
   getHomebridgePort() {
-    return this.serverService.getHomebridgePort()
+    return this.serverNetworkService.getHomebridgePort()
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Set the Homebridge port.' })
   @Put('/port')
   setHomebridgePort(@Body() body: { port: number }) {
-    return this.serverService.setHomebridgePort(body.port)
+    return this.serverNetworkService.setHomebridgePort(body.port)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the usable ports as set in the config file.' })
   @Get('/ports')
   getUsablePort() {
-    return this.serverService.getUsablePorts()
+    return this.serverNetworkService.getUsablePorts()
   }
 
   @UseGuards(AdminGuard)
   @Put('/ports')
   @ApiOperation({ summary: 'Update the usable ports for Homebridge.' })
   setUsablePorts(@Body() body: PortRangeDto) {
-    return this.serverService.setUsablePorts(body)
+    return this.serverNetworkService.setUsablePorts(body)
   }
 
   @UseGuards(AdminGuard)
@@ -354,7 +362,7 @@ export class ServerController {
       if (data.file.truncated) {
         throw new InternalServerErrorException(`Wallpaper exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
       }
-      await this.serverService.uploadWallpaper(data)
+      await this.serverWallpaperService.uploadWallpaper(data)
     } catch (err) {
       this.logger.error(`Wallpaper upload failed as ${err.message}`)
       throw new InternalServerErrorException(err.message)
@@ -457,6 +465,6 @@ export class ServerController {
   @Delete('/wallpaper')
   @HttpCode(204)
   async deleteWallpaper(): Promise<void> {
-    await this.serverService.deleteWallpaper()
+    await this.serverWallpaperService.deleteWallpaper()
   }
 }

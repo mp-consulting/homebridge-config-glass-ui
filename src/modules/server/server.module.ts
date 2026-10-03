@@ -8,6 +8,10 @@ import { LoggerModule } from '../../core/logger/logger.module.js'
 import { AccessoriesModule } from '../accessories/accessories.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { ConfigEditorModule } from '../config-editor/config-editor.module.js'
+import { ServerCachedAccessoriesService } from './server-cached-accessories.service.js'
+import { ServerNetworkService } from './server-network.service.js'
+import { ServerPairingsService } from './server-pairings.service.js'
+import { ServerWallpaperService } from './server-wallpaper.service.js'
 import { ServerController } from './server.controller.js'
 import { ServerService } from './server.service.js'
 
@@ -24,6 +28,10 @@ import { ServerService } from './server.service.js'
   ],
   providers: [
     ServerService,
+    ServerPairingsService,
+    ServerCachedAccessoriesService,
+    ServerNetworkService,
+    ServerWallpaperService,
   ],
   controllers: [
     ServerController,

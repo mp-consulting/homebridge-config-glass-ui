@@ -243,3 +243,12 @@ export interface PackageUpdateResult {
     childBridgeUsernames: string[]
   }
 }
+
+/**
+ * What the registry search needs to know about the installed plugins: the
+ * list loaded so far (if any) and a way to load it
+ */
+export interface InstalledPluginsSource {
+  readonly loadedPlugins: HomebridgePlugin[] | undefined
+  getInstalledPlugins: () => Promise<HomebridgePlugin[]>
+}

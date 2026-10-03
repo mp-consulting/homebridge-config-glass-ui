@@ -22,7 +22,8 @@ import { AuthService } from '../../src/core/auth/auth.service.js'
 import { setStaticAssetCacheHeaders } from '../../src/core/static-assets.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
+import { PluginMetadataService } from '../../src/modules/plugins/plugin-metadata.service.js'
 import { testStoragePath } from '../storage-path.js'
 import { authorizeWsClient } from '../ws-client.js'
 
@@ -83,7 +84,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
 
     // Isolate plugin discovery to the test plugin path only - resolving the
     // global paths would spawn `npm -g prefix`
-    ;(app.get(PluginsService) as any)._paths = [pluginsPath]
+    ;(app.get(InstalledPluginsService) as any)._paths = [pluginsPath]
 
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>')
@@ -287,8 +288,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const baseSchema = await readJson(baseSchemaPath)
         const maxLengthDomain = `https://${'a'.repeat(244)}.com`
         const overLengthDomain = `https://${'b'.repeat(245)}.com`
-        const pluginsService = app.get(PluginsService)
-        const loggerErrorSpy = vi.spyOn((pluginsService as any).logger, 'error').mockImplementation(() => undefined)
+        const loggerErrorSpy = vi.spyOn((app.get(PluginMetadataService) as any).logger, 'error').mockImplementation(() => undefined)
 
         try {
           await writeJson(baseSchemaPath, {
