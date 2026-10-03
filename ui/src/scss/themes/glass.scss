@@ -819,6 +819,15 @@ html body.glass-mode {
     background-color: transparent !important;
   }
 
+  // Plugin install / update / update-all output: a plain black terminal rather
+  // than glass, so the npm output reads like a real console
+  #plugin-log-output.terminal-dark-bg,
+  #plugin-output.terminal-dark-bg,
+  #update-all-log-output.terminal-dark-bg {
+    background: #000000 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+
   ngx-monaco-editor,
   ngx-monaco-diff-editor {
     display: block;
