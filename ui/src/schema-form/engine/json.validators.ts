@@ -479,7 +479,7 @@ export class JsonValidators {
                 return null;
             }
             const currentValue = control.value;
-            const isValid = !isNumber(currentValue) || +currentValue < exclusiveMinimumValue;
+            const isValid = !isNumber(currentValue) || +currentValue > exclusiveMinimumValue;
             return xor(isValid, invert) ?
                 null : { 'exclusiveMinimum': { exclusiveMinimumValue, currentValue } };
         };
@@ -667,6 +667,12 @@ export class JsonValidators {
                 return isEmpty(requiringFieldErrors) ?
                     null : { [requiringField]: requiringFieldErrors };
             }));
+            // A satisfied or irrelevant dependency leaves a `{ field: null }` entry
+            for (const key of Object.keys(allErrors || {})) {
+                if (allErrors[key] === null) {
+                    delete allErrors[key];
+                }
+            }
             return isEmpty(allErrors) ? null : allErrors;
         };
     }
@@ -730,7 +736,7 @@ export class JsonValidators {
             const sorted = control.value.slice().sort();
             const duplicateItems = [];
             for (let i = 1; i < sorted.length; i++) {
-                if (sorted[i - 1] === sorted[i] && duplicateItems.includes(sorted[i])) {
+                if (sorted[i - 1] === sorted[i] && !duplicateItems.includes(sorted[i])) {
                     duplicateItems.push(sorted[i]);
                 }
             }

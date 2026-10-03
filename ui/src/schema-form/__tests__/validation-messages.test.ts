@@ -63,14 +63,9 @@ describe('validation messages', () => {
     }
   })
 
-  // BUG (vendored from @ng-formworks/core): the French maxItems message uses
-  // {{minimumItems}}, which a maxItems error never has, so the user sees the
-  // raw placeholder.
-  const knownBroken = new Set(['fr.maxItems'])
-
   const placeholderCases = Object.keys(locales).flatMap(code => Object.keys(errorsByKey).map(key => [code, key] as const))
 
-  it.each(placeholderCases.filter(([code, key]) => !knownBroken.has(`${code}.${key}`)))(
+  it.each(placeholderCases)(
     '%s.%s fills every placeholder from the validator\'s own error fields',
     (code, key) => {
       const message = locales[code][key]
@@ -78,10 +73,6 @@ describe('validation messages', () => {
       expect(interpolate(message as string, errorsByKey[key])).not.toMatch(/\{\{.*?\}\}/)
     },
   )
-
-  it.fails('fr.maxItems fills its placeholders', () => {
-    expect(interpolate(frValidationMessages.maxItems as string, errorsByKey.maxItems)).not.toMatch(/\{\{.*?\}\}/)
-  })
 
   describe.each(Object.entries(locales))('%s', (_code, messages) => {
     it('has a non-empty static message for required and uniqueItems', () => {

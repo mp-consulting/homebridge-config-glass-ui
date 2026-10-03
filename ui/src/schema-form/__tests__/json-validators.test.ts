@@ -178,14 +178,11 @@ describe('jsonValidators', () => {
       expect(run(V.exclusiveMaximum(5), 5)).toEqual({ exclusiveMaximum: { exclusiveMaximumValue: 5, currentValue: 5 } })
     })
 
-    // BUG (vendored from @ng-formworks/core): exclusiveMinimum tests
-    // `value < bound` instead of `value > bound`, so it accepts values below
-    // the minimum and rejects values above it.
-    it.fails('exclusiveMinimum accepts values above the bound', () => {
+    it('exclusiveMinimum accepts values above the bound', () => {
       expect(run(V.exclusiveMinimum(5), 6)).toBeNull()
     })
 
-    it.fails('exclusiveMinimum rejects values below the bound', () => {
+    it('exclusiveMinimum rejects values below the bound', () => {
       expect(run(V.exclusiveMinimum(5), 4)).not.toBeNull()
     })
 
@@ -231,20 +228,12 @@ describe('jsonValidators', () => {
       expect(run(validator, { username: 'u' })).toEqual({ username: { username: { password: { required: true } } } })
     })
 
-    // BUG (vendored from @ng-formworks/core): every dependency that has no
-    // error still leaves a `{ <field>: null }` entry, and `isEmpty` does not
-    // treat that as empty, so a satisfied (or irrelevant) dependency returns
-    // a non-null error object and the control counts as invalid.
-    it.fails('dependencies: valid when the required field is present', () => {
+    it('dependencies: valid when the required field is present', () => {
       expect(run(V.dependencies({ username: ['password'] }), { username: 'u', password: 'p' })).toBeNull()
     })
 
-    it.fails('dependencies: valid when the requiring field is absent', () => {
+    it('dependencies: valid when the requiring field is absent', () => {
       expect(run(V.dependencies({ username: ['password'] }), { other: 1 })).toBeNull()
-    })
-
-    it('dependencies: currently returns a null entry when satisfied', () => {
-      expect(run(V.dependencies({ username: ['password'] }), { username: 'u', password: 'p' })).toEqual({ username: null })
     })
 
     it('dependencies: a schema with required fields', () => {
@@ -262,10 +251,7 @@ describe('jsonValidators', () => {
       expect(V.uniqueItems(false)).toBe(V.nullValidator)
     })
 
-    // BUG (vendored from @ng-formworks/core): the duplicate check is
-    // `duplicateItems.includes(x)` where `!includes` was meant, so a
-    // duplicate is never recorded and uniqueItems always passes.
-    it.fails('uniqueItems: rejects duplicates', () => {
+    it('uniqueItems: rejects duplicates', () => {
       expect(run(V.uniqueItems(), [1, 2, 2])).toEqual({ uniqueItems: { duplicateItems: [2] } })
     })
 

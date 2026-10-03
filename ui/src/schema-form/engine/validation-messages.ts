@@ -271,7 +271,7 @@ export const frValidationMessages = {
     minProperties: 'Doit comporter au minimum {{minimumProperties}} éléments',
     maxProperties: 'Doit comporter au maximum {{maximumProperties}} éléments',
     minItems: 'Doit comporter au minimum {{minimumItems}} éléments',
-    maxItems: 'Doit comporter au maximum {{minimumItems}} éléments',
+    maxItems: 'Doit comporter au maximum {{maximumItems}} éléments',
     uniqueItems: 'Tous les éléments doivent être uniques',
     // Note: No default error messages for 'type', 'const', 'enum', or 'dependencies'
 };
