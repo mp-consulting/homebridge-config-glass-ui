@@ -12,7 +12,9 @@ import { Logger } from '../../src/core/logger/logger.service.js'
 import { isNodeV24SupportedArchitecture } from '../../src/core/node-version.constants.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
+import { DashboardLayoutService } from '../../src/modules/status/dashboard-layout.service.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
+import { SystemMetricsService } from '../../src/modules/status/system-metrics.service.js'
 
 // getNodeVersionInfo asks npm for its version, which costs about a second.
 // No test here asserts on the npm version.
@@ -77,6 +79,8 @@ describe('StatusService - getNodeVersionInfo', () => {
       pluginsService,
       serverService,
       homebridgeIpcService,
+      {} as SystemMetricsService,
+      {} as DashboardLayoutService,
     )
 
     // Clear cache before each test
@@ -429,6 +433,8 @@ describe('StatusService - getNodeVersionInfo', () => {
         pluginsService,
         serverService,
         homebridgeIpcService,
+        {} as SystemMetricsService,
+        {} as DashboardLayoutService,
       )
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
@@ -481,6 +487,8 @@ describe('StatusService - getNodeVersionInfo', () => {
         pluginsService,
         serverService,
         homebridgeIpcService,
+        {} as SystemMetricsService,
+        {} as DashboardLayoutService,
       )
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
@@ -534,6 +542,8 @@ describe('StatusService - getNodeVersionInfo', () => {
         pluginsService,
         serverService,
         homebridgeIpcService,
+        {} as SystemMetricsService,
+        {} as DashboardLayoutService,
       )
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)

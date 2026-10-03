@@ -18,10 +18,10 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
-import { ServerService } from '../../src/modules/server/server.service.js'
 import { StatusGateway } from '../../src/modules/status/status.gateway.js'
 import { StatusModule } from '../../src/modules/status/status.module.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
+import { SystemMetricsService } from '../../src/modules/status/system-metrics.service.js'
 import { testStoragePath } from '../storage-path.js'
 import { authorizeWsClient } from '../ws-client.js'
 
@@ -688,14 +688,7 @@ describe('StatusGateway (e2e)', () => {
       try {
         const logger = app.get(Logger)
         const debugSpy = vi.spyOn(logger, 'debug').mockImplementation(() => undefined)
-        const service = new StatusService(
-          httpService,
-          logger,
-          configService,
-          pluginsService,
-          app.get(ServerService),
-          ipcService,
-        ) as any
+        const service = new SystemMetricsService(logger, configService) as any
         service.getCpuLoadPoint = vi.fn().mockRejectedValue(new Error('si cpu failed'))
         service.getMemoryUsagePoint = vi.fn().mockRejectedValue(new Error('si mem failed'))
 
