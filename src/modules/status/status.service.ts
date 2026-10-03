@@ -6,7 +6,7 @@ import type { HomebridgeStatusMatterUpdate } from '../../core/matter/matter.inte
 
 import { exec, execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
-import { cpus, loadavg, platform, userInfo } from 'node:os'
+import { cpus, loadavg, networkInterfaces as osNetworkInterfaces, platform, userInfo } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
@@ -19,7 +19,6 @@ import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
 import {
   cpuTemperature,
-  currentLoad,
   mem,
   networkInterfaceDefault,
   networkInterfaces,
@@ -37,6 +36,7 @@ import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '..
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
+import { createCpuLoadMeter } from './cpu-load.js'
 import { readLinuxCpuTemperature } from './linux-cpu-temperature.js'
 import { MIN_SAMPLE_MS, SharedSampler } from './shared-sampler.js'
 import {
@@ -59,6 +59,8 @@ const MAX_REQUESTED_INTERVAL_MS = 60_000
 const METRIC_IDLE_MS = 75_000
 // Network samplers are per interface, and the interface comes from the client
 const MAX_NETWORK_SAMPLERS = 8
+// How long the interface list and the default interface are trusted
+const INTERFACE_CACHE_SECONDS = 60
 
 export interface NetworkUsage { net: Systeminformation.NetworkStatsData, point: number }
 
@@ -166,6 +168,8 @@ export class StatusService {
   }
 
   private cpuLoadHistory: number[] = []
+  // Load over the time since the previous sample, from os.cpus() tick deltas
+  private readCpuLoad = createCpuLoadMeter()
   private memoryUsageHistory: number[] = []
 
   private memoryInfo: Systeminformation.MemData
@@ -265,7 +269,7 @@ export class StatusService {
    * Looks up the cpu current load % and stores the last 60 points
    */
   private async getCpuLoadPoint() {
-    const load = (await currentLoad()).currentLoad
+    const load = this.readCpuLoad()
     this.cpuLoadHistory = this.cpuLoadHistory.slice(-60)
     this.cpuLoadHistory.push(load)
   }
@@ -400,7 +404,9 @@ export class StatusService {
 
   /**
    * The host's network interface names, cached for a minute (an interface
-   * that comes up later is picked up then)
+   * that comes up later is picked up then). Read from os.networkInterfaces():
+   * only the names are needed, and systeminformation's list runs a shell
+   * command per interface on some platforms.
    */
   private async getInterfaceNames(): Promise<Set<string>> {
     const cached = this.statusCache.get<string[]>('interfaceNames')
@@ -408,8 +414,8 @@ export class StatusService {
       return new Set(cached)
     }
     try {
-      const names = (await networkInterfaces()).map(x => x.iface).filter(Boolean)
-      this.statusCache.set('interfaceNames', names, 60)
+      const names = Object.keys(osNetworkInterfaces()).filter(Boolean)
+      this.statusCache.set('interfaceNames', names, INTERFACE_CACHE_SECONDS)
       return new Set(names)
     } catch (e) {
       this.logger.debug(`Failed to list network interfaces as ${e.message}.`)
@@ -417,8 +423,22 @@ export class StatusService {
     }
   }
 
+  /**
+   * The default interface's name, cached for a minute: finding it runs shell
+   * commands (`ip route` / `netstat` / `route`), too much for every sample
+   */
+  private async getDefaultInterfaceName(): Promise<string> {
+    const cached = this.statusCache.get<string>('defaultInterfaceName')
+    if (cached !== undefined) {
+      return cached
+    }
+    const name = await networkInterfaceDefault()
+    this.statusCache.set('defaultInterfaceName', name, INTERFACE_CACHE_SECONDS)
+    return name
+  }
+
   private async sampleNetworkUsage(iface: string): Promise<NetworkUsage> {
-    const net = await networkStats(iface || await networkInterfaceDefault())
+    const net = await networkStats(iface || await this.getDefaultInterfaceName())
 
     // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
     const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024
@@ -669,7 +689,7 @@ export class StatusService {
       return cachedResult
     }
 
-    const defaultInterfaceName = await networkInterfaceDefault()
+    const defaultInterfaceName = await this.getDefaultInterfaceName()
     const defaultInterface = defaultInterfaceName ? (await networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined
 
     if (defaultInterface) {

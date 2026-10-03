@@ -14,10 +14,11 @@ import { SharedSampler } from '../../src/modules/status/shared-sampler.js'
 import { requestedIntervalMs, StatusService } from '../../src/modules/status/status.service.js'
 import { testStoragePath } from '../storage-path.js'
 
-const { networkStatsMock, networkInterfaceDefaultMock, networkInterfacesMock, currentLoadMock } = vi.hoisted(() => ({
+const { networkStatsMock, networkInterfaceDefaultMock, networkInterfacesMock, osNetworkInterfacesMock, currentLoadMock } = vi.hoisted(() => ({
   networkStatsMock: vi.fn(),
   networkInterfaceDefaultMock: vi.fn(),
   networkInterfacesMock: vi.fn(),
+  osNetworkInterfacesMock: vi.fn(),
   currentLoadMock: vi.fn(),
 }))
 
@@ -28,8 +29,17 @@ vi.mock('systeminformation', async (importOriginal) => {
     networkStats: networkStatsMock,
     networkInterfaceDefault: networkInterfaceDefaultMock,
     networkInterfaces: networkInterfacesMock,
-    currentLoad: currentLoadMock,
   }
+})
+
+vi.mock('node:os', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:os')>()
+  return { ...actual, default: actual, networkInterfaces: osNetworkInterfacesMock }
+})
+
+vi.mock('../../src/modules/status/cpu-load.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../src/modules/status/cpu-load.js')>()
+  return { ...actual, createCpuLoadMeter: () => () => currentLoadMock() }
 })
 
 describe('readLinuxCpuTemperature', () => {
@@ -275,6 +285,26 @@ describe('SharedSampler - client-driven period', () => {
   })
 })
 
+describe('createCpuLoadMeter', () => {
+  const cpu = (busy: number, idle: number) => ({ model: '', speed: 0, times: { user: busy, nice: 0, sys: 0, irq: 0, idle } })
+
+  it('reports the load since boot first, then over each interval, from the tick deltas', async () => {
+    const { createCpuLoadMeter } = await vi.importActual<typeof import('../../src/modules/status/cpu-load.js')>('../../src/modules/status/cpu-load.js')
+    const readings = [
+      [cpu(100, 300), cpu(100, 300)], // 25% since boot
+      [cpu(190, 310), cpu(190, 310)], // +90 busy, +10 idle: 90%
+      [cpu(190, 310), cpu(190, 310)], // no tick elapsed: keep 90%
+      [cpu(200, 400), cpu(190, 410)], // +10 busy, +190 idle: 5%
+    ]
+    const read = createCpuLoadMeter(() => readings.shift()!)
+
+    expect(read()).toBe(25)
+    expect(read()).toBe(90)
+    expect(read()).toBe(90)
+    expect(read()).toBe(5)
+  })
+})
+
 describe('requestedIntervalMs', () => {
   it.each([
     [undefined, undefined],
@@ -300,9 +330,9 @@ describe('StatusService - shared metric sampling', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.resetAllMocks()
-    currentLoadMock.mockResolvedValue({ currentLoad: 12 })
+    currentLoadMock.mockReturnValue(12)
     networkInterfaceDefaultMock.mockResolvedValue('eth0')
-    networkInterfacesMock.mockResolvedValue([{ iface: 'eth0' }, { iface: 'wlan0' }])
+    osNetworkInterfacesMock.mockReturnValue({ eth0: [], wlan0: [] })
 
     statusService = new StatusService(
       new HttpService(),
@@ -373,8 +403,23 @@ describe('StatusService - shared metric sampling', () => {
     // Every unknown name shared the default interface's sampler
     expect(networkStatsMock.mock.calls.map(([iface]) => iface)).toEqual(['eth0'])
     expect([...(statusService as any).networkSamplers.keys()]).toEqual([''])
-    // The interface list is read once and cached
-    expect(networkInterfacesMock).toHaveBeenCalledTimes(1)
+    // The interface list is read once and cached, and so is the default
+    // interface; systeminformation's full interface scan is never needed
+    expect(osNetworkInterfacesMock).toHaveBeenCalledTimes(1)
+    expect(networkInterfaceDefaultMock).toHaveBeenCalledTimes(1)
+    expect(networkInterfacesMock).not.toHaveBeenCalled()
+  })
+
+  it('looks the default interface up once a minute, not on every network sample', async () => {
+    networkStatsMock.mockImplementation(async (iface: string) => netStats(iface, 0))
+
+    await statusService.getCurrentNetworkUsage([])
+    await vi.advanceTimersByTimeAsync(50_000)
+    expect(networkStatsMock.mock.calls.length).toBeGreaterThan(1)
+    expect(networkInterfaceDefaultMock).toHaveBeenCalledTimes(1)
+
+    await vi.advanceTimersByTimeAsync(20_000)
+    expect(networkInterfaceDefaultMock).toHaveBeenCalledTimes(2)
   })
 
   it('samples cpu load, temperature and network at a widget\'s 1 s refresh, and slows down after it leaves', async () => {
@@ -382,7 +427,7 @@ describe('StatusService - shared metric sampling', () => {
       .mockResolvedValue({ main: 50, cores: [], max: 50 })
     networkStatsMock.mockImplementation(async (iface: string) => netStats(iface, 0))
     let load = 0
-    currentLoadMock.mockImplementation(async () => ({ currentLoad: ++load }))
+    currentLoadMock.mockImplementation(() => ++load)
 
     const loads: number[] = []
     for (let i = 0; i < 5; i++) {
