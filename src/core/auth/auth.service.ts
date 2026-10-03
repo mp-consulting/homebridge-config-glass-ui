@@ -58,6 +58,25 @@ const KNOWN_SOURCE_SECONDS = 30 * 24 * 60 * 60
 // usernames already being counted are tracked (the per-source limit still applies)
 const USERNAME_FAILURE_MAX_ENTRIES = 10_000
 
+// Per-source budget across every username. The per-key limit above is keyed
+// on `username|source`, so a single address rotating through made-up
+// usernames was never slowed down - and every attempt costs a full-strength
+// password hash. Once a source has this many failures within the window
+// (refreshed on each failure), it is refused before any hashing is done.
+// A source that has signed in as the named user before is exempt, as above.
+const SOURCE_MAX_FAILURES = 20
+const SOURCE_FAILURE_WINDOW_SECONDS = 900
+// Bounds the memory a flood from many addresses can take, as above. Past it,
+// new sources are not counted - the hash concurrency limit below still holds.
+const SOURCE_FAILURE_MAX_ENTRIES = 10_000
+
+// How many sign-in attempts may hash a password at the same time. Each one is
+// a 210,000-iteration PBKDF2 on the libuv thread pool, so without a limit a
+// flood of attempts (from as many addresses as an attacker has) starves the
+// server. Past it, an attempt is refused with a 429 before any work, and does
+// not count as a failure.
+const MAX_CONCURRENT_LOGIN_HASHES = 2
+
 interface UsernameFailureState {
   failures: number
   // Cooldowns started so far, for the doubling
@@ -136,6 +155,13 @@ export class AuthService {
   // worst case for a legitimate user is one bounded cooldown.
   private knownLoginSources = new NodeCache({ stdTTL: KNOWN_SOURCE_SECONDS, useClones: false })
 
+  // Failed logins per source address (IPv6 per /64), for every username. See
+  // SOURCE_MAX_FAILURES. Refreshed on each failure.
+  private sourceFailureCache = new NodeCache({ stdTTL: SOURCE_FAILURE_WINDOW_SECONDS })
+
+  // Sign-in attempts currently hashing a password (see MAX_CONCURRENT_LOGIN_HASHES)
+  private activeLoginHashes = 0
+
   // Short-lived cache of the auth file, so validating a token on every request
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
   private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
@@ -170,12 +196,21 @@ export class AuthService {
    */
   async authenticate(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
     const normalisedUsername = String(username || '').toLowerCase()
-    const throttleKey = `${normalisedUsername}|${loginThrottleSource(clientId)}`
+    const source = loginThrottleSource(clientId)
+    const throttleKey = `${normalisedUsername}|${source}`
 
     // Reject before doing any work once the failure threshold is reached, so
     // password and 2FA guessing cannot run unbounded.
     this.assertNotLockedOut(throttleKey, username)
+    this.assertSourceNotLockedOut(source, throttleKey)
     this.assertUsernameNotCoolingDown(normalisedUsername, throttleKey, username)
+
+    // Taken synchronously, before the first `await`, so concurrent attempts
+    // cannot all pass the check together
+    if (this.activeLoginHashes >= MAX_CONCURRENT_LOGIN_HASHES) {
+      throw new HttpException('Too many sign-in attempts in progress. Please try again in a moment.', 429)
+    }
+    this.activeLoginHashes++
 
     try {
       const user = await this.findByUsername(username)
@@ -202,8 +237,9 @@ export class AuthService {
       await this.upgradePasswordHashIfNeeded(user, password)
 
       // Success clears the failure count for this key, and exempts this
-      // source from the per-username cooldown. The per-username count is
-      // left alone: it counts guesses from everywhere else as well.
+      // source from the per-username cooldown. The per-username and
+      // per-source counts are left alone: they count guesses at other
+      // usernames, or from elsewhere, as well.
       this.loginFailureCache.del(throttleKey)
       this.knownLoginSources.set(throttleKey, true)
 
@@ -223,6 +259,7 @@ export class AuthService {
       const is2faPrompt = e instanceof HttpException && e.getStatus() === 412 && e.message === '2FA Code Required'
       if (!is2faPrompt) {
         this.recordFailedAttempt(throttleKey)
+        this.recordSourceFailure(source)
         this.recordUsernameFailure(normalisedUsername)
       }
 
@@ -238,7 +275,37 @@ export class AuthService {
       }
 
       throw new ForbiddenException()
+    } finally {
+      this.activeLoginHashes--
     }
+  }
+
+  /**
+   * Throw a 429 once a source address has failed too often, whichever
+   * usernames it tried (see SOURCE_MAX_FAILURES). A source that has signed
+   * in as the named user before is exempt.
+   */
+  private assertSourceNotLockedOut(source: string, throttleKey: string) {
+    // No source (an internal caller) - nothing to key on
+    if (!source || this.knownLoginSources.has(throttleKey)) {
+      return
+    }
+    if ((this.sourceFailureCache.get<number>(source) || 0) >= SOURCE_MAX_FAILURES) {
+      this.logger.warn(`Too many failed login attempts from ${source} - temporarily refusing sign-in attempts from this address.`)
+      throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
+    }
+  }
+
+  private recordSourceFailure(source: string) {
+    if (!source) {
+      return
+    }
+    const existing = this.sourceFailureCache.get<number>(source)
+    if (existing === undefined && this.sourceFailureCache.getStats().keys >= SOURCE_FAILURE_MAX_ENTRIES) {
+      return
+    }
+    // Re-set to refresh the window
+    this.sourceFailureCache.set(source, (existing || 0) + 1)
   }
 
   /**
