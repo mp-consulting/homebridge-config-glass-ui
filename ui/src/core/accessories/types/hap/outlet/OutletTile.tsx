@@ -2,7 +2,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { switchIsOn, switchToggle } from '@/core/accessories/types/hap/switch/switch.utils'
 import { useSettingsStore } from '@/core/settings/settings.store'
 import { useLongPress } from '@/core/ui/use-long-press'
@@ -24,12 +24,16 @@ export function OutletTile({ service, readyForControl = false }: HapTileProps) {
   }
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick })
+  const srText = tileLabel(service.customName || service.serviceName, t('accessories.core.outlet'), on ? t('accessories.control.on') + consumptionSuffix(service) : t('accessories.control.off'))
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box hb-outlet', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={!!on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.outlet')}>

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { MonacoEditor } from '@/core/monaco'
 import { interpolateMd } from '@/core/pipes/interpolate-md'
 import { managePlugins } from '@/core/plugins/manage-plugins'
@@ -94,7 +95,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
       <div className="modal-body pb-0">
         {ctrl.loading && (
           <div className="text-center primary-text my-5 w-100">
-            <i className="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
+            <InlineSpinner className="icon-xl" />
           </div>
         )}
         {!ctrl.loading && !ctrl.canConfigure && (
@@ -126,7 +127,12 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                             <>
                               {open && (
                                 <HoverTooltip text={t('form.button_delete')}>
-                                  <button type="button" className="btn btn-danger m-0 ms-2" onClick={() => ctrl.removeBlock(index)}>
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger m-0 ms-2"
+                                    aria-label={`${t('form.button_delete')} ${(block.name as string) || pluginAlias}`}
+                                    onClick={() => ctrl.removeBlock(index)}
+                                  >
                                     <i className="fas fa-trash-can" aria-hidden="true"></i>
                                   </button>
                                 </HoverTooltip>
@@ -138,6 +144,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                                   id={`${id}-toggle`}
                                   aria-controls={`${id}-collapse`}
                                   aria-expanded={open}
+                                  aria-label={`${t('form.button_edit')} ${(block.name as string) || pluginAlias}`}
                                   onClick={() => ctrl.editBlock(index)}
                                 >
                                   <i className="far fa-pen-to-square" aria-hidden="true"></i>
@@ -155,6 +162,8 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                                   strict && !valid && 'red-text',
                                   !strict && !valid && 'orange-text',
                                 )}
+                                role="img"
+                                aria-label={t(validityLabel(valid, strict))}
                               >
                               </i>
                             </HoverTooltip>
@@ -215,12 +224,20 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                               strict && !ctrl.formIsValid && 'red-text',
                               !strict && !ctrl.formIsValid && 'orange-text',
                             )}
+                            role="img"
+                            aria-label={t(validityLabel(ctrl.formIsValid, strict))}
                           >
                           </i>
                         </HoverTooltip>
                       )
                     : (
-                        <button type="button" className="btn btn-elegant me-2" data-bs-dismiss="modal" onClick={() => ctrl.addBlock()}>
+                        <button
+                          type="button"
+                          className="btn btn-elegant me-2"
+                          data-bs-dismiss="modal"
+                          aria-label={t('plugins.config.add_block')}
+                          onClick={() => ctrl.addBlock()}
+                        >
                           <i className="fas fa-plus" aria-hidden="true"></i>
                         </button>
                       )}
@@ -233,7 +250,7 @@ export function ManualConfig({ activeModal, plugin, schema, editorContext }: Man
                   >
                     {!ctrl.saveInProgress
                       ? t('form.button_save')
-                      : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
+                      : <InlineSpinner />}
                   </button>
                 </>
               )

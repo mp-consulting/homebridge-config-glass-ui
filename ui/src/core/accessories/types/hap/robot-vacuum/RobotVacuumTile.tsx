@@ -2,7 +2,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
 
@@ -26,12 +26,16 @@ export function RobotVacuumTile({ service, readyForControl = false }: HapTilePro
   }
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick })
+  const srText = tileLabel(service.customName || service.serviceName, t('accessories.core.robot_vacuum'), on ? t('accessories.control.on') + consumptionSuffix(service) : t('accessories.control.off'))
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box hb-robot-vacuum', on && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={!!on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.robot_vacuum')}>

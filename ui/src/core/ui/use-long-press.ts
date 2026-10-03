@@ -5,7 +5,12 @@ import { RE_IPAD_IPHONE_IPOD, RE_NON_SAFARI, RE_SAFARI } from '@/core/regex.cons
 export interface LongPressOptions {
   /** How long a press has to be held to count as long, in ms. */
   duration?: number
-  onLongClick?: (event: MouseEvent | TouchEvent) => void
+  /**
+   * A held press, or from the keyboard Shift+Enter, Shift+F10 or the context
+   * menu key. With no `onShortClick`, Enter and Space land here as well.
+   */
+  onLongClick?: (event: MouseEvent | KeyboardEvent | TouchEvent) => void
+  /** A tap, or from the keyboard Enter or Space. */
   onShortClick?: (event: MouseEvent | KeyboardEvent | TouchEvent) => void
 }
 
@@ -27,6 +32,13 @@ function isSafariMobile(): boolean {
  * The listeners are attached natively rather than as React props because the
  * touchstart one has to be able to `preventDefault()`, and React registers
  * touch listeners as passive.
+ *
+ * The hook also owns **keyboard activation**, so a tile must not add its own
+ * Enter/Space `onKeyDown` (it would fire the action twice). As on a native
+ * button, Enter acts on keydown and Space on keyup; Shift+Enter, Shift+F10 and
+ * the context menu key are the keyboard's long press, so the manage modal is
+ * reachable without a pointer. A tile with only a long action (a sensor whose
+ * tap does nothing) gets it from Enter and Space too.
  *
  * ⚠️ The rule that matters most is the **synthetic event guard**. A touch on
  * iOS fires `touchstart`/`touchend` and then, a moment later, a *second* pair
@@ -52,7 +64,15 @@ export function useLongPress<T extends HTMLElement = HTMLElement>(options: LongP
 
     const duration = () => optionsRef.current.duration ?? 350
     const emitShort = (event: MouseEvent | KeyboardEvent | TouchEvent) => optionsRef.current.onShortClick?.(event)
-    const emitLong = (event: MouseEvent | TouchEvent) => optionsRef.current.onLongClick?.(event)
+    const emitLong = (event: MouseEvent | KeyboardEvent | TouchEvent) => optionsRef.current.onLongClick?.(event)
+    /** Enter / Space: the tap, or the long action on a tile that has no tap. */
+    const emitActivate = (event: KeyboardEvent) => {
+      if (optionsRef.current.onShortClick) {
+        emitShort(event)
+      } else {
+        emitLong(event)
+      }
+    }
 
     /**
      * True while a mouse event is close enough to a touch to be iOS replaying it.
@@ -63,10 +83,50 @@ export function useLongPress<T extends HTMLElement = HTMLElement>(options: LongP
      */
     const isSyntheticEvent = () => Date.now() - lastTouchTime < 300
 
-    const onKeyUp = (event: KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        emitShort(event)
+    /** Space acts on release, like a native button; set by its keydown here. */
+    let spaceArmed = false
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      // Only keys pressed on the tile itself, not ones bubbling up from inside it
+      if (event.target !== element || event.altKey || event.ctrlKey || event.metaKey) {
+        return
       }
+
+      const isLongKey = event.key === 'ContextMenu'
+        || (event.shiftKey && (event.key === 'F10' || event.key === 'Enter'))
+      if (isLongKey) {
+        // Keep the browser's own context menu away
+        event.preventDefault()
+        spaceArmed = false
+        if (!event.repeat) {
+          emitLong(event)
+        }
+        return
+      }
+
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault()
+        if (!event.repeat) {
+          emitActivate(event)
+        }
+      } else if (event.key === ' ') {
+        // Stop the page scrolling
+        event.preventDefault()
+        if (!event.repeat) {
+          spaceArmed = true
+        }
+      }
+    }
+
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.key === ' ' && spaceArmed) {
+        spaceArmed = false
+        emitActivate(event)
+      }
+    }
+
+    const onBlur = () => {
+      spaceArmed = false
     }
 
     const onMouseUp = (event: MouseEvent) => {
@@ -137,7 +197,9 @@ export function useLongPress<T extends HTMLElement = HTMLElement>(options: LongP
       clearTimeout(downTimeout)
     }
 
+    element.addEventListener('keydown', onKeyDown)
     element.addEventListener('keyup', onKeyUp)
+    element.addEventListener('blur', onBlur)
     element.addEventListener('mouseup', onMouseUp)
     element.addEventListener('touchend', onTouchEnd)
     element.addEventListener('touchstart', onMouseDown, { passive: false })
@@ -146,7 +208,9 @@ export function useLongPress<T extends HTMLElement = HTMLElement>(options: LongP
     element.addEventListener('touchmove', onMouseMove)
 
     return () => {
+      element.removeEventListener('keydown', onKeyDown)
       element.removeEventListener('keyup', onKeyUp)
+      element.removeEventListener('blur', onBlur)
       element.removeEventListener('mouseup', onMouseUp)
       element.removeEventListener('touchend', onTouchEnd)
       element.removeEventListener('touchstart', onMouseDown)

@@ -3,7 +3,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { televisionInputs } from '@/core/accessories/types/hap/television/television.utils'
 import { TelevisionManage } from '@/core/accessories/types/hap/television/TelevisionManage'
 import { openModal } from '@/core/ui/modal'
@@ -41,12 +41,21 @@ export function TelevisionTile({ service, readyForControl = false }: HapTileProp
   }
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick })
+  const on = !!(values?.On || values?.Active)
+  const srText = tileLabel(
+    service.customName || values?.ConfiguredName || service.serviceName,
+    t('accessories.core.television'),
+    on ? (channelList[values?.ActiveIdentifier] || t('accessories.control.on')) + consumptionSuffix(service) : t('accessories.control.off'),
+  )
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box hb-television', (values?.Active || values?.On) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.television')}>

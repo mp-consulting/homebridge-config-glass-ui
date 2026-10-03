@@ -3,7 +3,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useTranslation } from 'react-i18next'
 
 import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradientDefs'
-import { formatTemp, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
+import { formatTemp, tileLabel, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
 import { thermostatStatusFill } from '@/core/accessories/types/hap/thermostat/thermostat.utils'
 import { ThermostatManage } from '@/core/accessories/types/hap/thermostat/ThermostatManage'
 import { openModal } from '@/core/ui/modal'
@@ -25,11 +25,33 @@ export function ThermostatTile({ service, readyForControl = false }: HapTileProp
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick: onClick })
 
+  const unit = `°${temperatureUnits.toUpperCase()}`
+  let stateText = ''
+  if (values?.TargetHeatingCoolingState === 0) {
+    stateText = t('accessories.control.off')
+  } else if (values?.CurrentHeatingCoolingState === 1) {
+    stateText = t('accessories.control.heat')
+  } else if (values?.CurrentHeatingCoolingState === 2) {
+    stateText = t('accessories.control.cool')
+  } else if (values?.TargetHeatingCoolingState === 3) {
+    stateText = `${t('accessories.control.target')} ${formatTemp(values?.TargetTemperature, temperatureUnits)}${unit}`
+  }
+  const srText = tileLabel(
+    service.customName || service.serviceName,
+    t('accessories.core.thermostat'),
+    [
+      'CurrentTemperature' in values && `${formatTemp(values?.CurrentTemperature, temperatureUnits)}${unit}`,
+      stateText,
+    ].filter(Boolean).join(', '),
+  )
+
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box', values?.TargetHeatingCoolingState > 0 && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="button"
       tabIndex={0}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.thermostat')}>

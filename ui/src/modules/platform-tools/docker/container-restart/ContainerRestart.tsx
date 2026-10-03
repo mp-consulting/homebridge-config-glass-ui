@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { useHostRestart } from '@/modules/platform-tools/use-host-restart'
 
@@ -38,7 +39,7 @@ export function ContainerRestart() {
                   <p className="grey-text">{t('restart.please_wait_while_server_restarts')}</p>
                   <div className="justify-content-center my-4">
                     <div className="restart-progress-box primary-text">
-                      <i className="fas fa-circle-notch fa-spin"></i>
+                      <InlineSpinner />
                     </div>
                   </div>
                 </>

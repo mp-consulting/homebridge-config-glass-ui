@@ -2,7 +2,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { LockMechanismManage } from '@/core/accessories/types/hap/lock-mechanism/LockMechanismManage'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
@@ -37,7 +37,11 @@ export function LockMechanismTile({ service, readyForControl = false }: HapTileP
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick })
 
   let label = null
+  let stateText = ''
   if (values?.LockCurrentState < 2) {
+    stateText = values?.LockCurrentState
+      ? t('accessories.control.locked')
+      : t('accessories.control.unlocked') + consumptionSuffix(service)
     label = (
       <div className={cx('accessory-label', !values?.LockCurrentState && 'red-text', values?.LockCurrentState && 'grey-text')}>
         {t(values?.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked')}
@@ -45,10 +49,14 @@ export function LockMechanismTile({ service, readyForControl = false }: HapTileP
       </div>
     )
   } else if (values?.LockCurrentState === 2) {
+    stateText = t('accessories.control.jammed')
     label = <div className="accessory-label red-text">{t('accessories.control.jammed')}</div>
   } else if (values?.LockCurrentState === 3) {
+    stateText = t('accessories.control.unknown')
     label = <div className="accessory-label red-text">{t('accessories.control.unknown')}</div>
   }
+
+  const srText = tileLabel(service.customName || service.serviceName, t('accessories.core.lock_mechanism'), stateText)
 
   return (
     <div
@@ -61,7 +69,9 @@ export function LockMechanismTile({ service, readyForControl = false }: HapTileP
         values?.LockCurrentState === 3 && 'error',
         readyForControl && 'cursor-pointer',
       )}
+      role="button"
       tabIndex={0}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.lock_mechanism')}>

@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { convertTemp, formatDecimal } from '@/core/pipes'
 import { useSettingsStore } from '@/core/settings'
 import { useChartWidget } from '@/modules/status/widgets/base-chart-widget/use-chart-widget'
@@ -58,7 +59,7 @@ export function CpuWidget(props: WidgetProps) {
                     <div className="widget-value mb-0">
                       {currentLoad !== undefined
                         ? `${formatDecimal(currentLoad, '1.0-0')}%`
-                        : <i className="fas fa-circle-notch fa-spin"></i>}
+                        : <InlineSpinner />}
                     </div>
                     <div className="widget-value-label grey-text">{t('status.cpu.load')}</div>
                   </div>

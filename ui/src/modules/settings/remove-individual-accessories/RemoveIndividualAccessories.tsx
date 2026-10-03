@@ -210,7 +210,7 @@ export function RemoveIndividualAccessories({ activeModal, selectedBridge: selec
                           aria-label={t('form.button_delete')}
                           onClick={() => toggleList(uuid, item.$cacheFile!, item.$protocol!, item.$deviceId)}
                         >
-                          <i className={`fas ${!inList ? 'fa-trash' : clicked ? 'fa-circle-notch fa-spin' : 'fa-undo'}`}></i>
+                          <i className={`fas ${!inList ? 'fa-trash' : clicked ? 'fa-circle-notch fa-spin' : 'fa-undo'}`} aria-hidden="true"></i>
                         </button>
                       </li>
                     )

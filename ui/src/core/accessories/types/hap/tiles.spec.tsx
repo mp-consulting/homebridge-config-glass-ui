@@ -130,6 +130,63 @@ describe('the HAP accessory tiles', () => {
 
       expect(writesTo(service)).toEqual([{ type: tile.write[0], value: tile.write[1] }])
     })
+
+    it.each([['Enter', 'Enter'], ['Space', ' ']])('writes exactly once on %s', (_keyName, key) => {
+      // ⚠️ The tile and the long-press hook both used to answer Enter, so the
+      // switch toggled on and straight back off
+      const service = serviceWith(tile.chars)
+      const view = renderTile(tile.type, service, true)
+
+      view.press(key)
+
+      expect(writesTo(service)).toEqual([{ type: tile.write[0], value: tile.write[1] }])
+    })
+
+    it('tells a screen reader what it is and what state it is in', () => {
+      // A focusable div with no role or name reads as an empty "group"
+      const service = serviceWith(tile.chars)
+      service.customName = 'Hallway'
+      const box = renderTile(tile.type, service, true).box()
+
+      expect(['switch', 'button']).toContain(box.getAttribute('role'))
+      expect(box.getAttribute('aria-label')).toMatch(/^Hallway, /)
+      if (box.getAttribute('role') === 'switch') {
+        expect(box).toHaveAttribute('aria-checked', 'false')
+      }
+    })
+
+    it('writes nothing on the keyboard long press', () => {
+      const service = serviceWith(tile.chars)
+      const view = renderTile(tile.type, service, true)
+
+      view.press('Enter', { shiftKey: true })
+
+      expect(writesTo(service)).toEqual([])
+    })
+  })
+
+  describe('opening the manage modal from the keyboard', () => {
+    it.each([
+      ['Shift+Enter', 'Enter', { shiftKey: true }],
+      ['Shift+F10', 'F10', { shiftKey: true }],
+      ['the context menu key', 'ContextMenu', {}],
+    ])('opens it on %s, without toggling the accessory', (_name, key, init) => {
+      const service = serviceWith([['TargetPosition', 0], ['CurrentPosition', 0], ['PositionState', 2]])
+      const view = renderTile(DoorTile, service, true)
+
+      view.press(key, init)
+
+      expect(modal.opened).toHaveLength(1)
+      expect(writesTo(service)).toEqual([])
+    })
+
+    it('opens nothing until the bridge is ready for control', () => {
+      const view = renderTile(DoorTile, serviceWith([['TargetPosition', 0]]), false)
+
+      view.press('Enter', { shiftKey: true })
+
+      expect(modal.opened).toEqual([])
+    })
   })
 
   describe.each(MODAL_TILES.map(tile => [tile.name, tile] as const))('the %s tile', (_name, tile) => {
@@ -139,6 +196,15 @@ describe('the HAP accessory tiles', () => {
       view.tap()
 
       expect(modal.opened).toEqual([])
+    })
+
+    it('is announced as a button with its name', () => {
+      const service = serviceWith(tile.chars)
+      service.customName = 'Hallway'
+      const box = renderTile(tile.type, service, true).box()
+
+      expect(box).toHaveAttribute('role', 'button')
+      expect(box.getAttribute('aria-label')).toMatch(/^Hallway, /)
     })
 
     it('opens its manage modal on a tap once the bridge is ready', () => {

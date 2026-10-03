@@ -5,6 +5,7 @@ import type { CustomPluginsModalData } from '@/core/ui/modal-data'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { CustomPluginsController } from '@/core/plugins/custom-plugins/custom-plugins.controller'
 import { useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
@@ -95,7 +96,7 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
       <div className="modal-body pb-0 modal-body-min-height">
         {state.loading && (
           <div className="text-center primary-text my-5 w-100">
-            <i className="fas fa-circle-notch fa-spin icon-xl"></i>
+            <InlineSpinner className="icon-xl" />
           </div>
         )}
 
@@ -172,7 +173,7 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
         )}
         {state.pluginSpinner && (
           <div className="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
-            <i className="fas fa-circle-notch fa-spin icon-xl"></i>
+            <InlineSpinner className="icon-xl" />
           </div>
         )}
       </div>
@@ -196,6 +197,8 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
                   strictValidation && !state.formIsValid && 'red-text',
                   !strictValidation && !state.formIsValid && 'orange-text',
                 )}
+                role="img"
+                aria-label={t(state.formIsValid ? 'form.label_valid' : strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')}
               >
               </i>
             </HoverTooltip>
@@ -208,7 +211,7 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
           >
             {!state.saveInProgress
               ? t('form.button_save')
-              : <i className="fas fa-circle-notch fa-spin"></i>}
+              : <InlineSpinner />}
           </button>
         </div>
       </ModalFooter>

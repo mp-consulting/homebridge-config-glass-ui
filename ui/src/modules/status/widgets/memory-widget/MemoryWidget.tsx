@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { formatDecimal } from '@/core/pipes'
 import { useSettingsStore } from '@/core/settings'
 import { useChartWidget } from '@/modules/status/widgets/base-chart-widget/use-chart-widget'
@@ -60,7 +61,7 @@ export function MemoryWidget(props: WidgetProps) {
                     <div className="widget-value mb-0">
                       {totalMemory !== undefined
                         ? `${formatDecimal(totalMemory, '1.0-2')} GB`
-                        : <i className="fas fa-circle-notch fa-spin"></i>}
+                        : <InlineSpinner />}
                     </div>
                     <div className="widget-value-label grey-text">{t('status.memory.label_total')}</div>
                   </div>
@@ -68,7 +69,7 @@ export function MemoryWidget(props: WidgetProps) {
                     <div className="widget-value mb-0">
                       {freeMemory !== undefined
                         ? `${formatDecimal(freeMemory, '1.0-2')} GB`
-                        : <i className="fas fa-circle-notch fa-spin"></i>}
+                        : <InlineSpinner />}
                     </div>
                     <div className="widget-value-label grey-text">{t('status.memory.label_available')}</div>
                   </div>

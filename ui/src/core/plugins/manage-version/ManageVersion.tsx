@@ -9,6 +9,7 @@ import { rcompare } from 'semver'
 
 import { api } from '@/core/api'
 import { pluginsCache } from '@/core/caching/plugins-cache'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { getCurrentUpdatePreference } from '@/core/plugins/manage-version/update-preference'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
@@ -238,7 +239,7 @@ export function ManageVersion({ activeModal, plugin, onRefreshPluginList, onSett
         {loading
           ? (
               <div className="w-100 text-center primary-text my-5 w-100">
-                <i className="fas fa-circle-notch fa-spin icon-xl"></i>
+                <InlineSpinner className="icon-xl" />
               </div>
             )
           : (

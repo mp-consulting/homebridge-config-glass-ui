@@ -56,14 +56,6 @@ export function DoorTile({ service, readyForControl = false }: HapTileProps) {
       tabIndex={0}
       style={positionStyle(service)}
       aria-label={srText}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') {
-          onClick()
-        } else if (event.key === ' ') {
-          event.preventDefault()
-          onClick()
-        }
-      }}
     >
       <span className="visually-hidden">
         {srText}

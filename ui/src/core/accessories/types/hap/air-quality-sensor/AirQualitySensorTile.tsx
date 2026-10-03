@@ -45,11 +45,6 @@ export function AirQualitySensorTile({ service }: HapTileProps) {
       role={canShowModal ? 'button' : undefined}
       tabIndex={canShowModal ? 0 : undefined}
       aria-label={canShowModal ? srText : undefined}
-      onKeyDown={(event) => {
-        if ((event.key === 'Enter' || event.key === ' ') && canShowModal) {
-          onLongClick()
-        }
-      }}
     >
       <span className="visually-hidden">
         {srText}

@@ -3,6 +3,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useTranslation } from 'react-i18next'
 
 import { FilterMaintenanceManage } from '@/core/accessories/types/hap/filter-maintenance/FilterMaintenanceManage'
+import { tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { openModal } from '@/core/ui/modal'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
@@ -23,6 +24,11 @@ export function FilterMaintenanceTile({ service, readyForControl = false }: HapT
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick: onClick })
   const replace = values?.FilterChangeIndication === 1
+  const srText = tileLabel(
+    service.customName || service.serviceName,
+    t('accessories.core.filter_maintenance'),
+    [`${values?.FilterLifeLevel}%`, replace && t('accessories.control.replace')].filter(Boolean).join(', '),
+  )
 
   return (
     <div
@@ -33,7 +39,9 @@ export function FilterMaintenanceTile({ service, readyForControl = false }: HapT
         !replace && values?.FilterLifeLevel < 50 && 'dirty',
         readyForControl && 'cursor-pointer',
       )}
+      role="button"
       tabIndex={0}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.filter_maintenance')}>

@@ -49,9 +49,16 @@
   }
 }
 
+// The theme colours (the themes paint the rings themselves; this is what is
+// left without one), never a fixed orange
+.animate_loader {
+  color: var(--glass-primary, currentColor);
+}
+
 .spinner_outer {
   animation: spinner-rotate 2.5s linear infinite;
   transform-origin: 50px 50px;
+  stroke: var(--glass-primary-dark, currentColor);
 }
 
 .spinner_inner {

@@ -3,6 +3,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { createAdaptiveLightingSignal, useAdaptiveLighting } from '@/core/accessories/types/hap/lightbulb/adaptive-lighting'
 import { getBrightnessLabel, getBulbFill, getOnOffLabel } from '@/core/accessories/types/hap/lightbulb/lightbulb.utils'
 import { LightbulbManage } from '@/core/accessories/types/hap/lightbulb/LightbulbManage'
@@ -84,12 +85,21 @@ export function LightbulbTile({ service, readyForControl = false }: HapTileProps
 
   const pressRef = useLongPress<HTMLDivElement>({ onShortClick: onClick, onLongClick: () => void onLongClick() })
   const values = service.values
+  const on = !!(values.On || values.Active)
+  const srText = tileLabel(
+    service.customName || service.serviceName,
+    t('accessories.core.lightbulb'),
+    on && values.Brightness ? `${t('accessories.control.on')}, ${values.Brightness}%` : t(on ? 'accessories.control.on' : 'accessories.control.off'),
+  )
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box', (values.On || values.Active) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.lightbulb')}>

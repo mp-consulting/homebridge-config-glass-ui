@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { AIR_QUALITY_LABELS } from '@/core/accessories/types/matter/air-quality-sensor/air-quality-sensor'
 import { AirQualitySensorManage } from '@/core/accessories/types/matter/air-quality-sensor/AirQualitySensorManage'
 import { getAirQualityValue, hasConcentrationData } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
 
@@ -50,7 +50,6 @@ export function MatterAirQualitySensorTile({ service }: MatterTileProps) {
       role={canShowModal ? 'button' : undefined}
       tabIndex={canShowModal ? 0 : undefined}
       aria-label={canShowModal ? srText : undefined}
-      onKeyDown={onEnterOrSpace(() => canShowModal && onLongClick())}
     >
       <span className="visually-hidden">
         {srText}

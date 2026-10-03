@@ -50,3 +50,27 @@ export function useTemperatureUnits(): 'c' | 'f' {
   // 'c' until the settings have loaded, rather than crashing on undefined
   return useSettingsStore(state => state.env?.temperatureUnits) || 'c'
 }
+
+/**
+ * The accessible name of a tile: `{name}, {type}, {state}`, leaving the type
+ * out when the name already says it (a "Kitchen Light" is not read as
+ * "Kitchen Light, Lightbulb"). Tiles put it in `aria-label` next to a `role`
+ * (`switch` + `aria-checked` for an on/off tile, `button` otherwise), since
+ * the icon and the two label lines say nothing useful to a screen reader.
+ * @param name - the name the tile shows
+ * @param srType - the translated accessory type
+ * @param stateText - the state as plain text (empty to leave it out)
+ */
+export function tileLabel(name: string | undefined, srType: string, stateText: string): string {
+  const baseName = (name || '').trim()
+  const includeType = !baseName.toLowerCase().includes(srType.toLowerCase())
+  return [baseName, includeType ? srType : '', stateText].filter(Boolean).join(', ')
+}
+
+/**
+ * ` · 12W` after an on state, when the accessory reports its power use.
+ * @param service - the accessory service
+ */
+export function consumptionSuffix(service: ServiceTypeX): string {
+  return hasCurrentConsumption(service) ? ` · ${currentConsumption(service)}W` : ''
+}

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradientDefs'
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { toggleActiveOrOn } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { humidifierStatusFill } from '@/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.utils'
 import { HumidifierDehumidifierManage } from '@/core/accessories/types/hap/humidifier-dehumidifier/HumidifierDehumidifierManage'
@@ -53,34 +53,50 @@ export function HumidifierDehumidifierTile({ service, readyForControl = false, t
     </>
   )
 
-  let label
+  // The state line: a word, or a target with the bullseye in front of it
+  let stateText = ''
+  let targetText = ''
   if (('Active' in values && !values?.Active) || ('On' in values && !values?.On)) {
-    label = t('accessories.control.off')
+    stateText = t('accessories.control.off')
   } else if (values?.TargetHumidifierDehumidifierState === 0 && (hasHumidifier || hasDehumidifier)) {
     if (hasHumidifier && hasDehumidifier) {
-      label = target(`${pct(values?.RelativeHumidityHumidifierThreshold)} - ${pct(values?.RelativeHumidityDehumidifierThreshold)}`)
+      targetText = `${pct(values?.RelativeHumidityHumidifierThreshold)} - ${pct(values?.RelativeHumidityDehumidifierThreshold)}`
     } else if (hasHumidifier) {
-      label = target(pct(values?.RelativeHumidityHumidifierThreshold))
+      targetText = pct(values?.RelativeHumidityHumidifierThreshold)
     } else {
-      label = target(pct(values?.RelativeHumidityDehumidifierThreshold))
+      targetText = pct(values?.RelativeHumidityDehumidifierThreshold)
     }
   } else if (values?.TargetHumidifierDehumidifierState === 1 && hasHumidifier) {
-    label = target(pct(values?.RelativeHumidityHumidifierThreshold))
+    targetText = pct(values?.RelativeHumidityHumidifierThreshold)
   } else if (values?.TargetHumidifierDehumidifierState === 1) {
-    label = t('accessories.control.humidify')
+    stateText = t('accessories.control.humidify')
   } else if (values?.TargetHumidifierDehumidifierState === 2 && hasDehumidifier) {
-    label = target(pct(values?.RelativeHumidityDehumidifierThreshold))
+    targetText = pct(values?.RelativeHumidityDehumidifierThreshold)
   } else if (values?.TargetHumidifierDehumidifierState === 2) {
-    label = t('accessories.control.dehumidify')
+    stateText = t('accessories.control.dehumidify')
   } else {
-    label = t('accessories.control.on')
+    stateText = t('accessories.control.on')
   }
+
+  const label = targetText ? target(targetText) : stateText
+  if (targetText) {
+    stateText = `${t('accessories.control.target')} ${targetText}`
+  }
+  const on = !!(values.Active || values.On)
+  const srText = tileLabel(
+    service.customName || service.serviceName,
+    t('accessories.core.humidifier_dehumidifier'),
+    on ? stateText + consumptionSuffix(service) : stateText,
+  )
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box', (values.Active || values.On) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.humidifier_dehumidifier')}>

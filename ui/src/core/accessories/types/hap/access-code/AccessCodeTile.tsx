@@ -2,12 +2,19 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 
 import { useTranslation } from 'react-i18next'
 
+import { tileLabel } from '@/core/accessories/types/hap/hap-tile'
+
 /** Display only: there is nothing to control on an access code service. */
 export function AccessCodeTile({ service }: HapTileProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="accessory-box" tabIndex={0}>
+    <div
+      className="accessory-box"
+      role="group"
+      tabIndex={0}
+      aria-label={tileLabel(service.customName || service.serviceName, t('accessories.core.access_code'), '')}
+    >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.access_code')}>
           <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">

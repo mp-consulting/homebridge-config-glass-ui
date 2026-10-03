@@ -3,7 +3,7 @@ import type { MatterTileProps } from '@/core/accessories/types/matter/matter-til
 import { useTranslation } from 'react-i18next'
 
 import { getThermostatLocalTemperature, getThermostatSystemMode, isThermostatOn } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal, tileName } from '@/core/accessories/types/matter/matter-tile'
 import { MatterThermostatManage } from '@/core/accessories/types/matter/thermostat/MatterThermostatManage'
 import { convertTemp } from '@/core/pipes/convert-temp'
 import { formatDecimal } from '@/core/pipes/decimal'
@@ -68,7 +68,6 @@ export function MatterThermostatTile({ service, readyForControl = false }: Matte
       role="button"
       tabIndex={0}
       aria-label={srText}
-      onKeyDown={onEnterOrSpace(onClick)}
     >
       <span className="visually-hidden">
         {srText}

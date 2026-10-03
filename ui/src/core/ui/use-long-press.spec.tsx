@@ -334,12 +334,104 @@ describe('useLongPress', () => {
   })
 
   describe('the keyboard', () => {
-    it('reports Enter as a tap', () => {
-      // The tile has to be usable without a pointer at all
-      button.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }))
+    /** A full key press: keydown then keyup, the way a real key arrives. */
+    function press(key: string, init: Partial<Pick<KeyboardEvent, 'shiftKey' | 'ctrlKey' | 'altKey' | 'metaKey'>> = {}) {
+      const down = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init })
+      button.dispatchEvent(down)
+      button.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true, ...init }))
+      return down
+    }
+
+    it('reports Enter as exactly one tap', () => {
+      // The tile has to be usable without a pointer at all, and a tile that also
+      // listened for Enter itself used to toggle twice - on, then straight off
+      press('Enter')
 
       expect(host.short).toBe(1)
       expect(host.long).toBe(0)
+    })
+
+    it('reports Space as exactly one tap, and keeps the page from scrolling', () => {
+      const down = press(' ')
+
+      expect(host.short).toBe(1)
+      expect(host.long).toBe(0)
+      expect(down.defaultPrevented).toBe(true)
+    })
+
+    it('acts on Space only once it is released', () => {
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+      expect(host.short).toBe(0)
+
+      button.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true }))
+      expect(host.short).toBe(1)
+    })
+
+    it('ignores a key released on the tile that was pressed somewhere else', () => {
+      // Space pressed on the previous control, focus moved, released here
+      button.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true }))
+      button.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }))
+
+      expect(host.short).toBe(0)
+    })
+
+    it('ignores auto-repeat while a key is held', () => {
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, repeat: true }))
+      button.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, repeat: true }))
+      button.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }))
+
+      expect(host.short).toBe(1)
+    })
+
+    it.each([
+      ['Shift+Enter', 'Enter', { shiftKey: true }],
+      ['Shift+F10', 'F10', { shiftKey: true }],
+      ['the context menu key', 'ContextMenu', {}],
+    ])('reports %s as a long press', (_name, key, init) => {
+      // The manage modal has to be reachable without a pointer too
+      const down = press(key, init)
+
+      expect(host.long).toBe(1)
+      expect(host.short).toBe(0)
+      expect(down.defaultPrevented).toBe(true)
+    })
+
+    it('leaves other shortcuts alone', () => {
+      press('Enter', { ctrlKey: true })
+      press('Tab')
+      press('F10')
+
+      expect(host.short).toBe(0)
+      expect(host.long).toBe(0)
+    })
+  })
+
+  describe('the keyboard on a tile with only a long action', () => {
+    function LongOnly() {
+      const pressRef = useLongPress<HTMLDivElement>({
+        onLongClick: () => {
+          host.long = host.long + 1
+        },
+      })
+      return <div ref={pressRef} tabIndex={0}>Readings</div>
+    }
+
+    it('opens it from Enter and Space as well', () => {
+      unmount()
+      host.short = 0
+      host.long = 0
+      const result = render(<LongOnly />)
+      unmount = result.unmount
+      const box = result.container.querySelector('div')!
+
+      box.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+      box.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }))
+      expect(host.long).toBe(1)
+
+      box.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
+      box.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true }))
+      expect(host.long).toBe(2)
     })
   })
 

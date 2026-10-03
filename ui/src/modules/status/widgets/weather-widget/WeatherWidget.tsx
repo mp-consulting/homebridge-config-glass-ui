@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { convertTemp, formatDecimal } from '@/core/pipes'
 import { useSettingsStore } from '@/core/settings'
 import { useNamespace, useNamespaceConnected } from '@/core/ws'
@@ -192,7 +193,7 @@ export function WeatherWidget({ widget, configureEvent }: WidgetProps) {
             : (
                 <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
                   <div className="d-flex flex-column w-100 pb-2" role="status" aria-label={t('common.a11y.loading')}>
-                    <h1><i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i></h1>
+                    <h1><InlineSpinner /></h1>
                   </div>
                 </div>
               )}

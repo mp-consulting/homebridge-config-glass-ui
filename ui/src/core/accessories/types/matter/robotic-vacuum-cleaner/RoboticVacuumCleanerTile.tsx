@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { RvcOperationalState } from '@/core/accessories/types/matter/matter-device.constants'
 import { controlDevice, getDeviceActiveState, getDeviceStatusText, getRvcOperationalState, isOnOffDevice } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal } from '@/core/accessories/types/matter/matter-tile'
 import { RoboticVacuumCleanerManage } from '@/core/accessories/types/matter/robotic-vacuum-cleaner/RoboticVacuumCleanerManage'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
@@ -52,7 +52,6 @@ export function RoboticVacuumCleanerTile({ service, readyForControl = false }: M
       tabIndex={0}
       aria-checked={active}
       aria-label={srText}
-      onKeyDown={onEnterOrSpace(onClick)}
     >
       <span className="visually-hidden">
         {srText}

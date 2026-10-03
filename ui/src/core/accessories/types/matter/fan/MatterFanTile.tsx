@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { MatterFanManage } from '@/core/accessories/types/matter/fan/MatterFanManage'
 import { getFanPercentSetting, isFanOn, toggleFan } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
 
@@ -43,7 +43,6 @@ export function MatterFanTile({ service, readyForControl = false }: MatterTilePr
       tabIndex={0}
       aria-checked={on}
       aria-label={srText}
-      onKeyDown={onEnterOrSpace(onClick)}
     >
       <span className="visually-hidden">
         {srText}

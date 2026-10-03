@@ -36,11 +36,6 @@ export function SwitchTile({ service, readyForControl = false }: HapTileProps) {
       tabIndex={0}
       aria-checked={on}
       aria-label={srText}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          onClick()
-        }
-      }}
     >
       <span className="visually-hidden">
         {srText}

@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid'
 
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
+import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { interpolateMd } from '@/core/pipes/interpolate-md'
 import { HomebridgeDeconz } from '@/core/plugins/custom-plugins/homebridge-deconz/HomebridgeDeconz'
 import { HomebridgeHue } from '@/core/plugins/custom-plugins/homebridge-hue/HomebridgeHue'
@@ -232,6 +233,11 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
     ? 'form.label_valid'
     : strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')
 
+  // Read out rather than shown in colour only; nothing to say before the first validation
+  const validityA11y = (valid: boolean | undefined) => valid === undefined
+    ? { 'aria-hidden': true as const }
+    : { 'role': 'img', 'aria-label': validityLabel(valid) }
+
   const schemaForm = (block: PluginConfigBlock) => (
     <SchemaForm
       configSchema={schema}
@@ -291,7 +297,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
                           </button>
                         </HoverTooltip>
                         <HoverTooltip text={validityLabel(formBlocksValid[block.__uuid__])} placement="left">
-                          <i className={validityClass(formBlocksValid[block.__uuid__])} aria-hidden="true"></i>
+                          <i className={validityClass(formBlocksValid[block.__uuid__])} {...validityA11y(formBlocksValid[block.__uuid__])}></i>
                         </HoverTooltip>
                       </div>
                     </div>
@@ -341,7 +347,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
           {schema.singular
             ? (
                 <HoverTooltip text={validityLabel(formIsValid)}>
-                  <i className={`${validityClass(formIsValid)} me-2`} aria-hidden="true"></i>
+                  <i className={`${validityClass(formIsValid)} me-2`} {...validityA11y(formIsValid)}></i>
                 </HoverTooltip>
               )
             : (
@@ -364,7 +370,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
           >
             {!saveInProgress
               ? <span>{t('form.button_save')}</span>
-              : <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>}
+              : <InlineSpinner />}
           </button>
         </div>
       </ModalFooter>

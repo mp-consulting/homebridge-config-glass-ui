@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ClimateGradientDefs } from '@/core/accessories/types/hap/ClimateGradientDefs'
-import { currentConsumption, formatTemp, hasCurrentConsumption, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, formatTemp, hasCurrentConsumption, tileLabel, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
 import { heaterCoolerStatusFill, toggleActiveOrOn } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { HeaterCoolerManage } from '@/core/accessories/types/hap/heater-cooler/HeaterCoolerManage'
 import { openModal } from '@/core/ui/modal'
@@ -54,34 +54,50 @@ export function HeaterCoolerTile({ service, readyForControl = false, type }: Hea
     </>
   )
 
-  let label
+  // The state line: a word, or a target with the bullseye in front of it
+  let stateText = ''
+  let targetText = ''
   if (('Active' in values && !values?.Active) || ('On' in values && !values?.On)) {
-    label = t('accessories.control.off')
+    stateText = t('accessories.control.off')
   } else if (values?.TargetHeaterCoolerState === 0 && (hasHeating || hasCooling)) {
     if (hasHeating && hasCooling) {
-      label = target(`${temp(values?.HeatingThresholdTemperature)} - ${temp(values?.CoolingThresholdTemperature)}`)
+      targetText = `${temp(values?.HeatingThresholdTemperature)} - ${temp(values?.CoolingThresholdTemperature)}`
     } else if (hasHeating) {
-      label = target(temp(values?.HeatingThresholdTemperature))
+      targetText = temp(values?.HeatingThresholdTemperature)
     } else {
-      label = target(temp(values?.CoolingThresholdTemperature))
+      targetText = temp(values?.CoolingThresholdTemperature)
     }
   } else if (values?.TargetHeaterCoolerState === 1 && hasHeating) {
-    label = target(temp(values?.HeatingThresholdTemperature))
+    targetText = temp(values?.HeatingThresholdTemperature)
   } else if (values?.TargetHeaterCoolerState === 1) {
-    label = t('accessories.control.heat')
+    stateText = t('accessories.control.heat')
   } else if (values?.TargetHeaterCoolerState === 2 && hasCooling) {
-    label = target(temp(values?.CoolingThresholdTemperature))
+    targetText = temp(values?.CoolingThresholdTemperature)
   } else if (values?.TargetHeaterCoolerState === 2) {
-    label = t('accessories.control.cool')
+    stateText = t('accessories.control.cool')
   } else {
-    label = t('accessories.control.on')
+    stateText = t('accessories.control.on')
   }
+
+  const label = targetText ? target(targetText) : stateText
+  if (targetText) {
+    stateText = `${t('accessories.control.target')} ${targetText}`
+  }
+  const on = !!(values.Active || values.On)
+  const srText = tileLabel(
+    service.customName || service.serviceName,
+    t('accessories.core.heater_cooler'),
+    on ? stateText + consumptionSuffix(service) : stateText,
+  )
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box', (values.Active || values.On) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         <div className="accessory-svg" aria-label={t('accessories.core.heater_cooler')}>

@@ -3,7 +3,7 @@ import type { HapTileProps } from '@/core/accessories/types/hap/hap-tile'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { currentConsumption, hasCurrentConsumption } from '@/core/accessories/types/hap/hap-tile'
+import { consumptionSuffix, currentConsumption, hasCurrentConsumption, tileLabel } from '@/core/accessories/types/hap/hap-tile'
 import { ValveManage } from '@/core/accessories/types/hap/valve/ValveManage'
 import { useLatest } from '@/core/hooks/use-latest'
 import { openModal } from '@/core/ui/modal'
@@ -208,9 +208,20 @@ export function ValveTile({ service, readyForControl = false }: HapTileProps) {
   }
 
   let label
+  let stateText
+  let srType = t('accessories.core.generic_valve')
+  if (values?.ValveType === 1) {
+    srType = t('accessories.core.irrigation_valve')
+  } else if (values?.ValveType === 2) {
+    srType = t('accessories.core.shower_head_valve')
+  } else if (values?.ValveType === 3) {
+    srType = t('accessories.core.faucet_valve')
+  }
   if (values?.Active && remainingDuration) {
+    stateText = `${t('accessories.control.running')}, ${remainingDuration}`
     label = <div className="accessory-label grey-text">{remainingDuration}</div>
   } else if ((values?.Active && !remainingDuration) || values?.On) {
+    stateText = t('accessories.control.running') + consumptionSuffix(service)
     label = (
       <div className="accessory-label grey-text">
         {t('accessories.control.running')}
@@ -218,14 +229,20 @@ export function ValveTile({ service, readyForControl = false }: HapTileProps) {
       </div>
     )
   } else {
+    stateText = t('accessories.control.off')
     label = <div className="accessory-label grey-text">{t('accessories.control.off')}</div>
   }
+  const on = !!(values?.Active || values?.On)
+  const srText = tileLabel(service.customName || values?.ConfiguredName || service.serviceName, srType, stateText)
 
   return (
     <div
       ref={pressRef}
       className={cx('accessory-box hb-valve', (values?.Active || values?.On) && 'accessory-on', readyForControl && 'cursor-pointer')}
+      role="switch"
       tabIndex={0}
+      aria-checked={on}
+      aria-label={srText}
     >
       <div className="d-flex flex-column h-100">
         {icon}
