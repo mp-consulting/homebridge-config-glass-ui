@@ -130,7 +130,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
 
   const reportUploadError = (error: any) => {
     console.error(error)
-    toast.error(error?.error?.message || t('backup.restore_failed'), t('toast.title_error'))
+    toastApiError(error, 'backup.restore_failed')
   }
 
   const uploadHomebridgeArchive = async (): Promise<void> => {

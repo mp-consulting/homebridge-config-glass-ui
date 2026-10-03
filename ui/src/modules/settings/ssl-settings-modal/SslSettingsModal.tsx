@@ -11,6 +11,7 @@ import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 import { isSslFormInvalid } from '@/modules/settings/ssl-settings-modal/ssl-settings'
 
 const MODES: Array<{ mode: SslMode, icon: string, label: string, desc: string }> = [
@@ -123,7 +124,8 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
           // Upload pending key+cert pair if either was newly selected
           if (pending.key || pending.cert) {
             if (!pending.key || !pending.cert) {
-              throw new Error(i18n.t('settings.security.upload_both_files'))
+              toast.error(i18n.t('settings.security.upload_both_files'), i18n.t('toast.title_error'))
+              return
             }
             const formData = new FormData()
             formData.append('uploads', pending.key, pending.key.name)
@@ -188,8 +190,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
       activeModal.close(config.mode)
     } catch (error: any) {
       console.error(error)
-      const errorMessage = error?.error?.message || error?.message || t('toast.api_error_generic')
-      toast.error(errorMessage, i18n.t('toast.title_error'))
+      toastApiError(error)
     } finally {
       setIsSaving(false)
     }

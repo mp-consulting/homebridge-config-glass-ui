@@ -15,11 +15,11 @@ import { HomebridgeHue } from '@/core/plugins/custom-plugins/homebridge-hue/Home
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { childBridges as childBridgesService } from '@/core/utilities/child-bridges'
 import { cx } from '@/core/utilities/cx'
+import { toastApiError } from '@/core/utilities/http-error'
 import { SchemaForm } from '@/schema-form'
 
 import './plugin-config.scss'
@@ -161,8 +161,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
         }
       } catch (error: any) {
         console.error(error)
-        const message = error?.error?.message || i18n.t('plugins.config.load_error')
-        toast.error(message, i18n.t('toast.title_error'))
+        toastApiError(error, 'plugins.config.load_error')
       }
     })()
 
