@@ -9,7 +9,7 @@ import { Controller, Get, Post, Put, UseGuards, ValidationPipe } from '@nestjs/c
 import { AuthGuard } from '@nestjs/passport'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, remove, writeFile, writeJson } from 'fs-extra'
+import { copy, readJson, remove, writeFile, writeJson } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -154,6 +154,37 @@ describe('Setup wizard security (e2e)', () => {
       await expect(verifyWsClient(socket('/backup'), configService, authService)).resolves.toMatchObject({ username: 'setup-wizard' })
       await expect(verifyWsClient(socket('/status'), configService, authService)).rejects.toThrow()
       await expect(verifyWsClient(socket('/platform-tools/terminal'), configService, authService)).rejects.toThrow()
+    })
+  })
+
+  describe('restrictLogsToAdmins on a new install', () => {
+    afterEach(() => {
+      configService.restrictLogsToAdmins = false
+      delete configService.ui.restrictLogsToAdmins
+    })
+
+    it('is turned on when the setup wizard creates the first user', async () => {
+      await remove(authFilePath)
+      await authService.checkAuthFile()
+      await authService.setupFirstUser({ username: 'first', name: 'First', password: 'first-password' } as any)
+
+      const ui = (await readJson(configPath)).platforms.find((p: any) => p.platform === 'config')
+      expect(ui.restrictLogsToAdmins).toBe(true)
+      expect(configService.restrictLogsToAdmins).toBe(true)
+    })
+
+    it('keeps a value the config already has', async () => {
+      const config = await readJson(configPath)
+      config.platforms.find((p: any) => p.platform === 'config').restrictLogsToAdmins = false
+      await writeJson(configPath, config)
+
+      await remove(authFilePath)
+      await authService.checkAuthFile()
+      await authService.setupFirstUser({ username: 'first', name: 'First', password: 'first-password' } as any)
+
+      const ui = (await readJson(configPath)).platforms.find((p: any) => p.platform === 'config')
+      expect(ui.restrictLogsToAdmins).toBe(false)
+      expect(configService.restrictLogsToAdmins).toBe(false)
     })
   })
 })

@@ -20,6 +20,7 @@ import { generateSecret, generateURI, verify } from 'otplib'
 
 import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { UserDto } from '../../modules/users/users.dto.js'
+import { HomebridgeConfig } from '../config/config.interfaces.js'
 import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
@@ -763,9 +764,41 @@ export class AuthService {
 
       this.configService.setupWizardComplete = true
 
+      await this.restrictLogsForNewInstall()
+
       return createdUser
     } finally {
       this.firstUserSetupInProgress = false
+    }
+  }
+
+  /**
+   * Plugin output in the Homebridge log routinely contains credentials, so a
+   * new install restricts the log viewer to administrators. Existing installs
+   * keep the long-standing behaviour (any signed-in user may read it): this
+   * only runs when the setup wizard creates the first user, and only sets the
+   * option when the UI config does not already have a value for it.
+   */
+  private async restrictLogsForNewInstall() {
+    try {
+      let changed = false
+      await this.jsonStore.mutate<HomebridgeConfig>(this.configService.configPath, (config) => {
+        const ui = Array.isArray(config?.platforms) ? config.platforms.find(x => x?.platform === 'config') : undefined
+        if (!ui || ui.restrictLogsToAdmins !== undefined) {
+          return null
+        }
+        ui.restrictLogsToAdmins = true
+        changed = true
+        return config
+      }, { spaces: 4 })
+      if (changed) {
+        this.configService.ui.restrictLogsToAdmins = true
+        this.configService.restrictLogsToAdmins = true
+        this.logger.log('Restricted the Homebridge log to administrators (restrictLogsToAdmins), the default for new installs.')
+      }
+    } catch (e) {
+      // The user exists; failing setup over a default would be worse
+      this.logger.warn(`Could not set restrictLogsToAdmins for the new install: ${e.message}`)
     }
   }
 
