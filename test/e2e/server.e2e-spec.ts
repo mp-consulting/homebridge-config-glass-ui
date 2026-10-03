@@ -3,6 +3,9 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
+import { execFileSync, spawnSync } from 'node:child_process'
+import { createPrivateKey, X509Certificate } from 'node:crypto'
+import { chmod, stat, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -1564,6 +1567,137 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(201)
     expect(res.json().valid).toBe(true)
     expect(res.json().type).toBe('keycert')
+  })
+
+  // Windows has no POSIX permission bits - report what was asked for there
+  const modeOf = async (path: string, windowsMode: number) => process.platform === 'win32'
+    ? windowsMode
+    : (await stat(path)).mode & 0o777
+
+  it('POST /server/ssl/selfsigned/generate writes a valid, owner-only certificate', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: { authorization },
+      payload: { hostnames: ['homebridge.local', '192.168.1.20', 'fe80::1'], mode: 'keycert' },
+    })
+    expect(res.statusCode).toBe(201)
+
+    const keyPem = await readFile(res.json().keyPath)
+    const cert = new X509Certificate(await readFile(res.json().certPath))
+    expect(cert.subject).toContain('CN=homebridge.local')
+    expect(cert.subject).toContain('O=Homebridge')
+    expect(cert.subject).toContain('OU=Homebridge Glass UI')
+    expect(cert.issuer).toBe(cert.subject)
+    expect(cert.subjectAltName).toContain('DNS:homebridge.local')
+    expect(cert.subjectAltName).toContain('IP Address:192.168.1.20')
+    expect(cert.subjectAltName).toMatch(/IP Address:fe80:0:0:0:0:0:0:1/i)
+    expect(cert.ca).toBe(false)
+    expect(cert.keyUsage).toEqual(expect.arrayContaining(['1.3.6.1.5.5.7.3.1', '1.3.6.1.5.5.7.3.2']))
+    expect(new Date(cert.validTo).toISOString()).toBe('2050-01-01T00:00:00.000Z')
+    expect(cert.verify(cert.publicKey)).toBe(true)
+    expect(cert.checkPrivateKey(createPrivateKey(keyPem))).toBe(true)
+    // A fresh random serial each time (Firefox rejects a reused issuer + serial)
+    expect(cert.serialNumber).toMatch(/^01[0-9A-F]{32}$/)
+
+    expect(await modeOf(res.json().keyPath, 0o600)).toBe(0o600)
+    expect(await modeOf(resolve(configService.storagePath, 'ssl-certs'), 0o700)).toBe(0o700)
+  })
+
+  it('POST /server/ssl/keycert saves the uploaded pair owner-only', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // A valid pair to upload
+    const gen = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: { authorization },
+      payload: { hostnames: ['localhost'], mode: 'keycert' },
+    })
+    const keyPem = await readFile(gen.json().keyPath)
+    const certPem = await readFile(gen.json().certPath)
+
+    // Files and a directory left world-readable by an older version are tightened
+    const sslDir = resolve(configService.storagePath, 'ssl-certs')
+    await chmod(sslDir, 0o755)
+    await writeFile(resolve(sslDir, 'ui-ssl.key'), 'old', { mode: 0o644 })
+    await chmod(resolve(sslDir, 'ui-ssl.key'), 0o644)
+
+    const payload = new FormData()
+    payload.append('key', keyPem, 'ui.key')
+    payload.append('cert', certPem, 'ui.crt')
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/keycert',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(await readFile(res.json().keyPath)).toEqual(keyPem)
+    expect(await readFile(res.json().certPath)).toEqual(certPem)
+    expect(await modeOf(res.json().keyPath, 0o600)).toBe(0o600)
+    expect(await modeOf(res.json().certPath, 0o600)).toBe(0o600)
+    expect(await modeOf(sslDir, 0o700)).toBe(0o700)
+  })
+
+  // Node can read a PKCS#12 bundle but not write one, so the openssl CLI builds it
+  const hasOpenssl = spawnSync('openssl', ['version']).status === 0
+
+  it.skipIf(!hasOpenssl)('POST /server/ssl/pfx saves the uploaded bundle owner-only', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const gen = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: { authorization },
+      payload: { hostnames: ['localhost'], mode: 'keycert' },
+    })
+    const sslDir = resolve(configService.storagePath, 'ssl-certs')
+    const sourcePfx = resolve(configService.storagePath, 'upload.pfx')
+    execFileSync('openssl', [
+      'pkcs12',
+      '-export',
+      '-inkey',
+      gen.json().keyPath,
+      '-in',
+      gen.json().certPath,
+      '-out',
+      sourcePfx,
+      '-passout',
+      'pass:secret',
+      // Ciphers OpenSSL 3 reads without the legacy provider (LibreSSL defaults to RC2)
+      '-keypbe',
+      'AES-256-CBC',
+      '-certpbe',
+      'AES-256-CBC',
+      '-macalg',
+      'sha256',
+    ])
+    await chmod(sslDir, 0o755)
+
+    const payload = new FormData()
+    payload.append('pfx', await readFile(sourcePfx), 'ui.pfx')
+    payload.append('passphrase', 'secret')
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/pfx',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(await readFile(res.json().pfxPath)).toEqual(await readFile(sourcePfx))
+    expect(await modeOf(res.json().pfxPath, 0o600)).toBe(0o600)
+    expect(await modeOf(sslDir, 0o700)).toBe(0o700)
   })
 
   it('POST /server/ssl/keycert (no files uploaded)', async () => {

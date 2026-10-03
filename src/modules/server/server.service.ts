@@ -4,7 +4,7 @@ import type { FastifyRequest } from 'fastify'
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { createPublicKey, X509Certificate } from 'node:crypto'
-import { readFile, writeFile } from 'node:fs/promises'
+import { chmod, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 import { Readable } from 'node:stream'
@@ -31,6 +31,28 @@ import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.servi
 import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { generateSetupCode, macToHex } from './server.utils.js'
+
+/**
+ * Read a whole (multipart file) stream into memory
+ */
+async function readStreamToBuffer(stream: Readable): Promise<Buffer> {
+  const chunks: Buffer[] = []
+  await new Promise<void>((resolvePromise, rejectPromise) => {
+    stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
+    stream.on('end', () => resolvePromise())
+    stream.on('error', rejectPromise)
+  })
+  return Buffer.concat(chunks)
+}
+
+/**
+ * Write a file readable by the owner only. `mode` applies only when the file
+ * is created, so an existing file (e.g. from an older version) is tightened too.
+ */
+async function writePrivateFile(path: string, data: Buffer): Promise<void> {
+  await writeFile(path, data, { mode: 0o600 })
+  await chmod(path, 0o600).catch(() => {})
+}
 
 /**
  * Homebridge restart/reset, main bridge setup code and the UI SSL settings.
@@ -211,25 +233,48 @@ export class ServerService {
   }
 
   /**
+   * Create `<storage>/ssl-certs` owner-only (it holds private keys) and
+   * tighten it if an older version created it with the default mode.
+   */
+  private async ensureSslDir(): Promise<string> {
+    const sslDir = join(this.configService.storagePath, 'ssl-certs')
+    await ensureDir(sslDir, 0o700)
+    await chmod(sslDir, 0o700).catch(() => {})
+    return sslDir
+  }
+
+  /**
    * Upload a PEM key+cert pair, validate they match, save to storage, and update config
    */
   public async uploadSslKeyCert(req: FastifyRequest): Promise<{ ok: boolean, type: 'keycert', keyPath: string, certPath: string, details?: string }> {
     // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers.
     // Override the global `files: 1` multipart limit since this endpoint legitimately receives a key + cert pair (#2789).
     const parts = req.parts ? req.parts({ limits: { files: 2 } }) : null
-    const files: MultipartFile[] = []
+    const files: { fieldname: string, buf: Buffer }[] = []
+
+    // Each file is read as soon as its part arrives: busboy only moves on to
+    // the next part (and ends the iteration) once the current file stream has
+    // been consumed, so collecting the parts first and reading them afterwards
+    // never finishes.
+    const collect = async (part: MultipartFile) => {
+      const buf = await readStreamToBuffer(part.file as unknown as Readable)
+      if (part.file?.truncated) {
+        throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
+      }
+      files.push({ fieldname: part.fieldname, buf })
+    }
 
     if (parts) {
       for await (const part of parts) {
         if ('file' in part && part.file) {
-          files.push(part)
+          await collect(part)
         }
       }
     } else {
       // Fallback to single file (should not happen for pair uploads)
       const single = await req.file()
       if (single?.file) {
-        files.push(single)
+        await collect(single)
       }
     }
 
@@ -237,25 +282,10 @@ export class ServerService {
       throw new BadRequestException('No files uploaded. Please upload both the private key and certificate files.')
     }
 
-    // Read all file streams into buffers
-    const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
-      const chunks: Buffer[] = []
-      await new Promise<void>((resolvePromise, rejectPromise) => {
-        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
-        stream.on('end', () => resolvePromise())
-        stream.on('error', rejectPromise)
-      })
-      return Buffer.concat(chunks)
-    }
-
     let keyPem: Buffer | null = null
     let certPem: Buffer | null = null
 
-    for (const f of files) {
-      if (f.file?.truncated) {
-        throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
-      }
-      const buf = await readStreamToBuffer(f.file as unknown as Readable)
+    for (const { fieldname, buf } of files) {
       const text = buf.toString('utf8')
 
       // A single PEM may contain both a key and a cert (combined bundle); test each independently
@@ -271,9 +301,9 @@ export class ServerService {
 
       // Fall back to fieldname only when neither PEM marker is present (e.g. DER uploads).
       if (!hasKey && !hasCert) {
-        if (f.fieldname === 'key' && !keyPem) {
+        if (fieldname === 'key' && !keyPem) {
           keyPem = buf
-        } else if (f.fieldname === 'cert' && !certPem) {
+        } else if (fieldname === 'cert' && !certPem) {
           certPem = buf
         }
       }
@@ -302,15 +332,13 @@ export class ServerService {
     }
 
     // Save files to storagePath/ssl-certs
-    const sslDir = join(this.configService.storagePath, 'ssl-certs')
+    const sslDir = await this.ensureSslDir()
     const keyPath = join(sslDir, 'ui-ssl.key')
     const certPath = join(sslDir, 'ui-ssl.crt')
 
-    await ensureDir(sslDir)
-
     // If existing files exist at these paths, overwrite them
-    await writeFile(keyPath, keyPem)
-    await writeFile(certPath, certPem)
+    await writePrivateFile(keyPath, keyPem)
+    await writePrivateFile(certPath, certPem)
 
     // Update config.json UI block
     const configFile = await this.configEditorService.getConfigFile()
@@ -346,14 +374,24 @@ export class ServerService {
   public async uploadSslPfx(req: FastifyRequest): Promise<{ ok: boolean, type: 'pfx', pfxPath: string, details?: string }> {
     // Expect file field named 'pfx' (or any file) and optional field 'passphrase'
     let passphrase: string | undefined
-    let filePart: MultipartFile | undefined
+    let pfxBuffer: Buffer | undefined
+
+    // Read the file as soon as its part arrives - busboy only ends the
+    // iteration once every file stream has been consumed
+    const collect = async (part: MultipartFile) => {
+      const buf = await readStreamToBuffer(part.file as unknown as Readable)
+      if (part.file?.truncated) {
+        throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
+      }
+      pfxBuffer = buf
+    }
 
     if (req.parts) {
       for await (const part of req.parts()) {
         const file = part as MultipartFile
         const field = part as MultipartValue<string>
         if (part.type === 'file' || file.file) {
-          filePart = file
+          await collect(file)
         } else if (part.type === 'field' || field.value) {
           if (part.fieldname === 'passphrase') {
             passphrase = field.value
@@ -362,27 +400,16 @@ export class ServerService {
       }
     } else {
       // Fallback to single-file API
-      filePart = await req.file()
+      const single = await req.file()
+      if (single) {
+        await collect(single)
+      }
       passphrase = (req.body as { passphrase?: string } | undefined)?.passphrase
     }
 
-    if (!filePart) {
+    if (!pfxBuffer) {
       throw new BadRequestException('No PFX file uploaded.')
     }
-    if (filePart.file?.truncated) {
-      throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
-    }
-
-    const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
-      const chunks: Buffer[] = []
-      await new Promise<void>((resolvePromise, rejectPromise) => {
-        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
-        stream.on('end', () => resolvePromise())
-        stream.on('error', rejectPromise)
-      })
-      return Buffer.concat(chunks)
-    }
-    const pfxBuffer = await readStreamToBuffer(filePart.file as unknown as Readable)
 
     // Validate by attempting to create a secure context
     try {
@@ -393,10 +420,10 @@ export class ServerService {
     }
 
     // Save to storage
-    const sslDir = join(this.configService.storagePath, 'ssl-certs')
+    const sslDir = await this.ensureSslDir()
     const pfxPath = join(sslDir, 'ui-ssl.pfx')
-    await ensureDir(sslDir)
-    await writeFile(pfxPath, pfxBuffer)
+    // The PFX bundles the private key
+    await writePrivateFile(pfxPath, pfxBuffer)
 
     // Update config
     const configFile = await this.configEditorService.getConfigFile()
@@ -489,7 +516,7 @@ export class ServerService {
     const mode = options.mode || 'keycert'
 
     // Generate and persist the certificate to storagePath/ssl-certs
-    const generator = new SslCertGeneratorService()
+    const generator = new SslCertGeneratorService(this.configService.storagePath)
     await generator.generateCertificate(hostnames)
 
     const sslDir = join(this.configService.storagePath, 'ssl-certs')
