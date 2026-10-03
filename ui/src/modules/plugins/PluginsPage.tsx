@@ -11,6 +11,7 @@ import { useStore } from 'zustand'
 import { useAuthStore } from '@/core/auth/auth.store'
 import { Spinner } from '@/core/components/spinner/Spinner'
 import { settingsActions } from '@/core/settings'
+import { cx } from '@/core/utilities/cx'
 import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 import { ws } from '@/core/ws'
 import { PluginCard } from '@/modules/plugins/plugin-card/PluginCard'
@@ -194,7 +195,7 @@ export function PluginsPage() {
                   aria-expanded={showSearchBar}
                   onClick={() => actions.showSearch()}
                 >
-                  <i aria-hidden="true" className={`fas fa-search${showSearchBar ? ' primary-text' : ''}`}></i>
+                  <i aria-hidden="true" className={cx('fas fa-search', showSearchBar && 'primary-text')}></i>
                 </button>
               </ToolbarTooltip>
               <ToolbarTooltip text={t('plugins.stats')}>
@@ -206,7 +207,7 @@ export function PluginsPage() {
                   aria-expanded={tab === 'stats'}
                   onClick={() => actions.showStats()}
                 >
-                  <i aria-hidden="true" className={`fas fa-sliders${tab === 'stats' ? ' primary-text' : ''}`}></i>
+                  <i aria-hidden="true" className={cx('fas fa-sliders', tab === 'stats' && 'primary-text')}></i>
                 </button>
               </ToolbarTooltip>
             </>
@@ -270,7 +271,7 @@ export function PluginsPage() {
                   <div className="alert alert-info mt-4 text-center w-100" role="status" aria-live="polite">
                     <i
                       aria-hidden="true"
-                      className={`fas primary-text my-3 icon-xl ${showExitButton ? 'fa-exclamation-circle' : 'fa-magnifying-glass'}`}
+                      className={cx('fas primary-text my-3 icon-xl', showExitButton ? 'fa-exclamation-circle' : 'fa-magnifying-glass')}
                     >
                     </i>
                     <p>

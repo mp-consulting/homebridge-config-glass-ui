@@ -4,7 +4,6 @@ import type { PluginModalData } from '@/core/ui/modal-data'
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuid } from 'uuid'
 
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
@@ -15,11 +14,12 @@ import { HomebridgeHue } from '@/core/plugins/custom-plugins/homebridge-hue/Home
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
-import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { childBridges as childBridgesService } from '@/core/utilities/child-bridges'
 import { cx } from '@/core/utilities/cx'
+import { toastApiError } from '@/core/utilities/http-error'
+import { randomUuid } from '@/core/utilities/random-uuid'
 import { SchemaForm } from '@/schema-form'
 
 import './plugin-config.scss'
@@ -73,7 +73,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
 
   function newBlock(): PluginConfigBlock {
     return {
-      __uuid__: uuid(),
+      __uuid__: randomUuid(),
       name: schema.pluginAlias,
       config: {
         [pluginType]: schema.pluginAlias,
@@ -139,7 +139,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
           return
         }
         const configBlocks: PluginConfigBlock[] = loaded.map((block: Record<string, any>) => ({
-          __uuid__: uuid(),
+          __uuid__: randomUuid(),
           name: block.name || schema.pluginAlias,
           config: block,
         }))
@@ -161,8 +161,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
         }
       } catch (error: any) {
         console.error(error)
-        const message = error?.error?.message || i18n.t('plugins.config.load_error')
-        toast.error(message, i18n.t('toast.title_error'))
+        toastApiError(error, 'plugins.config.load_error')
       }
     })()
 
@@ -267,7 +266,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
               const collapseId = `${block.__uuid__}-collapse`
               return (
                 <div key={block.__uuid__} className="card accordion-item" id={block.__uuid__}>
-                  <div className={`card-header accordion-header${expanded ? '' : ' collapsed'}`} role="heading">
+                  <div className={cx('card-header accordion-header', !expanded && 'collapsed')} role="heading">
                     <div className="d-flex align-items-center justify-content-between">
                       <h5 className="m-0">{block.name}</h5>
                       <div className="d-flex align-items-center">
@@ -285,7 +284,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
                         )}
                         <HoverTooltip text={t('form.button_edit')} placement="left">
                           <button
-                            className={`btn btn-primary ms-2 me-2${expanded ? '' : ' collapsed'}`}
+                            className={cx('btn btn-primary ms-2 me-2', !expanded && 'collapsed')}
                             type="button"
                             id={toggleId}
                             aria-controls={collapseId}

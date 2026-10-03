@@ -13,6 +13,7 @@ import { RE_ANSI_FULL, RE_NEWLINE, RE_SPINNER } from '@/core/regex.constants'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 import { ws } from '@/core/ws'
 import { environment } from '@/environments/environment'
@@ -298,7 +299,7 @@ export function SetupWizard() {
 
   return (
     <div
-      className={`setup-container gradient d-flex align-items-start justify-content-center${backgroundStyle ? '' : ' anim'}`}
+      className={cx('setup-container gradient d-flex align-items-start justify-content-center', !backgroundStyle && 'anim')}
       style={backgroundStyle ? { background: backgroundStyle } : undefined}
     >
       <div className="w-100 setup-card d-flex py-4 flex-column">
@@ -312,7 +313,7 @@ export function SetupWizard() {
         />
         <div className="progress w-100 my-4">
           <div
-            className={`progress-bar progress-bar-striped bg-success${loading || restoreUploading ? ' progress-bar-animated' : ''}`}
+            className={cx('progress-bar progress-bar-striped bg-success', (loading || restoreUploading) && 'progress-bar-animated')}
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={100}

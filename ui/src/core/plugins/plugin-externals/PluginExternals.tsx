@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { serverPairingsCache } from '@/core/caching'
 import { QrCode } from '@/core/components/qrcode/QrCode'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
@@ -31,8 +32,6 @@ interface ExternalAccessoryPairing {
 }
 
 export type PluginExternalsProps = PluginExternalsModalData & ModalComponentProps
-
-const defaultIcon = 'assets/hb-icon.png'
 
 /** The accessories a plugin publishes outside its bridge (external / Matter-only), with their pairing codes. */
 export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
@@ -80,7 +79,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
 
   const closeModal = () => activeModal.dismiss()
   const handleIconError = (event: SyntheticEvent<HTMLImageElement>) => {
-    event.currentTarget.src = defaultIcon
+    event.currentTarget.src = DEFAULT_PLUGIN_ICON
   }
 
   const row = (label: string, value: string | number) => (
@@ -172,7 +171,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
                     alt=""
                     aria-hidden="true"
                     className="mb-3 plugin-icon-card"
-                    src={plugin.icon || defaultIcon}
+                    src={plugin.icon || DEFAULT_PLUGIN_ICON}
                     onError={handleIconError}
                   />
                 </div>

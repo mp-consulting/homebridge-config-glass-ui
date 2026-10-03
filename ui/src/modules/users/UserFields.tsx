@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { RequiredIndicator } from '@/core/components/required-indicator/RequiredIndicator'
+import { cx } from '@/core/utilities/cx'
 
 export interface UserFieldProps {
   id: string
@@ -31,7 +32,7 @@ export function UserField({ id, label, type, value, autoComplete, autoCapitalize
           id={id}
           autoComplete={autoComplete}
           autoCapitalize={autoCapitalize}
-          className={`form-control custom-input${invalid ? ' is-invalid' : ''}`}
+          className={cx('form-control custom-input', invalid && 'is-invalid')}
           aria-label={label}
           value={value}
           disabled={disabled}

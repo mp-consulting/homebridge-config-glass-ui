@@ -10,6 +10,7 @@ import { useAuthStore } from '@/core/auth'
 import { notifications } from '@/core/notifications'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { t } from '@/core/ui/i18n'
+import { ignoreDismiss } from '@/core/ui/ignore-dismiss'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { terminalNavigationGuard } from '@/core/utilities/terminal/instances'
@@ -499,7 +500,7 @@ export function createStatusStore(options: StatusStoreOptions = {}) {
         openModal(Credits, {}, {
           size: 'lg',
           backdrop: 'static',
-        }).result.catch(() => {})
+        }).result.catch(ignoreDismiss)
       },
 
       toggleReorderMode() {

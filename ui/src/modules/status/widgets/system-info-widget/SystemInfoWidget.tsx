@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { cx } from '@/core/utilities/cx'
 import { useNamespace, useNamespaceConnected } from '@/core/ws'
 
 import './system-info-widget.scss'
@@ -65,7 +66,7 @@ export function SystemInfoWidget({ widget }: WidgetProps) {
 
   return (
     <div className="hb-system-info-widget flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>{t('status.widget.info')}</div>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>{t('status.widget.info')}</div>
       {!loaded && (
         <div className="d-flex flex-grow-1 align-items-center justify-content-center" role="status" aria-label={t('status.widget.info.loading')}>
           <InlineSpinner className="fa-2xl grey-text" />

@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 
+import { linkCron, linkDebug } from '@/core/constants/links'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_BLOCK, INNER_FLEX, SectionShell, SettingRow, SwitchControl, TextInput } from '@/modules/settings/sections/rows'
 import { useField, useItemHidden, useSettingsPage, useSettingsPageState } from '@/modules/settings/settings-page.context'
-import { linkCron, linkDebug } from '@/modules/settings/settings-page.store'
 
 const MONO_INPUT = 'form-control custom-input resp-input order-1 order-md-2 font-monospace'
 

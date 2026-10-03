@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 import { displayName, sortEntries } from '@/modules/settings/port-overview-modal/port-overview'
 
@@ -61,7 +62,7 @@ export function PortOverviewModal({ activeModal }: ModalComponentProps) {
                   </div>
                 )}
                 {entries.map((entry, index) => (
-                  <ul key={`${entry.service}-${entry.bridge}-${entry.port}`} className={`list-group list-group-box ${index === entries.length - 1 ? 'mb-0' : 'mb-3'}`}>
+                  <ul key={`${entry.service}-${entry.bridge}-${entry.port}`} className={cx('list-group list-group-box', index === entries.length - 1 ? 'mb-0' : 'mb-3')}>
                     <li className="list-group-item">
                       <h6 className="mb-0 text-center">{displayName(entry)}</h6>
                     </li>

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 
 import { accessories } from '@/core/accessories/accessories'
 import { AccessoryTile } from '@/core/accessories/accessory-tile/AccessoryTile'
+import { cx } from '@/core/utilities/cx'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
 
 import { AccessoryPointerSensor } from './accessory-drag'
@@ -126,7 +127,7 @@ export function AccessoriesWidget({ widget, saveWidgets }: WidgetProps) {
 
   return (
     <div className="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>
         {t('menu.label_accessories')}
       </div>
       {dashboardAccessories.length > 0 && (

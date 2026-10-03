@@ -17,7 +17,7 @@ import {
   getHomebridgeUiIconClass,
   getNodejsIconClass,
   getPluginsIconClass,
-} from '@/modules/status/widgets/update-info-widget/update-info.controller'
+} from '@/modules/status/widgets/update-info-widget/update-info.store'
 import { UpdateInfoWidget } from '@/modules/status/widgets/update-info-widget/UpdateInfoWidget'
 import { createWidgetEvent } from '@/modules/status/widgets/widget.types'
 import { makeAuthState, makeSettingsState, renderWithProviders } from '@/testing'

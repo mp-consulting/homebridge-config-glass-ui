@@ -4,6 +4,7 @@ import type { PluginModalData } from '@/core/ui/modal-data'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { escapeHtml } from '@/core/helpers/html.helper'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
@@ -12,8 +13,6 @@ import { cx } from '@/core/utilities/cx'
 import './plugin-info.scss'
 
 export type PluginInfoProps = PluginModalData & ModalComponentProps
-
-const defaultIcon = 'assets/hb-icon.png'
 
 /** An icon-only wiki link, named for screen readers by `label` */
 function wikiLink(href: string, label: string): string {
@@ -25,7 +24,7 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
   const { t } = useTranslation()
   const [iconError, setIconError] = useState(false)
 
-  const pluginIcon = plugin?.icon && !iconError ? plugin.icon : defaultIcon
+  const pluginIcon = plugin?.icon && !iconError ? plugin.icon : DEFAULT_PLUGIN_ICON
   const verified = plugin.verifiedPlugin || plugin.verifiedPlusPlugin
   const hasLink = plugin.links.homepage || plugin.links.npm
 

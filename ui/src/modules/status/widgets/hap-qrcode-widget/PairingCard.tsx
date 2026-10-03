@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { QrCode } from '@/core/components/qrcode/QrCode'
+import { cx } from '@/core/utilities/cx'
 
 import { usePairingCard } from './use-pairing-card'
 
@@ -32,7 +33,7 @@ export function PairingCard({ title, showStatus, paired, pin, setupUri, placehol
       <div className="pairing-card-header drag-handler d-flex align-items-center justify-content-between">
         <span className="pairing-card-title">{title}</span>
         {showStatus && (
-          <span className={`pairing-status-pill${paired ? ' is-paired' : ''}`}>
+          <span className={cx('pairing-status-pill', paired && 'is-paired')}>
             <span className="pairing-status-dot" aria-hidden="true"></span>
             {t(paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired')}
           </span>
@@ -41,7 +42,7 @@ export function PairingCard({ title, showStatus, paired, pin, setupUri, placehol
 
       <div ref={card.containerRef} className="d-flex flex-column flex-grow-1 w-100 min-h-0">
         <div
-          className={`pairing-qr-area d-flex align-items-center justify-content-center w-100${!setupUri ? ' flex-grow-1' : ''}`}
+          className={cx('pairing-qr-area d-flex align-items-center justify-content-center w-100', !setupUri && 'flex-grow-1')}
           style={setupUri ? { height: `${card.qrCodeHeight}px` } : undefined}
         >
           {setupUri

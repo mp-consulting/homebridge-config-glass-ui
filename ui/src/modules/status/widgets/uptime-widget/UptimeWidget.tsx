@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { cx } from '@/core/utilities/cx'
 import { useNamespace, useNamespaceConnected } from '@/core/ws'
 
 import { humaniseDuration } from './humanise-duration'
@@ -39,7 +40,7 @@ export function UptimeWidget({ widget }: WidgetProps) {
 
   return (
     <div className="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>
         {t('status.uptime.title_uptime')}
       </div>
       <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">

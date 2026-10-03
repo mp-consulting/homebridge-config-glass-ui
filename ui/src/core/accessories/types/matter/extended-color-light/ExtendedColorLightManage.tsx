@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getHue, getSaturation, hasClusterFeature, hasColorTemperature } from '@/core/accessories/types/matter/matter-device.utils'
-import { LightModeButtons, MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
+import { LightModeButtons, MatterManageModal } from '@/core/accessories/types/matter/matter-manage'
 import {
   useMatterColorTemperatureActions,
   useMatterColorTemperatureState,
@@ -137,8 +137,7 @@ export function ExtendedColorLightManage({ service: initial, activeModal }: Acce
   const targetColorTemperature = ct.targetColorTemperature
 
   return (
-    <div className="modal-content hb-matter-extended-color-light-manage">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal} className="hb-matter-extended-color-light-manage">
       <div className="modal-body text-center px-5">
         <LightModeButtons targetMode={light.targetMode} setTargetMode={setTargetMode} />
         <h6 className="mt-4">
@@ -213,7 +212,6 @@ export function ExtendedColorLightManage({ service: initial, activeModal }: Acce
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

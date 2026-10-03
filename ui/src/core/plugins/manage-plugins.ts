@@ -6,6 +6,7 @@ import { lt, minVersion } from 'semver'
 import { api } from '@/core/api'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { t } from '@/core/ui/i18n'
+import { ignoreDismiss } from '@/core/ui/ignore-dismiss'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { createEmitter } from '@/core/utilities/emitter'
@@ -115,8 +116,8 @@ export const managePlugins = {
           await managePlugins.settings(result.plugin)
         }
       }
-    } catch {
-      // Modal was dismissed
+    } catch (reason) {
+      ignoreDismiss(reason)
     }
   },
 
@@ -143,8 +144,8 @@ export const managePlugins = {
       await ref.result
       // Refresh the plugin list after uninstall completes
       emitPluginListRefresh()
-    } catch {
-      // Modal was dismissed without uninstalling
+    } catch (reason) {
+      ignoreDismiss(reason)
     }
   },
 
@@ -184,8 +185,8 @@ export const managePlugins = {
           await managePlugins.settings(result.plugin)
         }
       }
-    } catch {
-      // Modal was dismissed
+    } catch (reason) {
+      ignoreDismiss(reason)
     }
   },
 
@@ -230,8 +231,8 @@ export const managePlugins = {
       return plugin.installedVersion
         ? await managePlugins.updatePlugin(plugin, version, plugin)
         : managePlugins.installPlugin(plugin, version, plugin)
-    } catch {
-      // Do nothing
+    } catch (reason) {
+      ignoreDismiss(reason)
     }
   },
 
@@ -268,7 +269,9 @@ export const managePlugins = {
       if (result === 'refresh') {
         emitPluginListRefresh()
       }
-    } catch { /* modal was dismissed */ }
+    } catch (reason) {
+      ignoreDismiss(reason)
+    }
   },
 
   /**
@@ -281,7 +284,9 @@ export const managePlugins = {
 
     try {
       await ref.result
-    } catch { /* modal was dismissed */ }
+    } catch (reason) {
+      ignoreDismiss(reason)
+    }
   },
 
   /**
@@ -318,7 +323,7 @@ export const managePlugins = {
       editorContext,
     }, LARGE_STATIC)
 
-    return ref.result.catch(() => { /* modal dismissed */ })
+    return ref.result.catch(ignoreDismiss)
   },
 
   /** Open the JSON config modal */

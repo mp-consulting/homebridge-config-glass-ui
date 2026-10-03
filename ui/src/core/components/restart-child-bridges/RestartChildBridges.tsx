@@ -7,6 +7,7 @@ import { api } from '@/core/api'
 import { useSettingsStore } from '@/core/settings'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 
 export type RestartChildBridgesProps = RestartChildBridgesModalData & ModalComponentProps
 
@@ -56,7 +57,7 @@ export function RestartChildBridges({ activeModal, bridges }: RestartChildBridge
                     ? (
                         <>
                           <i className="fas fa-lg fa-hap me-2"></i>
-                          <i className={`fas fa-lg fa-matter${bridge.matterSerialNumber ? '' : ' opacity-muted'}`}></i>
+                          <i className={cx('fas fa-lg fa-matter', !bridge.matterSerialNumber && 'opacity-muted')}></i>
                         </>
                       )
                     : <i className="fas fa-hap"></i>}

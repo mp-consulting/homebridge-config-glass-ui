@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getFanPercentSetting, isFanOn, setFanSpeed } from '@/core/accessories/types/matter/matter-device.utils'
-import { LightModeButtons, MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
+import { LightModeButtons, MatterManageModal } from '@/core/accessories/types/matter/matter-manage'
 import { useStateRef } from '@/core/accessories/types/matter/use-state-ref'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
@@ -86,8 +86,7 @@ export function MatterFanManage({ service: initial, activeModal }: AccessoryMana
   }
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body text-center px-5">
         <LightModeButtons targetMode={targetMode} setTargetMode={(value, event) => void setTargetMode(value, event)} />
 
@@ -106,7 +105,6 @@ export function MatterFanManage({ service: initial, activeModal }: AccessoryMana
           onChange={value => onTargetSpeedChange(value as number)}
         />
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

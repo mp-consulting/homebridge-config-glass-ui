@@ -12,6 +12,7 @@ import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { bridgeEntries } from '@/modules/settings/remove-bridge-accessories/bridge-entries'
 
 /** Clear the cached accessories of chosen child bridges. */
@@ -98,7 +99,7 @@ export function RemoveBridgeAccessories({ activeModal }: ModalComponentProps) {
                     return (
                       <li key={`${item._id}-${item._protocol}`} className="list-group-item d-flex justify-content-between align-items-center">
                         <span className="me-3">
-                          <i className={`fas fa-lg ${item._protocol === 'matter' ? 'fa-matter' : 'fa-hap'}`}></i>
+                          <i className={cx('fas fa-lg', item._protocol === 'matter' ? 'fa-matter' : 'fa-hap')}></i>
                         </span>
                         <span className="flex-grow-1">
                           {item.name}
@@ -109,7 +110,7 @@ export function RemoveBridgeAccessories({ activeModal }: ModalComponentProps) {
                         </span>
                         <button
                           type="button"
-                          className={`btn m-0 ms-3 ${inList ? 'btn-elegant' : 'btn-danger'}`}
+                          className={cx('btn m-0 ms-3', inList ? 'btn-elegant' : 'btn-danger')}
                           disabled={clicked}
                           aria-label={t('form.button_delete')}
                           onClick={() => toggleList(item._id, item._protocol)}

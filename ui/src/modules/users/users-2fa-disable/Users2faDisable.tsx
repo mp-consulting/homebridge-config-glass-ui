@@ -13,6 +13,7 @@ import { notifications } from '@/core/notifications'
 import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 
 import './users-2fa-disable.scss'
 
@@ -75,7 +76,7 @@ export function Users2faDisable({ activeModal }: Users2faDisableProps) {
             <div className="text-start text-md-end w-100 w-md-50">
               <input
                 id="disable-2fa-password"
-                className={`form-control custom-input${touched && passwordInvalid ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input', touched && passwordInvalid && 'is-invalid')}
                 type="password"
                 autoComplete="current-password"
                 placeholder={t('users.label_password')}

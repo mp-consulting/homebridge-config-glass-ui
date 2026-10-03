@@ -1,4 +1,4 @@
-import type { BridgesDeps } from '@/modules/status/widgets/bridges-widget/bridges.controller'
+import type { BridgesDeps } from '@/modules/status/widgets/bridges-widget/bridges.store'
 import type { FakeIoNamespace, FakeWs } from '@/testing'
 import type { Mock } from 'vitest'
 
@@ -10,7 +10,7 @@ import { useAuthStore } from '@/core/auth'
 import { ttlCache } from '@/core/caching'
 import { useSettingsStore } from '@/core/settings'
 import { ws as realWs } from '@/core/ws'
-import { BridgesController } from '@/modules/status/widgets/bridges-widget/bridges.controller'
+import { createBridgesStore, isChildMatterEnabled } from '@/modules/status/widgets/bridges-widget/bridges.store'
 import { BridgesWidget } from '@/modules/status/widgets/bridges-widget/BridgesWidget'
 import { createWidgetEvent } from '@/modules/status/widgets/widget.types'
 import { fakeWs, makeAuthState, makeSettingsState } from '@/testing'
@@ -33,6 +33,7 @@ describe('the bridges widget', () => {
   let ws: FakeWs
   let mainIo: FakeIoNamespace
   let childIo: FakeIoNamespace
+  let teardown: () => void
   let deps: BridgesDeps & { api: { put: Mock<(...args: any[]) => any> }, cache: { invalidateAll: Mock<(...args: any[]) => any> }, toastError: Mock<(...args: any[]) => any> }
 
   function makeBridge(overrides: Record<string, any> = {}): any {
@@ -65,8 +66,8 @@ describe('the bridges widget', () => {
       isAdmin: options.admin ?? true,
       isMatterSupported: options.matterSupport ?? false,
     }
-    const ctrl = new BridgesController(deps)
-    ctrl.init()
+    const ctrl = createBridgesStore(deps)
+    teardown = ctrl.getState().connect()
     for (let tick = 0; tick < 10; tick += 1) {
       await Promise.resolve()
     }
@@ -82,7 +83,7 @@ describe('the bridges widget', () => {
     it('reads the main homebridge status', async () => {
       const ctrl = await open({ status: { status: 'ok', name: 'My Homebridge' } })
 
-      expect(ctrl.homebridgeStatus).toMatchObject({ status: 'ok', name: 'My Homebridge' })
+      expect(ctrl.getState().homebridgeStatus).toMatchObject({ status: 'ok', name: 'My Homebridge' })
     })
 
     it('lists the child bridges by name', async () => {
@@ -94,7 +95,7 @@ describe('the bridges widget', () => {
       })
 
       // Sorted, because the server returns them in config order and the user scans this list looking for one bridge
-      expect(ctrl.childBridges.map(bridge => bridge.name)).toEqual(['Alpha', 'Zulu'])
+      expect(ctrl.getState().childBridges.map(bridge => bridge.name)).toEqual(['Alpha', 'Zulu'])
     })
 
     it('asks the server to keep it posted', async () => {
@@ -106,7 +107,7 @@ describe('the bridges widget', () => {
     it('starts every bridge as not restarting', async () => {
       const ctrl = await open({ bridges: [makeBridge()] })
 
-      expect(ctrl.childBridges[0].restarting).toBe(false)
+      expect(ctrl.getState().childBridges[0].restarting).toBe(false)
     })
 
     it('updates a bridge in place when its status changes', async () => {
@@ -114,8 +115,8 @@ describe('the bridges widget', () => {
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'down' }))
 
-      expect(ctrl.childBridges).toHaveLength(1)
-      expect(ctrl.childBridges[0].status).toBe('down')
+      expect(ctrl.getState().childBridges).toHaveLength(1)
+      expect(ctrl.getState().childBridges[0].status).toBe('down')
     })
 
     it('adds a bridge it has not seen before', async () => {
@@ -124,7 +125,7 @@ describe('the bridges widget', () => {
       childIo.socket.fire('child-bridge-status-update', makeBridge({ name: 'Alpha', username: '0E:22:22:22:22:22' }))
 
       // A plugin can be configured while the page is open
-      expect(ctrl.childBridges.map(bridge => bridge.name)).toEqual(['Alpha', 'Zulu'])
+      expect(ctrl.getState().childBridges.map(bridge => bridge.name)).toEqual(['Alpha', 'Zulu'])
     })
 
     it('marks the main bridge as down when the socket drops', async () => {
@@ -133,7 +134,7 @@ describe('the bridges widget', () => {
       mainIo.socket.fire('disconnect')
 
       // The server is gone, so its last reported status is no longer true
-      expect(ctrl.homebridgeStatus?.status).toBe('down')
+      expect(ctrl.getState().homebridgeStatus?.status).toBe('down')
     })
 
     it('keeps the bridge name when the socket drops', async () => {
@@ -142,7 +143,7 @@ describe('the bridges widget', () => {
       mainIo.socket.fire('disconnect')
 
       // Only the status is replaced, so the row does not lose its label
-      expect(ctrl.homebridgeStatus?.name).toBe('My Homebridge')
+      expect(ctrl.getState().homebridgeStatus?.name).toBe('My Homebridge')
     })
   })
 
@@ -150,20 +151,20 @@ describe('the bridges widget', () => {
     it('reads no matter config as not enabled for the aria label', async () => {
       const ctrl = await open({ matterSupport: true, bridges: [makeBridge()] })
 
-      expect(ctrl.isChildMatterEnabled(ctrl.childBridges[0])).toBe(false)
+      expect(isChildMatterEnabled(ctrl.getState().childBridges[0])).toBe(false)
     })
 
     it('treats a configured matter bridge as enabled', async () => {
       const ctrl = await open({ matterSupport: true, bridges: [makeBridge({ matterConfig: { port: 5540 } })] })
 
-      expect(ctrl.isChildMatterEnabled(ctrl.childBridges[0])).toBe(true)
+      expect(isChildMatterEnabled(ctrl.getState().childBridges[0])).toBe(true)
     })
 
     it('treats a matter bridge turned off in place as not enabled', async () => {
       // Still configured, so the icon shows, but it is not advertising anything
       const ctrl = await open({ matterSupport: true, bridges: [makeBridge({ matterConfig: { port: 5540, enabled: false } })] })
 
-      expect(ctrl.isChildMatterEnabled(ctrl.childBridges[0])).toBe(false)
+      expect(isChildMatterEnabled(ctrl.getState().childBridges[0])).toBe(false)
     })
 
     it('maps the main bridge into the shared icon source', async () => {
@@ -172,7 +173,7 @@ describe('the bridges widget', () => {
         status: { status: 'ok', hap: { enabled: false, externalsOnly: true }, matter: { enabled: true, externalsOnly: true } },
       })
 
-      expect(ctrl.mainBridgeIconSource()).toEqual({
+      expect(ctrl.getState().mainBridgeIconSource()).toEqual({
         status: 'ok',
         hap: { enabled: false, externalsOnly: true },
         matterConfig: { enabled: true, externalsOnly: true },
@@ -184,63 +185,63 @@ describe('the bridges widget', () => {
     it('reads the name, the status and the restart action', async () => {
       const ctrl = await open({ status: { status: 'ok', name: 'My Homebridge' } })
 
-      expect(ctrl.mainBridgeAriaLabel()).toBe('My Homebridge, status.services.label_running, menu.tooltip_restart')
+      expect(ctrl.getState().mainBridgeAriaLabel()).toBe('My Homebridge, status.services.label_running, menu.tooltip_restart')
     })
 
     it('says restarting instead of a status while in transition', async () => {
       const ctrl = await open({ status: { status: 'pending', name: 'My Homebridge' } })
 
       // And drops the restart action, because pressing it again does nothing
-      expect(ctrl.mainBridgeAriaLabel()).toBe('My Homebridge, status.services.label_restarting')
+      expect(ctrl.getState().mainBridgeAriaLabel()).toBe('My Homebridge, status.services.label_restarting')
     })
 
     it('leaves out the restart action for a non-admin', async () => {
       const ctrl = await open({ status: { status: 'ok', name: 'My Homebridge' }, admin: false })
 
-      expect(ctrl.mainBridgeAriaLabel()).toBe('My Homebridge, status.services.label_running')
+      expect(ctrl.getState().mainBridgeAriaLabel()).toBe('My Homebridge, status.services.label_running')
     })
 
     it('falls back to Homebridge when the status has no name', async () => {
       const ctrl = await open({ status: { status: 'ok' } })
 
-      expect(ctrl.mainBridgeAriaLabel()).toContain('Homebridge,')
+      expect(ctrl.getState().mainBridgeAriaLabel()).toContain('Homebridge,')
     })
 
     it('adds the matter state when matter is supported', async () => {
       const ctrl = await open({ matterSupport: true, status: { status: 'ok', name: 'My Homebridge', matter: { enabled: true } } })
 
-      expect(ctrl.mainBridgeAriaLabel())
+      expect(ctrl.getState().mainBridgeAriaLabel())
         .toBe('My Homebridge, status.services.label_running, status.services.matter_running, menu.tooltip_restart')
     })
 
     it('says matter is not enabled when it is not configured', async () => {
       const ctrl = await open({ matterSupport: true, status: { status: 'ok', name: 'My Homebridge' } })
 
-      expect(ctrl.mainBridgeAriaLabel()).toContain('status.services.matter_not_enabled')
+      expect(ctrl.getState().mainBridgeAriaLabel()).toContain('status.services.matter_not_enabled')
     })
 
     it('leaves matter out entirely when the server does not support it', async () => {
       const ctrl = await open({ status: { status: 'ok', name: 'My Homebridge' } })
 
-      expect(ctrl.mainBridgeAriaLabel()).not.toContain('matter')
+      expect(ctrl.getState().mainBridgeAriaLabel()).not.toContain('matter')
     })
 
     it('leaves matter out during a transition', async () => {
       const ctrl = await open({ matterSupport: true, status: { status: 'pending', name: 'My Homebridge' } })
 
-      expect(ctrl.mainBridgeAriaLabel()).not.toContain('matter')
+      expect(ctrl.getState().mainBridgeAriaLabel()).not.toContain('matter')
     })
 
     it('reads a child bridge the same way', async () => {
       const ctrl = await open({ bridges: [makeBridge({ name: 'Kitchen Bridge' })] })
 
-      expect(ctrl.childBridgeAriaLabel(ctrl.childBridges[0])).toBe('Kitchen Bridge, status.services.label_running, menu.tooltip_restart')
+      expect(ctrl.getState().childBridgeAriaLabel(ctrl.getState().childBridges[0])).toBe('Kitchen Bridge, status.services.label_running, menu.tooltip_restart')
     })
 
     it('says restarting for a child bridge being restarted', async () => {
       const ctrl = await open({ bridges: [makeBridge()] })
 
-      expect(ctrl.childBridgeAriaLabel({ ...ctrl.childBridges[0], restarting: true })).toBe('Kitchen Bridge, status.services.label_restarting')
+      expect(ctrl.getState().childBridgeAriaLabel({ ...ctrl.getState().childBridges[0], restarting: true })).toBe('Kitchen Bridge, status.services.label_restarting')
     })
   })
 
@@ -249,33 +250,33 @@ describe('the bridges widget', () => {
       vi.useFakeTimers()
       const ctrl = await open()
 
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
 
       expect(deps.api.put).toHaveBeenCalledWith('/server/restart', {})
       // Everything cached describes a process that is being replaced
       expect(deps.cache.invalidateAll).toHaveBeenCalled()
-      expect(ctrl.isRestarting).toBe(true)
+      expect(ctrl.getState().isRestarting).toBe(true)
     })
 
     it('stops showing as restarting when homebridge reports itself up', async () => {
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
 
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
 
-      expect(ctrl.isRestarting).toBe(false)
+      expect(ctrl.getState().isRestarting).toBe(false)
     })
 
     it('gives up waiting after fifteen seconds', async () => {
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
 
       await vi.advanceTimersByTimeAsync(15000)
 
       // Otherwise a restart that never reports back leaves the row spinning
-      expect(ctrl.isRestarting).toBe(false)
+      expect(ctrl.getState().isRestarting).toBe(false)
     })
 
     it('tells the user when the restart cannot be started', async () => {
@@ -284,7 +285,7 @@ describe('the bridges widget', () => {
       const ctrl = await open()
       deps.api.put.mockRejectedValue(new Error('offline'))
 
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
 
       expect(deps.toastError).toHaveBeenCalledWith('restart.toast_server_restart_error', 'toast.title_error')
       expect(deps.cache.invalidateAll).not.toHaveBeenCalled()
@@ -296,7 +297,7 @@ describe('the bridges widget', () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
 
-      await ctrl.restartChildBridge(ctrl.childBridges[0])
+      await ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
       expect(childIo.requests.at(-1)).toEqual({ resource: 'restart-child-bridge', payload: '0E:11:11:11:11:11' })
     })
@@ -307,41 +308,41 @@ describe('the bridges widget', () => {
         bridges: [makeBridge({ name: 'Alpha', username: '0E:11:11:11:11:11' }), makeBridge({ name: 'Beta', username: '0E:22:22:22:22:22' })],
       })
 
-      void ctrl.restartChildBridge(ctrl.childBridges[0])
+      void ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
-      expect(ctrl.childBridges[0].restarting).toBe(true)
-      expect(ctrl.childBridges[1].restarting).toBe(false)
+      expect(ctrl.getState().childBridges[0].restarting).toBe(true)
+      expect(ctrl.getState().childBridges[1].restarting).toBe(false)
     })
 
     it('stops showing as restarting when that bridge reports itself up', async () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
-      void ctrl.restartChildBridge(ctrl.childBridges[0])
+      void ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
 
-      expect(ctrl.childBridges[0].restarting).toBe(false)
+      expect(ctrl.getState().childBridges[0].restarting).toBe(false)
     })
 
     it('keeps showing as restarting while it is still down', async () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
-      void ctrl.restartChildBridge(ctrl.childBridges[0])
+      void ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'down' }))
 
       // A bridge on its way back up reports down first
-      expect(ctrl.childBridges[0].restarting).toBe(true)
+      expect(ctrl.getState().childBridges[0].restarting).toBe(true)
     })
 
     it('gives up waiting after fifteen seconds', async () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
-      void ctrl.restartChildBridge(ctrl.childBridges[0])
+      void ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
       await vi.advanceTimersByTimeAsync(15000)
 
-      expect(ctrl.childBridges[0].restarting).toBe(false)
+      expect(ctrl.getState().childBridges[0].restarting).toBe(false)
     })
 
     it('tells the user when the restart is refused', async () => {
@@ -350,15 +351,15 @@ describe('the bridges widget', () => {
       const ctrl = await open({ bridges: [makeBridge()] })
       childIo.socket.respondTo('restart-child-bridge', { error: 'not running' })
 
-      await ctrl.restartChildBridge(ctrl.childBridges[0])
+      await ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
       expect(deps.toastError).toHaveBeenCalledWith('status.widget.bridge.restart_error', 'toast.title_error')
     })
   })
 
   describe('announcing a finished restart', () => {
-    async function restartHomebridgeAndSettle(ctrl: BridgesController, finalStatus = 'ok') {
-      await ctrl.restartHomebridge()
+    async function restartHomebridgeAndSettle(ctrl: ReturnType<typeof createBridgesStore>, finalStatus = 'ok') {
+      await ctrl.getState().restartHomebridge()
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: finalStatus, name: 'Homebridge' })
       await vi.advanceTimersByTimeAsync(3000)
@@ -367,22 +368,22 @@ describe('the bridges widget', () => {
     it('says nothing until the status has settled', async () => {
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
 
       await vi.advanceTimersByTimeAsync(3000)
 
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
     })
 
     it('waits before speaking, because the status flaps on the way up', async () => {
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
 
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
     })
 
     it('announces the finished state three seconds after it settles', async () => {
@@ -392,7 +393,7 @@ describe('the bridges widget', () => {
       await restartHomebridgeAndSettle(ctrl)
 
       // The delay lets plugins finish loading, so the announcement reflects the state the user will actually see
-      expect(ctrl.homebridgeLiveMessage).toBe('status.widget.bridge.restart_complete_with_status')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('status.widget.bridge.restart_complete_with_status')
     })
 
     it('clears the announcement so it is not read again', async () => {
@@ -402,25 +403,25 @@ describe('the bridges widget', () => {
 
       await vi.advanceTimersByTimeAsync(3000)
 
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
     })
 
     it('announces only once per restart', async () => {
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
       await vi.advanceTimersByTimeAsync(3000)
-      const first = ctrl.homebridgeLiveMessage
+      const first = ctrl.getState().homebridgeLiveMessage
 
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
       await vi.advanceTimersByTimeAsync(3000)
 
       // A live region that repeats is read out again every time
       expect(first).not.toBe('')
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
     })
 
     it('says nothing when it drops back to restarting before the announcement', async () => {
@@ -428,27 +429,27 @@ describe('the bridges widget', () => {
       // homebridge on load - would otherwise be announced as finished
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
 
       await vi.advanceTimersByTimeAsync(3000)
 
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
     })
 
     it('says nothing about a child bridge that drops back to restarting', async () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
-      await ctrl.restartChildBridge(ctrl.childBridges[0])
+      await ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
 
       await vi.advanceTimersByTimeAsync(3000)
 
-      expect(ctrl.childBridgeLiveMessages['0E:11:11:11:11:11']).toBeFalsy()
+      expect(ctrl.getState().childBridgeLiveMessages['0E:11:11:11:11:11']).toBeFalsy()
     })
 
     it('tracks a bridge that has no username by its name', async () => {
@@ -458,12 +459,12 @@ describe('the bridges widget', () => {
       const nameless = makeBridge({ username: undefined, name: 'Nameless Bridge' })
       const ctrl = await open({ bridges: [nameless] })
 
-      await ctrl.restartChildBridge(ctrl.childBridges[0])
+      await ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
       childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'pending' })
       childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'ok' })
       await vi.advanceTimersByTimeAsync(3000)
 
-      expect(ctrl.childBridgeLiveMessages['Nameless Bridge']).toBeTruthy()
+      expect(ctrl.getState().childBridgeLiveMessages['Nameless Bridge']).toBeTruthy()
     })
 
     it('says nothing about a restart the user did not ask for', async () => {
@@ -476,7 +477,7 @@ describe('the bridges widget', () => {
       // would make an announcement that *was* made look like one that was not
       await vi.advanceTimersByTimeAsync(3000)
 
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
     })
 
     it('announces a restart that ended with homebridge down', async () => {
@@ -486,31 +487,31 @@ describe('the bridges widget', () => {
       await restartHomebridgeAndSettle(ctrl, 'down')
 
       // The whole point of the announcement: telling a screen reader user the restart finished badly
-      expect(ctrl.homebridgeLiveMessage).toBe('status.widget.bridge.restart_complete_with_status')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('status.widget.bridge.restart_complete_with_status')
     })
 
     it('announces a finished child bridge restart against that bridge', async () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
-      void ctrl.restartChildBridge(ctrl.childBridges[0])
+      void ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
       await vi.advanceTimersByTimeAsync(3000)
 
       // Keyed by bridge, so restarting two at once does not cross the messages
-      expect(ctrl.childBridgeLiveMessages['0E:11:11:11:11:11']).toBe('status.widget.bridge.restart_complete_with_status')
+      expect(ctrl.getState().childBridgeLiveMessages['0E:11:11:11:11:11']).toBe('status.widget.bridge.restart_complete_with_status')
     })
 
     it('clears a child bridge message again too', async () => {
       vi.useFakeTimers()
       const ctrl = await open({ bridges: [makeBridge()] })
-      void ctrl.restartChildBridge(ctrl.childBridges[0])
+      void ctrl.getState().restartChildBridge(ctrl.getState().childBridges[0])
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
       await vi.advanceTimersByTimeAsync(6000)
 
-      expect(ctrl.childBridgeLiveMessages['0E:11:11:11:11:11']).toBe('')
+      expect(ctrl.getState().childBridgeLiveMessages['0E:11:11:11:11:11']).toBe('')
     })
 
     it('says nothing about a child bridge restarting on its own', async () => {
@@ -521,43 +522,43 @@ describe('the bridges widget', () => {
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
       await vi.advanceTimersByTimeAsync(6000)
 
-      expect(ctrl.childBridgeLiveMessages['0E:11:11:11:11:11']).toBeUndefined()
+      expect(ctrl.getState().childBridgeLiveMessages['0E:11:11:11:11:11']).toBeUndefined()
     })
 
     it('drops its pending announcements when the widget is removed', async () => {
       vi.useFakeTimers()
       const ctrl = await open()
-      await ctrl.restartHomebridge()
+      await ctrl.getState().restartHomebridge()
       mainIo.socket.fire('homebridge-status', { status: 'pending', name: 'Homebridge' })
       mainIo.socket.fire('homebridge-status', { status: 'ok', name: 'Homebridge' })
 
-      ctrl.destroy()
+      teardown()
       await vi.advanceTimersByTimeAsync(6000)
 
       // A timer firing into a destroyed widget announces into nothing
-      expect(ctrl.homebridgeLiveMessage).toBe('')
+      expect(ctrl.getState().homebridgeLiveMessage).toBe('')
       expect(childIo.end).toHaveBeenCalled()
     })
 
     it('releases its hold on the shared status socket when the widget is removed', async () => {
       // end() only drops this widget's reference - the ws service keeps the
       // server session up while the status page still holds it
-      const ctrl = await open()
+      await open()
 
-      ctrl.destroy()
+      teardown()
 
       expect(mainIo.end).toHaveBeenCalledTimes(1)
     })
 
     it('detaches its own listeners when the widget is removed', async () => {
-      const ctrl = await open()
+      await open()
       const before = {
         status: mainIo.socket.handlers('homebridge-status').length,
         disconnect: mainIo.socket.handlers('disconnect').length,
         child: childIo.socket.handlers('child-bridge-status-update').length,
       }
 
-      ctrl.destroy()
+      teardown()
 
       expect(mainIo.socket.handlers('homebridge-status')).toHaveLength(before.status - 1)
       expect(mainIo.socket.handlers('disconnect')).toHaveLength(before.disconnect - 1)

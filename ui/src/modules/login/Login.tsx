@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router'
 import { authActions, useAuthStore } from '@/core/auth'
 import { useSettingsStore } from '@/core/settings'
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 import { environment } from '@/environments/environment'
 
 import './login.scss'
@@ -151,7 +152,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
 
   return (
     <div
-      className={`login-container gradient d-flex align-items-start justify-content-center${backgroundStyle ? '' : ' anim'}`}
+      className={cx('login-container gradient d-flex align-items-start justify-content-center', !backgroundStyle && 'anim')}
       style={backgroundStyle ? { background: backgroundStyle } : undefined}
     >
       <div className="w-100 login-card d-flex py-4 flex-column">
@@ -178,7 +179,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
                       autoComplete="username"
                       autoCapitalize="none"
                       tabIndex={0}
-                      className={`form-control custom-input${usernameDirty && !username ? ' is-invalid' : ''}`}
+                      className={cx('form-control custom-input', usernameDirty && !username && 'is-invalid')}
                       required
                       aria-label={t('users.label_username')}
                       placeholder={t('users.label_username')}
@@ -198,7 +199,7 @@ export function Login({ targetRoute = '/' }: LoginProps) {
                       id="form-pass"
                       autoComplete="current-password"
                       tabIndex={0}
-                      className={`form-control custom-input${passwordDirty && !password ? ' is-invalid' : ''}`}
+                      className={cx('form-control custom-input', passwordDirty && !password && 'is-invalid')}
                       required
                       aria-label={t('users.label_password')}
                       placeholder={t('users.label_password')}

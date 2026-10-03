@@ -10,6 +10,7 @@ import { Confirm } from '@/core/components/confirm/Confirm'
 import { escapeHtml } from '@/core/helpers/html.helper'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { openModal } from '@/core/ui/modal'
+import { cx } from '@/core/utilities/cx'
 import { ws } from '@/core/ws'
 import { environment } from '@/environments/environment'
 import { Sidebar } from '@/shared/layout/sidebar/Sidebar'
@@ -121,7 +122,7 @@ export function Layout() {
     <div className="hb-layout">
       <a className="skip-link" href="#main-content" onClick={skipToContent}>{t('layout.skip_to_content')}</a>
       <Sidebar initialIsExpanded={sidebarExpanded} />
-      <main id="main-content" tabIndex={-1} className={`content px-3 p-md-4${sidebarExpanded ? ' sidebarExpanded' : ''}`}>
+      <main id="main-content" tabIndex={-1} className={cx('content px-3 p-md-4', sidebarExpanded && 'sidebarExpanded')}>
         {sslStartupError && (
           <div className="alert alert-warning" role="alert">
             <i className="fas fa-fw fa-triangle-exclamation me-1"></i>

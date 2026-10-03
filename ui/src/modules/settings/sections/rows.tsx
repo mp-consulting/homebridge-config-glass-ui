@@ -5,6 +5,7 @@ import type { InputHTMLAttributes, ReactNode } from 'react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { cx } from '@/core/utilities/cx'
 import { useField, useItemHidden, useSaving, useSettingsPage, useSettingsPageState } from '@/modules/settings/settings-page.context'
 
 /**
@@ -34,7 +35,7 @@ export function SettingRow({ item, hidden, children }: { item?: string, hidden?:
   const searchHidden = useItemHidden(item ?? '')
   const isHidden = hidden ?? (item ? searchHidden : false)
   return (
-    <li className={`setting-row list-group-item${isHidden ? ' setting-hidden' : ''}`} inert={isHidden || undefined}>
+    <li className={cx('setting-row list-group-item', isHidden && 'setting-hidden')} inert={isHidden || undefined}>
       {children}
     </li>
   )
@@ -72,7 +73,7 @@ export function SectionShell({ section, fieldsId, title, ulClassName = 'list-gro
           aria-controls={fieldsId}
           onClick={() => page.toggleSection(section)}
         >
-          <i aria-hidden="true" className={`fa ${open ? 'fa-chevron-down' : 'fa-chevron-right'}`}></i>
+          <i aria-hidden="true" className={cx('fa', open ? 'fa-chevron-down' : 'fa-chevron-right')}></i>
           {' '}
           {t(title)}
         </button>

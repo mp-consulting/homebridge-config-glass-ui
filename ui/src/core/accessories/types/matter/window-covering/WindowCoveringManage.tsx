@@ -13,7 +13,7 @@ import {
   setWindowCoveringPosition,
   setWindowCoveringTiltPosition,
 } from '@/core/accessories/types/matter/matter-device.utils'
-import { MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
+import { MatterManageModal } from '@/core/accessories/types/matter/matter-manage'
 import { useStateRef } from '@/core/accessories/types/matter/use-state-ref'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
@@ -105,8 +105,7 @@ export function WindowCoveringManage({ service: initial, activeModal }: Accessor
   const summaryPercentage = getWindowCoveringOpenPercentage(service)
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body text-center px-5">
         <div className="d-flex justify-content-center mb-0 p-0">
           <div className="mb-0 mx-0 p-3 btn-read w-100">
@@ -176,7 +175,6 @@ export function WindowCoveringManage({ service: initial, activeModal }: Accessor
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

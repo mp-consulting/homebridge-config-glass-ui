@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { formatTemp, useTemperatureUnits } from '@/core/accessories/types/hap/hap-tile'
-import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal, ModeButton } from '@/core/accessories/types/hap/manage-parts'
 import { thermostatStatusClass } from '@/core/accessories/types/hap/thermostat/thermostat.utils'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
@@ -116,8 +116,7 @@ export function ThermostatManage({ service: initialService, activeModal }: HapMa
   ]
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <h6 className="mt-2 mb-4 fs-4">
           <i className={`fas fa-temperature-full ${thermostatStatusClass(service)}`}></i>
@@ -204,7 +203,6 @@ export function ThermostatManage({ service: initialService, activeModal }: HapMa
               )
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

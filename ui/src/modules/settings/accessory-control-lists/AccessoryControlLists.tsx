@@ -10,6 +10,7 @@ import { api } from '@/core/api'
 import { accessoryOverviewCache } from '@/core/caching'
 import { settingsActions } from '@/core/settings'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 import { titleCase } from '@/modules/settings/title-case'
 
@@ -25,7 +26,7 @@ function PairedIcon({ paired }: { paired?: boolean }) {
       delay={{ show: 150, hide: 0 }}
       overlay={<Tooltip>{t(paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired')}</Tooltip>}
     >
-      <i className={`fas fa-link ${paired ? 'green-text' : 'grey-text'}`}></i>
+      <i className={cx('fas fa-link', paired ? 'green-text' : 'grey-text')}></i>
     </OverlayTrigger>
   )
 }
@@ -37,8 +38,8 @@ function ProtocolIcons({ pairing, isMatterSupported }: { pairing: Pairing, isMat
       {isMatterSupported
         ? (
             <>
-              <i className={`fas fa-lg fa-hap me-2${pairing._matterOnly ? ' opacity-muted' : ''}`}></i>
-              <i className={`fas fa-lg fa-matter${!pairing._matter ? ' opacity-muted' : ''}`}></i>
+              <i className={cx('fas fa-lg fa-hap me-2', pairing._matterOnly && 'opacity-muted')}></i>
+              <i className={cx('fas fa-lg fa-matter', !pairing._matter && 'opacity-muted')}></i>
             </>
           )
         : <i className="fas fa-lg fa-hap"></i>}

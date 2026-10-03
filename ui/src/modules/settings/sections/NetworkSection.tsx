@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_BLOCK, INNER_FLEX, NumberInput, PwaWarning, SaveIndicator, SectionShell, SettingRow, SwitchControl, TextInput } from '@/modules/settings/sections/rows'
 import { useDisabled, useField, useInvalid, useItemHidden, useSaving, useSettingsPage, useSettingsPageState } from '@/modules/settings/settings-page.context'
 
@@ -40,7 +41,7 @@ export function NetworkSection() {
               {t('settings.network.message_network_interface')}
             </div>
             {adaptersSelected.map(adapter => (
-              <span key={adapter.iface} className={`badge badge-primary me-1 ${adapter.missing ? 'badge-danger' : 'badge-info'}`}>
+              <span key={adapter.iface} className={cx('badge badge-primary me-1', adapter.missing ? 'badge-danger' : 'badge-info')}>
                 {adapter.missing && <i aria-hidden="true" className="fas fa-exclamation-triangle"></i>}
                 {' '}
                 {adapter.iface}
@@ -113,7 +114,7 @@ export function NetworkSection() {
           <div className={CONTROL_WRAP}>
             <NumberInput
               field="hbPort"
-              className={`${MONO_INPUT}${hbPortIsInvalid ? ' is-invalid' : ''}`}
+              className={cx(MONO_INPUT, hbPortIsInvalid && 'is-invalid')}
               min="1025"
               max="65533"
               aria-label={t('settings.network.port_hb')}
@@ -134,7 +135,7 @@ export function NetworkSection() {
             <div className="d-flex gap-2 order-1 order-md-2 resp-select-width">
               <NumberInput
                 field="hbStartPort"
-                className={`form-control custom-input font-monospace flex-fill${hbStartPortIsInvalid ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input font-monospace flex-fill', hbStartPortIsInvalid && 'is-invalid')}
                 min="1025"
                 max="65533"
                 placeholder="1025"
@@ -142,7 +143,7 @@ export function NetworkSection() {
               />
               <NumberInput
                 field="hbEndPort"
-                className={`form-control custom-input font-monospace flex-fill${hbEndPortIsInvalid ? ' is-invalid' : ''}`}
+                className={cx('form-control custom-input font-monospace flex-fill', hbEndPortIsInvalid && 'is-invalid')}
                 min="1025"
                 max="65533"
                 placeholder="65533"
@@ -205,7 +206,7 @@ export function NetworkSection() {
           <div className={CONTROL_WRAP}>
             <NumberInput
               field="uiPort"
-              className={`${MONO_INPUT}${uiPortIsInvalid ? ' is-invalid' : ''}`}
+              className={cx(MONO_INPUT, uiPortIsInvalid && 'is-invalid')}
               min="1025"
               max="65533"
               placeholder="8581"

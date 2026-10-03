@@ -1,7 +1,8 @@
 import type { WidgetProps } from '@/modules/status/widgets/widget.types'
 
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useStore } from 'zustand'
 
 import { api } from '@/core/api'
 import { useAuthStore } from '@/core/auth'
@@ -10,9 +11,10 @@ import { ChildBridgeStatusIcons } from '@/core/components/child-bridge-status-ic
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { ws } from '@/core/ws'
 
-import { BridgesController } from './bridges.controller'
+import { createBridgesStore } from './bridges.store'
 
 import './bridges-widget.scss'
 
@@ -20,7 +22,7 @@ export function BridgesWidget({ widget }: WidgetProps) {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => state.user.admin)
 
-  const [ctrl] = useState(() => new BridgesController({
+  const [store] = useState(() => createBridgesStore({
     ws,
     api,
     cache: ttlCache,
@@ -29,45 +31,42 @@ export function BridgesWidget({ widget }: WidgetProps) {
     isAdmin: !!isAdmin,
     isMatterSupported: settingsActions.isFeatureEnabled('matterSupport'),
   }))
-  useSyncExternalStore(ctrl.subscribe, ctrl.getVersion)
+  const bridges = useStore(store)
 
-  useEffect(() => {
-    ctrl.init()
-    return () => ctrl.destroy()
-  }, [ctrl])
+  useEffect(() => store.getState().connect(), [store])
 
-  const status = ctrl.homebridgeStatus
-  const mainBusy = status?.status === 'pending' || ctrl.isRestarting
+  const status = bridges.homebridgeStatus
+  const mainBusy = status?.status === 'pending' || bridges.isRestarting
 
   return (
     <div className="hb-bridges-widget flex-column d-flex align-items-stretch h-100 w-100 pb-3 overflow-auto no-scrollbars">
       <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
-        {ctrl.homebridgeLiveMessage}
+        {bridges.homebridgeLiveMessage}
       </span>
-      {ctrl.childBridges.map(bridge => (
+      {bridges.childBridges.map(bridge => (
         <span key={bridge.username || bridge.name} className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
-          {ctrl.childBridgeLiveMessages[bridge.username || bridge.name]}
+          {bridges.childBridgeLiveMessages[bridge.username || bridge.name]}
         </span>
       ))}
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>
         {t('child_bridge.bridges')}
       </div>
       <div className="d-flex flex-wrap w-100 mt-0 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center">
         <button
           type="button"
           className="hb-status-item hb-status-item-quarter hb-status-row d-flex flex-row w-100 px-3 mt-2 mb-1 text-start"
-          aria-label={ctrl.mainBridgeAriaLabel()}
+          aria-label={bridges.mainBridgeAriaLabel()}
           aria-disabled={mainBusy || !isAdmin ? 'true' : undefined}
           onClick={() => {
             if (!(mainBusy || !isAdmin)) {
-              void ctrl.restartHomebridge()
+              void bridges.restartHomebridge()
             }
           }}
         >
           <div className="hb-status-icon d-flex align-items-center">
             {/* Same shared icons as the child rows - the main bridge is mapped
                 into the same source shape so the colour/tooltip rules have one owner */}
-            <ChildBridgeStatusIcons bridge={ctrl.mainBridgeIconSource()} serverRestarting={ctrl.isRestarting} />
+            <ChildBridgeStatusIcons bridge={bridges.mainBridgeIconSource()} serverRestarting={bridges.isRestarting} />
           </div>
           <div className="align-self-center flex-child px-2">{status?.name || 'Homebridge'}</div>
           <div className="grey-text ms-auto d-flex align-items-center" aria-hidden="true">
@@ -75,23 +74,23 @@ export function BridgesWidget({ widget }: WidgetProps) {
             {mainBusy && <i className="fas fa-circle-notch fa-spin"></i>}
           </div>
         </button>
-        {ctrl.childBridges.map((bridge) => {
-          const busy = bridge.status === 'pending' || !!bridge.restarting || ctrl.isRestarting
+        {bridges.childBridges.map((bridge) => {
+          const busy = bridge.status === 'pending' || !!bridge.restarting || bridges.isRestarting
           return (
             <button
               key={bridge.username || bridge.name}
               type="button"
               className="hb-status-item hb-status-item-quarter hb-status-row d-flex flex-row w-100 px-3 mt-2 mb-1 text-start"
-              aria-label={ctrl.childBridgeAriaLabel(bridge)}
+              aria-label={bridges.childBridgeAriaLabel(bridge)}
               aria-disabled={busy || !isAdmin ? 'true' : undefined}
               onClick={() => {
                 if (!(busy || !isAdmin)) {
-                  void ctrl.restartChildBridge(bridge)
+                  void bridges.restartChildBridge(bridge)
                 }
               }}
             >
               <div className="hb-status-icon d-flex align-items-center">
-                <ChildBridgeStatusIcons bridge={bridge} serverRestarting={ctrl.isRestarting} />
+                <ChildBridgeStatusIcons bridge={bridge} serverRestarting={bridges.isRestarting} />
               </div>
               <div className="align-self-center flex-child px-2">{bridge.name}</div>
               <div className="grey-text ms-auto d-flex align-items-center" aria-hidden="true">

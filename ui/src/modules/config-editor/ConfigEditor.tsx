@@ -25,6 +25,7 @@ import { i18n, t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
+import { toastApiError } from '@/core/utilities/http-error'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
 import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 
@@ -492,8 +493,7 @@ export function ConfigEditor() {
       clearDecorations()
     } catch (error: unknown) {
       console.error(error)
-      const errorMessage = (error as { error?: { message?: string } })?.error?.message || t('backup.load_error')
-      toast.error(errorMessage, t('toast.title_error'))
+      toastApiError(error, 'backup.load_error')
     }
   }
 

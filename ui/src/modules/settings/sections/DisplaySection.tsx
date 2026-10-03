@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useSettingsStore } from '@/core/settings'
+import { cx } from '@/core/utilities/cx'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_BLOCK, INNER_FLEX, SaveIndicator, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useDisabled, useField, useItemHidden, useSaving, useSettingsPage } from '@/modules/settings/settings-page.context'
 import { fontSizes, fontWeights } from '@/modules/settings/settings-page.store'
@@ -191,7 +192,7 @@ export function DisplaySection() {
               </div>
               <div className="d-flex flex-column flex-fill">
                 <select
-                  className={`custom-select terminal-theme-select w-100${isTerminalLightingModeDisabled ? ' disabled-no-interaction' : ''}`}
+                  className={cx('custom-select terminal-theme-select w-100', isTerminalLightingModeDisabled && 'disabled-no-interaction')}
                   value={terminalLighting ?? ''}
                   disabled={terminalLightingDisabled}
                   aria-label={t('settings.display.lighting_mode')}

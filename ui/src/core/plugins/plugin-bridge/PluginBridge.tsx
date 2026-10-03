@@ -5,14 +5,15 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from 'zustand'
 
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { linkChildBridges } from '@/core/constants/links'
 import { getHapNameValidationError, selectHasValidationErrors, selectValidationErrorBridgeName } from '@/core/plugins/plugin-bridge/plugin-bridge.hap'
-import { linkChildBridges } from '@/core/plugins/plugin-bridge/plugin-bridge.state'
 import { PluginBridgeAdvanced } from '@/core/plugins/plugin-bridge/PluginBridgeAdvanced'
 import { PluginBridgeHap } from '@/core/plugins/plugin-bridge/PluginBridgeHap'
 import { PluginBridgeMatter } from '@/core/plugins/plugin-bridge/PluginBridgeMatter'
 import { usePluginBridge } from '@/core/plugins/plugin-bridge/usePluginBridge'
-import { ModalFooter } from '@/core/ui/ModalParts'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
+import { cx } from '@/core/utilities/cx'
 
 import './plugin-bridge.scss'
 
@@ -61,20 +62,12 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
 
   return (
     <div className="modal-content hb-plugin-bridge">
-      <div className="modal-header">
-        <h5 className="modal-title">{plugin.displayName || plugin.name}</h5>
-        {!justInstalled && (
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="modal"
-            aria-label={t('form.button_close')}
-            disabled={saveInProgress}
-            onClick={() => actions.closeModal()}
-          >
-          </button>
-        )}
-      </div>
+      <ModalHeader
+        title={plugin.displayName || plugin.name}
+        onClose={() => actions.closeModal()}
+        closeDisabled={saveInProgress}
+        hideClose={justInstalled}
+      />
       <div className="modal-body">
         {loading
           ? (
@@ -242,7 +235,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                               <input
                                 id="bridge-name"
                                 type="text"
-                                className={`form-control custom-input${nameError ? ' is-invalid' : ''}`}
+                                className={cx('form-control custom-input', nameError && 'is-invalid')}
                                 value={bridge.name ?? ''}
                                 onChange={event => setBridgeField('name', event.target.value)}
                               />
@@ -266,7 +259,7 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
                             }}
                           >
                             <span className="text-start">{t('common.labels.advanced')}</span>
-                            <i aria-hidden="true" className={`fa grey-text${showAdvanced ? ' fa-chevron-down' : ' fa-chevron-left'}`}></i>
+                            <i aria-hidden="true" className={cx('fa grey-text', showAdvanced ? 'fa-chevron-down' : 'fa-chevron-left')}></i>
                           </li>
                           {showAdvanced && <PluginBridgeAdvanced store={store} />}
                         </>

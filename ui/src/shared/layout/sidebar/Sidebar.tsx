@@ -11,6 +11,7 @@ import { notifications, useNotification } from '@/core/notifications'
 import { useSettingsStore } from '@/core/settings'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { handleMenuKeydown } from '@/shared/layout/sidebar/menu-keydown'
 
 import './sidebar.scss'
@@ -292,7 +293,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
       <div className="link">
         <button
           type="button"
-          className={`link-row${active ? ' active' : ''}`}
+          className={cx('link-row', active && 'active')}
           aria-label={label}
           aria-current={active ? 'page' : undefined}
           onClick={() => void navigate(path)}
@@ -341,7 +342,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
           <span className="glass-logo" aria-hidden="true"></span>
           <div className="hb-logo-text-mobile">Homebridge</div>
         </a>
-        <div aria-hidden="true" className={`hamburger-icon${isExpanded ? ' hamburger-icon-cross' : ''}`}>
+        <div aria-hidden="true" className={cx('hamburger-icon', isExpanded && 'hamburger-icon-cross')}>
           <span></span>
           <span></span>
           <span></span>
@@ -351,7 +352,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
 
       <div
         ref={sidebarRef}
-        className={`sidebar${isExpanded ? ' expanded' : ''}`}
+        className={cx('sidebar', isExpanded && 'expanded')}
         id="sidebar"
         role={isMobile ? undefined : 'navigation'}
         aria-label={isMobile ? undefined : t('menu.sidebar.aria_menu')}

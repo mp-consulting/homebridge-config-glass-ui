@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 
+import { cx } from '@/core/utilities/cx'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_FLEX, SectionShell, SettingRow, TextInput } from '@/modules/settings/sections/rows'
 import { useInvalid, useSettingsPage } from '@/modules/settings/settings-page.context'
 
@@ -18,7 +19,7 @@ export function GeneralSection() {
           <div className={CONTROL_WRAP}>
             <TextInput
               field="hbName"
-              className={`form-control custom-input resp-input order-1 order-md-2${hbNameIsInvalid ? ' is-invalid' : ''}`}
+              className={cx('form-control custom-input resp-input order-1 order-md-2', hbNameIsInvalid && 'is-invalid')}
               aria-label={t('settings.name')}
             />
             <FieldSaveIndicator saving="hbName" />

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 
 import { linkedFan, loadRotationSpeed } from '@/core/accessories/types/hap/heater-cooler/heater-cooler.utils'
 import { humidifierFanGradient, humidifierStatusClass } from '@/core/accessories/types/hap/humidifier-dehumidifier/humidifier-dehumidifier.utils'
-import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal, ModeButton } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
 import { useLatest } from '@/core/hooks/use-latest'
@@ -193,8 +193,7 @@ export function HumidifierDehumidifierManage({ service: initialService, activeMo
   }
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <h6 className="mt-2 mb-4 fs-4">
           <i className={`fas fa-temperature-full ${humidifierStatusClass(service, type)}`}></i>
@@ -246,7 +245,6 @@ export function HumidifierDehumidifierManage({ service: initialService, activeMo
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { settingsActions } from '@/core/settings'
+import { cx } from '@/core/utilities/cx'
 import { terminalNavigationGuard, useTerminal } from '@/core/utilities/terminal'
 import { patchXtermLiveRegion } from '@/modules/logs/terminal-page'
 
@@ -166,12 +167,12 @@ export function TerminalWidget({ resizeEvent }: WidgetProps) {
   return (
     <div
       ref={widgetContainerRef}
-      className={`hb-terminal-widget flex-column d-flex align-items-stretch h-100 w-100${dark ? ' widget-container-dark' : ''}`}
+      className={cx('hb-terminal-widget flex-column d-flex align-items-stretch h-100 w-100', dark && 'widget-container-dark')}
       onClick={() => terminal.activateTerminal()}
       onTouchStart={event => terminal.onTouchStart(event)}
       onTouchEnd={event => terminal.onTouchEnd(event)}
     >
-      <div ref={titleRef} className={`drag-handler p-2${dark ? ' terminal-title-dark' : ''}`}>
+      <div ref={titleRef} className={cx('drag-handler p-2', dark && 'terminal-title-dark')}>
         <span aria-hidden="true">{`Homebridge ${t('menu.docker.terminal')}`}</span>
         <button
           type="button"

@@ -4,7 +4,7 @@ import type { AccessoryManageModalProps } from '@/core/accessories/types/use-man
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LightModeButtons, MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
+import { LightModeButtons, MatterManageModal } from '@/core/accessories/types/matter/matter-manage'
 import {
   useMatterColorTemperatureActions,
   useMatterColorTemperatureState,
@@ -43,8 +43,7 @@ export function ColorTemperatureLightManage({ service: initial, activeModal }: A
   }
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body text-center px-5">
         <LightModeButtons targetMode={light.targetMode} setTargetMode={setTargetMode} />
         <h6 className="mt-4">
@@ -79,7 +78,6 @@ export function ColorTemperatureLightManage({ service: initial, activeModal }: A
           />
         </div>
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

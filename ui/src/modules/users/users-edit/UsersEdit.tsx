@@ -11,6 +11,7 @@ import { api } from '@/core/api'
 import { authActions, useAuthStore } from '@/core/auth'
 import { RequiredIndicator } from '@/core/components/required-indicator/RequiredIndicator'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 
 import { validateUserForm } from '../user-form'
@@ -123,7 +124,7 @@ export function UsersEdit({ activeModal, user, existingUsers = [] }: UsersEditPr
           <div className="text-center mb-4">
             <i className="fas fa-user-pen primary-text icon-xl"></i>
           </div>
-          <ul className={`list-group list-group-box${deleteMode ? ' opacity-muted mb-4' : ' mb-0'}`}>
+          <ul className={cx('list-group list-group-box', deleteMode ? 'opacity-muted mb-4' : 'mb-0')}>
             <UserField
               id="form-username"
               label={t('users.label_username')}
@@ -162,7 +163,7 @@ export function UsersEdit({ activeModal, user, existingUsers = [] }: UsersEditPr
                   type="password"
                   autoComplete="new-password"
                   id="form-pass"
-                  className={`form-control custom-input${invalid('password') ? ' is-invalid' : ''}`}
+                  className={cx('form-control custom-input', invalid('password') && 'is-invalid')}
                   aria-label={t('users.label_new_password')}
                   value={value.password}
                   disabled={deleteMode}
@@ -217,7 +218,7 @@ export function UsersEdit({ activeModal, user, existingUsers = [] }: UsersEditPr
             </button>
             <button
               type="submit"
-              className={`btn ${deleteMode ? 'btn-danger' : 'btn-primary'}`}
+              className={cx('btn', deleteMode ? 'btn-danger' : 'btn-primary')}
               disabled={!deleteMode && (!valid || isFormUnchanged())}
             >
               {t(deleteMode ? 'form.button_delete' : 'form.button_save')}

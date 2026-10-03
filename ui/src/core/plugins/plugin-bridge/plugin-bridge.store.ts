@@ -6,6 +6,7 @@ import type { PluginBridgeDeps, PluginBridgeStore, PluginBridgeStoreState, Slice
 
 import { createStore } from 'zustand/vanilla'
 
+import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 
 import { createBridgeListSlice } from './plugin-bridge.bridge-list'
@@ -15,7 +16,7 @@ import { initialize } from './plugin-bridge.load'
 import { createMatterSlice } from './plugin-bridge.matter'
 import { save } from './plugin-bridge.save'
 import { createScheduleSlice } from './plugin-bridge.schedule'
-import { defaultIcon, initialState } from './plugin-bridge.state'
+import { initialState } from './plugin-bridge.state'
 
 /** The modal as a whole: loading, saving, leaving, and the selected block's plain fields. */
 export interface EditorActions extends ChildBridgeActions {
@@ -86,7 +87,7 @@ export function createPluginBridgeStore(data: PluginBridgeModalData, deps: Plugi
       handleIconError: () => {
         const plugin = get().plugin
         if (plugin) {
-          plugin.icon = defaultIcon
+          plugin.icon = DEFAULT_PLUGIN_ICON
           set({ plugin: { ...plugin } })
         }
       },

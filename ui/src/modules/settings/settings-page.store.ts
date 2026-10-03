@@ -21,7 +21,7 @@ import { SAVED_SPINNER_MS } from '@/modules/settings/settings-page/shared'
 import { createStartupSlice } from '@/modules/settings/settings-page/startup'
 import { createTerminalSlice } from '@/modules/settings/settings-page/terminal'
 
-export { externalIconLink, fontSizes, fontWeights, linkCron, linkDebug, linkRaspbianSsl } from '@/modules/settings/settings-page/shared'
+export { fontSizes, fontWeights } from '@/modules/settings/settings-page/shared'
 export type { FieldKey, SavingKey, SettingsFieldValues, SettingsPageDeps, SettingsPageFlags, SettingsPageState } from '@/modules/settings/settings-page/types'
 
 /**

@@ -3,9 +3,25 @@ import type { MouseEvent, ReactNode } from 'react'
 import { ModalHeader } from '@/core/ui/ModalParts'
 import { cx } from '@/core/utilities/cx'
 
-/** The `.modal-header` every HAP manage modal opens with: the accessory name and a close button. */
-export function ManageHeader({ title, onClose }: { title: string | undefined, onClose: () => void }) {
-  return <ModalHeader title={title} onClose={onClose} />
+/**
+ * The shell every HAP manage modal renders: the `.modal-content` box, a
+ * `.modal-header` with the accessory name and a close button, the modal's
+ * body (`children`) and the empty `.modal-footer` the Angular template kept.
+ */
+export function ManageModal({ title, onClose, className, children }: {
+  title: string | undefined
+  onClose: () => void
+  /** Extra classes for the `.modal-content` box. */
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <div className={cx('modal-content', className)}>
+      <ModalHeader title={title} onClose={onClose} />
+      {children}
+      <div className="modal-footer"></div>
+    </div>
+  )
 }
 
 /**

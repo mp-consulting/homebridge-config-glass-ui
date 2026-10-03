@@ -5,7 +5,7 @@ import type { MouseEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal, ModeButton } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
 import { useLatest } from '@/core/hooks/use-latest'
@@ -53,8 +53,7 @@ export function ValveManage({ service: initialService, activeModal }: HapManageP
   const service = m.service
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <div
           className="btn-group-vertical d-flex justify-content-center mb-4 p-0"
@@ -82,7 +81,6 @@ export function ValveManage({ service: initialService, activeModal }: HapManageP
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

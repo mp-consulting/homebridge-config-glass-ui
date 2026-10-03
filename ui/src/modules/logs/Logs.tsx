@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { cx } from '@/core/utilities/cx'
 import { useDebouncedCallback } from '@/core/utilities/debounce'
 import { useCanDeactivate, useLog } from '@/core/utilities/terminal'
 
@@ -173,7 +174,7 @@ export function Logs() {
                 aria-expanded={showSearchBar}
                 onClick={showSearch}
               >
-                <i aria-hidden="true" className={`fas fa-search${showSearchBar ? ' primary-text' : ''}`}></i>
+                <i aria-hidden="true" className={cx('fas fa-search', showSearchBar && 'primary-text')}></i>
               </button>
             </ToolbarTooltip>
             <ToolbarTooltip id="logs-download-tooltip" label={t('form.button_download')}>
@@ -208,7 +209,7 @@ export function Logs() {
                 ref={searchInputRef}
                 type="text"
                 id="logs-search"
-                className={`search-bar${terminalTheme === 'light' ? ' search-bar-light' : ''}${searchInputInvalid ? ' is-invalid' : ''}`}
+                className={cx('search-bar', terminalTheme === 'light' && 'search-bar-light', searchInputInvalid && 'is-invalid')}
                 name="query"
                 value={query}
                 aria-label={t('logs.placeholder_search_logs')}
@@ -230,7 +231,7 @@ export function Logs() {
         </div>
       )}
 
-      <div className={`flex-column d-flex align-items-stretch ${showSearchBar ? 'adjust-for-mobile-with-search' : 'adjust-for-mobile'}`}>
+      <div className={cx('flex-column d-flex align-items-stretch', showSearchBar ? 'adjust-for-mobile-with-search' : 'adjust-for-mobile')}>
         <div ref={termTargetRef} id="log-output" className="align-self-end w-100 h-100 mb-1"></div>
       </div>
     </div>

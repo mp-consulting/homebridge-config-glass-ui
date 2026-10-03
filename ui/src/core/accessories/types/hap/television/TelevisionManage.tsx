@@ -4,7 +4,7 @@ import type { MouseEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ManageHeader, ModeButton } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal, ModeButton } from '@/core/accessories/types/hap/manage-parts'
 import { televisionInputs } from '@/core/accessories/types/hap/television/television.utils'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { cx } from '@/core/utilities/cx'
@@ -37,8 +37,7 @@ export function TelevisionManage({ service: initialService, activeModal }: HapMa
   const service = m.service
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         {hasActive && (
           <div
@@ -72,7 +71,6 @@ export function TelevisionManage({ service: initialService, activeModal }: HapMa
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

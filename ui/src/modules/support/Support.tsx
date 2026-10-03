@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
+import { cx } from '@/core/utilities/cx'
 
 import { swaggerUrl } from './swagger-url'
 
@@ -74,7 +75,7 @@ function DisclosureToggle({ open, controls, label, onToggle }: { open: boolean, 
         aria-controls={controls}
         onClick={onToggle}
       >
-        <i className={`fa ${open ? 'fa-chevron-down' : 'fa-chevron-right'}`} aria-hidden="true"></i>
+        <i className={cx('fa', open ? 'fa-chevron-down' : 'fa-chevron-right')} aria-hidden="true"></i>
         {' '}
         {label}
       </button>

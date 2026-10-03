@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { formatDecimal } from '@/core/pipes'
+import { cx } from '@/core/utilities/cx'
 import { useChartWidget } from '@/modules/status/widgets/base-chart-widget/use-chart-widget'
 
 import '@/modules/status/widgets/base-chart-widget/chart-widget.scss'
@@ -48,7 +49,7 @@ export function NetworkWidget(props: WidgetProps) {
 
   return (
     <div className="hb-chart-widget flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-      <div className={`drag-handler p-2${widget.draggable ? ' widget-cursor' : ''}`}>
+      <div className={cx('drag-handler p-2', widget.draggable && 'widget-cursor')}>
         {t('status.network.title_network')}
         {' '}
         (

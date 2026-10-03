@@ -11,6 +11,7 @@ import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 
 import { Users2faDisable } from './users-2fa-disable/Users2faDisable'
@@ -97,7 +98,7 @@ export function Users() {
                   <span className="me-auto my-0">
                     <h4>{user.name}</h4>
                     <h5 className="small text-truncate grey-text">
-                      <i className={`fas ${user.admin ? 'fa-user-secret' : 'fa-user'}`} aria-hidden="true"></i>
+                      <i className={cx('fas', user.admin ? 'fa-user-secret' : 'fa-user')} aria-hidden="true"></i>
                       {' '}
                       {user.username}
                     </h5>

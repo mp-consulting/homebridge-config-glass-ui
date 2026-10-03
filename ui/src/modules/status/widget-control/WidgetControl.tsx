@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '@/core/api'
 import { formatDatePattern } from '@/core/pipes/date-pattern'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 import { ws } from '@/core/ws'
 
 import { dateFormats, findOpenWeatherMapCity, hasChanges, searchCountryCodeFormatter, timeFormats } from './widget-control.helpers'
@@ -144,7 +145,7 @@ function CityTypeahead({ value, onChange, onSearchingChange }: CityTypeaheadProp
               type="button"
               role="option"
               aria-selected={index === active}
-              className={`dropdown-item${index === active ? ' active' : ''}`}
+              className={cx('dropdown-item', index === active && 'active')}
               onMouseDown={event => event.preventDefault()}
               onMouseEnter={() => setActive(index)}
               onClick={() => select(item)}
@@ -281,7 +282,7 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
               <div className="text-start text-md-end w-100 w-md-50">
                 <div className="input-group">
                   <span className="input-group-text custom-input" id="">
-                    <i className={`fas${searching ? ' fa-circle-notch fa-spin' : ' fa-city'}`} aria-hidden="true"></i>
+                    <i className={cx('fas', searching ? 'fa-circle-notch fa-spin' : 'fa-city')} aria-hidden="true"></i>
                   </span>
                   <CityTypeahead
                     value={widget.location as WeatherLocation | undefined}

@@ -4,7 +4,7 @@ import type { AccessoryManageModalProps } from '@/core/accessories/types/use-man
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LightModeButtons, MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
+import { LightModeButtons, MatterManageModal } from '@/core/accessories/types/matter/matter-manage'
 import { useMatterLightActions, useMatterLightState } from '@/core/accessories/types/matter/use-matter-light'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
@@ -33,8 +33,7 @@ export function DimmableLightManage({ service: initial, activeModal }: Accessory
   }
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body text-center px-5">
         <LightModeButtons targetMode={light.targetMode} setTargetMode={setTargetMode} />
         <h6 className="mt-4">
@@ -52,7 +51,6 @@ export function DimmableLightManage({ service: initial, activeModal }: Accessory
           onChange={value => onBrightnessChange(value as number)}
         />
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

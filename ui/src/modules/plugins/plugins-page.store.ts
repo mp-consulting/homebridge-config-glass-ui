@@ -10,6 +10,7 @@ import { serverPairingsCache } from '@/core/caching/server-pairings-cache'
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { settingsActions, useSettingsStore } from '@/core/settings'
+import { ignoreDismiss } from '@/core/ui/ignore-dismiss'
 import { openModal } from '@/core/ui/modal'
 import { toastApiError } from '@/core/utilities/http-error'
 import { PluginSupport } from '@/modules/plugins/plugin-support/PluginSupport'
@@ -502,7 +503,7 @@ export function createPluginsPageStore() {
           }
           pluginsCache.invalidate()
           void get().loadInstalledPlugins()
-        }, () => {})
+        }, ignoreDismiss)
       },
 
       showSearch() {

@@ -16,6 +16,7 @@ import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 import { hideXtermInputFromScreenReader } from '@/core/utilities/terminal/log.service'
 import { ws } from '@/core/ws'
@@ -130,7 +131,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
 
   const reportUploadError = (error: any) => {
     console.error(error)
-    toast.error(error?.error?.message || t('backup.restore_failed'), t('toast.title_error'))
+    toastApiError(error, 'backup.restore_failed')
   }
 
   const uploadHomebridgeArchive = async (): Promise<void> => {
@@ -219,7 +220,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
   const dismissModal = () => activeModal.dismiss('Dismiss')
 
   return (
-    <div className={`modal-content${isLightTerminalTheme ? ' terminal-light-theme' : ''}`}>
+    <div className={cx('modal-content', isLightTerminalTheme && 'terminal-light-theme')}>
       <ModalHeader title={translate('backup.title_backup')} closeDisabled={restoreInProgress} onClose={dismissModal} />
       {!restoreStarted && !setupWizardRestore && (
         <div className="modal-body">
@@ -250,7 +251,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       <div
         ref={termTargetRef}
         id="plugin-log-output"
-        className={`modal-body ${isLightTerminalTheme ? 'terminal-light-bg' : 'terminal-dark-bg'}`}
+        className={cx('modal-body', isLightTerminalTheme ? 'terminal-light-bg' : 'terminal-dark-bg')}
         hidden={!restoreStarted}
       >
       </div>
