@@ -1,13 +1,14 @@
+import { Buffer } from 'node:buffer'
 import { createPrivateKey, X509Certificate } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
 import { outputFile, remove } from 'fs-extra'
-import forge from 'node-forge'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { SslCertGeneratorService } from '../../src/core/ssl/ssl-cert-generator.service.js'
+import { X509CertificateGenerator } from '../../src/core/ssl/x509.js'
 import { testStoragePath } from '../storage-path.js'
 
 const isPosix = process.platform !== 'win32'
@@ -27,18 +28,19 @@ describe('SslCertGeneratorService (e2e)', { timeout: 30_000 }, () => {
 
   /** A self-signed certificate that expired yesterday */
   const writeExpiredCertificate = async () => {
-    const keys = forge.pki.rsa.generateKeyPair(1024)
-    const cert = forge.pki.createCertificate()
-    cert.publicKey = keys.publicKey
-    cert.serialNumber = '01'
-    cert.validity.notBefore = new Date(Date.now() - 2 * 365 * 24 * 3600 * 1000)
-    cert.validity.notAfter = new Date(Date.now() - 24 * 3600 * 1000)
-    const attrs = [{ name: 'commonName', value: 'localhost' }]
-    cert.setSubject(attrs)
-    cert.setIssuer(attrs)
-    cert.sign(keys.privateKey, forge.md.sha256.create())
-    await outputFile(keyPath, forge.pki.privateKeyToPem(keys.privateKey))
-    await outputFile(certPath, forge.pki.certificateToPem(cert))
+    const alg = { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256', publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 2048 }
+    const keys = await crypto.subtle.generateKey(alg, true, ['sign', 'verify'])
+    const cert = await X509CertificateGenerator.createSelfSigned({
+      serialNumber: '01',
+      name: 'CN=localhost',
+      notBefore: new Date(Date.now() - 2 * 365 * 24 * 3600 * 1000),
+      notAfter: new Date(Date.now() - 24 * 3600 * 1000),
+      keys,
+      signingAlgorithm: alg,
+    })
+    const pkcs8 = Buffer.from(await crypto.subtle.exportKey('pkcs8', keys.privateKey)).toString('base64')
+    await outputFile(keyPath, `-----BEGIN PRIVATE KEY-----\n${pkcs8.match(/.{1,64}/g)!.join('\n')}\n-----END PRIVATE KEY-----\n`)
+    await outputFile(certPath, cert.toString('pem'))
   }
 
   beforeEach(async () => {
@@ -98,10 +100,9 @@ describe('SslCertGeneratorService (e2e)', { timeout: 30_000 }, () => {
     expect(a.serialNumber).not.toBe(b.serialNumber)
   })
 
-  // BUG: generateOrLoadCertificate only checks that both files exist. A
-  // corrupt or expired certificate is handed to the HTTPS server as is, and
-  // never replaced, so the UI fails to start or serves an expired cert.
-  it.fails('regenerates a corrupt certificate', async () => {
+  // A corrupt or expired certificate would otherwise be handed to the HTTPS
+  // server as is: the UI fails to start, or serves an expired certificate
+  it('regenerates a corrupt certificate', async () => {
     await outputFile(keyPath, 'garbage')
     await outputFile(certPath, 'garbage')
 
@@ -110,23 +111,12 @@ describe('SslCertGeneratorService (e2e)', { timeout: 30_000 }, () => {
     expect(() => new X509Certificate(certificate)).not.toThrow()
   })
 
-  it.fails('regenerates an expired certificate', async () => {
+  it('regenerates an expired certificate', async () => {
     await writeExpiredCertificate()
 
     const { certificate } = await service().generateOrLoadCertificate()
 
     expect(new Date(new X509Certificate(certificate).validTo).getTime()).toBeGreaterThan(Date.now())
-  })
-
-  it('currently returns a corrupt or expired certificate unchanged', async () => {
-    await outputFile(keyPath, 'garbage-key')
-    await outputFile(certPath, 'garbage-cert')
-    const corrupt = await service().generateOrLoadCertificate()
-    expect(corrupt.certificate.toString()).toBe('garbage-cert')
-
-    await writeExpiredCertificate()
-    const expired = await service().generateOrLoadCertificate()
-    expect(new Date(new X509Certificate(expired.certificate).validTo).getTime()).toBeLessThan(Date.now())
   })
 
   it('rejects when the certificate directory cannot be created', async () => {

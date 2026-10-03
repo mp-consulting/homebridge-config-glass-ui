@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer'
-import { KeyObject, randomBytes } from 'node:crypto'
+import { createPrivateKey, KeyObject, randomBytes, X509Certificate } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { chmod, readFile, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
@@ -61,8 +61,12 @@ export class SslCertGeneratorService {
       try {
         const privateKey = await readFile(this.privateKeyPath)
         const certificate = await readFile(this.certificatePath)
-        this.logger.log('Loaded existing self-signed certificate')
-        return { privateKey, certificate }
+        const problem = this.checkCertificate(privateKey, certificate)
+        if (!problem) {
+          this.logger.log('Loaded existing self-signed certificate')
+          return { privateKey, certificate }
+        }
+        this.logger.warn(`Existing self-signed certificate ${problem}, generating a new one`)
       } catch (error) {
         this.logger.warn('Failed to load existing certificate, generating new one:', error.message)
       }
@@ -70,6 +74,26 @@ export class SslCertGeneratorService {
 
     // Generate new certificate
     return this.generateCertificate(hostnames)
+  }
+
+  /**
+   * Why a stored key and certificate can't be served (unreadable, mismatched
+   * or expired), or undefined when they can
+   */
+  private checkCertificate(privateKey: Buffer, certificate: Buffer): string | undefined {
+    let x509: X509Certificate
+    try {
+      x509 = new X509Certificate(certificate)
+      if (!x509.checkPrivateKey(createPrivateKey(privateKey))) {
+        return 'does not match its private key'
+      }
+    } catch {
+      return 'could not be parsed'
+    }
+    if (new Date(x509.validTo).getTime() <= Date.now()) {
+      return 'has expired'
+    }
+    return undefined
   }
 
   /**
