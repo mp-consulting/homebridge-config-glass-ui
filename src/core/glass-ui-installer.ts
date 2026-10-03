@@ -214,7 +214,10 @@ export async function revertToOfficialUi(options: InstallerOptions): Promise<Ins
   let version = 'latest'
   try {
     version = JSON.parse(await readFile(markerPath(target), 'utf8')).version || 'latest'
-  } catch {}
+  } catch {
+    // No readable marker (Glass UI was installed by hand, or the marker was
+    // removed): the version it replaced is unknown, so reinstall the latest
+  }
 
   if (target.legacyPath && (await lstatOrNull(target.legacyPath))?.isSymbolicLink()) {
     await rm(target.legacyPath)
