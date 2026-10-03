@@ -61,13 +61,17 @@ test('the skip link is the first stop and lands on the page', async ({ page }) =
 
 test('the hamburger opens the menu', async ({ page }) => {
   const sidebar = page.locator('#sidebar')
-  // The menu ignores taps for 750 ms after a navigation and closes on one
-  // (Sidebar.tsx); on a slow runner the page can still be settling, so let it
-  // go idle and retry the tap until the menu is open and stays interactive
+  // Tap the right end of the header, where the hamburger is: the header
+  // button also holds the logo, which links home, and with wider fonts (the
+  // Linux CI runner) a tap on its centre lands on the logo text. The menu
+  // ignores taps for 750 ms after a navigation (Sidebar.tsx), so on a slow
+  // runner retry the tap until the menu is open and stays interactive
+  const header = page.getByRole('button', { name: 'Menu' })
   await page.waitForLoadState('networkidle')
   await expect(async () => {
     if (!await sidebar.evaluate(el => el.classList.contains('expanded'))) {
-      await page.getByRole('button', { name: 'Menu' }).click()
+      const box = (await header.boundingBox())!
+      await header.click({ position: { x: box.width - 30, y: box.height / 2 } })
     }
     await expect(sidebar).toHaveClass(/expanded/, { timeout: 1000 })
     await expect(sidebar).not.toHaveAttribute('inert', { timeout: 1000 })
