@@ -9,7 +9,6 @@ import process from 'node:process'
 import { Inject, Injectable } from '@nestjs/common'
 import { cyan, green, red, yellow } from 'bash-color'
 import { satisfies } from 'semver'
-import { Tail } from 'tail'
 
 import { createAuthorizedRunner } from '../../core/auth/guards/ws-auth.js'
 import { ConfigService } from '../../core/config/config.service.js'
@@ -17,10 +16,59 @@ import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
 import { isLogCommandAllowed, isProtectedStoragePath, LOG_COMMAND_RULE, LOG_PATH_RULE } from '../config-editor/config-safety.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
+import { NativeLogTail } from './native-log-tail.js'
 
 // How long a trailing partial line is held back waiting for its terminator
 // before being flushed to the client anyway
 const PARTIAL_LINE_FLUSH_MS = 50
+
+// What a shared log command keeps to replay to a viewer who joins later: as
+// many lines as the commands show on start (`tail -n 500`, `journalctl -n
+// 500`), and no more than this many characters however long the lines are
+export const LOG_HISTORY_MAX_LINES = 500
+export const LOG_HISTORY_MAX_CHARS = 256 * 1024
+
+/**
+ * One log command's child process, shared by everyone viewing it
+ */
+interface CommandStream {
+  key: string
+  clients: Set<EventEmitter>
+  /** Recent output, replayed to a viewer who joins later */
+  history: string
+  /** Set once the last viewer left and the process is being killed */
+  ending: boolean
+  /** Set once the process exited, so a later kill cannot hit a reused pid */
+  exited: boolean
+  kill: () => void
+  resize?: (size: { rows: number, cols: number }) => void
+}
+
+/**
+ * Keep the last LOG_HISTORY_MAX_LINES lines (and at most
+ * LOG_HISTORY_MAX_CHARS characters) of a stream's output, cut at a line start
+ */
+export function trimLogHistory(history: string): string {
+  let trimmed = history
+  if (trimmed.length > LOG_HISTORY_MAX_CHARS) {
+    trimmed = trimmed.slice(-LOG_HISTORY_MAX_CHARS)
+    const firstNewline = trimmed.indexOf('\n')
+    if (firstNewline !== -1) {
+      trimmed = trimmed.slice(firstNewline + 1)
+    }
+  }
+
+  // Find the newline that ends the line before the last MAX_LINES lines
+  let index = trimmed.length
+  for (let count = 0; count <= LOG_HISTORY_MAX_LINES; count++) {
+    index = trimmed.lastIndexOf('\n', index - 1)
+    if (index === -1) {
+      return trimmed.startsWith('\r') ? trimmed.slice(1) : trimmed
+    }
+  }
+  const start = trimmed[index + 1] === '\r' ? index + 2 : index + 1
+  return trimmed.slice(start)
+}
 
 @Injectable()
 export class LogService {
@@ -33,7 +81,9 @@ export class LogService {
   // Set when the log path points at secrets in the storage directory
   private refusedPath: string | undefined
   private useNative = false
-  private nativeTail: Tail
+  private nativeTail: NativeLogTail | undefined
+  // The running log commands, keyed by command and environment
+  private commandStreams = new Map<string, CommandStream>()
   private activeClients = new WeakSet<EventEmitter>()
   private logBuffers = new WeakMap<EventEmitter, { buffer: string, flushTimeout: ReturnType<typeof setTimeout> }>()
 
@@ -122,16 +172,105 @@ export class LogService {
   }
 
   /**
-   * Connect pty
+   * Stream the log command's output to the client. Every viewer of the same
+   * command shares one child process: it is started by the first, its recent
+   * output is replayed to each later one, and it is killed when the last
+   * leaves. Each `tail -f` / `journalctl -f` used to be spawned per tab.
    * @param client
    * @param size
    */
   private tailLog(client: EventEmitter, size: TermSize) {
-    const command = [...this.command]
-    // Per-client closure flag. A shared instance-level `ending` would
-    // let one client's disconnect suppress the "tail exited" diagnostic
-    // for every other client's tail process.
-    let ending = false
+    const key = JSON.stringify([this.command, this.commandEnv])
+    let stream = this.commandStreams.get(key)
+    const joining = Boolean(stream)
+    if (!stream) {
+      stream = this.startCommandStream(key, [...this.command], size)
+    }
+    const shared = stream
+
+    // A late joiner first gets what the stream has shown so far - the
+    // command's own backlog (`-n 500`) plus what followed, capped the same way
+    if (joining && shared.history) {
+      this.emitMessage(client, shared.history)
+    }
+    shared.clients.add(client)
+
+    // The pty is shared, so the last resize wins - harmless for a tail, whose
+    // lines are not laid out to the terminal width
+    const onResize = (resize: { rows: number, cols: number }) => {
+      shared.resize?.(resize)
+    }
+    if (shared.resize) {
+      client.on('resize', onResize)
+    }
+
+    // Cleanup on disconnect. Only this client's listeners are removed:
+    // removeAllListeners would also strip the WS auth registry's and
+    // socket.io's own disconnect listeners
+    const onEnd = () => {
+      this.activeClients.delete(client)
+      this.discardMessageBuffer(client)
+
+      client.off('resize', onResize)
+      client.off('end', onEnd)
+      client.off('disconnect', onEnd)
+
+      shared.clients.delete(client)
+      if (shared.clients.size === 0) {
+        this.stopCommandStream(shared)
+      }
+    }
+
+    client.on('end', onEnd)
+    client.on('disconnect', onEnd)
+  }
+
+  /**
+   * Spawn the log command once, fanning its output out to the stream's clients
+   */
+  private startCommandStream(key: string, command: string[], size: TermSize): CommandStream {
+    const stream: CommandStream = {
+      key,
+      clients: new Set(),
+      history: '',
+      ending: false,
+      exited: false,
+      kill: () => {},
+    }
+    this.commandStreams.set(key, stream)
+
+    const onOutput = (data: string) => {
+      stream.history = trimLogHistory(stream.history + data)
+      for (const client of stream.clients) {
+        try {
+          this.emitMessage(client, data)
+        } catch (e) {
+          // The client socket probably closed
+        }
+      }
+    }
+
+    // Tell every viewer when the log tailing process exits early
+    const onExit = (code: number) => {
+      stream.exited = true
+      if (this.commandStreams.get(key) === stream) {
+        this.commandStreams.delete(key)
+      }
+      if (stream.ending) {
+        return
+      }
+      for (const client of stream.clients) {
+        try {
+          this.flushMessage(client)
+          client.emit('stdout', '\n\r')
+          client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code}.\n\r`))
+          client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
+          client.emit('stdout', cyan('See https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
+        } catch (e) {
+          // The client socket probably closed
+        }
+      }
+    }
 
     // On Windows, avoid PTY for PowerShell to prevent ConPTY attach failures
     if (platform() === 'win32') {
@@ -142,58 +281,19 @@ export class LogService {
         env: { ...process.env, ...this.commandEnv },
       })
 
-      // Send stdout data from the process to the client
-      proc.stdout?.on('data', (data) => {
-        try {
-          this.emitMessage(client, data.toString('utf8').split('\n').join('\n\r'))
-        } catch (e) {
-          // The client socket probably closed
-        }
-      })
+      proc.stdout?.on('data', data => onOutput(data.toString('utf8').split('\n').join('\n\r')))
+      proc.stderr?.on('data', data => onOutput(data.toString('utf8').split('\n').join('\n\r')))
+      proc.on('exit', code => onExit(code))
 
-      // Send stderr data from the process to the client
-      proc.stderr?.on('data', (data) => {
-        try {
-          this.emitMessage(client, data.toString('utf8').split('\n').join('\n\r'))
-        } catch (e) {
-          // The client socket probably closed
-        }
-      })
-
-      // Send an error message to the client if the log tailing process exits early
-      proc.on('exit', (code) => {
-        try {
-          if (!ending) {
-            this.flushMessage(client)
-            client.emit('stdout', '\n\r')
-            client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code}.\n\r`))
-            client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
-            client.emit('stdout', cyan('See https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
-          }
-        } catch (e) {
-          // The client socket probably closed
-        }
-      })
-
-      // Cleanup on disconnect
-      const onEnd = () => {
-        ending = true
-        this.activeClients.delete(client)
-        this.discardMessageBuffer(client)
-
-        client.off('end', onEnd)
-        client.off('disconnect', onEnd)
-
+      stream.kill = () => {
         try {
           proc.kill()
         } catch (e) { }
       }
-
-      client.on('end', onEnd)
-      client.on('disconnect', onEnd)
     } else {
       // PTY mode for non-Windows platforms
-      const term = this.nodePtyService.spawn(command.shift(), command, {
+      const sudo = Boolean(this.configService.ui.sudo)
+      const term = this.nodePtyService.spawn(command[0], command.slice(1), {
         name: 'xterm-color',
         cols: size.cols,
         rows: size.rows,
@@ -201,55 +301,35 @@ export class LogService {
         env: { ...process.env, ...this.commandEnv },
       })
 
-      // Send stdout data from the process to the client
-      term.onData((data) => {
-        this.emitMessage(client, data)
-      })
+      term.onData(data => onOutput(data))
+      term.onExit(code => onExit(code.exitCode))
 
-      // Send an error message to the client if the log tailing process exits early
-      term.onExit((code) => {
-        try {
-          if (!ending) {
-            this.flushMessage(client)
-            client.emit('stdout', '\n\r')
-            client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code.exitCode}.\n\r`))
-            client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
-            client.emit('stdout', cyan('See https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
-          }
-        } catch (e) {
-          // The client socket probably closed
-        }
-      })
-
-      // Handle resize events
-      const onResize = (resize: { rows: number, cols: number }) => {
+      stream.resize = (resize) => {
         try {
           term.resize(resize.cols, resize.rows)
         } catch (e) { }
       }
-      client.on('resize', onResize)
-
-      // Cleanup on disconnect
-      const onEnd = () => {
-        ending = true
-        this.activeClients.delete(client)
-        this.discardMessageBuffer(client)
-
-        client.off('resize', onResize)
-        client.off('end', onEnd)
-        client.off('disconnect', onEnd)
-
+      stream.kill = () => {
         try {
           term.kill()
         } catch (e) { }
         // Really make sure the log tail command is killed when using sudo mode
-        if (this.configService.ui.sudo && term && term.pid) {
+        if (sudo && term && term.pid) {
           exec(`sudo -n kill -9 ${term.pid}`)
         }
       }
+    }
 
-      client.on('end', onEnd)
-      client.on('disconnect', onEnd)
+    return stream
+  }
+
+  private stopCommandStream(stream: CommandStream) {
+    stream.ending = true
+    if (this.commandStreams.get(stream.key) === stream) {
+      this.commandStreams.delete(stream.key)
+    }
+    if (!stream.exited) {
+      stream.kill()
     }
   }
 
@@ -303,30 +383,27 @@ export class LogService {
 
     let ended = false
     let logStream: ReturnType<typeof createReadStream> | undefined
-    // Assigned once this client is attached to the shared Tail
+    // Assigned once this client is attached to the shared tail
+    let tail: NativeLogTail | undefined
     let onLine: ((line: string) => void) | undefined
     let onError: ((err: Error) => void) | undefined
 
     // Cleanup on disconnect. Registered before the first `await`: a client
     // that disconnects while the initial read is in flight would otherwise
-    // never run it, and stay attached to the shared Tail below forever.
+    // never run it, and stay attached to the shared tail below forever.
     const onEnd = () => {
       ended = true
       this.activeClients.delete(client)
       this.discardMessageBuffer(client)
       logStream?.destroy()
 
-      if (onLine) {
-        // @ts-expect-error - TS2339: Property removeListener does not exist on type Tail
-        this.nativeTail.removeListener('line', onLine)
-
-        // @ts-expect-error - TS2339: Property removeListener does not exist on type Tail
-        this.nativeTail.removeListener('error', onError)
+      if (tail && onLine) {
+        tail.removeListener('line', onLine)
+        tail.removeListener('error', onError)
 
         // Stop watching the file if there are no other watchers
-        // @ts-expect-error - TS2339: Property listenerCount does not exist on type Tail
-        if (this.nativeTail.listenerCount('line') === 0) {
-          this.nativeTail.unwatch()
+        if (tail.listenerCount('line') === 0) {
+          tail.stop()
         }
       }
 
@@ -337,14 +414,20 @@ export class LogService {
     client.on('end', onEnd)
     client.on('disconnect', onEnd)
 
-    // Read the first 50000 bytes of the log and emit to the client
+    // Read the last 50000 bytes of the log and emit to the client
+    let logSize: number
     try {
       const logStats = await stat(this.configService.ui.log.path)
       if (ended) {
         return
       }
+      logSize = logStats.size
       const logStartPosition = logStats.size <= 50000 ? 0 : logStats.size - 50000
-      const stream = createReadStream(this.configService.ui.log.path, { start: logStartPosition })
+      // Up to the size just read, where the tail below takes over - so a line
+      // written meanwhile is not shown twice
+      const stream = createReadStream(this.configService.ui.log.path, logStats.size > 0
+        ? { start: logStartPosition, end: logStats.size - 1 }
+        : { start: 0 })
       logStream = stream
 
       stream.on('data', (buffer) => {
@@ -373,20 +456,17 @@ export class LogService {
       return
     }
 
-    if (!this.nativeTail) {
-      this.nativeTail = new Tail(this.configService.ui.log.path, {
-        fromBeginning: false,
-        useWatchFile: true,
-        fsWatchOptions: {
-          interval: 200,
-        },
-      })
-    } else {
-      // @ts-expect-error - TS2339: Property listenerCount does not exist on type Tail
-      if (this.nativeTail.listenerCount('line') === 0) {
-        this.nativeTail.watch()
-      }
+    // One tail of the file shared by every viewer. A new one is made when the
+    // configured path changed; viewers still on the old one keep it until
+    // they leave (each holds its own reference).
+    const path = this.configService.ui.log.path
+    if (!this.nativeTail || (this.nativeTail.path !== path && !this.nativeTail.isWatching)) {
+      this.nativeTail = new NativeLogTail(path)
     }
+    tail = this.nativeTail
+    // Follow on from where the initial read above stopped (a no-op while
+    // another viewer already has it running)
+    tail.start(logSize)
 
     // Watch for lines and emit to client
     onLine = (line: string) => {
@@ -397,8 +477,8 @@ export class LogService {
       client.emit('stdout', `${err.message}\n\r`)
     }
 
-    this.nativeTail.on('line', onLine)
-    this.nativeTail.on('error', onError)
+    tail.on('line', onLine)
+    tail.on('error', onError)
   }
 
   /**
