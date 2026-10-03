@@ -49,6 +49,10 @@ html body.glass-mode {
   --glass-bg-base: #eef0f6;
   --glass-surface: rgba(255, 255, 255, 0.58);
   --glass-surface-strong: rgba(255, 255, 255, 0.82);
+  // Menus and tooltips float over text (a plugin card's ⋮ menu opens across the
+  // next card), so they stay readable without the blur, which is often not
+  // applied (iOS Safari, or a translucent or filtered ancestor).
+  --glass-surface-menu: rgba(255, 255, 255, 0.96);
   --glass-surface-hover: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.85);
   --glass-divider: rgba(20, 20, 40, 0.08);
@@ -120,6 +124,7 @@ html body.glass-mode {
     --glass-bg-base: #0c0b12;
     --glass-surface: rgba(255, 255, 255, 0.045);
     --glass-surface-strong: rgba(32, 30, 44, 0.86);
+    --glass-surface-menu: rgba(30, 28, 40, 0.97);
     --glass-surface-hover: rgba(255, 255, 255, 0.09);
     --glass-border: rgba(255, 255, 255, 0.12);
     --glass-divider: rgba(255, 255, 255, 0.08);
@@ -717,7 +722,7 @@ html body.glass-mode {
   .dropdown-menu {
     border-radius: var(--glass-radius-md);
     padding: 6px;
-    background: var(--glass-surface-strong) !important;
+    background: var(--glass-surface-menu) !important;
     border: 1px solid var(--glass-border) !important;
     box-shadow: var(--glass-shadow-lift) !important;
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
@@ -737,7 +742,7 @@ html body.glass-mode {
   .tooltip-inner {
     border-radius: var(--glass-radius-sm);
     padding: 8px 12px;
-    background: var(--glass-surface-strong);
+    background: var(--glass-surface-menu);
     color: var(--glass-text);
     border: 1px solid var(--glass-border);
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -869,6 +874,7 @@ html body.glass-mode {
   html body.glass-mode {
     --glass-surface: #fbfbfd;
     --glass-surface-strong: #ffffff;
+    --glass-surface-menu: #ffffff;
     --glass-surface-hover: #eeeef4;
     --glass-input: #ffffff;
     --glass-tint-base: var(--glass-surface);
@@ -879,6 +885,7 @@ html body.glass-mode {
     &.dark-mode {
       --glass-surface: #1c1b24;
       --glass-surface-strong: #201e2c;
+      --glass-surface-menu: #201e2c;
       --glass-surface-hover: #2a2836;
       --glass-input: #15141c;
     }
