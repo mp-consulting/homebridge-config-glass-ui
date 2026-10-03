@@ -123,8 +123,11 @@ describe('accessories page performance', { timeout: 30_000 }, () => {
     tileRenders.clear()
     const start = performance.now()
     for (let update = 0; update < UPDATE_COUNT; update += 1) {
+      // Each update touches a different service and switches it on: a payload
+      // that repeats a service's current values keeps its object, so it would
+      // (rightly) render nothing and not count
       act(() => {
-        io.socket.fire('accessories-data', [rawSwitch((update * 7) % SERVICE_COUNT, update % 2 === 0)])
+        io.socket.fire('accessories-data', [rawSwitch((update * 7) % SERVICE_COUNT, true)])
       })
     }
     const elapsed = performance.now() - start
@@ -148,7 +151,7 @@ describe('accessories page performance', { timeout: 30_000 }, () => {
     for (let update = 0; update < UPDATE_COUNT; update += 1) {
       const before = service.rooms()
       const start = performance.now()
-      serviceIo.socket.fire('accessories-data', [rawSwitch((update * 7) % SERVICE_COUNT, update % 2 === 0)])
+      serviceIo.socket.fire('accessories-data', [rawSwitch((update * 7) % SERVICE_COUNT, true)])
       elapsed += performance.now() - start
       kept += service.rooms().filter((room, index) => room === before[index]).length
     }

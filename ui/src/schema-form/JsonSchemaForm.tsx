@@ -8,7 +8,7 @@
  * every (debounced) data change. The widgets read the engine's mutable state
  * during render, as the Angular templates did.
  */
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { startTransition, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import { installFixArrays } from './engine/fix-arrays'
 import { FrameworkLibrary, JsonSchemaFormController } from './engine/json-schema-form.controller'
@@ -49,6 +49,15 @@ export function JsonSchemaForm(props: JsonSchemaFormProps) {
   const unmountedRef = useRef(false)
   // Coalesce refresh requests into one render, and never update state while
   // React is rendering (widgets call into the engine during render).
+  //
+  // The re-render is a transition: every keystroke asks for one (the input
+  // event, the status change it causes, and the debounced data change after
+  // it), and on a big form a whole-form render takes long enough to make
+  // typing lag. As a transition it is interruptible - a keystroke arriving
+  // mid-render is handled first and the render starts over with the newer
+  // state, so a burst of typing renders once when it pauses. The DOM inputs
+  // are uncontrolled (written by the form-control binding), so what is typed
+  // never waits on this render.
   const refresh = useCallback(() => {
     if (refreshQueuedRef.current) {
       return
@@ -57,7 +66,9 @@ export function JsonSchemaForm(props: JsonSchemaFormProps) {
     queueMicrotask(() => {
       refreshQueuedRef.current = false
       if (!unmountedRef.current) {
-        setTick(t => t + 1)
+        // Runs in a microtask, not during the effect that may have queued it
+        // eslint-disable-next-line react/set-state-in-effect
+        startTransition(() => setTick(t => t + 1))
       }
     })
   }, [])

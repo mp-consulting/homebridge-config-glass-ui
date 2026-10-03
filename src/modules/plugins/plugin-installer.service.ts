@@ -178,11 +178,8 @@ export class PluginInstallerService {
 
     await this.applyAllowScripts(installOptions, client, pluginAction)
 
-    // Clean up the npm cache before any installation
-    await this.cleanNpmCache()
-
-    // Run the npm command
-    await this.runNpmCommand(
+    // Run the npm command (cleaning the npm cache and retrying once if it failed on a corrupt cache)
+    await this.runNpmCommandWithCacheRetry(
       [...this.npm, action, ...installOptions, npmPluginLabel],
       installPath,
       client,
@@ -292,11 +289,8 @@ export class PluginInstallerService {
       await this.applyAllowScripts(installOptions, client, pluginAction)
     }
 
-    // Clean up the npm cache before any installation or uninstallation
-    await this.cleanNpmCache()
-
-    // Run the npm command
-    await this.runNpmCommand(
+    // Run the npm command (cleaning the npm cache and retrying once if it failed on a corrupt cache)
+    await this.runNpmCommandWithCacheRetry(
       [...this.npm, action, ...installOptions, npmPluginLabel],
       installPath,
       client,
@@ -645,6 +639,9 @@ export class PluginInstallerService {
     client.emit('stdout', cyan(`DIR: ${cwd}\n\r`))
     client.emit('stdout', cyan(`CMD: ${command.join(' ')}\n\r\n\r`))
 
+    // The tail of npm's output, kept so a failure can be classified
+    let output = ''
+
     this.installed.pluginManagementStarted()
     try {
       await new Promise((res, rej) => {
@@ -659,6 +656,7 @@ export class PluginInstallerService {
         // Send stdout data from the process to all clients
         term.onData((data) => {
           client.emit('stdout', data)
+          output = (output + data).slice(-PluginInstallerService.NPM_OUTPUT_TAIL)
         })
 
         // Send an error message to the client if the command does not exit with code 0
@@ -669,7 +667,7 @@ export class PluginInstallerService {
             res(null)
           } else {
             clearTimeout(timeoutTimer)
-            rej(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Troubleshooting for help.`))
+            rej(Object.assign(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Troubleshooting for help.`), { npmOutput: output }))
           }
         })
 
@@ -686,6 +684,36 @@ export class PluginInstallerService {
       // installed") for up to a minute after success.
       this.installed.pluginManagementFinished()
     }
+  }
+
+  /**
+   * Run an npm command, and if it failed because the npm cache is corrupt,
+   * clean the cache and run it once more.
+   *
+   * The cache used to be cleaned before every install, update and uninstall,
+   * which throws away every cached tarball (so npm re-downloads all of them)
+   * and costs a slow `npm cache clean` on a Pi for the rare case it helps.
+   */
+  private async runNpmCommandWithCacheRetry(command: Array<string>, cwd: string, client: EventEmitter, cols?: number, rows?: number) {
+    try {
+      await this.runNpmCommand(command, cwd, client, cols, rows)
+    } catch (e) {
+      if (!PluginInstallerService.isNpmCacheError(e?.npmOutput)) {
+        throw e
+      }
+      client.emit('stdout', yellow('\r\nThe npm cache looks corrupt. Cleaning it and trying again.\r\n\r\n'))
+      await this.cleanNpmCache()
+      await this.runNpmCommand(command, cwd, client, cols, rows)
+    }
+  }
+
+  /** How much of npm's output (characters) is kept to classify a failure. */
+  private static readonly NPM_OUTPUT_TAIL = 16 * 1024
+
+  /** Whether npm's output shows a failure a clean cache can fix (integrity mismatch, missing or damaged cache entries). */
+  public static isNpmCacheError(output: unknown): boolean {
+    return typeof output === 'string'
+      && /\b(?:EINTEGRITY|ENOTCACHED|ECOMPROMISED)\b|integrity checksum failed|_cacache|cache (?:is )?corrupt/i.test(output)
   }
 
   /**

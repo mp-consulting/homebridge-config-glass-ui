@@ -39,6 +39,9 @@ export interface ChartWidget {
 function baseOptions(color?: string): ChartOptions<'line'> {
   return {
     responsive: true,
+    // A new point arrives every few seconds on a dashboard left open for
+    // hours: animating each redraw costs frames for nothing
+    animation: false,
     elements: {
       point: {
         radius: 0,
@@ -74,7 +77,7 @@ function baseOptions(color?: string): ChartOptions<'line'> {
 /**
  * What `BaseChartWidgetComponent` gave the cpu, memory and network widgets:
  * the chart config, a fixed-length series, and polling on the configured
- * interval (only while the socket is up), restarted from scratch when the
+ * interval (only while the socket is up and the tab is visible), restarted from scratch when the
  * widget's settings change.
  * @param props - the widget's props
  * @param fetchData - asks the server for a reading; the latest one is always called. It gets the
@@ -156,12 +159,24 @@ export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, 
     if (!io) {
       return undefined
     }
+    // No polling while the tab is in the background: nobody sees the chart,
+    // and the server would still sample on every request. One reading is
+    // fetched as soon as the tab is visible again.
     const timer = setInterval(() => {
-      if (io.socket.connected) {
+      if (io.socket.connected && !document.hidden) {
         fetchNow()
       }
     }, refreshInterval * 1000)
-    return () => clearInterval(timer)
+    const onVisibilityChange = () => {
+      if (!document.hidden && io.socket.connected) {
+        fetchNow()
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
   }, [io, fetchNow, refreshInterval, generation])
 
   // Listen for configuration changes

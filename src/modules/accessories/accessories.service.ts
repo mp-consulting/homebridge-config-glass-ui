@@ -31,8 +31,13 @@ class MatterIpcTimeoutError extends Error {}
 
 @Injectable()
 export class AccessoriesService {
+  /** How long a burst of instance discoveries is coalesced before the client is told to reload. */
+  static readonly INSTANCE_RELOAD_DEBOUNCE_MS = 1000
+
   public hapClient: HapClient
-  public accessoriesCache = new NodeCache({ stdTTL: 0 })
+  // Read-only: the cached list is only ever emitted, never mutated, so the
+  // default clone on every get/set is pure overhead
+  public accessoriesCache = new NodeCache({ stdTTL: 0, useClones: false })
 
   // Matter monitoring state
   private matterMonitoringActive = false
@@ -152,13 +157,28 @@ export class AccessoriesService {
     // only tears down what was actually wired up.
     let monitor: Awaited<ReturnType<HapClient['monitorCharacteristics']>> | null = null
     let secondaryLoadTimeout: ReturnType<typeof setTimeout> | null = null
+    let instanceReloadTimeout: ReturnType<typeof setTimeout> | null = null
+    // What the last full load sent this client, so the blind secondary load
+    // can skip re-sending a list that did not change
+    let lastSent: { hap: string, matter: string } | null = null
 
     const updateHandler = (data: ServiceType | MatterService) => {
       client.emit('accessories-data', data)
     }
 
-    const instanceUpdateHandler = async () => {
-      client.emit('accessories-reload-required', services)
+    // Discovery announces instances one at a time (a dozen child bridges come
+    // up within a second or two of each other), and every announcement makes
+    // the client re-fetch everything. Coalesce a burst into one reload.
+    const instanceUpdateHandler = () => {
+      if (instanceReloadTimeout) {
+        clearTimeout(instanceReloadTimeout)
+      }
+      instanceReloadTimeout = setTimeout(() => {
+        instanceReloadTimeout = null
+        if (!disconnected) {
+          client.emit('accessories-reload-required', services)
+        }
+      }, AccessoriesService.INSTANCE_RELOAD_DEBOUNCE_MS)
     }
 
     // Clean up on disconnect. Registered before the first `await` below: a
@@ -170,6 +190,10 @@ export class AccessoriesService {
       if (secondaryLoadTimeout) {
         clearTimeout(secondaryLoadTimeout)
         secondaryLoadTimeout = null
+      }
+      if (instanceReloadTimeout) {
+        clearTimeout(instanceReloadTimeout)
+        instanceReloadTimeout = null
       }
       this.clientSessions.delete(client)
       client.removeAllListeners('end')
@@ -199,7 +223,9 @@ export class AccessoriesService {
     client.on('disconnect', onEnd)
     client.on('end', onEnd)
 
-    const loadAllAccessories = async (refresh: boolean) => {
+    // `skipUnchanged`: leave out the data the client already has from the
+    // previous load (the ready events are still sent - they are idempotent)
+    const loadAllAccessories = async (refresh: boolean, skipUnchanged = false) => {
       if (disconnected) {
         return
       }
@@ -219,7 +245,10 @@ export class AccessoriesService {
 
       // Emit HAP ready immediately so HAP accessories can be controlled
       client.emit('hap-accessories-ready-for-control')
-      client.emit('accessories-data', hapServices)
+      const hapSignature = JSON.stringify(hapServices)
+      if (!skipUnchanged || hapSignature !== lastSent?.hap) {
+        client.emit('accessories-data', hapServices)
+      }
 
       // Load Matter accessories (maybe slower due to IPC)
       const matterServices = await this.loadMatterAccessories()
@@ -229,9 +258,11 @@ export class AccessoriesService {
 
       // Emit Matter ready
       client.emit('matter-accessories-ready-for-control')
-      if (matterServices.length > 0) {
+      const matterSignature = JSON.stringify(matterServices)
+      if (matterServices.length > 0 && (!skipUnchanged || matterSignature !== lastSent?.matter)) {
         client.emit('accessories-data', matterServices)
       }
+      lastSent = { hap: hapSignature, matter: matterSignature }
 
       // Merge both for caching and legacy compatibility
       services = [...hapServices, ...matterServices]
@@ -329,10 +360,13 @@ export class AccessoriesService {
     monitor.on('service-update', updateHandler)
     this.hapClient.on('instance-discovered', instanceUpdateHandler)
 
-    // Load a second time in case anything was missed
+    // Load a second time in case anything was missed: an instance discovered
+    // while the initial load ran (before the instance-discovered listener
+    // above was attached) never triggers a reload of its own. Most of the time
+    // nothing changed, so the data is only sent when it differs.
     secondaryLoadTimeout = setTimeout(async () => {
       secondaryLoadTimeout = null
-      await loadAllAccessories(true)
+      await loadAllAccessories(true, true)
     }, 3000)
 
     // Send a refresh instances request

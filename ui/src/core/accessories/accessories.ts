@@ -55,6 +55,60 @@ export interface AccessoriesServiceDeps {
   getUser?: () => { username?: string, admin?: boolean } | undefined
 }
 
+/**
+ * Fields the client writes onto a service after it arrives (control helpers,
+ * the saved layout's custom attributes, the links to sibling services). They
+ * are not part of the payload, so they are left out of the comparison.
+ */
+const CLIENT_SERVICE_FIELDS = new Set(['getCharacteristic', 'getCluster', 'linkedServices', 'customName', 'customType', 'hidden', 'onDashboard'])
+
+/** Structural equality of payload data; function-valued fields (helpers such as `setValue`) are ignored. */
+function sameData(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) {
+    return true
+  }
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+    return false
+  }
+  if (Array.isArray(a) !== Array.isArray(b)) {
+    return false
+  }
+  if (Array.isArray(a)) {
+    const other = b as unknown[]
+    return a.length === other.length && a.every((value, index) => sameData(value, other[index]))
+  }
+  const left = a as Record<string, unknown>
+  const right = b as Record<string, unknown>
+  const keys = (record: Record<string, unknown>) => Object.keys(record).filter(key => typeof record[key] !== 'function')
+  const leftKeys = keys(left)
+  const rightKeys = keys(right)
+  return leftKeys.length === rightKeys.length && leftKeys.every(key => Object.hasOwn(right, key) && sameData(left[key], right[key]))
+}
+
+/**
+ * Whether an incoming service carries the same data as the object already
+ * held for it. The client-written fields are ignored on the existing object;
+ * `hidden` (also a HAP field) is compared when the payload sends it.
+ */
+function sameServiceData(existing: ServiceTypeX, incoming: ServiceTypeX): boolean {
+  const current = existing as unknown as Record<string, unknown>
+  const next = incoming as unknown as Record<string, unknown>
+  for (const key of Object.keys(next)) {
+    if (typeof next[key] === 'function') {
+      continue
+    }
+    if (!sameData(current[key], next[key])) {
+      return false
+    }
+  }
+  for (const key of Object.keys(current)) {
+    if (!Object.hasOwn(next, key) && !CLIENT_SERVICE_FIELDS.has(key) && typeof current[key] !== 'function') {
+      return false
+    }
+  }
+  return true
+}
+
 export class AccessoriesService {
   private deps: Required<AccessoriesServiceDeps>
   private accessoryCache: any[] = []
@@ -675,24 +729,31 @@ export class AccessoriesService {
    * Returns the uniqueIds of the services the payload replaced or added.
    */
   private parseServices(services: ServiceTypeX[]): Set<string | undefined> {
-    const changed = new Set<string | undefined>(services.map(service => service.uniqueId))
-
     if (!this.accessories.services.length) {
       this.accessories.services = services
       this.reindexServices()
-      return changed
+      return new Set<string | undefined>(services.map(service => service.uniqueId))
     }
+
+    const changed = new Set<string | undefined>()
 
     // Replace existing objects instead of mutating them
     services.forEach((service) => {
       const existingIndex = this.indexOfService(service.uniqueId)
 
       if (existingIndex !== -1) {
+        // A full payload repeats every service: one whose data did not change
+        // keeps its object, so the memoised tiles showing it do not re-render
+        if (sameServiceData(this.accessories.services[existingIndex], service)) {
+          return
+        }
+        changed.add(service.uniqueId)
         // Replace the object instead of mutating it
         this.accessories.services[existingIndex] = service
         // Clear from customAttributesApplied Set so attributes get re-applied to the new object
         this.customAttributesApplied.delete(service.uniqueId!)
       } else {
+        changed.add(service.uniqueId)
         this.accessories.services.push(service)
         if (this.indexedServices === this.accessories.services && this.serviceIndex.size === this.accessories.services.length - 1) {
           this.serviceIndex.set(service.uniqueId, this.accessories.services.length - 1)

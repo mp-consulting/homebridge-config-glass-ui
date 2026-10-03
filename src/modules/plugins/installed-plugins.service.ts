@@ -53,6 +53,9 @@ interface InstalledModule { name: string, path: string, installPath: string }
  */
 @Injectable()
 export class InstalledPluginsService {
+  /** How many registry requests the installed-plugins scan runs at once. */
+  static readonly REGISTRY_CONCURRENCY = 12
+
   private npmGlobalRootPromise: Promise<string | null> | null = null
   private _paths: Array<string> | undefined
   private pathsPromise: Promise<Array<string>> | null = null
@@ -65,7 +68,9 @@ export class InstalledPluginsService {
   private npmPackage: HomebridgePlugin
 
   // Cache for installed plugins to avoid redundant file system operations
-  private installedPluginsCache = new NodeCache({ stdTTL: 60 })
+  // Cached by reference: callers only read the list (or copy an entry before
+  // changing it), and cloning every plugin's metadata on each read is costly
+  private installedPluginsCache = new NodeCache({ stdTTL: 60, useClones: false })
 
   // The in-flight or settled installed-modules scan. getHomebridgePackage,
   // getHomebridgeUiPackage and getInstalledPlugins each need it, so a single
@@ -162,41 +167,42 @@ export class InstalledPluginsService {
       && pathExistsSync(join(module.installPath, 'package.json')),
     )
 
-    // Limit lookup concurrency to the number of cpu cores
-    const limit = pLimit(cpus().length)
+    // The package.json reads are local disk work, so they are limited to the
+    // number of cpu cores. The parse is mostly a registry request per plugin,
+    // which waits on the network rather than the cpu, so more run at once.
+    const fileLimit = pLimit(Math.max(2, cpus().length))
+    const networkLimit = pLimit(InstalledPluginsService.REGISTRY_CONCURRENCY)
 
     await Promise.all(homebridgePlugins.map(async (pkg) => {
-      return limit(async () => {
-        try {
-          const pkgJson: IPackageJson = await readJson(join(pkg.installPath, 'package.json'))
-          // Check each plugin has the 'homebridge-plugin' keyword
-          if (pkgJson.keywords && pkgJson.keywords.includes('homebridge-plugin')) {
-            // Parse the package.json for each plugin
-            const plugin = await this.registry.parsePackageJson(pkgJson, pkg.path)
+      try {
+        const pkgJson: IPackageJson = await fileLimit(() => readJson(join(pkg.installPath, 'package.json')))
+        // Check each plugin has the 'homebridge-plugin' keyword
+        if (pkgJson.keywords && pkgJson.keywords.includes('homebridge-plugin')) {
+          // Parse the package.json for each plugin
+          const plugin = await networkLimit(() => this.registry.parsePackageJson(pkgJson, pkg.path))
 
-            // Check if the plugin has been disabled
-            plugin.disabled = disabledPlugins.includes(plugin.name)
+          // Check if the plugin has been disabled
+          plugin.disabled = disabledPlugins.includes(plugin.name)
 
-            // Filter out duplicate plugins and give preference to non-global plugins.
-            // The UI is deduplicated here too because it carries the 'homebridge-plugin'
-            // keyword, but 'prefer non-global' is wrong for it: it runs from
-            // UIX_BASE_PATH, which is normally the global install. Letting a shadow copy
-            // under customPluginPath win made manageUi() update that copy instead of the
-            // one running, so the same update was offered again after every restart.
-            const existingPlugin = plugins.find(x => plugin.name === x.name)
-            const isUi = plugin.name === this.configService.name
-            const isRunningUi = isUi && resolve(plugin.installPath) === getUiNodeModulesPath()
-            if (!existingPlugin) {
-              plugins.push(plugin)
-            } else if (isUi ? isRunningUi : (!plugin.globalInstall && existingPlugin.globalInstall === true)) {
-              const index = plugins.indexOf(existingPlugin)
-              plugins[index] = plugin
-            }
+          // Filter out duplicate plugins and give preference to non-global plugins.
+          // The UI is deduplicated here too because it carries the 'homebridge-plugin'
+          // keyword, but 'prefer non-global' is wrong for it: it runs from
+          // UIX_BASE_PATH, which is normally the global install. Letting a shadow copy
+          // under customPluginPath win made manageUi() update that copy instead of the
+          // one running, so the same update was offered again after every restart.
+          const existingPlugin = plugins.find(x => plugin.name === x.name)
+          const isUi = plugin.name === this.configService.name
+          const isRunningUi = isUi && resolve(plugin.installPath) === getUiNodeModulesPath()
+          if (!existingPlugin) {
+            plugins.push(plugin)
+          } else if (isUi ? isRunningUi : (!plugin.globalInstall && existingPlugin.globalInstall === true)) {
+            const index = plugins.indexOf(existingPlugin)
+            plugins[index] = plugin
           }
-        } catch (e) {
-          this.logger.error(`Failed to parse plugin ${pkg.name} as ${e.message}.`)
         }
-      })
+      } catch (e) {
+        this.logger.error(`Failed to parse plugin ${pkg.name} as ${e.message}.`)
+      }
     }))
 
     this.installedPlugins = plugins.map(plugin => this.registry.fixDisplayName(plugin))

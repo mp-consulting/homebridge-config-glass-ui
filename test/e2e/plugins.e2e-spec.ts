@@ -1430,6 +1430,105 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  describe('npm cache clean as a retry path', () => {
+    let cleanSpy: any
+    let npmSpy: any
+    const action = { name: 'homebridge-mock-plugin', version: '1.0.0' }
+
+    beforeEach(() => {
+      ;(installed as any).installedPlugins = [
+        { name: '@mp-consulting/homebridge-config-glass-ui', installPath: pluginsPath, globalInstall: false },
+      ]
+      vi.spyOn(installed as any, 'getInstalledPlugins').mockResolvedValue([])
+      vi.spyOn(installer as any, 'applyAllowScripts').mockResolvedValue(undefined)
+      vi.spyOn(installer, 'isPluginBundleAvailable').mockResolvedValue(false)
+      cleanSpy = vi.spyOn(installer as any, 'cleanNpmCache').mockResolvedValue(undefined)
+      npmSpy = vi.spyOn(installer as any, 'runNpmCommand')
+    })
+
+    it('does not clean the cache before an install or uninstall that succeeds', async () => {
+      npmSpy.mockResolvedValue(undefined)
+
+      await (installer as any).doManagePlugin('install', { ...action }, new EventEmitter())
+      await (installer as any).doManagePlugin('uninstall', { ...action }, new EventEmitter())
+
+      expect(npmSpy).toHaveBeenCalledTimes(2)
+      expect(cleanSpy).not.toHaveBeenCalled()
+    })
+
+    it('cleans the cache and retries once when npm failed on a corrupt cache', async () => {
+      npmSpy
+        .mockRejectedValueOnce(Object.assign(new Error('Operation failed with code 1.'), { npmOutput: 'npm error code EINTEGRITY\r\nnpm error sha512-abc integrity checksum failed' }))
+        .mockResolvedValueOnce(undefined)
+      const client = new EventEmitter()
+      const stdout = vi.fn()
+      client.on('stdout', stdout)
+
+      await (installer as any).doManagePlugin('install', { ...action }, client)
+
+      expect(cleanSpy).toHaveBeenCalledTimes(1)
+      expect(npmSpy).toHaveBeenCalledTimes(2)
+      expect(npmSpy.mock.calls[1][0]).toEqual(npmSpy.mock.calls[0][0])
+      expect(cleanSpy.mock.invocationCallOrder[0]).toBeLessThan(npmSpy.mock.invocationCallOrder[1])
+      expect(stdout).toHaveBeenCalledWith(expect.stringContaining('npm cache looks corrupt'))
+    })
+
+    it('retries only once', async () => {
+      const cacheFailure = () => Object.assign(new Error('Operation failed with code 1.'), { npmOutput: 'npm error code ENOTCACHED' })
+      npmSpy.mockRejectedValueOnce(cacheFailure()).mockRejectedValueOnce(cacheFailure())
+
+      await expect((installer as any).doManagePlugin('install', { ...action }, new EventEmitter())).rejects.toThrow('Operation failed')
+
+      expect(npmSpy).toHaveBeenCalledTimes(2)
+      expect(cleanSpy).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not retry a failure that has nothing to do with the cache', async () => {
+      npmSpy.mockRejectedValueOnce(Object.assign(new Error('Operation failed with code 1.'), { npmOutput: 'npm error code E404\r\nnpm error 404 Not Found' }))
+
+      await expect((installer as any).doManagePlugin('install', { ...action }, new EventEmitter())).rejects.toThrow('Operation failed')
+
+      expect(npmSpy).toHaveBeenCalledTimes(1)
+      expect(cleanSpy).not.toHaveBeenCalled()
+    })
+
+    it('keeps the tail of the npm output on a failed command', async () => {
+      npmSpy.mockRestore()
+      ;(installed as any).npmGlobalRootPromise = Promise.resolve(pluginsPath)
+      vi.spyOn((installer as any).nodePtyService, 'spawn').mockImplementation(() => {
+        let onData: (data: string) => void
+        return {
+          onData: (cb: (data: string) => void) => {
+            onData = cb
+          },
+          onExit: (cb: (e: { exitCode: number }) => void) => setImmediate(() => {
+            onData('x'.repeat(20_000))
+            onData('npm error code EINTEGRITY')
+            cb({ exitCode: 1 })
+          }),
+          kill: vi.fn(),
+        }
+      })
+
+      const error = await (installer as any).runNpmCommand(['npm', 'install', 'homebridge-mock-plugin@1.0.0'], pluginsPath, new EventEmitter()).catch((e: any) => e)
+
+      expect(error.npmOutput.length).toBeLessThanOrEqual(16 * 1024)
+      expect(PluginInstallerService.isNpmCacheError(error.npmOutput)).toBe(true)
+      ;(installed as any).npmGlobalRootPromise = null
+    })
+
+    it.each([
+      ['npm ERR! code EINTEGRITY', true],
+      ['npm error code ECOMPROMISED', true],
+      ['ENOENT: no such file or directory, open \'/root/.npm/_cacache/index-v5/ab/cd\'', true],
+      ['npm error code E404', false],
+      ['npm error code EACCES /usr/lib/node_modules', false],
+      [undefined, false],
+    ])('classifies %s as a cache error: %s', (output, expected) => {
+      expect(PluginInstallerService.isNpmCacheError(output)).toBe(expected)
+    })
+  })
+
   describe('supportsMatter', () => {
     const call = (keywords?: string[]) => (registry as any).supportsMatter(keywords) as boolean
 
@@ -2541,6 +2640,97 @@ describe('PluginController (e2e)', () => {
     // pending, so nothing can fire once the spy is gone.
     await app.close()
     exitSpy.mockRestore()
+  })
+
+  describe('@homebridge-plugins/* lookups during a search', () => {
+    let singleSpy: any
+    const scoped = (suffix: string) => `@homebridge-plugins/homebridge-${suffix}`
+
+    beforeEach(() => {
+      ;(installed as any).installedPlugins = []
+      ;(registry as any).scopedPluginNames = [
+        ...Array.from({ length: 15 }, (_, i) => scoped(`foo-${i}`)),
+        scoped('foo-bar'),
+      ]
+      vi.spyOn(httpService, 'get').mockImplementation((() => of({ data: { objects: [] } })) as any)
+      singleSpy = vi.spyOn(registry, 'searchNpmRegistrySingle').mockResolvedValue([])
+    })
+
+    afterEach(() => {
+      ;(registry as any).scopedPluginNames = []
+      vi.restoreAllMocks()
+    })
+
+    it('fetches at most a capped number of packuments', async () => {
+      await registry.searchNpmRegistry('foo', installed)
+
+      expect(singleSpy).toHaveBeenCalledTimes(PluginRegistryService.MAX_SCOPED_LOOKUPS)
+    })
+
+    it('fetches the names matching the most terms first', async () => {
+      await registry.searchNpmRegistry('foo bar', installed)
+
+      expect(singleSpy).toHaveBeenCalledTimes(PluginRegistryService.MAX_SCOPED_LOOKUPS)
+      expect(singleSpy.mock.calls[0][0]).toBe(scoped('foo-bar'))
+    })
+
+    it('does not look anything up for a term that is too short to be useful', async () => {
+      await registry.searchNpmRegistry('fo', installed)
+
+      expect(singleSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('installed plugin scan', () => {
+    let pluginRoot: string
+
+    beforeEach(async () => {
+      pluginRoot = resolve(process.env.UIX_STORAGE_PATH, 'scan-concurrency', 'node_modules')
+      const modules = []
+      for (let i = 0; i < 20; i += 1) {
+        const name = `homebridge-scan-${i}`
+        await mkdir(join(pluginRoot, name), { recursive: true })
+        await writeFile(join(pluginRoot, name, 'package.json'), JSON.stringify({ name, version: '1.0.0', keywords: ['homebridge-plugin'] }))
+        modules.push({ name, path: pluginRoot, installPath: join(pluginRoot, name) })
+      }
+      ;(installed as any).installedPluginsCache.flushAll()
+      vi.spyOn(installed as any, 'getInstalledModules').mockResolvedValue(modules)
+      vi.spyOn(installed as any, 'getDisabledPlugins').mockResolvedValue([])
+    })
+
+    afterEach(async () => {
+      ;(installed as any).installedPluginsCache.flushAll()
+      vi.restoreAllMocks()
+      await remove(dirname(pluginRoot))
+    })
+
+    it('runs the registry lookups with their own, higher concurrency limit', async () => {
+      let inFlight = 0
+      let maxInFlight = 0
+      vi.spyOn(registry, 'parsePackageJson').mockImplementation(async (pkgJson: any, installPath: string) => {
+        inFlight += 1
+        maxInFlight = Math.max(maxInFlight, inFlight)
+        await new Promise(res => setTimeout(res, 5))
+        inFlight -= 1
+        return { name: pkgJson.name, installPath, globalInstall: true } as any
+      })
+
+      const plugins = await installed.getInstalledPlugins()
+
+      expect(plugins).toHaveLength(20)
+      expect(maxInFlight).toBe(InstalledPluginsService.REGISTRY_CONCURRENCY)
+    })
+
+    it('serves the cached list by reference', async () => {
+      vi.spyOn(registry, 'parsePackageJson').mockImplementation(async (pkgJson: any, installPath: string) =>
+        ({ name: pkgJson.name, installPath, globalInstall: true }) as any)
+
+      const first = await installed.getInstalledPlugins()
+      const second = await installed.getInstalledPlugins()
+
+      expect(second).toBe(first)
+      expect(installed.getCachedInstalledPlugins()).toBe(first)
+    })
   })
 
   describe('npm registry document cache', () => {

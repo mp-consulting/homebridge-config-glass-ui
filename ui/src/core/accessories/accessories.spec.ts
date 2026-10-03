@@ -501,11 +501,39 @@ describe('accessoriesService', () => {
 
       const first = rawHap()
       sendData(first)
-      const second = rawHap()
+      const second = rawHap({ serviceCharacteristics: [rawCharacteristic('On', true, 11)] })
       sendData(second)
 
       expect(room('Kitchen')!.services[0]).toBe(second)
       expect(room('Kitchen')!.services[0]).not.toBe(first)
+    })
+
+    it('keeps the current object when a payload repeats it unchanged, so its memoised tile does not re-render', async () => {
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [layoutEntry({ customName: 'Lamp' })] }] })
+
+      const first = rawHap()
+      sendData(first)
+      // The helpers and custom attributes the client wrote do not count as a change
+      charFor(first, 'On')
+      const kitchen = room('Kitchen')
+      sendData(rawHap())
+
+      expect(room('Kitchen')).toBe(kitchen)
+      expect(room('Kitchen')!.services[0]).toBe(first)
+      expect((first as ServiceTypeX).customName).toBe('Lamp')
+    })
+
+    it('replaces the object when a nested value, or a field the payload dropped, changed', async () => {
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: [] }] })
+
+      sendData(rawHap({ clusters: { onOff: { onOff: false } } }))
+      const nested = rawHap({ clusters: { onOff: { onOff: true } } })
+      sendData(nested)
+      expect(room('Kitchen')!.services[0]).toBe(nested)
+
+      const dropped = rawHap()
+      sendData(dropped)
+      expect(room('Kitchen')!.services[0]).toBe(dropped)
     })
 
     it('merges a late-discovered bridge into the existing rooms', async () => {
@@ -747,6 +775,7 @@ describe('accessoriesService', () => {
       const before = room('Default Room')!.services.find(s => s.uniqueId === 'hap-hc')!
 
       const nextFan = accessory('Aircon', 'AC-1', 'Fanv2', 'hap-fan', 11)
+      nextFan.serviceCharacteristics = [rawCharacteristic('On', true, 11)] as any
       sendData(nextFan)
 
       const after = room('Default Room')!.services.find(s => s.uniqueId === 'hap-hc')!
@@ -814,9 +843,11 @@ describe('accessoriesService', () => {
 
       const mechanism = accessory('Front Door', 'LOCK-1', 'LockMechanism', 'hap-lock', 10)
       const management = accessory('Front Door', 'LOCK-1', 'LockManagement', 'hap-lock-mgmt', 11)
+      management.serviceCharacteristics = [rawCharacteristic('On', true, 11)] as any
       sendData(mechanism, management)
 
-      expect((mechanism as any).linkedServices[11]).toBe(management)
+      const current = room('Default Room')!.services.find(s => s.uniqueId === 'hap-lock')!
+      expect((current as any).linkedServices[11]).toBe(management)
     })
 
     it('leaves a lock mechanism alone when the accessory has two of them', async () => {

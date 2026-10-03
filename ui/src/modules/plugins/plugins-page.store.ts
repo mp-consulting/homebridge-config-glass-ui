@@ -62,7 +62,7 @@ export interface PluginsPageActions {
   search: () => Promise<void>
   onClearSearch: () => void
   onSubmit: (value: { query?: string | null }) => void
-  updateAllModal: () => void
+  updateAllModal: () => Promise<void>
   showSearch: () => void
   showStats: () => void
   openSupport: () => void
@@ -470,8 +470,8 @@ export function createPluginsPageStore() {
         }
       },
 
-      updateAllModal() {
-        const ref = managePlugins.openUpdateAllModal()
+      async updateAllModal() {
+        const ref = await managePlugins.openUpdateAllModal()
 
         // A run that only restarts child bridges never reloads this page, so
         // refresh the list once the modal is closed - completed updates should

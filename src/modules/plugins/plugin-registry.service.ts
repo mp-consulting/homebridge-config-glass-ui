@@ -43,6 +43,11 @@ import {
  */
 @Injectable()
 export class PluginRegistryService {
+  /** A search term shorter than this does not trigger @homebridge-plugins/* lookups. */
+  static readonly MIN_SCOPED_TERM_LENGTH = 3
+  /** The most @homebridge-plugins/* packuments one search fetches. */
+  static readonly MAX_SCOPED_LOOKUPS = 10
+
   // Plugin list cache
   private pluginListUrl = 'https://raw.githubusercontent.com/homebridge/plugins/latest/'
   private pluginListFile = `${this.pluginListUrl}assets/plugins-v2.min.json`
@@ -313,17 +318,30 @@ export class PluginRegistryService {
 
     // Find scoped plugins from the plugin list that match search terms but weren't returned by npm
     const resultNames = new Set(plugins.map(p => p.name))
-    const scopedLookups: Promise<HomebridgePlugin[]>[] = []
+    // Each lookup fetches a full packument, so a short term (which matches
+    // nearly every name - 'a', 'on') is not used, and only the best few
+    // candidates are fetched
+    const scopedTerms = searchTerms.filter(term => term.length >= PluginRegistryService.MIN_SCOPED_TERM_LENGTH)
+    const scopedCandidates: { name: string, matches: number }[] = []
 
-    for (const name of this.scopedPluginNames) {
-      if (!resultNames.has(name) && !this.isHiddenPlugin(name)) {
-        // Extract the unscoped part after the scope prefix for matching
-        const unscopedName = name.substring(name.lastIndexOf('/') + 1).toLowerCase()
-        if (searchTerms.some(term => unscopedName.includes(term))) {
-          scopedLookups.push(this.searchNpmRegistrySingle(name, installed).catch(() => []))
+    if (scopedTerms.length > 0) {
+      for (const name of this.scopedPluginNames) {
+        if (!resultNames.has(name) && !this.isHiddenPlugin(name)) {
+          // Extract the unscoped part after the scope prefix for matching
+          const unscopedName = name.substring(name.lastIndexOf('/') + 1).toLowerCase()
+          const matches = scopedTerms.filter(term => unscopedName.includes(term)).length
+          if (matches > 0) {
+            scopedCandidates.push({ name, matches })
+          }
         }
       }
     }
+
+    // Stable sort: the names matching the most terms first, list order otherwise
+    const scopedLookups: Promise<HomebridgePlugin[]>[] = scopedCandidates
+      .sort((a, b) => b.matches - a.matches)
+      .slice(0, PluginRegistryService.MAX_SCOPED_LOOKUPS)
+      .map(({ name }) => this.searchNpmRegistrySingle(name, installed).catch(() => []))
 
     if (scopedLookups.length > 0) {
       const scopedResults = await Promise.all(scopedLookups)
@@ -400,20 +418,17 @@ export class PluginRegistryService {
         return []
       }
 
-      let plugin: HomebridgePlugin
-
       // See if the plugin is already installed
       if (!installed.loadedPlugins) {
         await installed.getInstalledPlugins()
       }
       const isInstalled = installed.loadedPlugins.find(x => x.name === pkg.name)
       if (isInstalled) {
-        plugin = isInstalled
-        plugin.lastUpdated = pkg.time.modified
-        return [plugin]
+        // A copy: the installed list is cached by reference
+        return [{ ...isInstalled, lastUpdated: pkg.time.modified }]
       }
 
-      plugin = {
+      const plugin: HomebridgePlugin = {
         name: pkg.name,
         private: false,
         description: (pkg.description)

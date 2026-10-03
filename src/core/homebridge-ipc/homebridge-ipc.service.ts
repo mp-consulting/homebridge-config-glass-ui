@@ -15,6 +15,8 @@ export class HomebridgeIpcService extends EventEmitter {
   // don't stack independent timers and don't pile new `once('close')`
   // listeners onto the same ChildProcess.
   private pendingShutdownTimer: NodeJS.Timeout | null = null
+  // In-flight requestResponse() round trips, keyed by request + response event
+  private pendingRequests = new Map<string, Promise<unknown>>()
 
   private permittedEvents = [
     'childBridgeMetadataResponse',
@@ -74,9 +76,31 @@ export class HomebridgeIpcService extends EventEmitter {
   }
 
   /**
-   * Send a data request to homebridge and wait for the reply
+   * Send a data request to homebridge and wait for the reply.
+   *
+   * Concurrent calls for the same request share one round trip: the request
+   * carries no payload, so every caller would get the same reply, and each
+   * extra request would otherwise cost Homebridge another full answer (a child
+   * bridge metadata dump, say) and add a listener to the bus.
    */
-  public async requestResponse(requestEvent: string, responseEvent: string) {
+  public requestResponse(requestEvent: string, responseEvent: string): Promise<unknown> {
+    const key = `${requestEvent}\u0000${responseEvent}`
+    const pending = this.pendingRequests.get(key)
+    if (pending) {
+      return pending
+    }
+    const request = this.sendRequest(requestEvent, responseEvent)
+    this.pendingRequests.set(key, request)
+    const clear = () => {
+      if (this.pendingRequests.get(key) === request) {
+        this.pendingRequests.delete(key)
+      }
+    }
+    request.then(clear, clear)
+    return request
+  }
+
+  private sendRequest(requestEvent: string, responseEvent: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const actionTimeout = setTimeout(() => {
         // eslint-disable-next-line ts/no-use-before-define

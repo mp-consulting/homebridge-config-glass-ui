@@ -266,6 +266,54 @@ describe('HomebridgeIpcService (e2e)', () => {
       expect(mockProcess.send).toHaveBeenCalledWith({ id: 'testRequest', data: undefined })
     })
 
+    it('shares one round trip between concurrent identical requests', async () => {
+      const mockProcess = new EventEmitter() as any
+      mockProcess.connected = true
+      mockProcess.send = vi.fn(() => queueMicrotask(() => ipcService.emit('sharedResponse', { result: 'shared' })))
+      mockProcess.kill = vi.fn()
+      mockProcess.pid = 12345
+      ipcService.setHomebridgeProcess(mockProcess)
+
+      const first = ipcService.requestResponse('sharedRequest', 'sharedResponse')
+      const second = ipcService.requestResponse('sharedRequest', 'sharedResponse')
+      const other = ipcService.requestResponse('otherRequest', 'sharedResponse')
+
+      expect(second).toBe(first)
+      expect(other).not.toBe(first)
+      await expect(Promise.all([first, second, other])).resolves.toEqual([{ result: 'shared' }, { result: 'shared' }, { result: 'shared' }])
+      expect(mockProcess.send).toHaveBeenCalledTimes(2)
+      expect(ipcService.listenerCount('sharedResponse')).toBe(0)
+
+      // once settled, the next request goes out again
+      await ipcService.requestResponse('sharedRequest', 'sharedResponse')
+      expect(mockProcess.send).toHaveBeenCalledTimes(3)
+    })
+
+    it('lets the next request through after a shared request failed', async () => {
+      const mockProcess = new EventEmitter() as any
+      mockProcess.connected = true
+      mockProcess.send = vi.fn()
+      mockProcess.kill = vi.fn()
+      mockProcess.pid = 12345
+      ipcService.setHomebridgeProcess(mockProcess)
+
+      vi.useFakeTimers()
+      try {
+        const first = ipcService.requestResponse('flakyRequest', 'flakyResponse')
+        const second = ipcService.requestResponse('flakyRequest', 'flakyResponse')
+        first.catch(() => {})
+        await vi.advanceTimersByTimeAsync(3000)
+        await expect(second).rejects.toThrow('The Homebridge service did not respond')
+        expect(mockProcess.send).toHaveBeenCalledTimes(1)
+      } finally {
+        vi.useRealTimers()
+      }
+
+      mockProcess.send = vi.fn(() => queueMicrotask(() => ipcService.emit('flakyResponse', 'ok')))
+      await expect(ipcService.requestResponse('flakyRequest', 'flakyResponse')).resolves.toBe('ok')
+      expect(mockProcess.send).toHaveBeenCalledTimes(1)
+    })
+
     it('should reject on timeout when no response', async () => {
       const mockProcess = new EventEmitter() as any
       mockProcess.connected = true

@@ -105,7 +105,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
 
   const updateAllModal = async (): Promise<void> => {
     const managePlugins = await loadManagePlugins()
-    const ref = managePlugins.openUpdateAllModal()
+    const ref = await managePlugins.openUpdateAllModal()
 
     // A run that only restarts child bridges never disconnects the status
     // socket, so nothing else refreshes this widget - reload once the modal

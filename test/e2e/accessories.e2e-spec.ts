@@ -632,6 +632,86 @@ describe('AccessoriesController (e2e)', () => {
     ;(accessoriesService as any).hapMonitorPromise = null
   })
 
+  it('service.connect coalesces a burst of instance discoveries into one reload request', async () => {
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+
+    vi.useFakeTimers()
+    const client = authorizeWsClient(new EventEmitter() as any)
+    try {
+      await accessoriesService.connect(client)
+      const reloads = vi.fn()
+      client.on('accessories-reload-required', reloads)
+
+      accessoriesService.hapClient.emit('instance-discovered', {})
+      await vi.advanceTimersByTimeAsync(500)
+      accessoriesService.hapClient.emit('instance-discovered', {})
+      accessoriesService.hapClient.emit('instance-discovered', {})
+      expect(reloads).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(AccessoriesService.INSTANCE_RELOAD_DEBOUNCE_MS)
+      expect(reloads).toHaveBeenCalledTimes(1)
+
+      // a pending reload is dropped when the client leaves
+      accessoriesService.hapClient.emit('instance-discovered', {})
+      client.emit('disconnect')
+      await vi.advanceTimersByTimeAsync(AccessoriesService.INSTANCE_RELOAD_DEBOUNCE_MS)
+      expect(reloads).toHaveBeenCalledTimes(1)
+    } finally {
+      client.emit('disconnect')
+      vi.useRealTimers()
+    }
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
+  it('service.connect sends the delayed second load only when the data changed', async () => {
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+    hapClientMock.mockResolvedValue([{ uniqueId: 'a', serviceCharacteristics: [{ type: 'On', value: false }] }] as any)
+
+    vi.useFakeTimers()
+    const unchanged = authorizeWsClient(new EventEmitter() as any)
+    const changed = authorizeWsClient(new EventEmitter() as any)
+    try {
+      unchanged.emit = vi.fn(unchanged.emit.bind(unchanged))
+      await accessoriesService.connect(unchanged)
+      vi.mocked(unchanged.emit).mockClear()
+      await vi.advanceTimersByTimeAsync(3000)
+      // reloaded, still ready for control, but the identical list is not re-sent
+      expect(hapClientMock).toHaveBeenCalledTimes(2)
+      expect(unchanged.emit).toHaveBeenCalledWith('hap-accessories-ready-for-control')
+      expect(unchanged.emit).not.toHaveBeenCalledWith('accessories-data', expect.anything())
+
+      // an explicit refresh always sends
+      unchanged.emit('accessory-control', { refresh: true })
+      await vi.waitFor(() => expect(unchanged.emit).toHaveBeenCalledWith('accessories-data', expect.anything()))
+      unchanged.emit('disconnect')
+
+      changed.emit = vi.fn(changed.emit.bind(changed))
+      await accessoriesService.connect(changed)
+      vi.mocked(changed.emit).mockClear()
+      const next = [{ uniqueId: 'a', serviceCharacteristics: [{ type: 'On', value: true }] }]
+      hapClientMock.mockResolvedValue(next as any)
+      await vi.advanceTimersByTimeAsync(3000)
+      expect(changed.emit).toHaveBeenCalledWith('accessories-data', next)
+    } finally {
+      unchanged.emit('disconnect')
+      changed.emit('disconnect')
+      vi.useRealTimers()
+    }
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
   it('service.resetInstancePool should not throw when insecure mode disabled', () => {
     configService.homebridgeInsecureMode = false
     // Should be a no-op when insecure mode is disabled

@@ -4,23 +4,10 @@ import type { ModalRef } from '@/core/ui/modal'
 import { lt, minVersion } from 'semver'
 
 import { api } from '@/core/api'
-import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
-import { customPlugins } from '@/core/plugins/custom-plugins/custom-plugins.service'
-import { ManagePlugin } from '@/core/plugins/manage-plugin/ManagePlugin'
-import { ManageVersion } from '@/core/plugins/manage-version/ManageVersion'
-import { ManualConfig } from '@/core/plugins/manual-config/ManualConfig'
-import { PluginBridge } from '@/core/plugins/plugin-bridge/PluginBridge'
-import { PluginCompatibility } from '@/core/plugins/plugin-compatibility/PluginCompatibility'
-import { PluginConfig } from '@/core/plugins/plugin-config/PluginConfig'
-import { PluginExternals } from '@/core/plugins/plugin-externals/PluginExternals'
-import { ResetAccessories } from '@/core/plugins/reset-accessories/ResetAccessories'
-import { SwitchToScoped } from '@/core/plugins/switch-to-scoped/SwitchToScoped'
-import { UninstallPlugin } from '@/core/plugins/uninstall-plugin/UninstallPlugin'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toast } from '@/core/ui/toast'
-import { UpdateAllModal } from '@/core/update-all/UpdateAllModal'
 import { createEmitter } from '@/core/utilities/emitter'
 import { toastApiError } from '@/core/utilities/http-error'
 
@@ -50,6 +37,32 @@ const open = openModal as (component: unknown, props: Record<string, any>, optio
 const LARGE_STATIC = { size: 'lg', backdrop: 'static' } as const
 
 /**
+ * The modals, each loaded the first time it is opened. Imported statically
+ * they all landed in the plugins page's chunk - the settings form with its
+ * JSON schema validator, the Monaco-backed JSON editor, Update All - so the
+ * page paid for every one of them before showing its list.
+ */
+const modals = {
+  RestartHomebridge: async () => (await import('@/core/components/restart-homebridge/RestartHomebridge')).RestartHomebridge,
+  ManagePlugin: async () => (await import('@/core/plugins/manage-plugin/ManagePlugin')).ManagePlugin,
+  ManageVersion: async () => (await import('@/core/plugins/manage-version/ManageVersion')).ManageVersion,
+  ManualConfig: async () => (await import('@/core/plugins/manual-config/ManualConfig')).ManualConfig,
+  PluginBridge: async () => (await import('@/core/plugins/plugin-bridge/PluginBridge')).PluginBridge,
+  PluginCompatibility: async () => (await import('@/core/plugins/plugin-compatibility/PluginCompatibility')).PluginCompatibility,
+  PluginConfig: async () => (await import('@/core/plugins/plugin-config/PluginConfig')).PluginConfig,
+  PluginExternals: async () => (await import('@/core/plugins/plugin-externals/PluginExternals')).PluginExternals,
+  ResetAccessories: async () => (await import('@/core/plugins/reset-accessories/ResetAccessories')).ResetAccessories,
+  SwitchToScoped: async () => (await import('@/core/plugins/switch-to-scoped/SwitchToScoped')).SwitchToScoped,
+  UninstallPlugin: async () => (await import('@/core/plugins/uninstall-plugin/UninstallPlugin')).UninstallPlugin,
+  UpdateAllModal: async () => (await import('@/core/update-all/UpdateAllModal')).UpdateAllModal,
+}
+
+/** The custom settings UI service, which brings the custom UI host with it. */
+async function loadCustomPlugins() {
+  return (await import('@/core/plugins/custom-plugins/custom-plugins.service')).customPlugins
+}
+
+/**
  * Every plugin action goes through here: install, update, uninstall,
  * settings, child bridges, version picker (ManagePluginsService).
  */
@@ -64,8 +77,8 @@ export const managePlugins = {
    * returned ref's result - skipping the 'handover' reason, which means
    * the server is restarting right now.
    */
-  openUpdateAllModal(): ModalRef {
-    return open(UpdateAllModal, {}, {
+  async openUpdateAllModal(): Promise<ModalRef> {
+    return open(await modals.UpdateAllModal(), {}, {
       size: 'lg',
       // A run must not be interrupted by a stray backdrop click
       backdrop: 'static',
@@ -73,7 +86,7 @@ export const managePlugins = {
   },
 
   async installPlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null): Promise<void> {
-    const ref = open(ManagePlugin, {
+    const ref = open(await modals.ManagePlugin(), {
       action: 'Install',
       pluginName: plugin.name,
       pluginDisplayName: plugin.displayName,
@@ -97,7 +110,7 @@ export const managePlugins = {
         // other consumers see the new plugin immediately.
         settingsActions.setEnvItem('hasInstalledPlugins', true)
         if (result.plugin.isConfigured) {
-          open(RestartHomebridge, {}, { size: 'lg', backdrop: 'static', keyboard: false })
+          open(await modals.RestartHomebridge(), {}, { size: 'lg', backdrop: 'static', keyboard: false })
         } else {
           await managePlugins.settings(result.plugin)
         }
@@ -117,7 +130,7 @@ export const managePlugins = {
       console.error(error)
     }
 
-    const ref = open(UninstallPlugin, {
+    const ref = open(await modals.UninstallPlugin(), {
       plugin,
       childBridges,
       action: 'Uninstall',
@@ -144,7 +157,7 @@ export const managePlugins = {
   },
 
   async updatePlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null): Promise<void> {
-    const ref = open(ManagePlugin, {
+    const ref = open(await modals.ManagePlugin(), {
       action: 'Update',
       pluginName: plugin.name,
       pluginDisplayName: plugin.displayName,
@@ -166,7 +179,7 @@ export const managePlugins = {
       // Handle just-installed action (also triggered for updates)
       if (result?.action === 'just-installed' && result?.plugin) {
         if (result.plugin.isConfigured) {
-          open(RestartHomebridge, {}, { size: 'lg', backdrop: 'static', keyboard: false })
+          open(await modals.RestartHomebridge(), {}, { size: 'lg', backdrop: 'static', keyboard: false })
         } else {
           await managePlugins.settings(result.plugin)
         }
@@ -181,7 +194,7 @@ export const managePlugins = {
       return
     }
 
-    open(ManagePlugin, {
+    open(await modals.ManagePlugin(), {
       action: 'Update',
       pluginName: homebridgePkg.name,
       pluginDisplayName: homebridgePkg.displayName,
@@ -197,7 +210,7 @@ export const managePlugins = {
    * @param onSettingsChange - called when the version modal changed a setting
    */
   async installAlternateVersion(plugin: Plugin, onSettingsChange?: () => void): Promise<void> {
-    const ref = open(ManageVersion, {
+    const ref = open(await modals.ManageVersion(), {
       plugin,
       onRefreshPluginList: emitPluginListRefresh,
       onSettingsChange,
@@ -241,7 +254,7 @@ export const managePlugins = {
 
     const schema = plugin.settingsSchema ? editorContext.configSchema : undefined
 
-    const ref = open(PluginBridge, {
+    const ref = open(await modals.PluginBridge(), {
       schema,
       plugin,
       justInstalled,
@@ -264,7 +277,7 @@ export const managePlugins = {
    * @param plugin - the plugin
    */
   async externalAccessories(plugin: Plugin): Promise<void> {
-    const ref = open(PluginExternals, { plugin }, LARGE_STATIC)
+    const ref = open(await modals.PluginExternals(), { plugin }, LARGE_STATIC)
 
     try {
       await ref.result
@@ -287,6 +300,8 @@ export const managePlugins = {
 
     const schema = plugin.settingsSchema ? editorContext.configSchema : undefined
 
+    const customPlugins = await loadCustomPlugins()
+
     // Open the custom ui if the plugin has one
     if (schema && schema.customUi) {
       return customPlugins.openCustomSettingsUi(plugin, schema, editorContext)
@@ -297,7 +312,7 @@ export const managePlugins = {
     }
 
     // Open the standard ui
-    const ref = open(plugin.settingsSchema ? PluginConfig : ManualConfig, {
+    const ref = open(await (plugin.settingsSchema ? modals.PluginConfig() : modals.ManualConfig()), {
       schema,
       plugin,
       editorContext,
@@ -317,7 +332,7 @@ export const managePlugins = {
 
     const schema = plugin.settingsSchema ? editorContext?.configSchema : undefined
 
-    const ref = open(ManualConfig, {
+    const ref = open(await modals.ManualConfig(), {
       schema,
       plugin,
       editorContext,
@@ -350,7 +365,7 @@ export const managePlugins = {
     // If either are false, open modal warning about compatibility
     if (!isValidNode || !isValidHb) {
       try {
-        const ref = open(PluginCompatibility, {
+        const ref = open(await modals.PluginCompatibility(), {
           plugin,
           isValidNode,
           isValidHb,
@@ -379,11 +394,11 @@ export const managePlugins = {
 
   /** Open the reset child bridges modal */
   async resetChildBridges(childBridges: ChildBridge[]): Promise<void> {
-    open(ResetAccessories, { childBridges }, LARGE_STATIC)
+    open(await modals.ResetAccessories(), { childBridges }, LARGE_STATIC)
   },
 
   async switchToScoped(plugin: Plugin): Promise<void> {
-    open(SwitchToScoped, { plugin }, LARGE_STATIC)
+    open(await modals.SwitchToScoped(), { plugin }, LARGE_STATIC)
   },
 }
 

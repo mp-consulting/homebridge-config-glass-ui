@@ -318,6 +318,34 @@ describe('the terminal-owning services', () => {
         expect(redrawn).toBe(1000)
         expect(term().written.at(-1)).toBe('line 1099\n\r')
       })
+
+      it('caps the buffer by size as well, keeping the newest chunks', async () => {
+        await start()
+        connect()
+        const megabyte = (tag: string) => `${tag}${'x'.repeat(1024 * 1024 - tag.length)}`
+        stdout(megabyte('first'))
+        stdout(megabyte('second'))
+        stdout(megabyte('third'))
+        service.setSearchFilter('nothing matches this')
+        const before = term().written.length
+
+        service.clearSearchFilter()
+
+        const redrawn = term().written.slice(before) as string[]
+        expect(redrawn.map(chunk => chunk.replace(/x+$/, ''))).toEqual(['second', 'third'])
+      })
+
+      it('keeps a single chunk bigger than the size cap', async () => {
+        await start()
+        connect()
+        stdout('y'.repeat(3 * 1024 * 1024))
+        service.setSearchFilter('nothing matches this')
+        const before = term().written.length
+
+        service.clearSearchFilter()
+
+        expect(term().written.length - before).toBe(1)
+      })
     })
 
     it('scrolls to the end of the buffer, not to a fixed row', async () => {
@@ -394,10 +422,11 @@ describe('the terminal-owning services', () => {
         expect(await saved.text()).toBe('setting up homekit\nhomekit ready')
       })
 
-      it('surfaces the message the server put in the error blob', async () => {
+      it('surfaces the message the server sent with the error', async () => {
         await start()
+        // The api layer parses error bodies as JSON even for blob requests
         api.fail('get', '/platform-tools/hb-service/log/download', {
-          error: new Blob([JSON.stringify({ message: 'Log file not found' })]),
+          error: { message: 'Log file not found' },
         })
 
         void service.downloadLogFile()
@@ -583,6 +612,47 @@ describe('the terminal-owning services', () => {
       await new Promise(resolve => setTimeout(resolve, 0))
 
       expect(textarea.getAttribute('aria-hidden')).toBe('true')
+      dispose()
+      element.remove()
+    })
+
+    it('stops watching the whole subtree once the textarea is patched', async () => {
+      const { element, textarea } = withHelperTextarea()
+      const rows = document.createElement('div')
+      element.appendChild(rows)
+      const dispose = hideXtermInputFromScreenReader(element)
+      await new Promise(resolve => setTimeout(resolve, 300))
+      const query = vi.spyOn(element, 'querySelector')
+
+      // xterm's renderer rewrites its rows on every frame
+      for (let index = 0; index < 5; index += 1) {
+        rows.appendChild(document.createElement('span'))
+      }
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(query).not.toHaveBeenCalled()
+      expect(textarea.getAttribute('aria-hidden')).toBe('true')
+      dispose()
+      element.remove()
+    })
+
+    it('patches a textarea that replaces the first one', async () => {
+      const element = document.createElement('div')
+      const helpers = document.createElement('div')
+      element.appendChild(helpers)
+      const first = document.createElement('textarea')
+      first.className = 'xterm-helper-textarea'
+      helpers.appendChild(first)
+      document.body.appendChild(element)
+      const dispose = hideXtermInputFromScreenReader(element)
+
+      const second = document.createElement('textarea')
+      second.className = 'xterm-helper-textarea'
+      helpers.replaceChild(second, first)
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(second.getAttribute('aria-hidden')).toBe('true')
+      expect(second.getAttribute('tabindex')).toBe('-1')
       dispose()
       element.remove()
     })

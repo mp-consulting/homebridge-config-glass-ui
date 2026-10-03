@@ -103,9 +103,13 @@ describe('managePlugins', () => {
     vi.mocked(console.error).mockClear()
   })
 
+  /** Let the chain run on: microtasks, and the modals, which are imported the first time they open. */
   async function settle() {
-    for (let tick = 0; tick < 12; tick += 1) {
-      await Promise.resolve()
+    for (let round = 0; round < 3; round += 1) {
+      await vi.dynamicImportSettled()
+      for (let tick = 0; tick < 12; tick += 1) {
+        await Promise.resolve()
+      }
     }
   }
 
@@ -647,8 +651,8 @@ describe('managePlugins', () => {
   })
 
   describe('the update all opener', () => {
-    it('opens the modal large and undismissable, and hands back the ref', () => {
-      const ref = service.openUpdateAllModal()
+    it('opens the modal large and undismissable, and hands back the ref', async () => {
+      const ref = await service.openUpdateAllModal()
 
       expect(last().component).toBe(UpdateAllModal)
       expect(last().options).toMatchObject({ size: 'lg', backdrop: 'static' })

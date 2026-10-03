@@ -162,7 +162,7 @@ export function PluginsPage() {
                     type="button"
                     className="btn btn-elegant my-0 me-2"
                     aria-label={t('update_all.title')}
-                    onClick={() => actions.updateAllModal()}
+                    onClick={() => void actions.updateAllModal()}
                   >
                     <i aria-hidden="true" className="fas fa-arrow-alt-circle-up"></i>
                   </button>

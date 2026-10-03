@@ -15,6 +15,7 @@ import type {
 
 import { RE_ANSI_SIMPLE, RE_BRACKET_TAG } from '@/core/regex.constants'
 import { debounce } from '@/core/utilities/debounce'
+import { toToastMessage } from '@/core/utilities/http-error'
 
 import { subscribeResize } from './types'
 
@@ -25,19 +26,39 @@ import { subscribeResize } from './types'
  * on read-only views (logs, install progress, restore output) there's nothing
  * to type into it.
  *
- * xterm internally rebuilds parts of its DOM as it renders, so a one-shot
- * patch after `term.open()` isn't enough — a MutationObserver watches the host
- * element and re-applies the patch whenever xterm regenerates the subtree.
+ * The textarea may not exist yet when this runs, so a MutationObserver watches
+ * the host's subtree until it appears. Once it is patched, the observer is
+ * narrowed to the textarea's own container (direct children only), which is
+ * enough to catch the textarea being replaced: watching the whole subtree for
+ * the life of the terminal fired on every row xterm's DOM renderer redraws.
  *
  * Returns a disposer the caller must invoke when the terminal goes away, to
  * release the observer.
  */
 export function hideXtermInputFromScreenReader(host: HTMLElement): () => void {
+  // What the observer currently watches: the host's subtree, or the patched
+  // textarea's container (direct children only)
+  let watching: { node: Node, subtree: boolean } | null = null
+  // eslint-disable-next-line ts/no-use-before-define
+  const observer = new MutationObserver(() => apply())
+  const watch = (node: Node, subtree: boolean) => {
+    if (watching?.node === node && watching.subtree === subtree) {
+      return
+    }
+    observer.disconnect()
+    observer.observe(node, { childList: true, subtree })
+    watching = { node, subtree }
+  }
+
   const apply = () => {
     const ta = host.querySelector('.xterm-helper-textarea') as HTMLTextAreaElement | null
     if (!ta) {
+      // Not rendered yet, or its container went away: watch everything again
+      watch(host, true)
       return
     }
+    // Only a replacement of the textarea itself matters from here on
+    watch(ta.parentNode ?? host, false)
     // Hide from the AX tree and the tab order, but DO NOT set `disabled` and
     // DO NOT blur it. xterm copies a selection by focusing this textarea so the
     // browser's `copy` event reaches xterm's handler — a disabled (or blurred)
@@ -54,14 +75,17 @@ export function hideXtermInputFromScreenReader(host: HTMLElement): () => void {
   apply()
   // xterm creates the helper textarea lazily on first render; cover the
   // common timing windows.
-  setTimeout(apply, 0)
-  setTimeout(apply, 50)
-  setTimeout(apply, 250)
+  const timers = [0, 50, 250].map(delay => setTimeout(apply, delay))
 
-  const observer = new MutationObserver(apply)
-  observer.observe(host, { childList: true, subtree: true })
-
-  return () => observer.disconnect()
+  let disposed = false
+  return () => {
+    if (disposed) {
+      return
+    }
+    disposed = true
+    timers.forEach(timer => clearTimeout(timer))
+    observer.disconnect()
+  }
 }
 
 export interface LogServiceDeps {
@@ -90,7 +114,11 @@ export class LogService {
   private pluginName: string | undefined
   private searchFilter: string | null = null
   private logBuffer: string[] = []
+  // The buffer only serves the search filter's redraw, so it is capped both
+  // by chunk count and by size: a chunk can be one line or a whole backlog
+  private logBufferChars = 0
   private readonly maxBufferSize = 1000 // Maximum number of log chunks to keep in buffer
+  private readonly maxBufferChars = 2 * 1024 * 1024 // Maximum characters kept in the buffer
   private teardowns: Array<() => void> = []
   private xtermA11yDisposer: (() => void) | null = null
   // Kept as references so destroyTerminal can `off()` exactly these: the `log`
@@ -155,6 +183,7 @@ export class LogService {
     this.teardowns.push(this.io.connected.subscribe(() => {
       this.term.reset()
       this.logBuffer = []
+      this.logBufferChars = 0
       this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows })
     }))
 
@@ -198,10 +227,14 @@ export class LogService {
       } else {
         // Store raw data in buffer
         this.logBuffer.push(data)
+        this.logBufferChars += data.length
 
-        // Limit buffer size to prevent memory issues
-        if (this.logBuffer.length > this.maxBufferSize) {
-          this.logBuffer.shift() // Remove oldest entry
+        // Limit buffer size to prevent memory issues, keeping at least the newest chunk
+        while (
+          this.logBuffer.length > this.maxBufferSize
+          || (this.logBufferChars > this.maxBufferChars && this.logBuffer.length > 1)
+        ) {
+          this.logBufferChars -= this.logBuffer.shift()!.length // Remove oldest entry
         }
 
         // Apply search filter if active
@@ -319,21 +352,8 @@ export class LogService {
         this.deps.saveAs(body, 'homebridge.log.txt')
       }
     } catch (err) {
-      let message: string | undefined
-      try {
-        // A blob request carries the server's JSON error as a Blob
-        if (err && typeof err === 'object' && 'error' in err) {
-          const error = (err as { error: unknown }).error
-          if (error instanceof Blob) {
-            message = JSON.parse(await error.text()).message
-          } else if (error && typeof error === 'object' && 'message' in error) {
-            message = String((error as { message: unknown }).message)
-          }
-        }
-      } catch (error) {
-        console.error(error)
-      }
-      this.deps.toast.error(message || t('logs.download.error'), t('toast.title_error'))
+      // Error bodies arrive parsed as JSON whatever the request's responseType
+      this.deps.toast.error(toToastMessage(err, 'logs.download.error'), t('toast.title_error'))
     }
   }
 
@@ -357,10 +377,7 @@ export class LogService {
       this.term?.clear()
     } catch (error) {
       console.error(error)
-      const message = (error && typeof error === 'object' && 'error' in error && error.error && typeof error.error === 'object' && 'message' in error.error)
-        ? String(error.error.message)
-        : t('logs.truncate.error')
-      this.deps.toast.error(message, t('toast.title_error'))
+      this.deps.toast.error(toToastMessage(error, 'logs.truncate.error'), t('toast.title_error'))
     }
   }
 
@@ -395,6 +412,7 @@ export class LogService {
 
     // Reset for next session
     this.logBuffer = []
+    this.logBufferChars = 0
     this.searchFilter = null
   }
 }

@@ -246,6 +246,54 @@ describe('the cpu widget', () => {
       expect(io.requests.length).toBe(before)
     })
 
+    describe('while the tab is hidden', () => {
+      function setHidden(hidden: boolean) {
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden })
+      }
+
+      afterEach(() => {
+        // Back to jsdom's own getter on the prototype
+        delete (document as any).hidden
+      })
+
+      it('stops polling, and fetches once when the tab is shown again', async () => {
+        await openWithHistory(60, [1], 5)
+        setHidden(true)
+        document.dispatchEvent(new Event('visibilitychange'))
+        const before = io.requests.length
+
+        await tick(30)
+        expect(io.requests.length).toBe(before)
+
+        setHidden(false)
+        await act(async () => {
+          document.dispatchEvent(new Event('visibilitychange'))
+        })
+        expect(io.requests.length).toBe(before + 1)
+
+        await tick(5)
+        expect(io.requests.length).toBe(before + 2)
+      })
+
+      it('does not fetch on becoming visible while the socket is down', async () => {
+        await openWithHistory(60, [1], 5)
+        io.socket.disconnect()
+        const before = io.requests.length
+
+        await act(async () => {
+          document.dispatchEvent(new Event('visibilitychange'))
+        })
+
+        expect(io.requests.length).toBe(before)
+      })
+    })
+
+    it('draws without animation', async () => {
+      await openWithHistory(60, [1])
+
+      expect(chart.props.options.animation).toBe(false)
+    })
+
     it('stops polling once it is gone', async () => {
       vi.useFakeTimers()
       const { unmount } = await open({ refreshInterval: 5 })
