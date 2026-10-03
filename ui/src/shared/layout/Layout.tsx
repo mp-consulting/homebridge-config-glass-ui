@@ -7,6 +7,7 @@ import { lt } from 'semver'
 
 import { authActions, useAuthStore } from '@/core/auth'
 import { Confirm } from '@/core/components/confirm/Confirm'
+import { escapeHtml } from '@/core/helpers/html.helper'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { openModal } from '@/core/ui/modal'
 import { ws } from '@/core/ws'
@@ -79,9 +80,11 @@ export function Layout() {
       console.log(`Server restart required. UI Version: ${environment.serverTarget} - Server Version: ${uiVersion} `)
       const ref = openModal(Confirm, {
         title: t('platform.version.service_restart_required'),
+        // Confirm renders its message as HTML and i18n does not escape
+        // interpolated values, so the server-reported version is escaped
         message: t('platform.version.restart_required', {
-          serverVersion: uiVersion,
-          uiVersion: environment.serverTarget,
+          serverVersion: escapeHtml(uiVersion),
+          uiVersion: escapeHtml(environment.serverTarget),
         }),
         confirmButtonLabel: t('menu.tooltip_restart'),
         faIconClass: 'fas fa-power-off orange-text',
