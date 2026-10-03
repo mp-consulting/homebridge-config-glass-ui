@@ -5,7 +5,7 @@ import type { UserDto } from '../../../modules/users/users.dto.js'
 import type { ConfigService } from '../../config/config.service.js'
 import type { AuthService } from '../auth.service.js'
 
-import jwt from 'jsonwebtoken'
+import { JwtService } from '@nestjs/jwt'
 
 import { isLiveSetupWizardToken, isSetupWizardToken, isSetupWizardTokenNamespace } from '../setup-wizard-token.js'
 import { extractWsToken } from './ws-token.js'
@@ -50,6 +50,13 @@ const WS_SWEEP_INTERVAL_MS = 60 * 1000
 /** The event a client sends with a refreshed access token. */
 export const WS_REAUTH_EVENT = 'reauth'
 
+/**
+ * Verifies socket tokens through @nestjs/jwt, as JwtModule does for HTTP. The
+ * secret is passed on every call (the configured one can change between calls
+ * in specs), so this instance needs no options of its own.
+ */
+const wsJwt = new JwtService()
+
 /** The token a socket currently stands on: the last one it re-authenticated with, else its handshake's. */
 export function currentWsToken(client: WsClient): string | undefined {
   return client?.data?.wsToken || extractWsToken(client?.handshake)
@@ -70,9 +77,10 @@ export async function verifyWsClient(
   authService: AuthService,
   options: { ignoreExpiration?: boolean, token?: string } = {},
 ): Promise<WsUser> {
-  const payload = jwt.verify(options.token ?? currentWsToken(client), configService.secrets.secretKey, {
+  const payload = wsJwt.verify<WsUser>(options.token ?? currentWsToken(client), {
+    secret: configService.secrets.secretKey,
     ignoreExpiration: options.ignoreExpiration,
-  }) as WsUser
+  })
 
   // Revalidation tolerates an expired token for a short while only - see
   // WS_TOKEN_GRACE_SECONDS. Without this cap a socket outlived its session for
