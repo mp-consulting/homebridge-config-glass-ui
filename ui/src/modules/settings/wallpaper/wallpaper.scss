@@ -6,6 +6,14 @@
     animation: hb-wallpaper-gradient 20s ease infinite;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .anim {
+      -webkit-animation: none;
+      -moz-animation: none;
+      animation: none;
+    }
+  }
+
   .wallpaper-preview {
     height: 200px;
   }

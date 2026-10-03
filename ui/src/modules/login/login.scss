@@ -11,6 +11,15 @@
     animation: gradient 20s ease infinite;
   }
 
+  // The drifting gradient stays still for people who asked for less motion
+  @media (prefers-reduced-motion: reduce) {
+    &.anim {
+      -webkit-animation: none;
+      -moz-animation: none;
+      animation: none;
+    }
+  }
+
   .login-card {
     max-width: 550px;
     border-radius: 1rem;
