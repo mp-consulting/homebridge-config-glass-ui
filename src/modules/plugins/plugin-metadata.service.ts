@@ -31,6 +31,7 @@ import {
   RE_PRERELEASE_TYPE,
 } from '../../core/regex.constants.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { GitHubReleaseClient } from './github-release-client.js'
 import { InstalledPluginsService } from './installed-plugins.service.js'
 import { PluginRegistryService } from './plugin-registry.service.js'
 
@@ -53,6 +54,9 @@ export class PluginMetadataService {
   // plugin share one extraction instead of forking one process each
   private pluginAliasLookups = new Map<string, Promise<PluginAlias>>()
 
+  // Release notes and changelogs for getPluginRelease
+  private readonly github: GitHubReleaseClient
+
   /**
    * Define the alias / type some plugins without a schema where the extract method does not work
    */
@@ -70,7 +74,9 @@ export class PluginMetadataService {
     @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
     @Inject(PluginRegistryService) private readonly registry: PluginRegistryService,
     @Inject(InstalledPluginsService) private readonly installed: InstalledPluginsService,
-  ) {}
+  ) {
+    this.github = new GitHubReleaseClient(this.httpService, this.logger)
+  }
 
   /**
    * Returns the config.schema.json for the plugin
@@ -265,80 +271,36 @@ export class PluginMetadataService {
       throw new NotFoundException()
     }
 
-    // Helper to fetch a GitHub release by tag, trying v-prefixed first then bare version
-    const fetchReleaseByVersion = async (owner: string, repo: string, ver: string) => {
-      for (const tag of [`v${ver}`, ver]) {
-        try {
-          const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`))
-          return release.data
-        } catch { }
-      }
-      return null
-    }
-
     // Determine if this is a prerelease version (e.g. "1.2.3-beta.1") and extract the prerelease type
     const prereleaseType = resolvedVersion?.match(RE_PRERELEASE_TYPE)?.[1] ?? null
 
-    // Helper to find the most recently updated branch containing a keyword (e.g. "beta")
-    const findPrereleaseBranch = async (owner: string, repo: string, keyword: string): Promise<string | null> => {
-      try {
-        const response = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/branches`, {
-          params: { per_page: 100 },
-        }))
-        const matched = response.data.filter((b: any) => b.name.includes(keyword))
-        return matched.length > 0 ? matched.at(-1).name : null
-      } catch { }
-      return null
+    // A prerelease's changelog usually lives on its branch (e.g. "beta"), so
+    // that ref is tried first
+    const prereleaseRefs = async (owner: string, repo: string): Promise<string[]> => {
+      const branch = prereleaseType ? await this.github.prereleaseBranch(owner, repo, prereleaseType) : null
+      return branch ? [`refs/heads/${branch}`] : []
     }
 
     switch (pluginName) {
       case 'homebridge':
       case '@mp-consulting/homebridge-config-glass-ui': {
-        try {
-          // Release notes live in the GitHub repo that publishes each package
-          const [owner, repo] = pluginName === 'homebridge' ? ['homebridge', 'homebridge'] : ['mp-consulting', 'homebridge-config-glass-ui']
-          const tag = resolvedVersion ? `v${resolvedVersion}` : null
-          const release = tag
-            ? await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`)).then(r => r.data).catch(() => null)
-            : null
+        // Release notes live in the GitHub repo that publishes each package
+        const [owner, repo] = pluginName === 'homebridge' ? ['homebridge', 'homebridge'] : ['mp-consulting', 'homebridge-config-glass-ui']
+        const tag = resolvedVersion ? `v${resolvedVersion}` : null
+        const release = tag ? await this.github.releaseByTag(owner, repo, tag) : null
 
-          // Fetch changelog: try prerelease branch first for beta/alpha/test, then tag, then HEAD
-          let changelogData: string | null = null
-          if (prereleaseType) {
-            const branch = await findPrereleaseBranch(owner, repo, prereleaseType)
-            if (branch) {
-              try {
-                const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${branch}/CHANGELOG.md`))
-                changelogData = changelog.data
-              } catch { }
-            }
-          }
-          if (!changelogData && tag) {
-            try {
-              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${owner}/${repo}/refs/tags/${tag}/CHANGELOG.md`))
-              changelogData = changelog.data
-            } catch { }
-          }
-          if (!changelogData) {
-            try {
-              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${owner}/${repo}/HEAD/CHANGELOG.md`))
-              changelogData = changelog.data
-            } catch { }
-          }
+        // Changelog: the prerelease branch for beta/alpha/test, then the tag, then HEAD
+        const changelogData = await this.github.firstChangelog(owner, repo, [
+          ...await prereleaseRefs(owner, repo),
+          ...(tag ? [`refs/tags/${tag}`] : []),
+          'HEAD',
+        ])
 
-          return {
-            name: release?.tag_name ?? null,
-            notes: release?.body ?? null,
-            changelog: changelogData,
-            latestVersion,
-          }
-        } catch {
-          return {
-            name: null,
-            notes: null,
-            changelog: null,
-            latestVersion,
-          }
+        return {
+          name: release?.tag_name ?? null,
+          notes: release?.body ?? null,
+          changelog: changelogData,
+          latestVersion,
         }
       }
       default: {
@@ -348,85 +310,40 @@ export class PluginMetadataService {
           throw new NotFoundException()
         }
 
-        // Plugin must have a homepage to work out Git Repo
+        // Plugin must have a homepage to work out the repository
         // Some plugins have a custom homepage, so often we can also use the bugs link too
         if (!plugin.links.homepage && !plugin.links.bugs) {
           throw new NotFoundException()
         }
 
         // Make sure the repo is GitHub
-        const repoMatch = plugin.links.homepage?.match(RE_GITHUB_REPO)
-        const bugsMatch = plugin.links.bugs?.match(RE_GITHUB_REPO)
-        let match: RegExpMatchArray | null = repoMatch
-        if (!repoMatch) {
-          if (!bugsMatch) {
-            throw new NotFoundException()
-          }
-          match = bugsMatch
-        }
-
-        // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
-        const changelogPath = this.registry.getPluginChangelogPath(pluginName) || ''
-
-        // Helper to fetch a CHANGELOG.md from the repo, trying both cases
-        const fetchChangelog = async (ref: string): Promise<string | null> => {
-          for (const filename of ['CHANGELOG.md', 'changelog.md']) {
-            try {
-              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
-              return changelog.data
-            } catch { }
-          }
-          return null
-        }
-
-        try {
-          const release = resolvedVersion
-            ? await fetchReleaseByVersion(match[1], match[2], resolvedVersion)
-            : null
-
-          const releaseTag = release?.tag_name
-
-          // For prerelease versions, try the matching branch first for the changelog
-          let changelogData: string | null = null
-          if (prereleaseType) {
-            const branch = await findPrereleaseBranch(match[1], match[2], prereleaseType)
-            if (branch) {
-              changelogData = await fetchChangelog(`refs/heads/${branch}`)
-            }
-          }
-          if (!changelogData) {
-            const changelogRef = releaseTag ? `refs/tags/${releaseTag}` : 'HEAD'
-            changelogData = await fetchChangelog(changelogRef)
-          }
-
-          return {
-            name: releaseTag ?? null,
-            notes: release?.body ?? null,
-            changelog: changelogData,
-            latestVersion,
-          }
-        } catch (e) {
-          // No releases found — try prerelease branch, then fall back to default branch
-          let changelogData: string | null = null
-          if (prereleaseType) {
-            const branch = await findPrereleaseBranch(match[1], match[2], prereleaseType)
-            if (branch) {
-              changelogData = await fetchChangelog(`refs/heads/${branch}`)
-            }
-          }
-          if (!changelogData) {
-            changelogData = await fetchChangelog('HEAD')
-          }
-          if (changelogData) {
-            return {
-              name: null,
-              notes: null,
-              changelog: changelogData,
-              latestVersion,
-            }
-          }
-
+        const match = plugin.links.homepage?.match(RE_GITHUB_REPO) ?? plugin.links.bugs?.match(RE_GITHUB_REPO)
+        if (!match) {
           throw new NotFoundException()
+        }
+        const [, owner, repo] = match
+
+        const release = resolvedVersion
+          ? await this.github.releaseByVersion(owner, repo, resolvedVersion)
+          : null
+        const releaseTag = release?.tag_name
+
+        // Changelog: the prerelease branch for a prerelease, then the
+        // release's tag, else HEAD. The plugin may keep it in a custom
+        // directory, and either case of the file name is accepted.
+        const changelogData = await this.github.firstChangelog(owner, repo, [
+          ...await prereleaseRefs(owner, repo),
+          releaseTag ? `refs/tags/${releaseTag}` : 'HEAD',
+        ], {
+          path: this.registry.getPluginChangelogPath(pluginName) || '',
+          filenames: ['CHANGELOG.md', 'changelog.md'],
+        })
+
+        return {
+          name: releaseTag ?? null,
+          notes: release?.body ?? null,
+          changelog: changelogData,
+          latestVersion,
         }
       }
     }
