@@ -4,6 +4,7 @@ import type { KeyboardEvent } from 'react'
 import type { StartupScriptResponse } from './startup-script.loader'
 
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLoaderData } from 'react-router'
 
 import { api } from '@/core/api'
@@ -22,6 +23,7 @@ type StartupScriptEditor = Pick<MonacoInstance, 'getModel' | 'getAction' | 'disp
 
 /** The Docker container's `startup.sh`, in Monaco (a plain textarea on a phone). */
 export function StartupScript() {
+  const { t } = useTranslation()
   const data = useLoaderData() as StartupScriptResponse
 
   const [isMobile] = useState(() => Boolean(mobileDetect.detect.mobile()))
@@ -132,10 +134,17 @@ export function StartupScript() {
           <h3 className="primary-text m-0 font-monospace">startup.sh</h3>
         </div>
         <div className="col-6 text-end">
-          <button type="button" className="btn btn-primary waves-effect m-0" disabled={saveInProgress} onClick={() => void onSave()}>
+          <button
+            type="button"
+            className="btn btn-primary waves-effect m-0"
+            disabled={saveInProgress}
+            aria-label={t('form.button_save')}
+            aria-busy={saveInProgress}
+            onClick={() => void onSave()}
+          >
             {saveInProgress
-              ? <i className="fas fa-circle-notch fa-spin"></i>
-              : <i className="fas fa-floppy-disk"></i>}
+              ? <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+              : <i className="fas fa-floppy-disk" aria-hidden="true"></i>}
           </button>
         </div>
       </div>
@@ -158,6 +167,7 @@ export function StartupScript() {
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck="false"
+              aria-label={t('menu.docker.startup_script')}
               value={startupScript}
               onChange={event => setStartupScript(event.target.value)}
             >

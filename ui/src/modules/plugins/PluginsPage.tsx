@@ -288,6 +288,7 @@ export function PluginsPage() {
             src="https://developers.homebridge.io/analytics/"
             className="hb-stats"
             id="stats-iframe"
+            title={t('plugins.stats')}
             // eslint-disable-next-line react/dom-no-unsafe-iframe-sandbox -- the sandbox the Angular page gave the analytics site
             sandbox="allow-scripts allow-same-origin allow-popups"
             referrerPolicy="no-referrer"

@@ -118,13 +118,14 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
                     aria-label={t('form.button_delete')}
                     onClick={clearWallpaper}
                   >
-                    <i className="fas fa-trash"></i>
+                    <i className="fas fa-trash" aria-hidden="true"></i>
                   </button>
                 </div>
               )
             : <div className="gradient anim rounded wallpaper-placeholder"></div>}
         </div>
         <div className="mb-0">
+          <label htmlFor="wallpaper" className="visually-hidden">{t('settings.display.wallpaper')}</label>
           <input
             ref={wallpaperInputRef}
             type="file"
