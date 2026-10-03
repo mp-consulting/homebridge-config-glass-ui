@@ -26,6 +26,7 @@ The browser UI is rewritten in React (from Angular). Pages, themes, glass mode, 
 - The config editor highlights the invalid entry again when a save is refused.
 - Accessory tiles become controllable as soon as Homebridge reports it is ready, without reopening the page.
 - Dismissing the Homebridge v2 readiness warning closes the update dialog.
+- On a new install, the pairing and cached-accessory lists load (empty) before Homebridge has run once, instead of failing with a server error.
 - The manual config editor shows one editor for the open config block, instead of one per block.
 - Matter: controlling one part of a multi-part accessory no longer changes its parent's shown state; malformed accessory ids are refused instead of half-parsed; a command that cannot reach Homebridge is reported as such instead of as a timeout.
 - Mobile: the closed side menu no longer shows through the glass theme or traps keyboard focus, and the logo no longer covers page titles. Plugin cards no longer clip long names or show a bare "@".
