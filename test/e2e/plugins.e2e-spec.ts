@@ -2731,6 +2731,59 @@ describe('PluginController (e2e)', () => {
       expect(second).toBe(first)
       expect(installed.getCachedInstalledPlugins()).toBe(first)
     })
+
+    it('shares one load between concurrent callers on a cold cache', async () => {
+      const parse = vi.spyOn(registry, 'parsePackageJson').mockImplementation(async (pkgJson: any, installPath: string) =>
+        ({ name: pkgJson.name, installPath, globalInstall: true }) as any)
+
+      const [a, b, c] = await Promise.all([
+        installed.getInstalledPlugins(),
+        installed.getInstalledPlugins(),
+        installed.getInstalledPlugins(),
+      ])
+
+      expect(a).toHaveLength(20)
+      expect(b).toBe(a)
+      expect(c).toBe(a)
+      expect(parse).toHaveBeenCalledTimes(20)
+      expect((installed as any).getInstalledModules).toHaveBeenCalledTimes(1)
+    })
+
+    it('skips a module folder without a package.json quietly', async () => {
+      vi.spyOn(registry, 'parsePackageJson').mockImplementation(async (pkgJson: any, installPath: string) =>
+        ({ name: pkgJson.name, installPath, globalInstall: true }) as any)
+      const errorSpy = vi.spyOn((installed as any).logger, 'error').mockImplementation(() => {})
+      const modules = await (installed as any).getInstalledModules()
+      await mkdir(join(pluginRoot, 'homebridge-no-package'), { recursive: true })
+      ;(installed as any).getInstalledModules.mockResolvedValue([
+        ...modules,
+        { name: 'homebridge-no-package', path: pluginRoot, installPath: join(pluginRoot, 'homebridge-no-package') },
+      ])
+
+      const plugins = await installed.getInstalledPlugins()
+
+      expect(plugins).toHaveLength(20)
+      expect(errorSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not cache a load that an invalidation overtook', async () => {
+      let release!: () => void
+      const gate = new Promise<void>((res) => {
+        release = res
+      })
+      vi.spyOn(registry, 'parsePackageJson').mockImplementation(async (pkgJson: any, installPath: string) => {
+        await gate
+        return { name: pkgJson.name, installPath, globalInstall: true } as any
+      })
+
+      const stale = installed.getInstalledPlugins()
+      await new Promise(res => setTimeout(res, 5))
+      installed.clearInstalledPluginsCache()
+      release()
+
+      expect(await stale).toHaveLength(20)
+      expect(installed.getCachedInstalledPlugins()).toBeUndefined()
+    })
   })
 
   describe('npm registry document cache', () => {

@@ -21,7 +21,7 @@ import process from 'node:process'
 import { promisify } from 'node:util'
 
 import { Inject, Injectable } from '@nestjs/common'
-import { pathExists, pathExistsSync, readJson } from 'fs-extra/esm'
+import { pathExists, readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { gt, lt, rcompare } from 'semver'
@@ -79,6 +79,14 @@ export class InstalledPluginsService {
   // concurrent callers share one scan.
   private installedModulesCache: { promise: Promise<InstalledModule[]>, expires: number } | null = null
 
+  // The in-flight installed-plugins load, shared by concurrent callers (a
+  // dashboard load asks for it from several widgets at once) so a cold cache
+  // costs one scan and one round of registry requests, not one per caller
+  private installedPluginsPending: Promise<HomebridgePlugin[]> | null = null
+  // Bumped on every invalidation, so a load that started before one does not
+  // cache (or hand later callers) the snapshot it read
+  private installedPluginsGeneration = 0
+
   // Set while runNpmCommand is mid-flight so concurrent reads (notably
   // /auth/settings) can skip the synchronous filesystem walk that would
   // otherwise re-cache a mid-install snapshot.
@@ -98,8 +106,7 @@ export class InstalledPluginsService {
   }
 
   public pluginManagementFinished(): void {
-    this.installedPluginsCache.del('installed-plugins')
-    this.installedModulesCache = null
+    this.invalidateInstalledPlugins()
     this.pluginManagementInProgress -= 1
   }
 
@@ -157,14 +164,27 @@ export class InstalledPluginsService {
       return cached
     }
 
+    if (!this.installedPluginsPending) {
+      const pending = this.loadInstalledPlugins(this.installedPluginsGeneration)
+        .finally(() => {
+          if (this.installedPluginsPending === pending) {
+            this.installedPluginsPending = null
+          }
+        })
+      this.installedPluginsPending = pending
+    }
+    return this.installedPluginsPending
+  }
+
+  private async loadInstalledPlugins(generation: number): Promise<HomebridgePlugin[]> {
     const plugins: HomebridgePlugin[] = []
     const modules = await this.getInstalledModules()
     const disabledPlugins = await this.getDisabledPlugins()
 
     // Filter out non-homebridge plugins by name
+    // (a folder without a package.json is skipped below, when its read fails)
     const homebridgePlugins = modules.filter(module =>
-      ((module.name.indexOf('homebridge-') === 0) || this.registry.isScopedPlugin(module.name))
-      && pathExistsSync(join(module.installPath, 'package.json')),
+      (module.name.indexOf('homebridge-') === 0) || this.registry.isScopedPlugin(module.name),
     )
 
     // The package.json reads are local disk work, so they are limited to the
@@ -175,7 +195,16 @@ export class InstalledPluginsService {
 
     await Promise.all(homebridgePlugins.map(async (pkg) => {
       try {
-        const pkgJson: IPackageJson = await fileLimit(() => readJson(join(pkg.installPath, 'package.json')))
+        let pkgJson: IPackageJson
+        try {
+          pkgJson = await fileLimit(() => readJson(join(pkg.installPath, 'package.json')))
+        } catch (e) {
+          // Not a package (a stray folder, or a half-removed install): skip it quietly
+          if (e?.code === 'ENOENT' || e?.code === 'ENOTDIR') {
+            return
+          }
+          throw e
+        }
         // Check each plugin has the 'homebridge-plugin' keyword
         if (pkgJson.keywords && pkgJson.keywords.includes('homebridge-plugin')) {
           // Parse the package.json for each plugin
@@ -205,12 +234,19 @@ export class InstalledPluginsService {
       }
     }))
 
-    this.installedPlugins = plugins.map(plugin => this.registry.fixDisplayName(plugin))
+    const installed = plugins.map(plugin => this.registry.fixDisplayName(plugin))
 
+    // The caches were invalidated (an install finished) while this load ran:
+    // its snapshot may predate the change, so return it without keeping it
+    if (generation !== this.installedPluginsGeneration) {
+      return installed
+    }
+
+    this.installedPlugins = installed
     // Cache the result
-    this.installedPluginsCache.set('installed-plugins', this.installedPlugins)
+    this.installedPluginsCache.set('installed-plugins', installed)
 
-    return this.installedPlugins
+    return installed
   }
 
   /**
@@ -367,8 +403,14 @@ export class InstalledPluginsService {
    * Used when beta preferences change to force refresh
    */
   public clearInstalledPluginsCache() {
+    this.invalidateInstalledPlugins()
+  }
+
+  private invalidateInstalledPlugins() {
     this.installedPluginsCache.del('installed-plugins')
     this.installedModulesCache = null
+    this.installedPluginsPending = null
+    this.installedPluginsGeneration += 1
   }
 
   /**
