@@ -7,6 +7,7 @@ import process from 'node:process'
 
 import { outputFile } from 'fs-extra/esm'
 
+import { npmGlobalModulesPath, npmGlobalPrefixSync, npmRebuild, tryNpmRebuild } from '../../core/npm/npm-runner.js'
 import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 import { buildSudoersEntry, updateSudoersContent } from './sudoers.js'
@@ -114,30 +115,14 @@ export class FreeBSDInstaller extends BasePlatform {
   public async rebuild(all = false) {
     try {
       this.checkForRoot()
-      const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-        env: {
-          npm_config_loglevel: 'silent',
-          npm_update_notifier: 'false',
-          ...process.env,
-        },
-      }).toString('utf8')
+      const npmGlobalPath = npmGlobalModulesPath(npmGlobalPrefixSync())
       const targetNodeVersion = execSync('node -v').toString('utf8').trim()
 
-      execSync('npm rebuild', {
-        cwd: process.env.UIX_BASE_PATH,
-        stdio: 'inherit',
-      })
+      npmRebuild(process.env.UIX_BASE_PATH)
 
       if (all === true) {
         // Rebuild all modules
-        try {
-          execSync('npm rebuild', {
-            cwd: npmGlobalPath,
-            stdio: 'inherit',
-          })
-        } catch (e) {
-          this.hbService.logger.warn('Could not rebuild all modules - check Homebridge logs.')
-        }
+        tryNpmRebuild(npmGlobalPath, () => this.hbService.logger.warn('Could not rebuild all modules - check Homebridge logs.'))
       }
 
       this.hbService.logger.success(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`)

@@ -7,6 +7,8 @@ import process from 'node:process'
 import { Command } from 'commander'
 import { satisfies } from 'semver'
 
+import { MIN_NODE_VERSION } from './core/node-version.constants.js'
+
 let homebridge: any
 
 class HomebridgeUi {
@@ -28,8 +30,8 @@ class HomebridgeUi {
       .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .parse(process.argv)
 
-    if (!satisfies(process.version, '>=22.12.0')) {
-      const msg = `Node.js v22.12.0 higher is required. You may experience issues running this plugin running on ${process.version}.`
+    if (!satisfies(process.version, `>=${MIN_NODE_VERSION}`)) {
+      const msg = `Node.js v${MIN_NODE_VERSION} higher is required. You may experience issues running this plugin running on ${process.version}.`
       log.error(msg)
       log.warn(msg)
     }

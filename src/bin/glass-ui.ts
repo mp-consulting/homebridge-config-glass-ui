@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url'
 import { program } from 'commander'
 
 import { InstallerError, installGlassUi, revertToOfficialUi } from '../core/glass-ui-installer.js'
+import { npmGlobalPrefix } from '../core/npm/npm-runner.js'
 
 const { version } = JSON.parse(readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../package.json'), 'utf8'))
 
@@ -29,24 +30,12 @@ function runNpm(args: string[]): Promise<number> {
   })
 }
 
-function readNpmPrefix(): Promise<string> {
-  return new Promise((resolvePromise, reject) => {
-    let out = ''
-    const child = spawn('npm', ['prefix', '-g'], { shell: process.platform === 'win32' })
-    child.stdout.on('data', (chunk) => {
-      out += chunk
-    })
-    child.on('error', reject)
-    child.on('close', code => code === 0 ? resolvePromise(out.trim()) : reject(new Error('`npm prefix -g` failed.')))
-  })
-}
-
 const options = {
   env: process.env,
   platform: process.platform,
   npm: runNpm,
   log: (message: string) => console.log(message),
-  globalPrefix: readNpmPrefix,
+  globalPrefix: npmGlobalPrefix,
   exists: (path: string) => access(path).then(() => true, () => false),
 }
 

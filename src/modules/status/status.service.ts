@@ -4,25 +4,18 @@ import type { Systeminformation } from 'systeminformation'
 
 import type { HomebridgeStatusMatterUpdate } from '../../core/matter/matter.interfaces.js'
 
-import { exec, execSync } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
-import { cpus, loadavg, networkInterfaces as osNetworkInterfaces, platform, userInfo } from 'node:os'
-import { dirname, resolve } from 'node:path'
+import { exec } from 'node:child_process'
+import { userInfo } from 'node:os'
+import { dirname } from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
 
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { readJson, writeJsonSync } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
-import { gt } from 'semver'
 import {
-  cpuTemperature,
-  mem,
-  networkInterfaceDefault,
   networkInterfaces,
-  networkStats,
   osInfo,
   time,
 } from 'systeminformation'
@@ -32,37 +25,23 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { getUiNodeModulesPath } from '../../core/install-paths.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { fetchNodeReleases, pickNodeUpdate } from '../../core/node-version/node-release.js'
+import { npmVersion as getNpmVersion } from '../../core/npm/npm-runner.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
-import { createCpuLoadMeter } from './cpu-load.js'
-import { readLinuxCpuTemperature } from './linux-cpu-temperature.js'
-import { MIN_SAMPLE_MS, SharedSampler } from './shared-sampler.js'
+import { DashboardLayoutService } from './dashboard-layout.service.js'
 import {
   HomebridgeStatsResponse,
   HomebridgeStatus,
   HomebridgeStatusUpdate,
 } from './status.interfaces.js'
+import { NetworkUsage, SystemMetricsService } from './system-metrics.service.js'
+
+export { type NetworkUsage, requestedIntervalMs } from './system-metrics.service.js'
 
 const execAsync = promisify(exec)
-
-// CPU temperature and network stats are sampled on a shared timer while any
-// widget polls for them (see SharedSampler); cpu load and memory are sampled
-// in the background all the time, so their history is there when a dashboard
-// opens. 10 s is the widgets' default refresh and the period whenever no
-// widget polls faster; the on-demand samplers stop once no widget has asked
-// for longer than the slowest widget refresh (60 s).
-const METRIC_SAMPLE_MS = 10_000
-// A widget's refresh interval is 1-60 s
-const MAX_REQUESTED_INTERVAL_MS = 60_000
-const METRIC_IDLE_MS = 75_000
-// Network samplers are per interface, and the interface comes from the client
-const MAX_NETWORK_SAMPLERS = 8
-// How long the interface list and the default interface are trusted
-const INTERFACE_CACHE_SECONDS = 60
-
-export interface NetworkUsage { net: Systeminformation.NetworkStatsData, point: number }
 
 /**
  * Drop the pairing codes (HomeKit PIN and setup URI, and their Matter
@@ -140,18 +119,6 @@ export function versionOverviewForUser<T extends { serverInfo?: any, node?: any,
   }
 }
 
-/**
- * A widget's refresh interval (seconds, from the request payload) as a sampler
- * period: undefined - the sampler default - when absent or not a number, else
- * clamped to the 1-60 s a widget can be set to.
- */
-export function requestedIntervalMs(interval: unknown): number | undefined {
-  if (typeof interval !== 'number' || !Number.isFinite(interval) || interval <= 0) {
-    return undefined
-  }
-  return Math.min(MAX_REQUESTED_INTERVAL_MS, Math.max(MIN_SAMPLE_MS, Math.round(interval * 1000)))
-}
-
 /** The verified user on a socket (set by the WS guards) is an administrator */
 function isAdminClient(client: any): boolean {
   return client?.data?.user?.admin === true
@@ -160,50 +127,12 @@ function isAdminClient(client: any): boolean {
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 })
-  private dashboardLayout: any
   private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN
   private homebridgeStatusChange = new Subject<HomebridgeStatus>()
   private matterInfo: HomebridgeStatusMatterUpdate = {
     enabled: false,
   }
 
-  private cpuLoadHistory: number[] = []
-  // Load over the time since the previous sample, from os.cpus() tick deltas
-  private readCpuLoad = createCpuLoadMeter()
-  private memoryUsageHistory: number[] = []
-
-  private memoryInfo: Systeminformation.MemData
-
-  private cpuTempSampler = new SharedSampler(() => this.getCpuTemp(), {
-    intervalMs: METRIC_SAMPLE_MS,
-    idleMs: METRIC_IDLE_MS,
-    onError: e => this.logger.debug(`Failed to sample cpu temperature as ${e.message}.`),
-  })
-
-  private networkSamplers = new Map<string, SharedSampler<NetworkUsage>>()
-
-  // Background samplers for the cpu load / memory history; the value is unused
-  private cpuLoadSampler = new SharedSampler(async () => {
-    await this.getCpuLoadPoint()
-    return true
-  }, {
-    intervalMs: METRIC_SAMPLE_MS,
-    idleMs: Infinity,
-    onError: e => this.logger.debug(`Failed to sample cpu load as ${e.message}.`),
-  })
-
-  private memorySampler = new SharedSampler(async () => {
-    await this.getMemoryUsagePoint()
-    return true
-  }, {
-    intervalMs: METRIC_SAMPLE_MS,
-    idleMs: Infinity,
-    onError: e => this.logger.debug(`Failed to sample memory usage as ${e.message}.`),
-  })
-
-  // Set once systeminformation has also found no temperature sensor, so the
-  // Linux reader stops falling back to its blocking shell calls every sample
-  private noLinuxTempSensor = false
   // Sockets already receiving server stats, as LogService.activeClients
   private statsClients = new WeakSet<object>()
 
@@ -225,24 +154,9 @@ export class StatusService {
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(ServerService) private readonly serverService: ServerService,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(SystemMetricsService) private readonly systemMetrics: SystemMetricsService,
+    @Inject(DashboardLayoutService) private readonly dashboardLayout: DashboardLayoutService,
   ) {
-    // Systeminformation cpu data is not supported in FreeBSD Jail Shells
-    if (platform() === 'freebsd') {
-      this.getCpuLoadPoint = this.getCpuLoadPointAlt
-      this.getCpuTemp = this.getCpuTempAlt
-    }
-
-    if (this.configService.ui.disableServerMetricsMonitoring !== true) {
-      // Neither sample may reject unhandled: there is no global
-      // unhandledRejection handler, so one failed systeminformation call
-      // would take the whole UI process down. A missed sample is harmless
-      // (the samplers log it through onError).
-      this.cpuLoadSampler.start()
-      this.memorySampler.start()
-    } else {
-      this.logger.debug('Server metrics monitoring disabled.')
-    }
-
     this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
       this.homebridgeStatus = data.status
 
@@ -266,203 +180,10 @@ export class StatusService {
   }
 
   /**
-   * Looks up the cpu current load % and stores the last 60 points
-   */
-  private async getCpuLoadPoint() {
-    const load = this.readCpuLoad()
-    this.cpuLoadHistory = this.cpuLoadHistory.slice(-60)
-    this.cpuLoadHistory.push(load)
-  }
-
-  /**
-   * Looks up the current memory usage and stores the last 60 points
-   */
-  private async getMemoryUsagePoint() {
-    const memory = await mem()
-    this.memoryInfo = memory
-
-    const memoryFreePercent = ((memory.total - memory.available) / memory.total) * 100
-    this.memoryUsageHistory = this.memoryUsageHistory.slice(-60)
-    this.memoryUsageHistory.push(memoryFreePercent)
-  }
-
-  /**
-   * Alternative method to get the CPU load on systems that do not support systeminformation.currentLoad
-   * This is currently only used on FreeBSD
-   */
-  private async getCpuLoadPointAlt() {
-    const load = (loadavg()[0] * 100 / cpus().length)
-    this.cpuLoadHistory = this.cpuLoadHistory.slice(-60)
-    this.cpuLoadHistory.push(load)
-  }
-
-  /**
-   * Get the current CPU temperature using systeminformation.cpuTemperature
-   */
-  private async getCpuTemp() {
-    // An explicitly configured temperature file always wins - auto-detection
-    // can read the wrong sensor entirely on some platforms (e.g. Intel macOS
-    // reporting ~40°C too high), and previously the override only engaged
-    // when auto-detection failed outright, never when it was wrong (#2896)
-    if (this.configService.ui.temp) {
-      return this.getCpuTempLegacy()
-    }
-
-    if (platform() === 'linux') {
-      return this.getCpuTempLinux()
-    }
-
-    return cpuTemperature()
-  }
-
-  /**
-   * systeminformation's cpuTemperature() on Linux starts with an execSync that
-   * blocks the event loop, so read the same sysfs files with async fs, and only
-   * fall back to it for the sources the reader does not cover (vcgencmd).
-   */
-  private async getCpuTempLinux(): Promise<Systeminformation.CpuTemperatureData> {
-    const reading = await readLinuxCpuTemperature()
-    if (reading) {
-      return reading
-    }
-    if (this.noLinuxTempSensor) {
-      return { main: null, cores: [], max: null, socket: [], chipset: null }
-    }
-    const fallback = await cpuTemperature()
-    if (fallback.main === null) {
-      this.noLinuxTempSensor = true
-    }
-    return fallback
-  }
-
-  /**
-   * The old way of getting the cpu temp
-   */
-  private async getCpuTempLegacy() {
-    try {
-      const tempData = await readFile(this.configService.ui.temp, 'utf-8')
-      const tempValue = Number.parseFloat(tempData)
-
-      if (!Number.isFinite(tempValue)) {
-        throw new TypeError('the file does not contain a number')
-      }
-
-      // The configured file may hold either degrees or millidegrees, so pick the
-      // unit by magnitude - no cpu runs at 1000°C, and a millidegrees reading is
-      // never within 1°C of zero in practice. The comparison ignores the sign so
-      // a sub-zero millidegrees reading is not mistaken for degrees (#2896)
-      const cpuTemp = Math.abs(tempValue) >= 1000 ? tempValue / 1000 : tempValue
-      return {
-        main: cpuTemp,
-        cores: [],
-        max: cpuTemp,
-      }
-    } catch (e) {
-      this.logger.error(`Failed to read temp from ${this.configService.ui.temp} as ${e.message}.`)
-      return this.getCpuTempAlt()
-    }
-  }
-
-  /**
-   * Alternative method for CPU temp
-   * This is currently only used on FreeBSD and will return null
-   */
-  private async getCpuTempAlt() {
-    return {
-      main: -1,
-      cores: [],
-      max: -1,
-    }
-  }
-
-  /**
-   * Returns the current network usage
-   */
-  public async getCurrentNetworkUsage(netInterfaces?: string[], interval?: number): Promise<NetworkUsage> {
-    // Only the first interface's stats are returned, so only it is sampled.
-    // The name comes from the client and is handed to systeminformation (which
-    // builds commands and paths from it on some platforms), so only a name the
-    // host actually has is used - anything else gets the default interface.
-    const requested = Array.isArray(netInterfaces) ? netInterfaces.find(Boolean) : undefined
-    const iface = typeof requested === 'string' && (await this.getInterfaceNames()).has(requested) ? requested : ''
-
-    let sampler = this.networkSamplers.get(iface)
-    if (!sampler) {
-      if (this.networkSamplers.size >= MAX_NETWORK_SAMPLERS) {
-        return this.sampleNetworkUsage(iface)
-      }
-      sampler = new SharedSampler(() => this.sampleNetworkUsage(iface), {
-        intervalMs: METRIC_SAMPLE_MS,
-        idleMs: METRIC_IDLE_MS,
-        onError: e => this.logger.debug(`Failed to sample network usage as ${e.message}.`),
-        onStop: () => this.networkSamplers.delete(iface),
-      })
-      this.networkSamplers.set(iface, sampler)
-    }
-    return sampler.get(requestedIntervalMs(interval))
-  }
-
-  /**
-   * The host's network interface names, cached for a minute (an interface
-   * that comes up later is picked up then). Read from os.networkInterfaces():
-   * only the names are needed, and systeminformation's list runs a shell
-   * command per interface on some platforms.
-   */
-  private async getInterfaceNames(): Promise<Set<string>> {
-    const cached = this.statusCache.get<string[]>('interfaceNames')
-    if (cached) {
-      return new Set(cached)
-    }
-    try {
-      const names = Object.keys(osNetworkInterfaces()).filter(Boolean)
-      this.statusCache.set('interfaceNames', names, INTERFACE_CACHE_SECONDS)
-      return new Set(names)
-    } catch (e) {
-      this.logger.debug(`Failed to list network interfaces as ${e.message}.`)
-      return new Set()
-    }
-  }
-
-  /**
-   * The default interface's name, cached for a minute: finding it runs shell
-   * commands (`ip route` / `netstat` / `route`), too much for every sample
-   */
-  private async getDefaultInterfaceName(): Promise<string> {
-    const cached = this.statusCache.get<string>('defaultInterfaceName')
-    if (cached !== undefined) {
-      return cached
-    }
-    const name = await networkInterfaceDefault()
-    this.statusCache.set('defaultInterfaceName', name, INTERFACE_CACHE_SECONDS)
-    return name
-  }
-
-  private async sampleNetworkUsage(iface: string): Promise<NetworkUsage> {
-    const net = await networkStats(iface || await this.getDefaultInterfaceName())
-
-    // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
-    const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024
-
-    // TODO: break out the sent and received figures to two separate stacked graphs
-    // (these should ideally be positive/negative mirrored line charts)
-    return { net: net[0], point: txRxSec }
-  }
-
-  /**
    * Get the current dashboard layout
    */
   public async getDashboardLayout() {
-    if (!this.dashboardLayout) {
-      try {
-        const layout = await readJson(resolve(this.configService.storagePath, '.uix-dashboard.json'))
-        this.dashboardLayout = layout
-        return layout
-      } catch (e) {
-        return []
-      }
-    } else {
-      return this.dashboardLayout
-    }
+    return this.dashboardLayout.getLayout()
   }
 
   /**
@@ -490,54 +211,28 @@ export class StatusService {
    * Saves the current dashboard layout
    */
   public async setDashboardLayout(layout: any) {
-    writeJsonSync(resolve(this.configService.storagePath, '.uix-dashboard.json'), layout)
-    this.dashboardLayout = layout
-    return { status: 'ok' }
+    return this.dashboardLayout.setLayout(layout)
   }
 
   /**
    * Returns server CPU Load and temperature information
    */
   public async getServerCpuInfo(interval?: number) {
-    // When metrics monitoring is disabled, return an empty result rather than
-    // collecting on demand - the dashboard widgets poll this endpoint, which
-    // previously kept the metrics alive even with the monitoring turned off (#2934)
-    if (this.configService.ui.disableServerMetricsMonitoring === true) {
-      return {
-        cpuTemperature: { main: -1, cores: [], max: -1 },
-        currentLoad: 0,
-        cpuLoadHistory: [],
-      }
-    }
-
-    const intervalMs = requestedIntervalMs(interval)
-    await this.cpuLoadSampler.get(intervalMs)
-
-    return {
-      cpuTemperature: await this.cpuTempSampler.get(intervalMs),
-      currentLoad: this.cpuLoadHistory.slice(-1)[0],
-      cpuLoadHistory: this.cpuLoadHistory,
-    }
+    return this.systemMetrics.getServerCpuInfo(interval)
   }
 
   /**
    * Returns server Memory usage information
    */
   public async getServerMemoryInfo(interval?: number) {
-    // See getServerCpuInfo - no on-demand collection when monitoring is disabled (#2934)
-    if (this.configService.ui.disableServerMetricsMonitoring === true) {
-      return {
-        mem: null,
-        memoryUsageHistory: [],
-      }
-    }
+    return this.systemMetrics.getServerMemoryInfo(interval)
+  }
 
-    await this.memorySampler.get(requestedIntervalMs(interval))
-
-    return {
-      mem: this.memoryInfo,
-      memoryUsageHistory: this.memoryUsageHistory,
-    }
+  /**
+   * Returns the current network usage
+   */
+  public async getCurrentNetworkUsage(netInterfaces?: string[], interval?: number): Promise<NetworkUsage> {
+    return this.systemMetrics.getCurrentNetworkUsage(netInterfaces, interval)
   }
 
   /**
@@ -689,7 +384,7 @@ export class StatusService {
       return cachedResult
     }
 
-    const defaultInterfaceName = await this.getDefaultInterfaceName()
+    const defaultInterfaceName = await this.systemMetrics.getDefaultInterfaceName()
     const defaultInterface = defaultInterfaceName ? (await networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined
 
     if (defaultInterface) {
@@ -713,29 +408,6 @@ export class StatusService {
 
     this.statusCache.set('osInfo', osInformation, 86400)
     return osInformation
-  }
-
-  /**
-   * Get / Cache the GLIBC version
-   */
-  private getGlibcVersion(): string {
-    if (platform() !== 'linux') {
-      return ''
-    }
-
-    const cachedResult = this.statusCache.get('glibcVersion') as string
-    if (cachedResult) {
-      return cachedResult
-    }
-
-    try {
-      const glibcVersion = execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim()
-      this.statusCache.set('glibcVersion', glibcVersion, 86400)
-      return glibcVersion
-    } catch (e) {
-      this.logger.debug(`Could not check glibc version as ${e.message}.`)
-      return ''
-    }
   }
 
   /**
@@ -864,138 +536,30 @@ export class StatusService {
     const isNodeJs24Supported = isNodeV24SupportedArchitecture()
 
     try {
-      const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
-
-      // Get the newest node v22, v24 and v26
-      const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
-      const latest24 = versionList.filter((x: { version: string }) => x.version.startsWith('v24'))[0]
-      const latest26 = versionList.filter((x: { version: string }) => x.version.startsWith('v26'))[0]
-
-      let updateAvailable = false
-      let latestVersion = process.version
-      let showNodeUnsupportedWarning = false
-
-      /**
-       * NodeJS Version - Minimum GLIBC Version
-       *
-       *      18            2.28    // Official floor set here: builds moved to RHEL 8.
-       *                            // https://nodejs.org/en/blog/announcements/v18-release-announce
-       *      20            2.28    // Unchanged from 18; no dedicated migration doc, but bracketed
-       *                            // https://github.com/nodejs/node/blob/v20.x/BUILDING.md
-       *      22            2.28    // Unchanged from 20.
-       *                            // https://github.com/nodejs/node/blob/v22.x/BUILDING.md
-       *      24            2.28    // Explicitly confirmed "no change from Node.js 22."
-       *                            // Also adds a new libatomic/libatomic1 runtime dependency
-       *                            // (separate from glibc) starting at v25.
-       *                            // https://nodejs.org/en/blog/migrations/v22-to-v24
-       *      26            2.28    // Unchanged from 24.
-       *                            // https://github.com/nodejs/node/blob/v26.x/BUILDING.md
-       *
-       * Summary: the official glibc floor has been 2.28 since Node 18 and has not
-       * increased since, for any subsequent version through the current 26 dev
-       * branch. There is no 2.31 requirement documented anywhere by Node.js itself.
-       * ( I think when they launched 20 it originally had a 2.31 requirement, but that was later rolled back to 2.28. )
-       */
-
-      // Behaviour depends on the installed version of node
-      switch (process.version.split('.')[0]) {
-        case 'v20': {
-          // Currently using v20
-          if (isNodeJs24Supported) {
-            // If node 24 is supported, suggest updating to that
-            updateAvailable = true
-            latestVersion = latest24.version
-          } else {
-            // Otherwise, show the option for updating to node 22
-            updateAvailable = true
-            latestVersion = latest22.version
-          }
-          break
-        }
-        case 'v22': {
-          // Currently using v22
-          if (gt(latest22.version, process.version)) {
-            // Check if there is a new minor/patch version available
-            updateAvailable = true
-            latestVersion = latest22.version
-          } else if (isNodeJs24Supported) {
-            // If node 24 is supported, suggest updating to that
-            updateAvailable = true
-            latestVersion = latest24.version
-          }
-          break
-        }
-        case 'v24': {
-          // Currently using v24 (only possible on 64-bit architectures)
-          // Check if there is a new minor/patch version available
-          if (gt(latest24.version, process.version)) {
-            updateAvailable = true
-            latestVersion = latest24.version
-          }
-          break
-        }
-        case 'v26': {
-          // Currently using v26 (only possible on 64-bit architectures)
-          // Check if there is a new minor/patch version available
-          if (gt(latest26.version, process.version)) {
-            updateAvailable = true
-            latestVersion = latest26.version
-          }
-          break
-        }
-        default: {
-          // Using an unsupported version of node
-          showNodeUnsupportedWarning = true
-        }
+      const releases = await fetchNodeReleases(url => firstValueFrom(this.httpService.get(url)))
+      if (!releases) {
+        throw new TypeError('the release list is not an array')
       }
+
+      // The official glibc floor has been 2.28 since Node.js 18 and has not
+      // changed since (through v26), so it plays no part in the suggestion
+      const { updateAvailable, latestVersion, showNodeUnsupportedWarning } = pickNodeUpdate(releases, {
+        current: process.version,
+        policy: nodeUpdatePolicy,
+      })
 
       // Also return the npm version here
       let npmVersion = null
       try {
-        const { stdout } = await execAsync('npm --version')
-        npmVersion = `v${stdout.trim()}`
+        npmVersion = `v${await getNpmVersion()}`
       } catch (e) {
         this.logger.debug(`Could not check npm version as ${e.message}.`)
       }
 
-      // Apply node update policy
-      const nodeUpdatePolicy = this.configService.getNodeUpdatePolicy()
-      let finalUpdateAvailable = updateAvailable
-      let finalLatestVersion = latestVersion
-
-      if (nodeUpdatePolicy === 'none') {
-        // Hide all Node.js update notifications
-        finalUpdateAvailable = false
-      } else if (nodeUpdatePolicy === 'major') {
-        // Only show updates within the same major version
-        const currentMajor = Number.parseInt(process.version.split('.')[0].replace('v', ''), 10)
-        const latestMajor = Number.parseInt(latestVersion.split('.')[0].replace('v', ''), 10)
-
-        if (latestMajor > currentMajor) {
-          // The suggested version is a major upgrade, find the latest within current major
-          const latestInCurrentMajor = versionList
-            .filter((x: { version: string }) => x.version.startsWith(`v${currentMajor}`))
-            .sort((a: { version: string }, b: { version: string }) => {
-              // Sort by version descending
-              return b.version.localeCompare(a.version, undefined, { numeric: true, sensitivity: 'base' })
-            })[0]
-
-          if (latestInCurrentMajor && gt(latestInCurrentMajor.version, process.version)) {
-            // There's a newer version in the current major
-            finalLatestVersion = latestInCurrentMajor.version
-            finalUpdateAvailable = true
-          } else {
-            // No newer version in current major
-            finalUpdateAvailable = false
-          }
-        }
-        // If latestMajor === currentMajor, the existing latestVersion is already correct
-      }
-
       const versionInformation = {
         currentVersion: process.version,
-        latestVersion: finalLatestVersion,
-        updateAvailable: finalUpdateAvailable,
+        latestVersion,
+        updateAvailable,
         showNodeUnsupportedWarning,
         installPath: dirname(process.execPath),
         npmVersion,

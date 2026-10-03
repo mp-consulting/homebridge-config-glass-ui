@@ -1,15 +1,11 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { HttpService } from '@nestjs/axios'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
-import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
-import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
-import { ServerService } from '../../src/modules/server/server.service.js'
-import { StatusService } from '../../src/modules/status/status.service.js'
+import { SystemMetricsService } from '../../src/modules/status/system-metrics.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 const { cpuTemperatureMock } = vi.hoisted(() => ({
@@ -30,8 +26,8 @@ vi.mock('../../src/modules/status/linux-cpu-temperature.js', () => ({
   readLinuxCpuTemperature: vi.fn(async () => null),
 }))
 
-describe('StatusService - getCpuTemp', () => {
-  let statusService: StatusService
+describe('SystemMetricsService - getCpuTemp', () => {
+  let metrics: SystemMetricsService
   let configService: ConfigService
   let logger: Logger
   const tempDir = resolve(testStoragePath, 'cpu-temp')
@@ -54,14 +50,7 @@ describe('StatusService - getCpuTemp', () => {
       ui: { disableServerMetricsMonitoring: true },
     } as unknown as ConfigService
 
-    statusService = new StatusService(
-      new HttpService(),
-      logger,
-      configService,
-      {} as PluginsService,
-      {} as ServerService,
-      { on: vi.fn() } as unknown as HomebridgeIpcService,
-    )
+    metrics = new SystemMetricsService(logger, configService)
   })
 
   afterAll(async () => {
@@ -83,7 +72,7 @@ describe('StatusService - getCpuTemp', () => {
    */
   const getCpuTemp = async () => {
     // @ts-expect-error - accessing private method for testing
-    return statusService.getCpuTemp() as Promise<{ main: number, cores: number[], max: number }>
+    return metrics.getCpuTemp() as Promise<{ main: number, cores: number[], max: number }>
   }
 
   it('should prefer the configured temp file over systeminformation', async () => {

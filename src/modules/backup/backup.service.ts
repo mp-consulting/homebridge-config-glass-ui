@@ -21,7 +21,6 @@ import {
   NotFoundException,
   StreamableFile,
 } from '@nestjs/common'
-import { cyan, green, red, yellow } from 'bash-color'
 import dayjs from 'dayjs'
 import { copy, ensureDir, pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
 import { networkInterfaces } from 'systeminformation'
@@ -32,6 +31,7 @@ import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { cyan, green, red, yellow } from '../../core/logger/colors.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'

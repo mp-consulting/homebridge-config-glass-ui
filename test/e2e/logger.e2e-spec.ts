@@ -1,8 +1,8 @@
 import process from 'node:process'
 
-import { green, red, yellow } from 'bash-color'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { green, red, yellow } from '../../src/core/logger/colors.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
 
 describe('Logger (e2e)', () => {

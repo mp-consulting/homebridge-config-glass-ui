@@ -8,11 +8,11 @@ import process from 'node:process'
 
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { green, red, yellow } from 'bash-color'
 import { appendFile, copy, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { green, red, yellow } from '../../src/core/logger/colors.js'
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
 import { LogGateway } from '../../src/modules/log/log.gateway.js'
 import { LogModule } from '../../src/modules/log/log.module.js'

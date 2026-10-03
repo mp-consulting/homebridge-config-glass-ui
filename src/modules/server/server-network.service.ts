@@ -14,10 +14,10 @@ import {
 import { pathExists, readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
-import { check as tcpCheck } from 'tcp-port-used'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { findFreePort, isPortInUse } from '../../core/net/port.js'
 import { RE_COLON, RE_VALID_NAME } from '../../core/regex.constants.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { HomebridgeMdnsSettingDto } from './server.dto.js'
@@ -127,14 +127,7 @@ export class ServerNetworkService {
     const min = this.configService.homebridgeConfig.ports?.start ?? 30000
     const max = this.configService.homebridgeConfig.ports?.end ?? 60000
 
-    const randomPort = () => Math.floor(Math.random() * (max - min + 1) + min)
-
-    let port = randomPort()
-    while (await tcpCheck(port)) {
-      port = randomPort()
-    }
-
-    return { port }
+    return { port: await findFreePort(min, max) }
   }
 
   /**
@@ -169,7 +162,7 @@ export class ServerNetworkService {
 
     // Find first available port
     for (let port = min; port <= max; port += 1) {
-      if (!usedMatterPorts.has(port) && !await tcpCheck(port)) {
+      if (!usedMatterPorts.has(port) && !await isPortInUse(port)) {
         return { port }
       }
     }

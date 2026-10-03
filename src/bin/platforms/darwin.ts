@@ -10,6 +10,7 @@ import process from 'node:process'
 import { pathExists, remove } from 'fs-extra/esm'
 import { gte, lt } from 'semver'
 
+import { npmGlobalModulesPath, npmGlobalPrefixSync, npmRebuild, tryNpmRebuild } from '../../core/npm/npm-runner.js'
 import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
@@ -118,30 +119,15 @@ export class DarwinInstaller extends BasePlatform {
 
       const targetNodeVersion = execSync('node -v').toString('utf8').trim()
 
-      const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-        env: {
-          npm_config_loglevel: 'silent',
-          npm_update_notifier: 'false',
-          ...process.env,
-        },
-      }).toString('utf8')
+      const npmGlobalPath = npmGlobalModulesPath(npmGlobalPrefixSync())
 
-      execSync('npm rebuild', {
-        cwd: process.env.UIX_BASE_PATH,
-        stdio: 'inherit',
-      })
+      npmRebuild(process.env.UIX_BASE_PATH)
       this.hbService.logger.success(`Rebuilt @mp-consulting/homebridge-config-glass-ui for Node.js ${targetNodeVersion}.`)
 
       if (all === true) {
         // Rebuild all modules
-        try {
-          execSync('npm rebuild', {
-            cwd: npmGlobalPath,
-            stdio: 'inherit',
-          })
+        if (tryNpmRebuild(npmGlobalPath, () => this.hbService.logger.warn('Could not rebuild all modules - check Homebridge logs.'))) {
           this.hbService.logger.success(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`)
-        } catch (e) {
-          this.hbService.logger.warn('Could not rebuild all modules - check Homebridge logs.')
         }
       }
 
@@ -307,13 +293,7 @@ export class DarwinInstaller extends BasePlatform {
    * Checks if the user has write access to the global npm directory
    */
   private async checkGlobalNpmAccess() {
-    const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-      env: {
-        npm_config_loglevel: 'silent',
-        npm_update_notifier: 'false',
-        ...process.env,
-      },
-    }).toString('utf8')
+    const npmGlobalPath = npmGlobalModulesPath(npmGlobalPrefixSync())
     const { uid, gid } = await this.getId()
 
     try {

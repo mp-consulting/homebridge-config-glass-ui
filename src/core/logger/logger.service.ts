@@ -3,7 +3,8 @@ import type { ConsoleLoggerOptions } from '@nestjs/common'
 import process from 'node:process'
 
 import { ConsoleLogger, Injectable, Optional } from '@nestjs/common'
-import { cyan, green, red, white, yellow } from 'bash-color'
+
+import { cyan, green, red, white, yellow } from './colors.js'
 
 @Injectable()
 export class Logger extends ConsoleLogger {

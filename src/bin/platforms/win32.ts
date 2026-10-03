@@ -7,6 +7,7 @@ import process from 'node:process'
 import axios from 'axios'
 import { pathExists, remove } from 'fs-extra/esm'
 
+import { npmRebuild } from '../../core/npm/npm-runner.js'
 import { RE_SERVICE_NAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
@@ -128,10 +129,7 @@ export class Win32Installer extends BasePlatform {
     this.checkIsAdmin()
 
     try {
-      execSync('npm rebuild', {
-        cwd: process.env.UIX_BASE_PATH,
-        stdio: 'inherit',
-      })
+      npmRebuild(process.env.UIX_BASE_PATH)
 
       this.hbService.logger.success(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`)
     } catch (e) {

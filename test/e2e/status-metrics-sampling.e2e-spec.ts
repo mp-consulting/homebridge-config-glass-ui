@@ -9,9 +9,11 @@ import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-i
 import { Logger } from '../../src/core/logger/logger.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
+import { DashboardLayoutService } from '../../src/modules/status/dashboard-layout.service.js'
 import { readLinuxCpuTemperature } from '../../src/modules/status/linux-cpu-temperature.js'
 import { SharedSampler } from '../../src/modules/status/shared-sampler.js'
 import { requestedIntervalMs, StatusService } from '../../src/modules/status/status.service.js'
+import { SystemMetricsService } from '../../src/modules/status/system-metrics.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 const { networkStatsMock, networkInterfaceDefaultMock, networkInterfacesMock, osNetworkInterfacesMock, currentLoadMock } = vi.hoisted(() => ({
@@ -324,6 +326,7 @@ describe('requestedIntervalMs', () => {
 
 describe('StatusService - shared metric sampling', () => {
   let statusService: StatusService
+  let metrics: SystemMetricsService
 
   const netStats = (iface: string, rxSec: number) => [{ iface, rx_sec: rxSec, tx_sec: 0 }]
 
@@ -334,13 +337,20 @@ describe('StatusService - shared metric sampling', () => {
     networkInterfaceDefaultMock.mockResolvedValue('eth0')
     osNetworkInterfacesMock.mockReturnValue({ eth0: [], wlan0: [] })
 
+    const configService = { ui: {} } as unknown as ConfigService
+    metrics = new SystemMetricsService(
+      { log: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } as unknown as Logger,
+      configService,
+    )
     statusService = new StatusService(
       new HttpService(),
       { log: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() } as unknown as Logger,
-      { ui: {} } as unknown as ConfigService,
+      configService,
       {} as PluginsService,
       {} as ServerService,
       { on: vi.fn() } as unknown as HomebridgeIpcService,
+      metrics,
+      {} as DashboardLayoutService,
     )
   })
 
@@ -350,7 +360,7 @@ describe('StatusService - shared metric sampling', () => {
   })
 
   it('answers every client from one cpu temperature sample per interval', async () => {
-    const getCpuTemp = vi.spyOn(statusService as any, 'getCpuTemp')
+    const getCpuTemp = vi.spyOn(metrics as any, 'getCpuTemp')
       .mockResolvedValue({ main: 50, cores: [], max: 50 })
 
     const [a, b] = await Promise.all([statusService.getServerCpuInfo(), statusService.getServerCpuInfo()])
@@ -402,7 +412,7 @@ describe('StatusService - shared metric sampling', () => {
 
     // Every unknown name shared the default interface's sampler
     expect(networkStatsMock.mock.calls.map(([iface]) => iface)).toEqual(['eth0'])
-    expect([...(statusService as any).networkSamplers.keys()]).toEqual([''])
+    expect([...(metrics as any).networkSamplers.keys()]).toEqual([''])
     // The interface list is read once and cached, and so is the default
     // interface; systeminformation's full interface scan is never needed
     expect(osNetworkInterfacesMock).toHaveBeenCalledTimes(1)
@@ -423,7 +433,7 @@ describe('StatusService - shared metric sampling', () => {
   })
 
   it('samples cpu load, temperature and network at a widget\'s 1 s refresh, and slows down after it leaves', async () => {
-    const getCpuTemp = vi.spyOn(statusService as any, 'getCpuTemp')
+    const getCpuTemp = vi.spyOn(metrics as any, 'getCpuTemp')
       .mockResolvedValue({ main: 50, cores: [], max: 50 })
     networkStatsMock.mockImplementation(async (iface: string) => netStats(iface, 0))
     let load = 0
@@ -449,7 +459,7 @@ describe('StatusService - shared metric sampling', () => {
   })
 
   it('samples memory at the requested interval, and every 10 s for old payloads', async () => {
-    const memSpy = vi.spyOn(statusService as any, 'getMemoryUsagePoint').mockResolvedValue(undefined)
+    const memSpy = vi.spyOn(metrics as any, 'getMemoryUsagePoint').mockResolvedValue(undefined)
 
     await statusService.getServerMemoryInfo()
     expect(memSpy).toHaveBeenCalledTimes(1)
@@ -474,6 +484,6 @@ describe('StatusService - shared metric sampling', () => {
     await vi.advanceTimersByTimeAsync(120_000)
 
     expect(networkStatsMock).toHaveBeenCalledTimes(calls)
-    expect((statusService as any).networkSamplers.size).toBe(0)
+    expect((metrics as any).networkSamplers.size).toBe(0)
   })
 })

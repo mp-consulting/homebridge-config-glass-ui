@@ -12,15 +12,15 @@ import { Logger } from '../../src/core/logger/logger.service.js'
 import { isNodeV24SupportedArchitecture } from '../../src/core/node-version.constants.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
+import { DashboardLayoutService } from '../../src/modules/status/dashboard-layout.service.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
+import { SystemMetricsService } from '../../src/modules/status/system-metrics.service.js'
 
-// getNodeVersionInfo shells out to `npm --version` on every uncached call,
-// which costs about a second per test. No test here asserts on the npm version.
-vi.mock('node:child_process', async importOriginal => ({
-  ...await importOriginal<typeof import('node:child_process')>(),
-  exec: vi.fn((_command: string, callback: (error: Error | null, result: { stdout: string, stderr: string }) => void) => {
-    callback(null, { stdout: '11.0.0\n', stderr: '' })
-  }),
+// getNodeVersionInfo asks npm for its version, which costs about a second.
+// No test here asserts on the npm version.
+vi.mock('../../src/core/npm/npm-runner.js', async importOriginal => ({
+  ...await importOriginal<typeof import('../../src/core/npm/npm-runner.js')>(),
+  npmVersion: vi.fn(async () => '11.0.0'),
 }))
 
 interface NodeJsVersionInfo {
@@ -79,6 +79,8 @@ describe('StatusService - getNodeVersionInfo', () => {
       pluginsService,
       serverService,
       homebridgeIpcService,
+      {} as SystemMetricsService,
+      {} as DashboardLayoutService,
     )
 
     // Clear cache before each test
@@ -95,15 +97,7 @@ describe('StatusService - getNodeVersionInfo', () => {
   })
 
   describe('Node.js v20 users', () => {
-    it('should recommend v24 when on v20 with 64-bit architecture', async () => {
-      const isNode24Supported = isNodeV24SupportedArchitecture()
-
-      // Skip test if not on 64-bit architecture
-      if (!isNode24Supported) {
-        return
-      }
-
-      // Mock process.version
+    it('should show the unsupported warning (v20 is below the engines floor)', async () => {
       Object.defineProperty(process, 'version', {
         value: 'v20.19.0',
         writable: true,
@@ -115,45 +109,10 @@ describe('StatusService - getNodeVersionInfo', () => {
       const result = await statusService.getNodeVersionInfo() as NodeJsVersionInfo
 
       expect(result.currentVersion).toBe('v20.19.0')
-      expect(result.latestVersion).toBe('v24.2.0')
-      expect(result.updateAvailable).toBe(true)
-      expect(result.showNodeUnsupportedWarning).toBe(false)
-      expect(result.supportsNodeJs24).toBe(true)
+      expect(result.latestVersion).toBe('v20.19.0')
+      expect(result.updateAvailable).toBe(false)
+      expect(result.showNodeUnsupportedWarning).toBe(true)
 
-      // Restore original version
-      Object.defineProperty(process, 'version', {
-        value: originalProcessVersion,
-        writable: true,
-        configurable: true,
-      })
-    })
-
-    it('should recommend v22 when on v20 with 32-bit architecture', async () => {
-      const isNode24Supported = isNodeV24SupportedArchitecture()
-
-      // Skip test if on 64-bit architecture
-      if (isNode24Supported) {
-        return
-      }
-
-      // Mock process.version
-      Object.defineProperty(process, 'version', {
-        value: 'v20.19.0',
-        writable: true,
-        configurable: true,
-      })
-
-      vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
-
-      const result = await statusService.getNodeVersionInfo() as NodeJsVersionInfo
-
-      expect(result.currentVersion).toBe('v20.19.0')
-      expect(result.latestVersion).toBe('v22.13.0')
-      expect(result.updateAvailable).toBe(true)
-      expect(result.showNodeUnsupportedWarning).toBe(false)
-      expect(result.supportsNodeJs24).toBe(false)
-
-      // Restore original version
       Object.defineProperty(process, 'version', {
         value: originalProcessVersion,
         writable: true,
@@ -474,6 +433,8 @@ describe('StatusService - getNodeVersionInfo', () => {
         pluginsService,
         serverService,
         homebridgeIpcService,
+        {} as SystemMetricsService,
+        {} as DashboardLayoutService,
       )
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
@@ -526,6 +487,8 @@ describe('StatusService - getNodeVersionInfo', () => {
         pluginsService,
         serverService,
         homebridgeIpcService,
+        {} as SystemMetricsService,
+        {} as DashboardLayoutService,
       )
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
@@ -579,6 +542,8 @@ describe('StatusService - getNodeVersionInfo', () => {
         pluginsService,
         serverService,
         homebridgeIpcService,
+        {} as SystemMetricsService,
+        {} as DashboardLayoutService,
       )
 
       vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
@@ -599,9 +564,9 @@ describe('StatusService - getNodeVersionInfo', () => {
     })
 
     it('should show all updates when policy is "all" (default)', async () => {
-      // Mock process.version to v20
+      // Mock process.version to an older v22
       Object.defineProperty(process, 'version', {
-        value: 'v20.19.0',
+        value: 'v22.12.0',
         writable: true,
         configurable: true,
       })
@@ -611,8 +576,8 @@ describe('StatusService - getNodeVersionInfo', () => {
 
       const result = await statusService.getNodeVersionInfo() as NodeJsVersionInfo
 
-      expect(result.currentVersion).toBe('v20.19.0')
-      // Should show major version updates
+      expect(result.currentVersion).toBe('v22.12.0')
+      // Should show the update
       expect(result.updateAvailable).toBe(true)
 
       // Restore original version

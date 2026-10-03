@@ -7,7 +7,7 @@ import type {
 
 import { spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
-import { constants, existsSync } from 'node:fs'
+import { constants } from 'node:fs'
 import { access } from 'node:fs/promises'
 import { arch, cpus, platform, userInfo } from 'node:os'
 import {
@@ -20,15 +20,16 @@ import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, readJson, remove } from 'fs-extra/esm'
 import { firstValueFrom } from 'rxjs'
 import { satisfies } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { getUiNodeModulesPath } from '../../core/install-paths.js'
+import { cyan, green, red, yellow } from '../../core/logger/colors.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { npmPath } from '../../core/npm/npm-runner.js'
 import {
   RE_ENCODED_AT,
   RE_PLUGIN_NAME,
@@ -391,23 +392,10 @@ export class PluginInstallerService {
    * Helper function to work out where npm is
    */
   private getNpmPath() {
-    if (platform() === 'win32') {
-      // If running on windows find the full path to npm
-      const windowsNpmPath = [
-        join(process.env.APPDATA, 'npm/npm.cmd'),
-        join(process.env.ProgramFiles, 'nodejs/npm.cmd'),
-        join(process.env.NVM_SYMLINK || `${process.env.ProgramFiles}/nodejs`, 'npm.cmd'),
-      ].filter(existsSync)
-
-      if (windowsNpmPath.length) {
-        return [windowsNpmPath[0]]
-      } else {
-        this.logger.error('Cannot find npm binary, you will not be able to manage plugins or update Homebridge. You might be able to fix this problem by running:')
-        this.logger.error('npm install -g npm')
-      }
-    }
-    // Linux and macOS don't require the full path to npm
-    return ['npm']
+    return [npmPath(() => {
+      this.logger.error('Cannot find npm binary, you will not be able to manage plugins or update Homebridge. You might be able to fix this problem by running:')
+      this.logger.error('npm install -g npm')
+    })]
   }
 
   /**

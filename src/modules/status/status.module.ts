@@ -8,9 +8,11 @@ import { LoggerModule } from '../../core/logger/logger.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
 import { ServerModule } from '../server/server.module.js'
+import { DashboardLayoutService } from './dashboard-layout.service.js'
 import { StatusController } from './status.controller.js'
 import { StatusGateway } from './status.gateway.js'
 import { StatusService } from './status.service.js'
+import { SystemMetricsService } from './system-metrics.service.js'
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { StatusService } from './status.service.js'
   ],
   providers: [
     StatusService,
+    SystemMetricsService,
+    DashboardLayoutService,
     StatusGateway,
   ],
   controllers: [
