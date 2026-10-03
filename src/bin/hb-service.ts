@@ -26,7 +26,6 @@ import axios from 'axios'
 import { program } from 'commander'
 import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
 import ora from 'ora'
-import { gt, gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
 import { extract } from 'tar'
@@ -34,6 +33,8 @@ import { extract } from 'tar'
 import { generatePin, generateUsername } from '../core/hap-identity.js'
 import { getUiNodeModulesPath } from '../core/install-paths.js'
 import { findFreePort, isPortInUse } from '../core/net/port.js'
+import { MIN_NODE_VERSION } from '../core/node-version.constants.js'
+import { fetchNodeReleases, pickNodeInstall } from '../core/node-version/node-release.js'
 import { npmGlobalModulesPath, npmGlobalPrefixSync } from '../core/npm/npm-runner.js'
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { sanitiseStartupEnv } from '../modules/config-editor/config-safety.js'
@@ -1179,58 +1180,36 @@ export class HomebridgeServiceHelper {
    * If current version is > LTS, update to the latest version while retaining the major version number
    */
   private async checkForNodejsUpdates(requestedVersion: string) {
-    const versionList = (await axios.get('https://nodejs.org/dist/index.json')).data
+    const releases = await fetchNodeReleases()
 
     // Check response is valid array
-    if (!Array.isArray(versionList)) {
+    if (!releases) {
       this.logger.error('Failed to check for Node.js updates.')
       return { update: false }
     }
 
-    // Filter out non-LTS versions and find the latest LTS version
-    const currentLts = versionList.filter(x => x.lts)[0]
+    const plan = pickNodeInstall(releases, {
+      current: process.version,
+      currentModules: process.versions.modules,
+      requested: requestedVersion,
+    })
 
-    if (requestedVersion) {
-      const wantedVersion = versionList.find(x => x.version.startsWith(`v${requestedVersion}`))
-      if (wantedVersion) {
-        // Check the requested version is greater than v22.12.0
-        if (!gte(wantedVersion.version, '22.12.0')) {
-          this.logger.error('Refusing to install Node.js version lower than v22.12.0.')
-          return { update: false }
-        }
-        this.logger.log(`Installing Node.js ${wantedVersion.version} over ${process.version}...`)
-        return this.installer.updateNodejs({
-          target: wantedVersion.version,
-          rebuild: wantedVersion.modules !== process.versions.modules,
-        })
-      } else {
+    switch (plan.action) {
+      case 'too-old':
+        this.logger.error(`Refusing to install Node.js version lower than v${MIN_NODE_VERSION}.`)
+        return { update: false }
+      case 'unknown-version':
         this.logger.log(`v${requestedVersion} is not a valid Node.js version.`)
         return { update: false }
-      }
+      case 'up-to-date':
+        this.logger.log(`Node.js ${process.version} already up-to-date.`)
+        return { update: false }
+      case 'install':
+        this.logger.log(plan.reason === 'requested'
+          ? `Installing Node.js ${plan.target} over ${process.version}...`
+          : `Updating Node.js from ${process.version} to ${plan.target}...`)
+        return this.installer.updateNodejs({ target: plan.target, rebuild: plan.rebuild })
     }
-
-    if (gt(currentLts.version, process.version)) {
-      this.logger.log(`Updating Node.js from ${process.version} to ${currentLts.version}...`)
-      return this.installer.updateNodejs({
-        target: currentLts.version,
-        rebuild: currentLts.modules !== process.versions.modules,
-      })
-    }
-
-    const currentMajor = parse(process.version).major
-    const latestVersion = versionList.filter(x => parse(x.version).major === currentMajor)[0]
-
-    if (gt(latestVersion.version, process.version)) {
-      this.logger.log(`Updating Node.js from ${process.version} to ${latestVersion.version}...`)
-      return this.installer.updateNodejs({
-        target: latestVersion.version,
-        rebuild: latestVersion.modules !== process.versions.modules,
-      })
-    }
-
-    this.logger.log(`Node.js ${process.version} already up-to-date.`)
-
-    return { update: false }
   }
 
   /**

@@ -16,7 +16,6 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { readJson, writeJsonSync } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
-import { gt } from 'semver'
 import {
   cpuTemperature,
   mem,
@@ -32,6 +31,7 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { getUiNodeModulesPath } from '../../core/install-paths.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { fetchNodeReleases, pickNodeUpdate } from '../../core/node-version/node-release.js'
 import { npmVersion as getNpmVersion } from '../../core/npm/npm-runner.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
@@ -865,90 +865,17 @@ export class StatusService {
     const isNodeJs24Supported = isNodeV24SupportedArchitecture()
 
     try {
-      const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
-
-      // Get the newest node v22, v24 and v26
-      const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
-      const latest24 = versionList.filter((x: { version: string }) => x.version.startsWith('v24'))[0]
-      const latest26 = versionList.filter((x: { version: string }) => x.version.startsWith('v26'))[0]
-
-      let updateAvailable = false
-      let latestVersion = process.version
-      let showNodeUnsupportedWarning = false
-
-      /**
-       * NodeJS Version - Minimum GLIBC Version
-       *
-       *      18            2.28    // Official floor set here: builds moved to RHEL 8.
-       *                            // https://nodejs.org/en/blog/announcements/v18-release-announce
-       *      20            2.28    // Unchanged from 18; no dedicated migration doc, but bracketed
-       *                            // https://github.com/nodejs/node/blob/v20.x/BUILDING.md
-       *      22            2.28    // Unchanged from 20.
-       *                            // https://github.com/nodejs/node/blob/v22.x/BUILDING.md
-       *      24            2.28    // Explicitly confirmed "no change from Node.js 22."
-       *                            // Also adds a new libatomic/libatomic1 runtime dependency
-       *                            // (separate from glibc) starting at v25.
-       *                            // https://nodejs.org/en/blog/migrations/v22-to-v24
-       *      26            2.28    // Unchanged from 24.
-       *                            // https://github.com/nodejs/node/blob/v26.x/BUILDING.md
-       *
-       * Summary: the official glibc floor has been 2.28 since Node 18 and has not
-       * increased since, for any subsequent version through the current 26 dev
-       * branch. There is no 2.31 requirement documented anywhere by Node.js itself.
-       * ( I think when they launched 20 it originally had a 2.31 requirement, but that was later rolled back to 2.28. )
-       */
-
-      // Behaviour depends on the installed version of node
-      switch (process.version.split('.')[0]) {
-        case 'v20': {
-          // Currently using v20
-          if (isNodeJs24Supported) {
-            // If node 24 is supported, suggest updating to that
-            updateAvailable = true
-            latestVersion = latest24.version
-          } else {
-            // Otherwise, show the option for updating to node 22
-            updateAvailable = true
-            latestVersion = latest22.version
-          }
-          break
-        }
-        case 'v22': {
-          // Currently using v22
-          if (gt(latest22.version, process.version)) {
-            // Check if there is a new minor/patch version available
-            updateAvailable = true
-            latestVersion = latest22.version
-          } else if (isNodeJs24Supported) {
-            // If node 24 is supported, suggest updating to that
-            updateAvailable = true
-            latestVersion = latest24.version
-          }
-          break
-        }
-        case 'v24': {
-          // Currently using v24 (only possible on 64-bit architectures)
-          // Check if there is a new minor/patch version available
-          if (gt(latest24.version, process.version)) {
-            updateAvailable = true
-            latestVersion = latest24.version
-          }
-          break
-        }
-        case 'v26': {
-          // Currently using v26 (only possible on 64-bit architectures)
-          // Check if there is a new minor/patch version available
-          if (gt(latest26.version, process.version)) {
-            updateAvailable = true
-            latestVersion = latest26.version
-          }
-          break
-        }
-        default: {
-          // Using an unsupported version of node
-          showNodeUnsupportedWarning = true
-        }
+      const releases = await fetchNodeReleases(url => firstValueFrom(this.httpService.get(url)))
+      if (!releases) {
+        throw new TypeError('the release list is not an array')
       }
+
+      // The official glibc floor has been 2.28 since Node.js 18 and has not
+      // changed since (through v26), so it plays no part in the suggestion
+      const { updateAvailable, latestVersion, showNodeUnsupportedWarning } = pickNodeUpdate(releases, {
+        current: process.version,
+        policy: nodeUpdatePolicy,
+      })
 
       // Also return the npm version here
       let npmVersion = null
@@ -958,44 +885,10 @@ export class StatusService {
         this.logger.debug(`Could not check npm version as ${e.message}.`)
       }
 
-      // Apply node update policy
-      const nodeUpdatePolicy = this.configService.getNodeUpdatePolicy()
-      let finalUpdateAvailable = updateAvailable
-      let finalLatestVersion = latestVersion
-
-      if (nodeUpdatePolicy === 'none') {
-        // Hide all Node.js update notifications
-        finalUpdateAvailable = false
-      } else if (nodeUpdatePolicy === 'major') {
-        // Only show updates within the same major version
-        const currentMajor = Number.parseInt(process.version.split('.')[0].replace('v', ''), 10)
-        const latestMajor = Number.parseInt(latestVersion.split('.')[0].replace('v', ''), 10)
-
-        if (latestMajor > currentMajor) {
-          // The suggested version is a major upgrade, find the latest within current major
-          const latestInCurrentMajor = versionList
-            .filter((x: { version: string }) => x.version.startsWith(`v${currentMajor}`))
-            .sort((a: { version: string }, b: { version: string }) => {
-              // Sort by version descending
-              return b.version.localeCompare(a.version, undefined, { numeric: true, sensitivity: 'base' })
-            })[0]
-
-          if (latestInCurrentMajor && gt(latestInCurrentMajor.version, process.version)) {
-            // There's a newer version in the current major
-            finalLatestVersion = latestInCurrentMajor.version
-            finalUpdateAvailable = true
-          } else {
-            // No newer version in current major
-            finalUpdateAvailable = false
-          }
-        }
-        // If latestMajor === currentMajor, the existing latestVersion is already correct
-      }
-
       const versionInformation = {
         currentVersion: process.version,
-        latestVersion: finalLatestVersion,
-        updateAvailable: finalUpdateAvailable,
+        latestVersion,
+        updateAvailable,
         showNodeUnsupportedWarning,
         installPath: dirname(process.execPath),
         npmVersion,

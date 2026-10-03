@@ -5,6 +5,12 @@ import process from 'node:process'
  */
 
 /**
+ * The oldest Node.js release this package supports (the floor of `engines.node`
+ * in package.json). hb-service refuses to install anything older.
+ */
+export const MIN_NODE_VERSION = '22.12.0'
+
+/**
  * Architectures that support Node.js v24
  * Node.js v24 requires 64-bit architectures
  */

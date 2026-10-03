@@ -16,6 +16,7 @@ import { satisfies } from 'semver'
 
 import { revalidateWsClients } from '../auth/guards/ws-auth.js'
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+import { MIN_NODE_VERSION } from '../node-version.constants.js'
 import { resolveWallpaperPath } from './wallpaper.js'
 
 @Injectable()
@@ -40,7 +41,7 @@ export class ConfigService {
   public runningHomebridgeModulePath: string
 
   // Server env
-  public minimumNodeVersion = '22.12.0'
+  public minimumNodeVersion = MIN_NODE_VERSION
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1')
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')
   public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')
