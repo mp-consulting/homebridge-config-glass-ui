@@ -20,7 +20,7 @@ import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ConfigBackupService } from './config-backup.service.js'
 import { cleanUpUiConfig, generatePin, generateUsername, normaliseConfig } from './config-normalise.js'
-import { findUnsafeUiValues, RESTART_COMMAND_RULE } from './config-safety.js'
+import { findUnsafeBridgeEnvValues, findUnsafeUiValues, RESTART_COMMAND_RULE } from './config-safety.js'
 
 export interface ConfigEditorRestartInfo<T> {
   config: T
@@ -100,6 +100,21 @@ export class ConfigEditorService {
   }
 
   /**
+   * Throw a BadRequestException if any child bridge's `_bridge.env.NODE_OPTIONS`
+   * uses a flag that loads code, opens a debugger or reads/writes files (see
+   * `findUnsafeBridgeEnvValues`). Checked on the config about to be written,
+   * so a save that removes a bad value is never blocked by it.
+   */
+  private assertBridgeEnvSafe(config: HomebridgeConfig): void {
+    const unsafe = findUnsafeBridgeEnvValues(config)
+    if (unsafe.length) {
+      const { path, reason } = unsafe[0]
+      this.logger.warn(`Refused to save config.json: "${path}" is not allowed.`)
+      throw new BadRequestException(`Refusing to save "${path}": ${reason}`)
+    }
+  }
+
+  /**
    * Normalise a config object in place (see `normaliseConfig`).
    */
   private normaliseConfig(config: HomebridgeConfig | null): HomebridgeConfig {
@@ -117,6 +132,7 @@ export class ConfigEditorService {
     const now = new Date()
 
     config = this.normaliseConfig(config)
+    this.assertBridgeEnvSafe(config)
 
     // Snapshot the existing config to a timestamped backup path before
     // overwriting. copyFile keeps the live file present (never unlinked)
@@ -178,6 +194,7 @@ export class ConfigEditorService {
         // The mutators here never touch the restart commands, but keep the
         // allowlist chokepoint on every path that persists the file.
         this.assertRestartCommandsSafe(config)
+        this.assertBridgeEnvSafe(config)
         return config
       },
       {

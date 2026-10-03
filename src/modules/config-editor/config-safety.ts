@@ -48,6 +48,9 @@ const RE_UNSAFE_NODE_OPTION_PREFIX = /^--(?:inspect|debug)/
 // eslint-disable-next-line no-control-regex
 const RE_CONTROL_CHARS = /[\u0000-\u001F\u007F]/
 
+// The `path` findUnsafeBridgeEnvValues reports
+const RE_BRIDGE_ENV_PATH = /^(platforms|accessories)\[(\d+)\]\._bridge\.env\.NODE_OPTIONS$/
+
 export const RESTART_COMMAND_RULE = 'The command must use systemctl, service, shutdown, reboot, poweroff, halt, or init, optionally prefixed with sudo, and may not contain shell metacharacters.'
 export const NODE_OPTIONS_RULE = 'NODE_OPTIONS may not use --require, --import, --loader, --inspect or other flags that load code, open a debugger or read/write files.'
 export const LOG_PATH_RULE = 'The log path may not point at the UI secrets, users, config.json, HomeKit or Matter pairing data, SSL certificates, backups or hb-service startup settings in the Homebridge storage directory.'
@@ -95,6 +98,57 @@ export function sanitiseStartupEnv(env: unknown, warn: (msg: string) => void): R
     delete result.NODE_OPTIONS
   }
   return result
+}
+
+/**
+ * Every child bridge's `_bridge.env.NODE_OPTIONS` (in `platforms[]` and
+ * `accessories[]`) that is not allowed. Homebridge starts the child bridge
+ * process with that env, so it is the same code-loading hole as the
+ * hb-service startup NODE_OPTIONS and gets the same check. Not grandfathered:
+ * nothing checks the value again when Homebridge uses it.
+ */
+export function findUnsafeBridgeEnvValues(config: unknown): UnsafeUiValue[] {
+  const unsafe: UnsafeUiValue[] = []
+  if (!config || typeof config !== 'object') {
+    return unsafe
+  }
+  for (const arrayKey of ['platforms', 'accessories'] as const) {
+    const blocks = (config as Record<string, unknown>)[arrayKey]
+    if (!Array.isArray(blocks)) {
+      continue
+    }
+    blocks.forEach((block, index) => {
+      const env = block?._bridge?.env
+      if (!env || typeof env !== 'object' || !('NODE_OPTIONS' in env)) {
+        return
+      }
+      const flag = findUnsafeNodeOption(env.NODE_OPTIONS)
+      if (flag) {
+        unsafe.push({
+          path: `${arrayKey}[${index}]._bridge.env.NODE_OPTIONS`,
+          reason: `"${flag}" is not allowed. ${NODE_OPTIONS_RULE}`,
+        })
+      }
+    })
+  }
+  return unsafe
+}
+
+/**
+ * Remove the values reported by `findUnsafeBridgeEnvValues` from a config in
+ * place, dropping an `env` object left empty.
+ */
+export function removeUnsafeBridgeEnvValues(config: any, unsafe: UnsafeUiValue[]): void {
+  for (const { path } of unsafe) {
+    const match = RE_BRIDGE_ENV_PATH.exec(path)
+    const bridge = match ? config?.[match[1]]?.[Number(match[2])]?._bridge : undefined
+    if (bridge?.env && typeof bridge.env === 'object') {
+      delete bridge.env.NODE_OPTIONS
+      if (!Object.keys(bridge.env).length) {
+        delete bridge.env
+      }
+    }
+  }
 }
 
 /**

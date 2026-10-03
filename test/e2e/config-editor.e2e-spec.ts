@@ -1347,6 +1347,54 @@ describe('ConfigEditorController (e2e)', () => {
       expect(res.body).toContain('log.command')
     })
 
+    it('POST /config-editor (full save) refuses a child bridge NODE_OPTIONS that loads code', async () => {
+      for (const arrayKey of ['platforms', 'accessories'] as const) {
+        const config: any = await readJson(configFilePath)
+        const block = arrayKey === 'platforms'
+          ? { platform: 'ExampleHomebridgePlugin', _bridge: { username: '0E:AA:BB:CC:DD:EE', port: 45678, env: { NODE_OPTIONS: '--require /tmp/evil.js' } } }
+          : { accessory: 'ExampleAccessory', name: 'A', _bridge: { username: '0E:AA:BB:CC:DD:EF', port: 45679, env: { DEBUG: '*', NODE_OPTIONS: '--max-old-space-size=256 --import=data:text/javascript,1' } } }
+        config[arrayKey] = [...(config[arrayKey] ?? []), block]
+        const index = config[arrayKey].length - 1
+
+        const res = await app.inject({
+          method: 'POST',
+          url: '/config-editor',
+          headers: { authorization },
+          payload: config,
+        })
+        expect(res.statusCode).toBe(400)
+        expect(res.json().message).toContain(`${arrayKey}[${index}]._bridge.env.NODE_OPTIONS`)
+        expect(res.json().message).toContain('NODE_OPTIONS may not use --require')
+        const onDisk: any = await readJson(configFilePath)
+        expect(JSON.stringify(onDisk)).not.toContain('evil.js')
+        expect(JSON.stringify(onDisk)).not.toContain('--import')
+      }
+
+      // A harmless value saves
+      const config: any = await readJson(configFilePath)
+      config.platforms.push({ platform: 'ExampleHomebridgePlugin', _bridge: { username: '0E:AA:BB:CC:DD:EE', port: 45678, env: { NODE_OPTIONS: '--max-old-space-size=256' } } })
+      const ok = await app.inject({ method: 'POST', url: '/config-editor', headers: { authorization }, payload: config })
+      expect(ok.statusCode).toBe(201)
+    })
+
+    it('POST /config-editor/plugin/:pluginName refuses a child bridge NODE_OPTIONS that loads code', async () => {
+      homebridgeConfigService.homebridgeVersion = '1.8.0'
+      const res = await app.inject({
+        method: 'POST',
+        path: '/config-editor/plugin/homebridge-mock-plugin',
+        headers: { authorization },
+        payload: [{
+          platform: 'ExampleHomebridgePlugin',
+          _bridge: { username: '0E:AA:BB:CC:DD:EE', port: 45678, env: { NODE_OPTIONS: '--inspect=0.0.0.0:9229' } },
+        }],
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.json().message).toContain('_bridge.env.NODE_OPTIONS')
+      expect(res.json().message).toContain('"--inspect"')
+      expect(JSON.stringify(await readJson(configFilePath))).not.toContain('--inspect')
+    })
+
     it('PATCH refuses a log path that points at the secrets in the storage directory', async () => {
       for (const path of [resolve(process.env.UIX_STORAGE_PATH, 'auth.json'), resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')]) {
         const res = await app.inject({
