@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.4] - 2026-10-03
+
+### Fixed
+
+- **Updating Glass UI no longer leaves the old version running.** The update dialog could stay on the terminal with no status once the update finished, and the server then kept running the previous version until it was restarted by hand (so the home page still showed it). The server now restarts itself after updating the UI, even if the browser has gone away, and the dialog moves to the restart page when the connection drops during the update.
+- **Update All restarts the UI when a newer one is installed but not yet running**, instead of restarting only Homebridge.
+- Any request whose connection drops before the server answers now fails instead of waiting forever.
+
+The update to this version still runs the previous version's code: if the home page shows the old version afterwards, use Restart once. Updates after this one restart on their own.
+
 ## [2.0.0-beta.3] - 2026-10-03
 
 ### Security
