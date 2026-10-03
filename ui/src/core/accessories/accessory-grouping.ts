@@ -15,7 +15,7 @@ import { applyLayoutAttributes, findInLayout, servicesMatch } from '@/core/acces
  */
 
 /** Service types that never get a tile of their own. */
-export const HIDDEN_SERVICE_TYPES: ReadonlySet<string> = new Set([
+const HIDDEN_SERVICE_TYPES: ReadonlySet<string> = new Set([
   'InputSource',
   'LockManagement',
   'CameraRTPStreamManagement',
