@@ -13,7 +13,7 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
-import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
+import { MatterAccessoriesService } from '../../src/modules/accessories/matter-accessories.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 const CORRELATION_ID = /^accessoryControlResponse-\d+-[a-z0-9]+$/
@@ -44,7 +44,7 @@ describe('AccessoriesService Matter (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready()
 
     ipc = app.get(HomebridgeIpcService)
-    svc = app.get(AccessoriesService) as any
+    svc = app.get(MatterAccessoriesService) as any
   })
 
   beforeEach(() => {

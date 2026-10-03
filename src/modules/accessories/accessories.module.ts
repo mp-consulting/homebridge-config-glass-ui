@@ -8,6 +8,7 @@ import { LoggerModule } from '../../core/logger/logger.module.js'
 import { AccessoriesController } from './accessories.controller.js'
 import { AccessoriesGateway } from './accessories.gateway.js'
 import { AccessoriesService } from './accessories.service.js'
+import { MatterAccessoriesService } from './matter-accessories.service.js'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AccessoriesService } from './accessories.service.js'
   ],
   providers: [
     AccessoriesService,
+    MatterAccessoriesService,
     AccessoriesGateway,
   ],
   exports: [

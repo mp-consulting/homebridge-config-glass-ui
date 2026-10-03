@@ -16,6 +16,7 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
+import { MatterAccessoriesService } from '../../src/modules/accessories/matter-accessories.service.js'
 import { testStoragePath } from '../storage-path.js'
 import { authorizeWsClient } from '../ws-client.js'
 
@@ -873,7 +874,7 @@ describe('AccessoriesController (e2e)', () => {
 
     beforeEach(() => {
       ipcService = app.get(HomebridgeIpcService)
-      svc = accessoriesService as any
+      svc = app.get(MatterAccessoriesService) as any
       svc.activeClients.clear()
     })
 
