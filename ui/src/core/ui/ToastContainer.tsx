@@ -5,11 +5,36 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
-import { SafeHtml } from '@/core/ui/SafeHtml'
 import { toast } from '@/core/ui/toast'
 import { cx } from '@/core/utilities/cx'
 
 import './toast.scss'
+
+/**
+ * A message with `enableHtml`. The sanitiser (DOMPurify) is loaded with the
+ * first one rather than with the app shell: html toasts are rare, and plain
+ * ones render as text.
+ */
+function HtmlMessage({ className, html }: { className: string, html: string }) {
+  const [clean, setClean] = useState<string | null>(null)
+
+  useEffect(() => {
+    let live = true
+    import('@/core/ui/sanitize-html')
+      .then(({ sanitizeHtml }) => {
+        if (live) {
+          setClean(sanitizeHtml(html))
+        }
+      })
+      .catch(error => console.error(error))
+    return () => {
+      live = false
+    }
+  }, [html])
+
+  // eslint-disable-next-line react/dom-no-dangerously-set-innerhtml -- sanitised by sanitizeHtml(), like Angular's [innerHTML]
+  return <div role="alert" className={className} dangerouslySetInnerHTML={{ __html: clean ?? '' }} />
+}
 
 /**
  * The default toast (the app's `AppToastComponent`).
@@ -37,7 +62,7 @@ export function AppToast({ toast }: ToastComponentProps) {
         </div>
       )}
       {message && (options.enableHtml
-        ? <SafeHtml role="alert" className={options.messageClass} html={message} />
+        ? <HtmlMessage className={options.messageClass} html={message} />
         : <div role="alert" className={options.messageClass}>{message}</div>
       )}
       {options.progressBar && (
