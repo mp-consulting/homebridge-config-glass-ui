@@ -12,6 +12,8 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
+import { LoginThrottle } from '../../src/core/auth/login-throttle.js'
+import { PasswordHasher } from '../../src/core/auth/password-hasher.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -24,6 +26,8 @@ import '../../src/global-defaults.js'
 describe('Login throttling limits (e2e)', () => {
   let app: NestFastifyApplication
   let authService: AuthService
+  let passwordHasher: PasswordHasher
+  let loginThrottle: LoginThrottle
   let configService: ConfigService
   let authFilePath: string
   let configPath: string
@@ -50,6 +54,8 @@ describe('Login throttling limits (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready()
 
     authService = app.get(AuthService)
+    passwordHasher = app.get(PasswordHasher)
+    loginThrottle = app.get(LoginThrottle)
     configService = app.get(ConfigService)
   })
 
@@ -78,7 +84,7 @@ describe('Login throttling limits (e2e)', () => {
     it('refuses a source that rotates usernames once it has failed too often, before hashing', { timeout: 30_000 }, async () => {
       // Unknown usernames still run a full-strength hash (no enumeration by
       // timing); stubbed here so the test only counts the calls
-      const hash = vi.spyOn(authService as any, 'hashPassword').mockResolvedValue('00')
+      const hash = vi.spyOn(passwordHasher, 'hash').mockResolvedValue('00')
 
       for (let i = 0; i < 20; i++) {
         const res = await login(`made-up-${i}`, 'guess', '192.0.2.10')
@@ -100,7 +106,7 @@ describe('Login throttling limits (e2e)', () => {
     })
 
     it('counts an IPv6 /64 as one source', { timeout: 30_000 }, async () => {
-      vi.spyOn(authService as any, 'hashPassword').mockResolvedValue('00')
+      vi.spyOn(passwordHasher, 'hash').mockResolvedValue('00')
       for (let i = 0; i < 20; i++) {
         await login(`v6-user-${i}`, 'guess', `2001:db8:aa:bb::${(i + 1).toString(16)}`)
       }
@@ -111,12 +117,12 @@ describe('Login throttling limits (e2e)', () => {
     it('lets a source that signed in as a user before keep signing in as that user', { timeout: 30_000 }, async () => {
       expect((await login('admin', 'admin', '192.0.2.20')).statusCode).toBe(201)
 
-      vi.spyOn(authService as any, 'hashPassword').mockResolvedValue('00')
+      vi.spyOn(passwordHasher, 'hash').mockResolvedValue('00')
       for (let i = 0; i < 20; i++) {
         await login(`other-${i}`, 'guess', '192.0.2.20')
       }
       expect((await login('someone-else', 'guess', '192.0.2.20')).statusCode).toBe(429)
-      vi.mocked((authService as any).hashPassword).mockRestore()
+      vi.mocked(passwordHasher.hash).mockRestore()
 
       expect((await login('admin', 'admin', '192.0.2.20')).statusCode).toBe(201)
     })
@@ -125,11 +131,11 @@ describe('Login throttling limits (e2e)', () => {
   describe('password hash concurrency', () => {
     it('refuses an attempt with 429 while two others are hashing, without counting it as a failure', async () => {
       const pending: Array<() => void> = []
-      const held = () => new Promise((res) => {
+      const held = () => new Promise<string>((res) => {
         pending.push(() => res('00'))
       })
       // The first two hashes are held until released; later ones finish at once
-      const hash = vi.spyOn(authService as any, 'hashPassword')
+      const hash = vi.spyOn(passwordHasher, 'hash')
         .mockResolvedValue('00')
         .mockImplementationOnce(held)
         .mockImplementationOnce(held)
@@ -140,7 +146,7 @@ describe('Login throttling limits (e2e)', () => {
 
       expect(third).toBeInstanceOf(HttpException)
       expect(third.getStatus()).toBe(429)
-      expect((authService as any).sourceFailureCache.get('198.51.100.3')).toBeUndefined()
+      expect((loginThrottle as any).sourceFailureCache.get('198.51.100.3')).toBeUndefined()
 
       // Let the two in flight finish (as failures, for unknown users)
       await vi.waitFor(() => expect(pending).toHaveLength(2))

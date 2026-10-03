@@ -12,6 +12,7 @@ import { satisfies } from 'semver'
 import { createAuthorizedRunner } from '../../core/auth/guards/ws-auth.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { cyan, green, red, yellow } from '../../core/logger/colors.js'
+import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
 import { isLogCommandAllowed, isProtectedStoragePath, LOG_COMMAND_RULE, LOG_PATH_RULE } from '../config-editor/config-safety.js'
@@ -90,6 +91,7 @@ export class LogService {
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(NodePtyService) private readonly nodePtyService: NodePtyService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     this.setLogMethod()
   }
@@ -244,8 +246,10 @@ export class LogService {
       for (const client of stream.clients) {
         try {
           this.emitMessage(client, data)
-        } catch (e) {
-          // The client socket probably closed
+        } catch {
+          // The client socket probably closed. Not logged: this runs for every
+          // chunk of output, and the socket leaves `stream.clients` on its own
+          // disconnect, so one viewer must not stop the others' output
         }
       }
     }
@@ -267,7 +271,8 @@ export class LogService {
           client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
           client.emit('stdout', cyan('See https://github.com/mp-consulting/homebridge-config-glass-ui/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
         } catch (e) {
-          // The client socket probably closed
+          // The client socket probably closed - the other viewers are still told
+          this.logger.debug(`Could not tell a log viewer that the log tail command exited: ${e?.message ?? e}`)
         }
       }
     }
@@ -288,7 +293,10 @@ export class LogService {
       stream.kill = () => {
         try {
           proc.kill()
-        } catch (e) { }
+        } catch (e) {
+          // The process has probably already exited
+          this.logger.debug(`Could not stop the log tail command: ${e?.message ?? e}`)
+        }
       }
     } else {
       // PTY mode for non-Windows platforms
@@ -307,12 +315,18 @@ export class LogService {
       stream.resize = (resize) => {
         try {
           term.resize(resize.cols, resize.rows)
-        } catch (e) { }
+        } catch {
+          // The terminal has probably already exited; a resize can race its
+          // exit, and there is nothing left to resize
+        }
       }
       stream.kill = () => {
         try {
           term.kill()
-        } catch (e) { }
+        } catch (e) {
+          // The terminal has probably already exited - the sudo kill below still runs
+          this.logger.debug(`Could not stop the log tail command: ${e?.message ?? e}`)
+        }
         // Really make sure the log tail command is killed when using sudo mode
         if (sudo && term && term.pid) {
           exec(`sudo -n kill -9 ${term.pid}`)

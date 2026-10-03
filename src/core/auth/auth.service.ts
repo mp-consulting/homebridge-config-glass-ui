@@ -1,22 +1,4 @@
-import { Buffer } from 'node:buffer'
-import { pbkdf2, randomBytes, randomInt, timingSafeEqual } from 'node:crypto'
-import { isIPv4, isIPv6 } from 'node:net'
-
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  HttpException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { createGuardrails } from '@otplib/core'
-import { readJson } from 'fs-extra/esm'
-import NodeCache from 'node-cache'
-import { generateSecret, generateURI, verify } from 'otplib'
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 
 import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { UserDto } from '../../modules/users/users.dto.js'
@@ -24,166 +6,37 @@ import { HomebridgeConfig } from '../config/config.interfaces.js'
 import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
-import { revalidateWsClients } from './guards/ws-auth.js'
-import { isLiveSetupWizardToken, SETUP_WIZARD_CLAIM, SETUP_WIZARD_USERNAME } from './setup-wizard-token.js'
+import { LoginThrottle } from './login-throttle.js'
+import { OtpService } from './otp.service.js'
+import { PasswordHasher } from './password-hasher.js'
+import { TokenService } from './token.service.js'
+import { desensitiseUserProfile, UserRepository } from './user.repository.js'
 
-// OWASP-recommended PBKDF2-HMAC-SHA512 work factor. New and changed passwords
-// are hashed at this strength.
-const PBKDF2_ITERATIONS = 210000
-// Records created before versioned hashing carry no iteration count and were
-// hashed at 1,000. They verify at this count and are transparently upgraded to
-// PBKDF2_ITERATIONS on the owner's next successful login.
-const LEGACY_PBKDF2_ITERATIONS = 1000
-
-// Login throttling: after this many failed attempts for a given key the account
-// is locked out for LOGIN_LOCKOUT_SECONDS. Guards against online password and
-// 2FA guessing, which was otherwise unlimited.
-const MAX_LOGIN_FAILURES = 10
-const LOGIN_LOCKOUT_SECONDS = 300
-
-// Per-username budget across every source address. The per-source limit above
-// does nothing against guesses spread over many addresses (or IPv6 networks),
-// so once a username has this many failures from anywhere, further attempts
-// for it are slowed by a cooldown that doubles on each further failure, from
-// USERNAME_COOLDOWN_MIN_SECONDS up to USERNAME_COOLDOWN_MAX_SECONDS. It is
-// never a permanent lock: the cooldown is bounded, the count is forgotten
-// after USERNAME_FAILURE_WINDOW_SECONDS without a failure, and a source that
-// has signed in as that user before (KNOWN_SOURCE_SECONDS) is exempt - so an
-// attacker hammering the admin username cannot keep the admin out from their
-// usual address. The per-source limit still applies to everyone.
-const USERNAME_MAX_FAILURES = 50
-const USERNAME_FAILURE_WINDOW_SECONDS = 3600
-const USERNAME_COOLDOWN_MIN_SECONDS = 60
-const USERNAME_COOLDOWN_MAX_SECONDS = 900
-const KNOWN_SOURCE_SECONDS = 30 * 24 * 60 * 60
-// Bounds the memory a flood of made-up usernames can take; past it, only
-// usernames already being counted are tracked (the per-source limit still applies)
-const USERNAME_FAILURE_MAX_ENTRIES = 10_000
-
-// Per-source budget across every username. The per-key limit above is keyed
-// on `username|source`, so a single address rotating through made-up
-// usernames was never slowed down - and every attempt costs a full-strength
-// password hash. Once a source has this many failures within the window
-// (refreshed on each failure), it is refused before any hashing is done.
-// A source that has signed in as the named user before is exempt, as above.
-const SOURCE_MAX_FAILURES = 20
-const SOURCE_FAILURE_WINDOW_SECONDS = 900
-// Bounds the memory a flood from many addresses can take, as above. Past it,
-// new sources are not counted - the hash concurrency limit below still holds.
-const SOURCE_FAILURE_MAX_ENTRIES = 10_000
-
-// How many sign-in attempts may hash a password at the same time. Each one is
-// a 210,000-iteration PBKDF2 on the libuv thread pool, so without a limit a
-// flood of attempts (from as many addresses as an attacker has) starves the
-// server. Past it, an attempt is refused with a 429 before any work, and does
-// not count as a failure.
-const MAX_CONCURRENT_LOGIN_HASHES = 2
-
-interface UsernameFailureState {
-  failures: number
-  // Cooldowns started so far, for the doubling
-  cooldowns: number
-  // Epoch ms until which attempts from unknown sources are refused
-  lockedUntil: number
-}
+export { loginThrottleSource } from './login-throttle.js'
 
 /**
- * Salt for the hash computed when a login names a user that does not exist,
- * so that failure costs the same time as a wrong password (no username
- * enumeration by timing).
+ * The authentication facade the controllers, guards and strategies use. The
+ * work is done by focused providers: LoginThrottle (failed-login budgets),
+ * PasswordHasher (PBKDF2), TokenService (JWTs), UserRepository (auth.json)
+ * and OtpService (2FA). This class sequences them, and revokes the custom
+ * plugin UI tickets of a user whose credentials change.
  */
-const MISSING_USER_SALT = randomBytes(32).toString('hex')
-
-/**
- * The source part of a login throttle key. An IPv6 client usually controls a
- * whole /64 and could rotate through addresses in it for fresh guesses, so it
- * is throttled per /64. IPv4 (including IPv4-mapped IPv6) is kept as is.
- */
-export function loginThrottleSource(clientId?: string): string {
-  const address = (clientId || '').split('%')[0]
-  if (!isIPv6(address)) {
-    return address
-  }
-  const mapped = address.toLowerCase().startsWith('::ffff:') ? address.slice(7) : ''
-  if (isIPv4(mapped)) {
-    return mapped
-  }
-  const countGroups = (part: string) => part ? part.split(':').reduce((n, g) => n + (g.includes('.') ? 2 : 1), 0) : 0
-  const [head, tail] = address.split('::')
-  const groups = head ? head.split(':') : []
-  if (tail !== undefined) {
-    groups.push(...Array.from<string>({ length: 8 - countGroups(head) - countGroups(tail) }).fill('0'))
-    groups.push(...(tail ? tail.split(':') : []))
-  }
-  return `${groups.slice(0, 4).map(g => Number.parseInt(g, 16).toString(16)).join(':')}::/64`
-}
-
-// How long the auth file is cached for per-request token validation. Writes
-// that change a user's identity or role clear it immediately, so this is only
-// the ceiling for changes made outside this process (e.g. editing auth.json by
-// hand).
-const USER_CACHE_TTL_SECONDS = 5
-
-// The longest a service token may be valid for, from `iat` to `exp`. Minting
-// one already requires the secret key, so this is not a barrier to an attacker
-// who has that - it bounds how long a token stays usable if one leaks (plugins
-// have been known to print their own requests at debug level).
-const MAX_SERVICE_TOKEN_LIFETIME_SECONDS = 300
-
-/**
- * Each refresh renews the session cookie with a full Max-Age, so a chain of
- * renewals never ends on its own. This caps the total lifetime of one
- * signed-in session: past it, the next refresh returns 401 and the user signs
- * in again. Revocation (password change, 2FA, logout) still ends a session
- * immediately - this is only the backstop for sessions nothing ever revokes.
- */
-const MAX_SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60
-
 @Injectable()
 export class AuthService {
-  private otpUsageCache = new NodeCache({ stdTTL: 90 })
-
-  // Counts recent failed logins per key (normalised username + client address).
-  // A failed attempt refreshes the TTL, so sustained guessing keeps the account
-  // locked; the count clears after LOGIN_LOCKOUT_SECONDS of no attempts.
-  private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
-
-  // Failed logins per normalised username, from every source (see
-  // USERNAME_MAX_FAILURES). Refreshed on each failure.
-  private usernameFailureCache = new NodeCache({ stdTTL: USERNAME_FAILURE_WINDOW_SECONDS, useClones: false })
-
-  // `username|source` pairs that have completed a sign-in, exempt from the
-  // per-username cooldown. In memory only, so a restart forgets them and the
-  // worst case for a legitimate user is one bounded cooldown.
-  private knownLoginSources = new NodeCache({ stdTTL: KNOWN_SOURCE_SECONDS, useClones: false })
-
-  // Failed logins per source address (IPv6 per /64), for every username. See
-  // SOURCE_MAX_FAILURES. Refreshed on each failure.
-  private sourceFailureCache = new NodeCache({ stdTTL: SOURCE_FAILURE_WINDOW_SECONDS })
-
-  // Sign-in attempts currently hashing a password (see MAX_CONCURRENT_LOGIN_HASHES)
-  private activeLoginHashes = 0
-
-  // Short-lived cache of the auth file, so validating a token on every request
-  // is not a file read each time. Cleared by invalidateUserCache() on writes.
-  private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
-
   // Synchronous reservation flag for first-user setup, so two concurrent
   // onboarding requests cannot both create an administrator. See setupFirstUser.
   private firstUserSetupInProgress = false
 
-  // Custom guardrails for legacy 16-character OTP secrets (10 bytes when decoded)
-  private legacyOtpGuardrails = createGuardrails({
-    MIN_SECRET_BYTES: 10, // allow legacy 16-character Base32 secrets from otplib v12
-    MAX_SECRET_BYTES: 64,
-  })
-
   constructor(
-    @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
     @Inject(Logger) private readonly logger: Logger,
     @Inject(PluginsSettingsUiTicketService) private readonly pluginUiTicketService: PluginsSettingsUiTicketService,
+    @Inject(LoginThrottle) private readonly throttle: LoginThrottle,
+    @Inject(PasswordHasher) private readonly hasher: PasswordHasher,
+    @Inject(TokenService) private readonly tokens: TokenService,
+    @Inject(UserRepository) private readonly users: UserRepository,
+    @Inject(OtpService) private readonly otp: OtpService,
   ) {
     this.checkAuthFile()
   }
@@ -197,22 +50,15 @@ export class AuthService {
    * the throttle key alongside the username
    */
   async authenticate(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
-    const normalisedUsername = String(username || '').toLowerCase()
-    const source = loginThrottleSource(clientId)
-    const throttleKey = `${normalisedUsername}|${source}`
+    const attempt = this.throttle.attempt(username, clientId)
 
     // Reject before doing any work once the failure threshold is reached, so
     // password and 2FA guessing cannot run unbounded.
-    this.assertNotLockedOut(throttleKey, username)
-    this.assertSourceNotLockedOut(source, throttleKey)
-    this.assertUsernameNotCoolingDown(normalisedUsername, throttleKey, username)
+    this.throttle.assertLoginAllowed(attempt)
 
     // Taken synchronously, before the first `await`, so concurrent attempts
     // cannot all pass the check together
-    if (this.activeLoginHashes >= MAX_CONCURRENT_LOGIN_HASHES) {
-      throw new HttpException('Too many sign-in attempts in progress. Please try again in a moment.', 429)
-    }
-    this.activeLoginHashes++
+    this.hasher.reserveLoginHash()
 
     try {
       const user = await this.findByUsername(username)
@@ -220,11 +66,11 @@ export class AuthService {
       if (!user) {
         // Spend the same time a wrong password would, so response timing
         // does not reveal which usernames exist
-        await this.hashPassword(String(password ?? ''), MISSING_USER_SALT)
+        await this.hasher.hashForMissingUser(password)
         throw new ForbiddenException()
       }
 
-      await this.checkPassword(user, password)
+      await this.hasher.verify(user, password)
 
       if (user.otpActive && !otp) {
         throw new HttpException('2FA Code Required', 412)
@@ -236,33 +82,24 @@ export class AuthService {
 
       // Credentials (and OTP, if enabled) are valid: upgrade a legacy weak
       // password hash to the current work factor before returning.
-      await this.upgradePasswordHashIfNeeded(user, password)
+      await this.users.upgradePasswordHashIfNeeded(user, password)
 
-      // Success clears the failure count for this key, and exempts this
-      // source from the per-username cooldown. The per-username and
-      // per-source counts are left alone: they count guesses at other
-      // usernames, or from elsewhere, as well.
-      this.loginFailureCache.del(throttleKey)
-      this.knownLoginSources.set(throttleKey, true)
+      this.throttle.recordLoginSuccess(attempt)
 
-      if (user) {
-        return {
-          username: user.username,
-          name: user.name,
-          admin: user.admin,
-          instanceId: this.configService.instanceId,
-          sessionVersion: user.sessionVersion ?? 0,
-          otpLegacySecret: user.otpLegacySecret || false,
-        }
+      return {
+        username: user.username,
+        name: user.name,
+        admin: user.admin,
+        instanceId: this.configService.instanceId,
+        sessionVersion: user.sessionVersion ?? 0,
+        otpLegacySecret: user.otpLegacySecret || false,
       }
     } catch (e) {
       // "2FA Code Required" is a prompt for more input, not a failed attempt,
       // so it must not count towards the lockout.
       const is2faPrompt = e instanceof HttpException && e.getStatus() === 412 && e.message === '2FA Code Required'
       if (!is2faPrompt) {
-        this.recordFailedAttempt(throttleKey)
-        this.recordSourceFailure(source)
-        this.recordUsernameFailure(normalisedUsername)
+        this.throttle.recordLoginFailure(attempt)
       }
 
       if (e instanceof ForbiddenException) {
@@ -278,103 +115,16 @@ export class AuthService {
 
       throw new ForbiddenException()
     } finally {
-      this.activeLoginHashes--
+      this.hasher.releaseLoginHash()
     }
   }
 
   /**
-   * Throw a 429 once a source address has failed too often, whichever
-   * usernames it tried (see SOURCE_MAX_FAILURES). A source that has signed
-   * in as the named user before is exempt.
-   */
-  private assertSourceNotLockedOut(source: string, throttleKey: string) {
-    // No source (an internal caller) - nothing to key on
-    if (!source || this.knownLoginSources.has(throttleKey)) {
-      return
-    }
-    if ((this.sourceFailureCache.get<number>(source) || 0) >= SOURCE_MAX_FAILURES) {
-      this.logger.warn(`Too many failed login attempts from ${source} - temporarily refusing sign-in attempts from this address.`)
-      throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
-    }
-  }
-
-  private recordSourceFailure(source: string) {
-    if (!source) {
-      return
-    }
-    const existing = this.sourceFailureCache.get<number>(source)
-    if (existing === undefined && this.sourceFailureCache.getStats().keys >= SOURCE_FAILURE_MAX_ENTRIES) {
-      return
-    }
-    // Re-set to refresh the window
-    this.sourceFailureCache.set(source, (existing || 0) + 1)
-  }
-
-  /**
-   * Throw a 429 once a throttle key has reached the failure threshold
-   */
-  private assertNotLockedOut(throttleKey: string, username: string) {
-    if ((this.loginFailureCache.get<number>(throttleKey) || 0) >= MAX_LOGIN_FAILURES) {
-      this.logger.warn(`Too many failed login attempts for '${username}' - temporarily locked out.`)
-      throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
-    }
-  }
-
-  private recordFailedAttempt(throttleKey: string) {
-    this.loginFailureCache.set(throttleKey, (this.loginFailureCache.get<number>(throttleKey) || 0) + 1)
-  }
-
-  /**
-   * Throw a 429 while a username's cooldown runs, unless this source has
-   * signed in as that user before (see USERNAME_MAX_FAILURES)
-   */
-  private assertUsernameNotCoolingDown(normalisedUsername: string, throttleKey: string, username: string) {
-    const state = this.usernameFailureCache.get<UsernameFailureState>(normalisedUsername)
-    if (!state || state.lockedUntil <= Date.now() || this.knownLoginSources.has(throttleKey)) {
-      return
-    }
-    const seconds = Math.ceil((state.lockedUntil - Date.now()) / 1000)
-    this.logger.warn(`Too many failed login attempts for '${username}' from several addresses - slowing down sign-in attempts for ${seconds}s.`)
-    throw new HttpException(`Too many failed attempts. Please wait ${seconds} seconds and try again.`, 429)
-  }
-
-  /**
-   * Count a failure against the username. From the threshold on, every
-   * further failure starts a cooldown twice as long as the one before, up to
-   * the cap - roughly one guess per USERNAME_COOLDOWN_MAX_SECONDS at worst.
-   */
-  private recordUsernameFailure(normalisedUsername: string) {
-    const existing = this.usernameFailureCache.get<UsernameFailureState>(normalisedUsername)
-    if (!existing && this.usernameFailureCache.getStats().keys >= USERNAME_FAILURE_MAX_ENTRIES) {
-      return
-    }
-    const state = existing ?? { failures: 0, cooldowns: 0, lockedUntil: 0 }
-    state.failures++
-    if (state.failures >= USERNAME_MAX_FAILURES) {
-      const seconds = Math.min(USERNAME_COOLDOWN_MAX_SECONDS, USERNAME_COOLDOWN_MIN_SECONDS * 2 ** state.cooldowns)
-      state.cooldowns++
-      state.lockedUntil = Date.now() + seconds * 1000
-    }
-    // Re-set to refresh the window
-    this.usernameFailureCache.set(normalisedUsername, state)
-  }
-
-  /**
-   * Check a signed-in user's current password before a sensitive change.
-   * Throttled like a login - otherwise a stolen session could guess the
-   * password without limit. Only the session's own user can reach this, so
-   * keying on the username alone cannot be used to lock anyone else out.
+   * Check a signed-in user's current password before a sensitive change,
+   * throttled like a login (see LoginThrottle.checkCurrentPassword)
    */
   private async checkCurrentPassword(user: UserDto, password: string) {
-    const throttleKey = `${user.username.toLowerCase()}|current-password`
-    this.assertNotLockedOut(throttleKey, user.username)
-    try {
-      await this.checkPassword(user, password)
-    } catch (e) {
-      this.recordFailedAttempt(throttleKey)
-      throw e
-    }
-    this.loginFailureCache.del(throttleKey)
+    await this.throttle.checkCurrentPassword(user.username, () => this.hasher.verify(user, password))
   }
 
   /**
@@ -386,95 +136,14 @@ export class AuthService {
    */
   async signIn(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
     const user = await this.authenticate(username, password, otp, clientId)
-    // When this sign-in happened. Refreshes carry it forward unchanged, so the
-    // renewal chain as a whole has an age that can be capped.
-    const token = this.jwtService.sign({ ...user, sessionStartedAt: Math.floor(Date.now() / 1000) })
-
-    return {
-      access_token: token,
-      token_type: 'Bearer',
-      expires_in: this.configService.ui.sessionTimeout,
-    }
-  }
-
-  /**
-   * Verify as users username and password
-   * This will throw an error if the credentials are incorrect.
-   */
-  private async checkPassword(user: UserDto, password: string) {
-    // Verify against the strength this record was hashed at. Legacy records
-    // carry no count and were hashed at 1,000 iterations.
-    const iterations = user.passwordIterations ?? LEGACY_PBKDF2_ITERATIONS
-    const passwordAttemptHash = await this.hashPassword(password, user.salt, iterations)
-    const passwordAttemptHashBuff = Buffer.from(passwordAttemptHash, 'hex')
-    const knownPasswordHashBuff = Buffer.from(user.hashedPassword, 'hex')
-
-    if (timingSafeEqual(passwordAttemptHashBuff, knownPasswordHashBuff)) {
-      return user
-    } else {
-      throw new ForbiddenException()
-    }
-  }
-
-  /**
-   * Re-hash a user's password at the current work factor if it is stored at a
-   * weaker one. Called after a successful login (outside the auth-file lock) so
-   * legacy 1,000-iteration hashes are upgraded transparently the next time the
-   * owner signs in.
-   */
-  private async upgradePasswordHashIfNeeded(user: UserDto, password: string) {
-    const current = user.passwordIterations ?? LEGACY_PBKDF2_ITERATIONS
-    if (current >= PBKDF2_ITERATIONS) {
-      return
-    }
-    try {
-      const salt = await this.genSalt()
-      const hashedPassword = await this.hashPassword(password, salt, PBKDF2_ITERATIONS)
-      await this.withAuthFile((authfile) => {
-        const stored = authfile.find(x => x.username === user.username)
-        if (stored) {
-          stored.salt = salt
-          stored.hashedPassword = hashedPassword
-          stored.passwordIterations = PBKDF2_ITERATIONS
-        }
-      })
-      this.logger.log(`Upgraded stored password hash strength for ${user.username}.`)
-    } catch (e) {
-      // Never fail a valid login because the upgrade write failed; it will be
-      // retried on the next login.
-      this.logger.warn(`Could not upgrade password hash for ${user.username}: ${e.message}`)
-    }
+    return this.tokens.issueSessionToken(user)
   }
 
   /**
    * Returns a token for use when authentication is disabled
    */
   async generateNoAuthToken() {
-    // Prevent access if auth is not disabled
-    if (this.configService.ui.auth !== 'none') {
-      throw new UnauthorizedException()
-    }
-
-    // Load the first admin we can find
-    const users = await this.getUsers()
-    const user = users.find(x => x.admin === true)
-
-    // Generate a token
-    const token = this.jwtService.sign({
-      username: user.username,
-      name: user.name,
-      admin: user.admin,
-      instanceId: this.configService.instanceId,
-      sessionVersion: user.sessionVersion ?? 0,
-      otpLegacySecret: user.otpLegacySecret || false,
-      sessionStartedAt: Math.floor(Date.now() / 1000),
-    })
-
-    return {
-      access_token: token,
-      token_type: 'Bearer',
-      expires_in: this.configService.ui.sessionTimeout,
-    }
+    return this.tokens.generateNoAuthToken()
   }
 
   /**
@@ -483,250 +152,15 @@ export class AuthService {
    * @param reason - optional client reason for distinct log lines (allowlisted)
    */
   async refreshToken(user: any, reason?: string): Promise<any> {
-    // Service tokens are deliberately short-lived credentials minted by local
-    // programs. They must not be exchangeable for a normal user session.
-    if (user?.service !== undefined) {
-      this.rejectRefresh(user.username ?? 'a service token', 'Service tokens cannot be refreshed')
-    }
-
-    // Validate that the user still exists and has the same permissions
-    const currentUser = await this.findByUsername(user.username)
-    if (!currentUser) {
-      this.rejectRefresh(user.username, 'User no longer exists')
-    }
-
-    this.logger.debug(this.refreshTokenLogMessage(user.username, reason))
-
-    // Verify the user's admin status hasn't changed
-    if (currentUser.admin !== user.admin) {
-      this.rejectRefresh(user.username, 'User permissions have changed, please log in again')
-    }
-
-    // Password and 2FA changes increment this value. Refreshing must reject
-    // the old credential rather than copying the current value into a new
-    // token and making the revoked session valid again.
-    if ((currentUser.sessionVersion ?? 0) !== (user.sessionVersion ?? 0)) {
-      this.rejectRefresh(user.username, 'User credentials have changed, please log in again')
-    }
-
-    // Check if the instance ID matches (prevents cross-instance token reuse)
-    if (user.instanceId !== this.configService.instanceId) {
-      this.rejectRefresh(user.username, 'Token is not valid for this instance')
-    }
-
-    // Cap the total lifetime of a renewal chain: carried forward unchanged on
-    // every refresh, so one request per window can no longer renew for ever.
-    // A token minted before this field existed is grandfathered in - the cap
-    // starts counting from the first refresh that sees it.
-    const sessionStartedAt = typeof user.sessionStartedAt === 'number'
-      ? user.sessionStartedAt
-      : Math.floor(Date.now() / 1000)
-    if (Math.floor(Date.now() / 1000) - sessionStartedAt > MAX_SESSION_LIFETIME_SECONDS) {
-      this.rejectRefresh(user.username, 'Session has reached its maximum age, please log in again')
-    }
-
-    // Generate a new token with the same user data but updated expiration
-    const token = this.jwtService.sign({
-      username: user.username,
-      name: user.name,
-      admin: user.admin,
-      instanceId: user.instanceId,
-      sessionVersion: currentUser.sessionVersion ?? 0,
-      otpLegacySecret: currentUser.otpLegacySecret || false,
-      sessionStartedAt,
-    })
-
-    return {
-      access_token: token,
-      token_type: 'Bearer',
-      expires_in: this.configService.ui.sessionTimeout,
-    }
+    return this.tokens.refreshToken(user, reason)
   }
 
   /**
-   * Refuse a token refresh, saying why in the log before throwing.
-   *
-   * ⚠️ **Every rejection below goes through here, and new ones must too.** The
-   * routine "refreshing" lines are debug, because they are a consequence of the
-   * user having a browser open rather than a decision anyone made (#2978). That
-   * only works if the interesting half is visible: before this, a refresh
-   * refused because the account was deleted, demoted or had its credentials
-   * revoked logged nothing at all, while the successful ones announced
-   * themselves on every page load. Failed logins, lockouts and rejected service
-   * tokens already warn - this is the same event class.
-   *
-   * @param username - whose refresh was refused.
-   * @param reason - the client-facing message, reused verbatim in the log.
-   */
-  private rejectRefresh(username: string, reason: string): never {
-    this.logger.warn(`Refused to refresh the session for ${username}: ${reason.toLowerCase()}`)
-    throw new UnauthorizedException(reason)
-  }
-
-  /**
-   * Distinct log lines per refresh caller so admin checks and inactivity
-   * extension are not identical (and look like accidental duplicates).
-   */
-  private refreshTokenLogMessage(username: string, reason?: string): string {
-    switch (reason) {
-      case 'admin-guard':
-        return `Verifying admin session for ${username} (admin-guard token refresh).`
-      case 'session-extension':
-        return `Extending session for ${username} (inactivity-based token refresh).`
-      case 'profile-update':
-        return `Refreshing token for ${username} after profile/auth change.`
-      case 'session-restore':
-        return `Restoring session for ${username} (page load, token held in memory).`
-      default:
-        return `Request received to refresh token for ${username}.`
-    }
-  }
-
-  /**
-   * Validate a decoded, verified JWT payload against the user's current state.
-   *
-   * A valid signature alone is not enough: the payload is a snapshot from when
-   * the token was minted, so without this check a deleted user, a demoted
-   * administrator, or a user whose password was just changed kept full access
-   * until the token expired (eight hours by default).
-   *
-   * @param payload - the decoded, verified jwt payload
-   * @returns the payload if it still matches the stored user, otherwise null
+   * Validate a decoded, verified JWT payload against the user's current state
+   * (see TokenService.validateUser)
    */
   async validateUser(payload: any): Promise<any> {
-    // The setup-wizard token deliberately has no user record behind it. It is
-    // already constrained to the live wizard, and to the restore routes, by
-    // JwtStrategy and the websocket guards.
-    if (isLiveSetupWizardToken(payload, this.configService)) {
-      return payload
-    }
-
-    // A service token stands for a program, not a person, so the user checks
-    // below cannot apply to it.
-    if (payload?.service !== undefined) {
-      return this.validateServiceToken(payload)
-    }
-
-    const user = await this.findCurrentUser(payload?.username)
-
-    // Deleted (or renamed) since the token was issued
-    if (!user) {
-      // Named because the alternative is a bare 401 with nothing behind it:
-      // this is what a plugin minting its own token sees if it has not
-      // declared itself with a `service` claim.
-      this.logger.debug(`Rejected a correctly signed token for '${payload?.username}': no such user. A plugin authenticating with its own token must set the "service" claim.`)
-      return null
-    }
-
-    // Role changed since the token was issued
-    if (!!user.admin !== !!payload.admin) {
-      return null
-    }
-
-    // Credentials changed since the token was issued (password, OTP, ...)
-    if ((user.sessionVersion ?? 0) !== (payload.sessionVersion ?? 0)) {
-      return null
-    }
-
-    return payload
-  }
-
-  /**
-   * Validate a service token: one a program on this machine mints for itself
-   * by reading the secret key out of `.uix-secrets`, rather than logging in as
-   * a person. Homebridge plugins that call this api use these.
-   *
-   * The contract, for anyone writing one:
-   *
-   * - sign with `secrets.secretKey` from `<storagePath>/.uix-secrets`
-   * - `service`: a non-empty string naming the caller, e.g. the plugin name.
-   *   Its presence is what marks the token as a service token
-   * - `instanceId`: `sha256(secretKey)` as hex, checked like any other token
-   * - `admin`: true if the token needs administrator endpoints
-   * - expire it within MAX_SERVICE_TOKEN_LIFETIME_SECONDS; mint a fresh one
-   *   as needed rather than holding a long-lived token
-   *
-   * Why these are exempt from the user checks: those exist to revoke a person
-   * whose account was deleted, demoted, or had its password changed, and a
-   * service token has no account behind it to revoke. It must therefore say so
-   * explicitly - treating any unknown username as a service would hand a
-   * deleted user's token the access that deleting them was meant to remove.
-   */
-  private validateServiceToken(payload: any): any {
-    if (typeof payload.service !== 'string' || payload.service.trim() === '') {
-      this.logger.warn('Rejected a service token: the "service" claim must name the caller.')
-      return null
-    }
-
-    // jwt.verify has already rejected an expired token; this bounds how long a
-    // valid one lives. A token with no issued-at cannot be bounded at all.
-    const { iat, exp, service } = payload
-    if (typeof iat !== 'number' || typeof exp !== 'number') {
-      this.logger.warn(`Rejected a service token from '${service}': it must carry an expiry.`)
-      return null
-    }
-    if (exp - iat > MAX_SERVICE_TOKEN_LIFETIME_SECONDS) {
-      this.logger.warn(`Rejected a service token from '${service}': valid for ${exp - iat} seconds, the maximum is ${MAX_SERVICE_TOKEN_LIFETIME_SECONDS}.`)
-      return null
-    }
-
-    return payload
-  }
-
-  /**
-   * Look up a user for token validation. This runs on every authenticated
-   * request, so the auth file is cached briefly rather than read each time;
-   * revocation therefore takes effect within USER_CACHE_TTL_SECONDS.
-   */
-  private async findCurrentUser(username?: string): Promise<UserDto | undefined> {
-    if (!username) {
-      return undefined
-    }
-    let users = this.userCache.get<UserDto[]>('users')
-    if (!users) {
-      users = await this.getUsers()
-      this.userCache.set('users', users)
-    }
-    return users.find(x => x.username === username)
-  }
-
-  /**
-   * Drop the cached auth file. Called after any write that changes who a user
-   * is or what they may do, so revocation is immediate rather than waiting for
-   * the cache to expire.
-   */
-  private invalidateUserCache() {
-    this.userCache.del('users')
-  }
-
-  /**
-   * Hash a password
-   * @param password
-   * @param salt
-   */
-  private async hashPassword(password: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
-    return new Promise((resolve, reject) => {
-      pbkdf2(password, salt, iterations, 64, 'sha512', (err, derivedKey) => {
-        if (err) {
-          return reject(err)
-        }
-        return resolve(derivedKey.toString('hex'))
-      })
-    })
-  }
-
-  /**
-   * Generate a salt
-   */
-  private async genSalt(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      randomBytes(32, (err, buf) => {
-        if (err) {
-          return reject(err)
-        }
-        return resolve(buf.toString('hex'))
-      })
-    })
+    return this.tokens.validateUser(payload)
   }
 
   /**
@@ -758,7 +192,7 @@ export class AuthService {
 
       // Start with an empty auth file; addUser() below acquires the same
       // lock to push the first user, so both writes serialise correctly.
-      await this.jsonStore.write<UserDto[]>(this.configService.authPath, [], { spaces: 4 })
+      await this.users.reset()
 
       const createdUser = await this.addUser(user)
 
@@ -806,78 +240,25 @@ export class AuthService {
    * Generates a token for the setup wizard
    */
   async generateSetupWizardToken() {
-    // Prevent access if auth is not disabled
+    // Only while the setup wizard is still open
     if (this.configService.setupWizardComplete !== false) {
       throw new ForbiddenException()
     }
-
-    // Generate a token
-    // Only usable for the wizard's restore step - see setup-wizard-token.ts
-    const token = this.jwtService.sign({
-      username: SETUP_WIZARD_USERNAME,
-      name: SETUP_WIZARD_USERNAME,
-      admin: true,
-      [SETUP_WIZARD_CLAIM]: true,
-      instanceId: 'xxxxx', // intentionally wrong
-    }, { expiresIn: '5m' })
-
-    return {
-      access_token: token,
-      token_type: 'Bearer',
-      expires_in: 300,
-    }
+    return this.tokens.generateSetupWizardToken()
   }
 
   /**
    * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
-    let authfile: unknown
-    try {
-      authfile = await readJson(this.configService.authPath)
-    } catch (e) {
-      // Only a missing file means "no users yet". Anything else - unreadable,
-      // half-written, corrupt - must fail closed: opening the wizard would let
-      // whoever reaches the page first create an administrator.
-      if (e?.code === 'ENOENT') {
-        this.configService.setupWizardComplete = false
-        return
-      }
-      this.failAuthFileClosed(`it could not be read (${e?.message ?? e})`)
-      return
-    }
-    if (!Array.isArray(authfile)) {
-      this.failAuthFileClosed('it does not contain a list of users')
-      return
-    }
-    // There must be at least one admin user
-    if (!authfile.some(x => x?.admin === true)) {
-      this.configService.setupWizardComplete = false
-    }
+    return this.users.checkAuthFile()
   }
 
   /**
-   * Keep the setup wizard closed when auth.json exists but is not usable, and
-   * say how to recover.
-   */
-  private failAuthFileClosed(reason: string) {
-    this.configService.setupWizardComplete = true
-    this.logger.error(`The users file ${this.configService.authPath} exists but ${reason}. Nobody can sign in until it is fixed. `
-      + 'To start again with the setup wizard, delete the file and restart Homebridge.')
-  }
-
-  /**
-   * Clean the user profile of se
+   * Clean the user profile of sensitive fields
    */
   desensitiseUserProfile(user: UserDto): UserDto {
-    return {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      admin: user.admin,
-      otpActive: user.otpActive || false,
-      otpLegacySecret: user.otpLegacySecret || false,
-    }
+    return desensitiseUserProfile(user)
   }
 
   /**
@@ -885,13 +266,7 @@ export class AuthService {
    * @param strip - if true, remove the users salt and hashed password from the response
    */
   async getUsers(strip?: boolean): Promise<UserDto[]> {
-    const users: UserDto[] = await readJson(this.configService.authPath)
-
-    if (strip) {
-      return users.map(this.desensitiseUserProfile)
-    }
-
-    return users
+    return this.users.getUsers(strip)
   }
 
   /**
@@ -899,45 +274,7 @@ export class AuthService {
    * @param username
    */
   async findByUsername(username: string): Promise<UserDto> {
-    const users = await this.getUsers()
-    return users.find(x => x.username === username)
-  }
-
-  /**
-   * Run a read-modify-write transaction against auth.json under the
-   * shared per-path mutex. The callback receives the parsed users
-   * array (fresh from disk under the lock), mutates it in place, and
-   * may optionally return a side value for the outer caller (e.g. the
-   * newly-added user). The mutated array is then atomically persisted
-   * via write-temp/fsync/rename.
-   *
-   * Closes the long-standing race where two concurrent /users requests
-   * each read the same baseline (`Math.max(...ids) + 1` produced
-   * duplicate IDs; the second write wiped the first add/delete).
-   */
-  private async withAuthFile<R>(
-    mutator: (users: UserDto[]) => R | Promise<R>,
-  ): Promise<R> {
-    let result: R | undefined
-    await this.jsonStore.mutate<UserDto[]>(
-      this.configService.authPath,
-      async (current) => {
-        const users = current ?? []
-        result = await mutator(users)
-        return users
-      },
-      { spaces: 4 },
-    )
-    // Every write to the auth file goes through here, so this is the one place
-    // that has to drop the token-validation cache. Without it a deletion or
-    // demotion would not take effect until the cache expired.
-    this.invalidateUserCache()
-    // ...and the one place to cut off open sockets whose user this write
-    // deleted, demoted or revoked. Guards only run when a socket sends a
-    // message, so server-pushed streams (terminal output, the log tail) would
-    // otherwise keep flowing to a revoked user.
-    void revalidateWsClients()
-    return result as R
+    return this.users.findByUsername(username)
   }
 
   /**
@@ -945,34 +282,7 @@ export class AuthService {
    * @param user
    */
   async addUser(user: UserDto) {
-    // Salt + password hashing are computed *outside* the auth.json
-    // lock so a slow PBKDF2 doesn't block other callers waiting on
-    // the file. The duplicate-username check + id derivation + push
-    // run inside the lock, against a fresh read.
-    const salt = await this.genSalt()
-    const hashedPassword = await this.hashPassword(user.password, salt)
-
-    return this.withAuthFile((authfile) => {
-      if (authfile.some(x => x.username.toLowerCase() === user.username.toLowerCase())) {
-        throw new ConflictException(`User with username '${user.username}' already exists.`)
-      }
-      const newUser: UserDto = {
-        id: authfile.length ? Math.max(...authfile.map(x => x.id)) + 1 : 1,
-        username: user.username,
-        name: user.name,
-        hashedPassword,
-        salt,
-        passwordIterations: PBKDF2_ITERATIONS,
-        // Random rather than 0: tokens are matched on username and session
-        // version, so a deleted user's tokens would otherwise come back to
-        // life when the same username is created again
-        sessionVersion: randomInt(1, 2 ** 31),
-        admin: user.admin,
-      }
-      authfile.push(newUser)
-      this.logger.warn(`Added new user: ${user.username}.`)
-      return this.desensitiseUserProfile(newUser)
-    })
+    return this.users.addUser(user)
   }
 
   /**
@@ -980,21 +290,8 @@ export class AuthService {
    * @param id
    */
   async deleteUser(id: number) {
-    let deletedUsername: string | undefined
-    await this.withAuthFile((authfile) => {
-      const index = authfile.findIndex(x => x.id === id)
-      if (index < 0) {
-        throw new BadRequestException('User Not Found')
-      }
-      // Prevent deleting the only admin user
-      if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
-        throw new BadRequestException('Cannot delete only admin user')
-      }
-      deletedUsername = authfile[index].username
-      authfile.splice(index, 1)
-      this.logger.warn(`Deleted user with ID ${id}.`)
-    })
-    this.pluginUiTicketService.revokeUser(deletedUsername!)
+    const deletedUsername = await this.users.deleteUser(id)
+    this.pluginUiTicketService.revokeUser(deletedUsername)
   }
 
   /**
@@ -1002,12 +299,7 @@ export class AuthService {
    * browser cookie also invalidates any copy that may have been captured.
    */
   async revokeUserSessions(username: string): Promise<void> {
-    await this.withAuthFile((authfile) => {
-      const user = authfile.find(x => x.username === username)
-      if (user) {
-        user.sessionVersion = (user.sessionVersion ?? 0) + 1
-      }
-    })
+    await this.users.revokeUserSessions(username)
   }
 
   /**
@@ -1016,53 +308,9 @@ export class AuthService {
    * @param update
    */
   async updateUser(id: number, update: UserDto) {
-    // Pre-compute the new salt + hash outside the lock so PBKDF2 isn't
-    // serialised against unrelated auth-file mutations.
-    let newSalt: string | undefined
-    let newHashedPassword: string | undefined
-    if (update.password) {
-      newSalt = await this.genSalt()
-      newHashedPassword = await this.hashPassword(update.password, newSalt)
-    }
-
-    let previousUsername: string | undefined
-    const result = await this.withAuthFile((authfile) => {
-      const user = authfile.find(x => x.id === id)
-      if (!user) {
-        throw new BadRequestException('User Not Found')
-      }
-      previousUsername = user.username
-      if (user.username !== update.username) {
-        if (authfile.some(x => x.username.toLowerCase() === update.username.toLowerCase())) {
-          throw new ConflictException(`User with username '${update.username}' already exists.`)
-        }
-        this.logger.log(`Updated user: changed username from ${user.username} to ${update.username}.`)
-        user.username = update.username
-      }
-      user.name = update.name || user.name
-      const adminChanged = update.admin !== undefined && !!update.admin !== !!user.admin
-      // Demoting the only administrator would leave nobody able to manage
-      // users (and with auth set to "none", no admin to mint tokens for at
-      // all) - the same lockout deleteUser already refuses.
-      if (adminChanged && !update.admin && authfile.filter(x => x.admin === true).length < 2) {
-        throw new BadRequestException('Cannot remove admin from only admin user')
-      }
-      user.admin = (update.admin === undefined) ? user.admin : update.admin
-      if (newHashedPassword && newSalt) {
-        user.hashedPassword = newHashedPassword
-        user.salt = newSalt
-        user.passwordIterations = PBKDF2_ITERATIONS
-      }
-      // Changing the password or the admin role must invalidate tokens already
-      // issued to this user, which carry the old values in their payload.
-      if (newHashedPassword || adminChanged) {
-        user.sessionVersion = (user.sessionVersion ?? 0) + 1
-      }
-      this.logger.log(`Updated user: ${user.username}.`)
-      return this.desensitiseUserProfile(user)
-    })
-    this.pluginUiTicketService.revokeUser(previousUsername!)
-    return result
+    const { user, previousUsername } = await this.users.updateUser(id, update)
+    this.pluginUiTicketService.revokeUser(previousUsername)
+    return user
   }
 
   /**
@@ -1075,21 +323,13 @@ export class AuthService {
     // hash are computed inside too, after the check, so the
     // validate→update window can't be interleaved by another /password
     // call for the same user - and a wrong guess costs one hash, not two.
-    const result = await this.withAuthFile(async (authfile) => {
-      const user = authfile.find(x => x.username === username)
-      if (!user) {
-        throw new NotFoundException('User not found.')
-      }
+    const result = await this.users.withUser(username, () => new NotFoundException('User not found.'), async (user) => {
       // This will throw an error if the password is wrong
       await this.checkCurrentPassword(user, currentPassword)
-      const newSalt = await this.genSalt()
-      const newHashedPassword = await this.hashPassword(newPassword, newSalt)
-      user.hashedPassword = newHashedPassword
-      user.salt = newSalt
-      user.passwordIterations = PBKDF2_ITERATIONS
+      Object.assign(user, await this.hasher.createCredentials(newPassword))
       // Invalidate tokens issued against the old password.
       user.sessionVersion = (user.sessionVersion ?? 0) + 1
-      return this.desensitiseUserProfile(user)
+      return desensitiseUserProfile(user)
     })
     this.pluginUiTicketService.revokeUser(username)
     return result
@@ -1099,79 +339,14 @@ export class AuthService {
    * Generate an OTP secret for a user
    */
   async setupOtp(username: string) {
-    return this.withAuthFile((authfile) => {
-      const user = authfile.find(x => x.username === username)
-      if (!user) {
-        throw new NotFoundException('User not found.')
-      }
-      if (user.otpActive) {
-        throw new ForbiddenException('2FA has already been activated.')
-      }
-      user.otpSecret = generateSecret()
-      const appName = `Homebridge Glass UI (${this.configService.instanceId.slice(0, 7)})`
-      return {
-        timestamp: new Date(),
-        otpauth: generateURI({
-          issuer: appName,
-          label: user.username,
-          secret: user.otpSecret,
-        }),
-      }
-    })
+    return this.otp.setupOtp(username)
   }
 
   /**
    * Activates the OTP requirement for a user after verifying the otp code
    */
   async activateOtp(username: string, code: string) {
-    const result = await this.withAuthFile(async (authfile) => {
-      const user = authfile.find(x => x.username === username)
-      if (!user) {
-        throw new NotFoundException('User not found.')
-      }
-      if (!user.otpSecret) {
-        throw new BadRequestException('2FA has not been setup.')
-      }
-
-      let valid = false
-      try {
-        // Try with v13 (for 32-character secrets)
-        const result = await verify({
-          token: code,
-          secret: user.otpSecret,
-          epochTolerance: 30,
-        })
-        valid = result.valid
-      } catch (error: unknown) {
-        // If SecretTooShortError, use custom guardrails (shouldn't happen for new setups, but handle it)
-        if (error instanceof Error && error.name === 'SecretTooShortError' && user.otpSecret.length === 16) {
-          this.logger.warn(`${user.username} is attempting to activate a legacy 16-character OTP secret.`)
-
-          const result = await verify({
-            token: code,
-            secret: user.otpSecret,
-            epochTolerance: 30,
-            guardrails: this.legacyOtpGuardrails,
-          })
-          valid = result.valid
-
-          if (valid) {
-            user.otpLegacySecret = true
-          }
-        } else {
-          throw error
-        }
-      }
-
-      if (!valid) {
-        throw new BadRequestException('2FA code is not valid.')
-      }
-      user.otpActive = true
-      // Turning 2FA on invalidates sessions established before it was required.
-      user.sessionVersion = (user.sessionVersion ?? 0) + 1
-      this.logger.warn(`Activated 2FA for ${user.username}.`)
-      return this.desensitiseUserProfile(user)
-    })
+    const result = await this.otp.activateOtp(username, code)
     this.pluginUiTicketService.revokeUser(username)
     return result
   }
@@ -1180,11 +355,7 @@ export class AuthService {
    * Deactivates the OTP requirement for a user after verifying their password
    */
   async deactivateOtp(username: string, password: string) {
-    const result = await this.withAuthFile(async (authfile) => {
-      const user = authfile.find(x => x.username === username)
-      if (!user) {
-        throw new NotFoundException('User not found.')
-      }
+    const result = await this.users.withUser(username, () => new NotFoundException('User not found.'), async (user) => {
       // This will throw an error if the password is not valid
       await this.checkCurrentPassword(user, password)
       user.otpActive = false
@@ -1192,7 +363,7 @@ export class AuthService {
       delete user.otpLegacySecret
       user.sessionVersion = (user.sessionVersion ?? 0) + 1
       this.logger.warn(`Deactivated 2FA for ${username}.`)
-      return this.desensitiseUserProfile(user)
+      return desensitiseUserProfile(user)
     })
     this.pluginUiTicketService.revokeUser(username)
     return result
@@ -1202,91 +373,6 @@ export class AuthService {
    * Verify an OTP token for a user and prevent it being used more than once
    */
   async verifyOtpToken(user: UserDto, otp: string): Promise<boolean> {
-    const otpCacheKey = user.username + otp
-
-    if (this.otpUsageCache.get(otpCacheKey)) {
-      this.logger.warn(`${user.username} attempted to reuse one-time-password.`)
-      return false
-    }
-
-    // Reserve the slot BEFORE awaiting verify(). Otherwise two parallel
-    // requests with the same captured code would both pass the cache
-    // check, both call verify(), and both succeed — defeating the
-    // single-use protection. The reservation is rolled back if the code
-    // turns out to be invalid so the user can correct a typo and retry.
-    this.otpUsageCache.set(otpCacheKey, 'pending')
-
-    try {
-      // Try with v13 (for 32-character secrets)
-      const { valid } = await verify({
-        token: otp,
-        secret: user.otpSecret,
-        epochTolerance: 30,
-      })
-
-      if (valid) {
-        this.otpUsageCache.set(otpCacheKey, 'true')
-        return true
-      }
-    } catch (error: unknown) {
-      // If SecretTooShortError, this is a legacy 16-character secret from otplib v12
-      if (error instanceof Error && error.name === 'SecretTooShortError' && user.otpSecret.length === 16) {
-        this.logger.warn(`${user.username} is using a legacy 16-character OTP secret. They should re-setup 2FA for better security.`)
-
-        // Use custom guardrails to allow legacy 10-byte (16-character) secrets
-        const { valid } = await verify({
-          token: otp,
-          secret: user.otpSecret,
-          epochTolerance: 30,
-          guardrails: this.legacyOtpGuardrails,
-        })
-
-        if (valid) {
-          this.otpUsageCache.set(otpCacheKey, 'true')
-
-          // Set the flag on the user object immediately so it's included in the JWT
-          user.otpLegacySecret = true
-
-          // Persist the flag to the auth file (async, don't block login)
-          this.markUserAsLegacyOtp(user.username).catch((err: unknown) => {
-            const message = err instanceof Error ? err.message : 'Unknown error'
-            this.logger.error(`Failed to mark user ${user.username} as having legacy OTP: ${message}`)
-          })
-
-          return true
-        }
-      } else {
-        // Re-throw if it's a different error — but first roll back the
-        // reservation so a transient failure doesn't lock the user out.
-        this.otpUsageCache.del(otpCacheKey)
-        throw error
-      }
-    }
-
-    // verify() returned !valid. Roll back the reservation so a typed
-    // typo doesn't burn the code for the user's next attempt.
-    this.otpUsageCache.del(otpCacheKey)
-    return false
-  }
-
-  /**
-   * Mark a user as having a legacy OTP secret
-   */
-  private async markUserAsLegacyOtp(username: string) {
-    await this.jsonStore.mutate<UserDto[]>(
-      this.configService.authPath,
-      (current) => {
-        const authfile = current ?? []
-        const user = authfile.find(x => x.username === username)
-        if (!user || user.otpLegacySecret) {
-          // No-op: nothing to update, skip the write.
-          return null
-        }
-        user.otpLegacySecret = true
-        this.logger.warn(`Marked ${username} as having legacy OTP secret.`)
-        return authfile
-      },
-      { spaces: 4 },
-    )
+    return this.otp.verifyOtpToken(user, otp)
   }
 }
