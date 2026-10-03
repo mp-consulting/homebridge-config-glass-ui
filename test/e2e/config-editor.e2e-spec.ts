@@ -1331,6 +1331,22 @@ describe('ConfigEditorController (e2e)', () => {
       expect(res2.body).toContain('log.path')
     })
 
+    it('POST /config-editor (full save) refuses a log command that reads a protected storage file', async () => {
+      homebridgeConfigService.enableTerminalAccess = false
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      uiBlock.log = { method: 'custom', command: `cat ${resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')}` }
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/config-editor',
+        headers: { authorization },
+        payload: config,
+      })
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('log.command')
+    })
+
     it('PATCH refuses a log path that points at the secrets in the storage directory', async () => {
       for (const path of [resolve(process.env.UIX_STORAGE_PATH, 'auth.json'), resolve(process.env.UIX_STORAGE_PATH, '.uix-secrets')]) {
         const res = await app.inject({

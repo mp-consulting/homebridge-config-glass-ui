@@ -51,7 +51,7 @@ const RE_CONTROL_CHARS = /[\u0000-\u001F\u007F]/
 export const RESTART_COMMAND_RULE = 'The command must use systemctl, service, shutdown, reboot, poweroff, halt, or init, optionally prefixed with sudo, and may not contain shell metacharacters.'
 export const NODE_OPTIONS_RULE = 'NODE_OPTIONS may not use --require, --import, --loader, --inspect or other flags that load code, open a debugger or read/write files.'
 export const LOG_PATH_RULE = 'The log path may not point at the UI secrets, users, config.json, HomeKit or Matter pairing data, SSL certificates, backups or hb-service startup settings in the Homebridge storage directory.'
-export const LOG_COMMAND_RULE = 'With terminal access disabled, a custom log command must be tail, journalctl, cat, docker logs or podman logs (optionally prefixed with "sudo -n") with plain arguments.'
+export const LOG_COMMAND_RULE = 'With terminal access disabled, a custom log command must be tail, journalctl, cat, docker logs or podman logs (optionally prefixed with "sudo -n") with plain arguments, and may not read the UI secrets, users, config.json, pairing data, SSL certificates, backups or startup settings in the Homebridge storage directory.'
 
 /**
  * Returns the first NODE_OPTIONS flag that is not allowed, or undefined.
@@ -100,13 +100,36 @@ export function sanitiseStartupEnv(env: unknown, warn: (msg: string) => void): R
 /**
  * Whether a custom log command may run. With terminal access enabled an
  * admin already has a shell, so any command is allowed; otherwise it must
- * match `RE_SAFE_LOG_CMD`.
+ * match `RE_SAFE_LOG_CMD` and may not name a protected storage file (see
+ * `logCommandReadsProtectedPath`) - `cat <storage>/.uix-secrets` is an
+ * allowlisted binary with plain arguments, and would show the signing key to
+ * everyone who can read the log.
  */
-export function isLogCommandAllowed(command: unknown, terminalEnabled: boolean): boolean {
+export function isLogCommandAllowed(command: unknown, terminalEnabled: boolean, storagePath?: string): boolean {
   if (typeof command !== 'string' || !command.trim()) {
     return false
   }
-  return terminalEnabled || RE_SAFE_LOG_CMD.test(command)
+  return terminalEnabled || (RE_SAFE_LOG_CMD.test(command) && !logCommandReadsProtectedPath(command, storagePath))
+}
+
+/**
+ * Whether any argument of a log command points at a protected storage file
+ * (see `isProtectedStoragePath`). Every argument is treated as a possible
+ * path, as is the value of a `--option=value` and of a short option written
+ * together with its value (`-D/path`), so `journalctl --file=...` and
+ * `journalctl -D...` are covered as well as plain file arguments.
+ */
+export function logCommandReadsProtectedPath(command: string, storagePath: string | undefined): boolean {
+  return command.trim().split(/\s+/).some((arg) => {
+    const candidates = [arg]
+    if (arg.includes('=')) {
+      candidates.push(arg.slice(arg.indexOf('=') + 1))
+    }
+    if (/^-[^-]./.test(arg)) {
+      candidates.push(arg.slice(2))
+    }
+    return candidates.some(candidate => isProtectedStoragePath(candidate, storagePath))
+  })
 }
 
 /**
@@ -184,7 +207,7 @@ export function findUnsafeUiValues(newUi: any, oldUi: any, opts: { terminalEnabl
   const newLog = newUi.log && typeof newUi.log === 'object' ? newUi.log : undefined
   const oldLog = oldUi?.log && typeof oldUi.log === 'object' ? oldUi.log : undefined
   if (newLog) {
-    if (newLog.command !== oldLog?.command && !isEmpty(newLog.command) && !isLogCommandAllowed(newLog.command, opts.terminalEnabled)) {
+    if (newLog.command !== oldLog?.command && !isEmpty(newLog.command) && !isLogCommandAllowed(newLog.command, opts.terminalEnabled, opts.storagePath)) {
       unsafe.push({ path: 'log.command', reason: `Unsafe log command. ${LOG_COMMAND_RULE}` })
     }
     if (newLog.path !== oldLog?.path && !isEmpty(newLog.path) && (typeof newLog.path !== 'string' || RE_CONTROL_CHARS.test(newLog.path))) {

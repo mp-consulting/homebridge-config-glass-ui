@@ -55,6 +55,34 @@ describe('config-safety', () => {
     expect(sanitiseStartupEnv(undefined, warn)).toEqual({})
   })
 
+  describe('log command reading protected storage files', () => {
+    const storagePath = join(tmpdir(), 'hb-storage')
+
+    it.each([
+      `cat ${join(storagePath, '.uix-secrets')}`,
+      `tail -n 500 -f ${join(storagePath, 'auth.json')}`,
+      `sudo -n cat ${join(storagePath, 'persist', 'AccessoryInfo.json')}`,
+      `tail -f /var/log/homebridge.log ${join(storagePath, 'config.json')}`,
+      'cat .uix-secrets',
+      `journalctl --file=${join(storagePath, 'backups', 'x.journal')}`,
+      `journalctl -D${join(storagePath, 'ssl-certs')}`,
+      `cat ${join(storagePath, 'logs', '..', 'AUTH.JSON')}`,
+    ])('refuses %s', (command) => {
+      expect(isLogCommandAllowed(command, false, storagePath)).toBe(false)
+      expect(findUnsafeUiValues({ log: { method: 'custom', command } }, {}, { terminalEnabled: false, storagePath }))
+        .toEqual([{ path: 'log.command', reason: expect.stringContaining('may not read the UI secrets') }])
+    })
+
+    it.each([
+      'tail -n 500 -f /var/log/homebridge.log',
+      `tail -f ${join(storagePath, 'homebridge.log')}`,
+      'sudo -n journalctl -o cat -f -u homebridge',
+      'docker logs -f homebridge',
+    ])('allows %s', (command) => {
+      expect(isLogCommandAllowed(command, false, storagePath)).toBe(true)
+    })
+  })
+
   it('isLogCommandAllowed: allowlist without terminal, anything with terminal', () => {
     expect(isLogCommandAllowed('tail -f /var/log/homebridge.log', false)).toBe(true)
     expect(isLogCommandAllowed('sudo -n journalctl -o cat -f -u homebridge', false)).toBe(true)
