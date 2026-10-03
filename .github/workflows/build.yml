@@ -46,8 +46,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Coverage (and its thresholds in vitest.config.js / ui/vite.config.ts) is
+      # checked on one Node version only, to keep the matrix fast
       - name: Test server
+        if: matrix.node-version != '24.x'
         run: npm test
+
+      - name: Test server (with coverage)
+        if: matrix.node-version == '24.x'
+        run: npm run test-coverage
 
       # The schema-form golden suite replays real plugin schemas, which are gitignored and
       # pinned by manifest.json. On CI the suite fails (rather than skips) when they are missing.
@@ -63,7 +70,12 @@ jobs:
         run: node scripts/schema-corpus/fetch.mjs --from-manifest
 
       - name: Test UI
+        if: matrix.node-version != '24.x'
         run: npm run test:ui
+
+      - name: Test UI (with coverage)
+        if: matrix.node-version == '24.x'
+        run: npm run test:ui -- --coverage
 
   e2e:
     name: Browser (Playwright)
