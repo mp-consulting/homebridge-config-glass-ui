@@ -183,7 +183,7 @@ describe('ChildBridges (e2e)', () => {
     it('keeps the WS auth registry\'s disconnect cleanup when the status stream ends', async () => {
       const user = { username: 'admin', admin: true }
       const socket = Object.assign(new EventEmitter(), { data: {} as any, disconnect: vi.fn() })
-      rememberWsUser(socket, user as any, async () => user as any)
+      rememberWsUser(socket as any, user as any, async () => user as any)
       socket.data.wsToken = 'child-bridges-listener-test-token'
       const registryListeners = socket.listenerCount('disconnect')
 
