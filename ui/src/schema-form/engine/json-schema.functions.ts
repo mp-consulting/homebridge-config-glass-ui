@@ -1255,8 +1255,15 @@ export function convertJSONSchemaIfToCondition(schema, layoutNode, negate = fals
         });
     }
     condition["functionBody"] = `return ${notOp}(${conditionFun})`;
+    // Recorded so the form service can tell this generated body from one a
+    // plugin author wrote (only the latter is reported). Kept by text, which
+    // survives the layout's cloneDeep calls.
+    generatedFunctionBodies.add(condition["functionBody"]);
     return condition;
 }
+
+/** `functionBody` strings built by `convertJSONSchemaIfToCondition` (if/then/else), not written by a plugin */
+export const generatedFunctionBodies = new Set();
 
 export function convertSchemaToDraft6(schema, options = {}) {
     let draft = options.draft || null;
