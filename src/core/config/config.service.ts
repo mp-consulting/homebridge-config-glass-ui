@@ -286,6 +286,15 @@ export class ConfigService {
   }
 
   /**
+   * True when a different version of the UI has been installed since this
+   * process started, so it is still running the old one
+   */
+  public async uiPackageChangedOnDisk(): Promise<boolean> {
+    const currentPackage = await readJson(resolve(process.env.UIX_BASE_PATH, 'package.json'))
+    return currentPackage.version !== this.package.version
+  }
+
+  /**
    * Checks to see if the UI requires a restart due to changed ui or bridge settings
    */
   public async uiRestartRequired(): Promise<boolean> {
@@ -295,8 +304,7 @@ export class ConfigService {
     }
 
     // If the ui version has changed on disk, a restart is required
-    const currentPackage = await readJson(resolve(process.env.UIX_BASE_PATH, 'package.json'))
-    if (currentPackage.version !== this.package.version) {
+    if (await this.uiPackageChangedOnDisk()) {
       return true
     }
 

@@ -394,6 +394,20 @@ export class UpdateAllService {
         settled.add(item.name)
       }
 
+      // A UI update installed earlier but never restarted into (its browser
+      // went away before asking) would otherwise keep running the old version
+      // through this run's Homebridge-only restart
+      if (!needs.ui && (needs.homebridge || needs.childBridgeUsernames.size > 0)) {
+        try {
+          if (await this.configService.uiPackageChangedOnDisk()) {
+            this.logger.warn('Update All: a newer Homebridge Glass UI is installed but not running yet, so the UI restarts too.')
+            needs.ui = true
+          }
+        } catch (e) {
+          this.logger.debug(`Update All: could not compare the installed UI version (${e.message}).`)
+        }
+      }
+
       finalRestartState = await this.finale(needs)
       uiRestartNeeded = needs.ui
     } catch (e) {

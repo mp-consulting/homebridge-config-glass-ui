@@ -707,6 +707,36 @@ describe('UpdateAllController (e2e)', () => {
       expect(mockHomebridgeIpcService.restartHomebridge).toHaveBeenCalledTimes(1)
     })
 
+    it('restarts the UI too when a newer UI is installed but not running yet', async () => {
+      // The UI updated itself earlier, but the browser that should have asked
+      // for the restart went away, so this process still runs the old version
+      const changed = vi.spyOn(configService, 'uiPackageChangedOnDisk').mockResolvedValue(true)
+      try {
+        mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-alpha')])
+
+        const res = await startRun([{ name: 'homebridge-alpha', to: '1.1.0' }])
+        expect(res.statusCode).toBe(201)
+        await updateAllService.waitForActiveRun()
+
+        expect(mockPluginsService.scheduleUiRestart).toHaveBeenCalledTimes(1)
+        expect(mockHomebridgeIpcService.restartHomebridge).not.toHaveBeenCalled()
+        expect((await readJournal()).restart.ui).toBe('scheduled')
+      } finally {
+        changed.mockRestore()
+      }
+    })
+
+    it('restarts only Homebridge when the running UI is the installed one', async () => {
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-alpha')])
+
+      const res = await startRun([{ name: 'homebridge-alpha', to: '1.1.0' }])
+      expect(res.statusCode).toBe(201)
+      await updateAllService.waitForActiveRun()
+
+      expect(mockHomebridgeIpcService.restartHomebridge).toHaveBeenCalledTimes(1)
+      expect(mockPluginsService.scheduleUiRestart).not.toHaveBeenCalled()
+    })
+
     it('refuses to start while a ui self-restart fuse is armed', async () => {
       // Regression: a single-item UI update arms a 5s process exit; a run
       // started inside that window used to be truncated mid-way when the

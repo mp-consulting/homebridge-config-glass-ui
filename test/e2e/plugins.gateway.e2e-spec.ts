@@ -368,6 +368,35 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
   })
 
+  it('ON /plugins/update restarts the server once the UI has updated itself', async () => {
+    vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+    // Stubbed: the real one ends this process five seconds later
+    const scheduleUiRestart = vi.spyOn(pluginsService, 'scheduleUiRestart').mockImplementation(() => {})
+
+    await expect(pluginsGateway.updatePlugin(client, { name: configService.name, version: 'latest' })).resolves.toBe(true)
+
+    // Even if the browser that asked never comes back to request the restart
+    expect(scheduleUiRestart).toHaveBeenCalledTimes(1)
+  })
+
+  it('ON /plugins/update leaves the server running after updating any other plugin', async () => {
+    vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+    const scheduleUiRestart = vi.spyOn(pluginsService, 'scheduleUiRestart').mockImplementation(() => {})
+
+    await pluginsGateway.updatePlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' })
+
+    expect(scheduleUiRestart).not.toHaveBeenCalled()
+  })
+
+  it('ON /plugins/update does not restart when the UI update fails', async () => {
+    vi.spyOn(pluginsService, 'managePlugin').mockRejectedValue(new Error('npm failed'))
+    const scheduleUiRestart = vi.spyOn(pluginsService, 'scheduleUiRestart').mockImplementation(() => {})
+
+    await pluginsGateway.updatePlugin(client, { name: configService.name, version: 'latest' })
+
+    expect(scheduleUiRestart).not.toHaveBeenCalled()
+  })
+
   it('ON /plugins/update (custom version)', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
