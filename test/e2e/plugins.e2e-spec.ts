@@ -1320,31 +1320,41 @@ describe('PluginController (e2e)', () => {
     it('should schedule full restart when updating @mp-consulting/homebridge-config-glass-ui', async () => {
       const managePluginSpy = vi.spyOn(installer as any, 'managePlugin').mockResolvedValue(true)
       const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
-      const setTimeoutSpy = vi.spyOn(globalThis, 'setTimeout')
+      // Only the timer pair is faked: the update itself runs from a setImmediate
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
 
-      const res = await app.inject({
-        method: 'POST',
-        path: '/plugins/update/%40mp-consulting%2Fhomebridge-config-glass-ui?version=5.8.0',
-        headers: {
-          authorization,
-        },
-      })
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          path: '/plugins/update/%40mp-consulting%2Fhomebridge-config-glass-ui?version=5.8.0',
+          headers: {
+            authorization,
+          },
+        })
 
-      expect(res.statusCode).toBe(201)
+        expect(res.statusCode).toBe(201)
 
-      // setTimeout should be called to schedule the restart (with 5000ms delay)
-      const expectedDelayMs = 5000 // PluginsService.UI_RESTART_DELAY_MS
-      await vi.waitFor(() => expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), expectedDelayMs))
-      expect(exitSpy).not.toHaveBeenCalled()
+        // The restart is armed once the background update has finished...
+        // (polled on setImmediate: vi.waitFor would advance the fake clock)
+        for (let i = 0; i < 1000 && !uiUpdate.uiRestartPending; i++) {
+          await new Promise(resolve => setImmediate(resolve))
+        }
+        expect(uiUpdate.uiRestartPending).toBe(true)
+        expect(exitSpy).not.toHaveBeenCalled()
 
-      // ⚠️ Kill the fuse before releasing the stub. The restart is armed on a
-      // 5000ms timer but this test stops waiting once it is armed, so restoring process.exit
-      // here used to leave a live timer that fired 4.8s later - during whatever
-      // test was running by then - and took the whole worker down with it.
-      uiUpdate.onModuleDestroy()
-      managePluginSpy.mockRestore()
-      exitSpy.mockRestore()
-      setTimeoutSpy.mockRestore()
+        // ...and actually happens 5 seconds later (UiUpdateService.UI_RESTART_DELAY_MS)
+        await vi.advanceTimersByTimeAsync(4999)
+        expect(exitSpy).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(1)
+        expect(exitSpy).toHaveBeenCalledExactlyOnceWith(0)
+      } finally {
+        // ⚠️ Kill the fuse before releasing the stub, so no live timer can
+        // call the real process.exit during a later test.
+        uiUpdate.onModuleDestroy()
+        vi.useRealTimers()
+        managePluginSpy.mockRestore()
+        exitSpy.mockRestore()
+      }
     })
   })
 
