@@ -25,7 +25,7 @@ export type SwitchToScopedProps = SwitchToScopedModalData & ModalComponentProps
 
 /** The icon-only wiki link, named for screen readers by `label` */
 function moreInfoLink(label: string): string {
-  return `<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank" aria-label="${escapeHtml(label)}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
+  return `<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(label)}"><i class="fas fa-up-right-from-square primary-text" aria-hidden="true"></i></a>`
 }
 const prefix = '<span class="font-monospace">@homebridge-plugins/</span>'
 

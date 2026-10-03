@@ -276,6 +276,7 @@ export function PluginsPage() {
                 <a
                   href="https://developers.homebridge.io/analytics"
                   target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={t('plugins.stats_open_in_new_tab')}
                 >
                   <i aria-hidden="true" className="fas fa-up-right-from-square"></i>

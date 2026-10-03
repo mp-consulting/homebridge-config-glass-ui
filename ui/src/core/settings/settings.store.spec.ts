@@ -196,7 +196,7 @@ describe('settings store', () => {
 
       // Tapping it opens the help page
       raised('warning').onTap!()
-      expect(open).toHaveBeenCalledWith('https://homebridge.io/w/JqTFs', '_blank')
+      expect(open).toHaveBeenCalledWith('https://homebridge.io/w/JqTFs', '_blank', 'noopener,noreferrer')
     })
 
     it('says nothing when the clocks agree', async () => {

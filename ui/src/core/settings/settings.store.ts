@@ -186,7 +186,7 @@ function checkServerTime(timestamp: string) {
         onTap: () => {
           // A previous warning still on screen has lost its tap handler
           if (serverTimeWarning === warning) {
-            window.open('https://homebridge.io/w/JqTFs', '_blank')
+            window.open('https://homebridge.io/w/JqTFs', '_blank', 'noopener,noreferrer')
           }
         },
       },
