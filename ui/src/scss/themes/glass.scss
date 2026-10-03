@@ -11,19 +11,37 @@
  * win without escalating further.
  */
 
+$glass-radius-xl: 28px;
 $glass-radius-lg: 24px;
 $glass-radius-md: 18px;
 $glass-radius-sm: 14px;
+$glass-radius-xs: 10px;
 $glass-sidebar-width: 64px;
 $glass-gutter: 16px;
 
-// A frosted surface. Each surface picks its own tint strength.
-@mixin glass-surface($tint: 0.1) {
-  background: linear-gradient(135deg, rgba(var(--glass-primary-rgb), $tint) 0%, var(--glass-surface) 55%) !important;
+// The theme tint at `$tint` strength, mixed with --glass-tint-base: that is
+// transparent (a translucent tint) unless less transparency was asked for, when
+// it is the opaque surface (an opaque tinted colour).
+@function glass-tint($tint) {
+  @return color-mix(in srgb, rgb(var(--glass-primary-rgb)) #{$tint * 100%}, var(--glass-tint-base));
+}
+
+// A glass surface. Each surface picks its own tint strength.
+//
+// Only the few surfaces that float over everything (sidebar, mobile header,
+// modals, menus, the login card) are frosted, with `$blur: true`. A
+// backdrop-filter re-renders what is behind it on every frame that scrolls, and
+// the cards, widgets and accessory tiles repeat dozens of times a page; over the
+// soft background gradients a translucent fill looks almost the same without it.
+@mixin glass-surface($tint: 0.1, $blur: false) {
+  background: linear-gradient(135deg, glass-tint($tint) 0%, var(--glass-surface) 55%) !important;
   border: 1px solid var(--glass-border) !important;
   box-shadow: var(--glass-shadow) !important;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+
+  @if $blur {
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  }
 }
 
 html body.glass-mode {
@@ -45,9 +63,31 @@ html body.glass-mode {
   // colour.
   --glass-text-accent: var(--glass-primary-text, var(--glass-primary));
   --glass-input: rgba(255, 255, 255, 0.7);
+  --glass-tint-base: transparent;
   --glass-blur: 22px;
+  --glass-blur-strong: 30px;
+  --glass-blur-backdrop: 14px;
   --glass-bg-glow-1: 0.34;
   --glass-bg-glow-2: 0.18;
+  --glass-bg-glow-3: rgba(120, 140, 220, 0.14);
+  --glass-bg-glow-3-at: 85% 15%;
+  // Status colours. The validity and status check marks keep a green instead
+  // of turning into the theme colour, so "valid" never reads as just another
+  // accent.
+  --glass-success: #2e7d32;
+  --glass-success-rgb: 46, 125, 50;
+  --glass-warning: #ffa000;
+  --glass-danger: #d32f2f;
+  // Radii, from the $glass-radius-* scale
+  --glass-radius-xl: #{$glass-radius-xl};
+  --glass-radius-lg: #{$glass-radius-lg};
+  --glass-radius-md: #{$glass-radius-md};
+  --glass-radius-sm: #{$glass-radius-sm};
+  --glass-radius-xs: #{$glass-radius-xs};
+  // The mobile top bar, which the sidebar and the page content sit below
+  --glass-header-top: 10px;
+  --glass-header-h: 62px;
+  --glass-header-bottom: calc(var(--glass-header-top) + var(--glass-header-h));
 
   // Only the main page fills the viewport. Plugin settings iframes also get the
   // glass-mode class (with modal-content), and there 100vh is the iframe itself:
@@ -55,14 +95,26 @@ html body.glass-mode {
   // a margin, and the two would chase each other into an endless scroll.
   &:not(.modal-content) {
     min-height: 100vh;
+    min-height: 100dvh;
   }
   color: var(--glass-text);
   background-color: var(--glass-bg-base) !important;
-  background-image:
-    radial-gradient(60vw 55vh at 0% 0%, rgba(var(--glass-primary-rgb), var(--glass-bg-glow-1)), transparent 70%),
-    radial-gradient(50vw 50vh at 100% 100%, rgba(var(--glass-primary-rgb), var(--glass-bg-glow-2)), transparent 70%),
-    radial-gradient(45vw 45vh at 85% 15%, rgba(120, 140, 220, 0.14), transparent 70%) !important;
-  background-attachment: fixed !important;
+  background-image: none !important;
+
+  // The glow stays put while the page scrolls. A fixed layer behind the page
+  // does that without `background-attachment: fixed`, which repaints the whole
+  // background on every scroll (and which iOS ignores)
+  &:not(.modal-content)::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(60vw 55vh at 0% 0%, rgba(var(--glass-primary-rgb), var(--glass-bg-glow-1)), transparent 70%),
+      radial-gradient(50vw 50vh at 100% 100%, rgba(var(--glass-primary-rgb), var(--glass-bg-glow-2)), transparent 70%),
+      radial-gradient(45vw 45vh at var(--glass-bg-glow-3-at), var(--glass-bg-glow-3), transparent 70%);
+  }
 
   &.dark-mode {
     --glass-bg-base: #0c0b12;
@@ -79,11 +131,10 @@ html body.glass-mode {
     --glass-input: rgba(0, 0, 0, 0.28);
     --glass-bg-glow-1: 0.42;
     --glass-bg-glow-2: 0.22;
-
-    background-image:
-      radial-gradient(60vw 55vh at 0% 0%, rgba(var(--glass-primary-rgb), var(--glass-bg-glow-1)), transparent 70%),
-      radial-gradient(50vw 50vh at 100% 100%, rgba(var(--glass-primary-rgb), var(--glass-bg-glow-2)), transparent 70%),
-      radial-gradient(45vw 45vh at 80% 20%, rgba(70, 90, 180, 0.16), transparent 70%) !important;
+    --glass-bg-glow-3: rgba(70, 90, 180, 0.16);
+    --glass-bg-glow-3-at: 80% 20%;
+    --glass-success: #66bb6a;
+    --glass-success-rgb: 102, 187, 106;
   }
 
   // ── Typography ──────────────────────────────────────────
@@ -117,13 +168,14 @@ html body.glass-mode {
     top: $glass-gutter;
     left: $glass-gutter;
     height: calc(100vh - #{$glass-gutter * 2});
+    height: calc(100dvh - #{$glass-gutter * 2});
     width: $glass-sidebar-width;
-    border-radius: 26px;
+    border-radius: var(--glass-radius-lg);
     padding: 10px 0;
     display: flex;
     flex-direction: column;
     color: var(--glass-muted) !important;
-    @include glass-surface(0.16);
+    @include glass-surface(0.16, $blur: true);
 
     // The sidebar component's own (encapsulated) rules outrank these, so layout
     // properties that must change are marked important.
@@ -173,6 +225,14 @@ html body.glass-mode {
       opacity: 1 !important;
     }
 
+    // Open and close at once rather than sliding
+    @media (prefers-reduced-motion: reduce) {
+      &,
+      * {
+        transition: none !important;
+      }
+    }
+
     .link-wrapper {
       flex: 1;
       flex-direction: column;
@@ -188,7 +248,7 @@ html body.glass-mode {
         }
 
         .link-row {
-          border-radius: $glass-radius-sm;
+          border-radius: var(--glass-radius-sm);
           padding: 12px 4px !important;
           color: var(--glass-muted);
 
@@ -231,9 +291,11 @@ html body.glass-mode {
       }
     }
 
+    // Below the mobile top bar, with a gap like the one above it
     @media (max-width: 767px) {
-      top: 84px;
-      height: calc(100vh - 100px);
+      top: calc(var(--glass-header-bottom) + 12px);
+      height: calc(100vh - var(--glass-header-bottom) - #{12px + $glass-gutter});
+      height: calc(100dvh - var(--glass-header-bottom) - #{12px + $glass-gutter});
       width: 0;
       padding: 0;
       border-width: 0 !important;
@@ -256,12 +318,12 @@ html body.glass-mode {
 
   // Mobile top bar
   .m-header {
-    top: 10px;
-    left: 10px;
-    width: calc(100% - 20px);
-    height: 62px;
-    border-radius: 20px;
-    @include glass-surface(0.16);
+    top: var(--glass-header-top);
+    left: var(--glass-header-top);
+    width: calc(100% - 2 * var(--glass-header-top));
+    height: var(--glass-header-h);
+    border-radius: var(--glass-radius-md);
+    @include glass-surface(0.16, $blur: true);
 
     .hb-logo-img {
       display: none;
@@ -286,7 +348,7 @@ html body.glass-mode {
 
     @media (max-width: 767px) {
       margin-left: 0;
-      padding-top: 90px !important;
+      padding-top: calc(var(--glass-header-bottom) + 18px) !important;
     }
   }
 
@@ -388,15 +450,15 @@ html body.glass-mode {
   .list-group-box,
   .accordion,
   .alert {
-    border-radius: $glass-radius-lg !important;
+    border-radius: var(--glass-radius-lg) !important;
     color: var(--glass-text) !important;
     @include glass-surface(0.12);
   }
 
-  // backdrop-filter gives every glass surface its own stacking context, so a
-  // dropdown opened inside one (the plugin card's ⋮ menu) is painted under the
-  // next card no matter its own z-index. Lift the surface while its menu is open;
-  // it stays below modals (1055) and the sidebar (500).
+  // A dropdown opened inside a card (the plugin card's ⋮ menu) is painted under
+  // the next card whenever the card is its own stacking context. Lift the
+  // surface while its menu is open; it stays below modals (1055) and the
+  // sidebar (500).
   .card,
   .list-group-box,
   .accordion,
@@ -433,7 +495,7 @@ html body.glass-mode {
   }
 
   gridster-preview {
-    border-radius: $glass-radius-lg;
+    border-radius: var(--glass-radius-lg);
     background: rgba(var(--glass-primary-rgb), 0.18) !important;
   }
 
@@ -473,14 +535,14 @@ html body.glass-mode {
   .alert-warning {
     box-shadow:
       var(--glass-shadow),
-      inset 3px 0 0 #ffa000 !important;
+      inset 3px 0 0 var(--glass-warning) !important;
   }
 
   .alert-error,
   .alert-danger {
     box-shadow:
       var(--glass-shadow),
-      inset 3px 0 0 #d32f2f !important;
+      inset 3px 0 0 var(--glass-danger) !important;
   }
 
   .alert-info {
@@ -509,13 +571,13 @@ html body.glass-mode {
     background: var(--glass-input) !important;
     color: var(--glass-text) !important;
     border: 1px solid var(--glass-divider);
-    border-radius: $glass-radius-sm !important;
+    border-radius: var(--glass-radius-sm) !important;
   }
 
   // ── Status: bridge and update rows ──────────────────────
 
   .hb-status-row {
-    border-radius: $glass-radius-sm;
+    border-radius: var(--glass-radius-sm);
     background: transparent;
     border: 0;
     color: var(--glass-text);
@@ -526,10 +588,12 @@ html body.glass-mode {
     }
   }
 
+  // A check mark means "valid" or "up to date": success green rather than the
+  // theme colour, so it still reads as a status next to the accent
   .fa-circle-check.green-text,
   .fa-check-circle.green-text {
-    color: var(--glass-primary) !important;
-    filter: drop-shadow(0 3px 6px rgba(var(--glass-primary-rgb), 0.35));
+    color: var(--glass-success) !important;
+    filter: drop-shadow(0 3px 6px rgba(var(--glass-success-rgb), 0.35));
   }
 
   .qr-code-container {
@@ -543,7 +607,7 @@ html body.glass-mode {
   // ── Plugins ─────────────────────────────────────────────
 
   .plugin-icon-card {
-    border-radius: $glass-radius-md !important;
+    border-radius: var(--glass-radius-md) !important;
     border: 1px solid var(--glass-border) !important;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     background: #ffffff;
@@ -551,7 +615,7 @@ html body.glass-mode {
   }
 
   .plugin-icon-small {
-    border-radius: 10px !important;
+    border-radius: var(--glass-radius-xs) !important;
     border-color: var(--glass-border) !important;
   }
 
@@ -573,7 +637,7 @@ html body.glass-mode {
   // ── Accessories: HomeKit-style tiles ────────────────────
 
   .accessory-box {
-    border-radius: 22px !important;
+    border-radius: var(--glass-radius-lg) !important;
     color: var(--glass-muted) !important;
     @include glass-surface(0.08);
     box-shadow: var(--glass-shadow) !important;
@@ -590,7 +654,7 @@ html body.glass-mode {
 
   .accessory-widget-box .accessory-box,
   .accessory-tab .accessory-box {
-    background: linear-gradient(135deg, rgba(var(--glass-primary-rgb), 0.08) 0%, var(--glass-surface) 55%) !important;
+    background: linear-gradient(135deg, glass-tint(0.08) 0%, var(--glass-surface) 55%) !important;
   }
 
   // Accessories that are on turn into solid tiles, like the Home app
@@ -622,7 +686,7 @@ html body.glass-mode {
     background: var(--glass-input) !important;
     color: var(--glass-text) !important;
     border: 1px solid var(--glass-divider) !important;
-    border-radius: 12px !important;
+    border-radius: var(--glass-radius-sm) !important;
 
     &:focus {
       border-color: rgba(var(--glass-primary-rgb), 0.6) !important;
@@ -651,7 +715,7 @@ html body.glass-mode {
   // ── Menus, tooltips, toasts ─────────────────────────────
 
   .dropdown-menu {
-    border-radius: $glass-radius-md;
+    border-radius: var(--glass-radius-md);
     padding: 6px;
     background: var(--glass-surface-strong) !important;
     border: 1px solid var(--glass-border) !important;
@@ -660,7 +724,7 @@ html body.glass-mode {
     backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 
     .dropdown-item {
-      border-radius: 10px;
+      border-radius: var(--glass-radius-xs);
       color: var(--glass-text) !important;
 
       &:hover,
@@ -671,7 +735,7 @@ html body.glass-mode {
   }
 
   .tooltip-inner {
-    border-radius: 12px;
+    border-radius: var(--glass-radius-sm);
     padding: 8px 12px;
     background: var(--glass-surface-strong);
     color: var(--glass-text);
@@ -681,7 +745,7 @@ html body.glass-mode {
   }
 
   .toast-container .ngx-toastr {
-    border-radius: $glass-radius-md;
+    border-radius: var(--glass-radius-md);
     -webkit-backdrop-filter: blur(var(--glass-blur));
     backdrop-filter: blur(var(--glass-blur));
   }
@@ -691,23 +755,19 @@ html body.glass-mode {
   .modal-backdrop {
     background-color: rgba(10, 8, 20, 0.35);
     opacity: 1 !important;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(var(--glass-blur-backdrop));
+    backdrop-filter: blur(var(--glass-blur-backdrop));
   }
 
   .modal-content {
-    border-radius: 28px !important;
+    border-radius: var(--glass-radius-xl) !important;
     overflow: hidden;
     color: var(--glass-text) !important;
-    background: linear-gradient(
-      135deg,
-      rgba(var(--glass-primary-rgb), 0.12) 0%,
-      var(--glass-surface-strong) 50%
-    ) !important;
+    background: linear-gradient(135deg, glass-tint(0.12) 0%, var(--glass-surface-strong) 50%) !important;
     border: 1px solid var(--glass-border) !important;
     box-shadow: var(--glass-shadow-lift) !important;
-    -webkit-backdrop-filter: blur(30px) saturate(160%);
-    backdrop-filter: blur(30px) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur-strong)) saturate(160%);
   }
 
   .modal-header,
@@ -719,7 +779,7 @@ html body.glass-mode {
   }
 
   .modal-body .card {
-    border-radius: $glass-radius-md !important;
+    border-radius: var(--glass-radius-md) !important;
   }
 
   // The plugin settings iframe body carries modal-content + glass-mode itself
@@ -736,7 +796,7 @@ html body.glass-mode {
   #log-output,
   #docker-terminal {
     padding: 18px 18px 12px;
-    border-radius: $glass-radius-lg;
+    border-radius: var(--glass-radius-lg);
     @include glass-surface(0.14);
   }
 
@@ -744,7 +804,7 @@ html body.glass-mode {
   .terminal-light-bg {
     background: var(--glass-input) !important;
     border: 1px solid var(--glass-divider) !important;
-    border-radius: $glass-radius-md;
+    border-radius: var(--glass-radius-md);
     padding: 0.5rem !important;
   }
 
@@ -757,7 +817,7 @@ html body.glass-mode {
   ngx-monaco-editor,
   ngx-monaco-diff-editor {
     display: block;
-    border-radius: $glass-radius-lg;
+    border-radius: var(--glass-radius-lg);
     overflow: hidden;
     @include glass-surface(0.14);
   }
@@ -777,26 +837,121 @@ html body.glass-mode {
 
   // ── Login and setup ─────────────────────────────────────
 
-  .login-container {
+  // The glass background shows through, unless a custom wallpaper was set: it
+  // comes as an inline style, which this must not override
+  .login-container:not([style*='background']) {
     background: transparent !important;
   }
 
+  // Over a photo the card needs more than translucent glass to stay readable: a
+  // scrim over the whole wallpaper (an inset shadow paints above the background
+  // but under the card) and the stronger surface behind the form
+  .login-container[style*='background'] {
+    box-shadow: inset 0 0 0 100vmax rgba(10, 8, 20, 0.28);
+
+    .login-card {
+      background: linear-gradient(135deg, glass-tint(0.12) 0%, var(--glass-surface-strong) 55%) !important;
+    }
+  }
+
+  // One card on the page, so it can afford to be frosted
   .login-card,
   .setup-card {
-    border-radius: 28px !important;
+    border-radius: var(--glass-radius-xl) !important;
     color: var(--glass-text) !important;
-    @include glass-surface(0.16);
+    @include glass-surface(0.16, $blur: true);
   }
 }
 
 // Respect people who ask for less transparency
+// (opaque surfaces, tints mixed into them rather than laid over the page, no blur)
 @media (prefers-reduced-transparency: reduce) {
   html body.glass-mode {
-    --glass-surface: rgba(255, 255, 255, 0.95);
+    --glass-surface: #fbfbfd;
+    --glass-surface-strong: #ffffff;
+    --glass-surface-hover: #eeeef4;
+    --glass-input: #ffffff;
+    --glass-tint-base: var(--glass-surface);
     --glass-blur: 0px;
+    --glass-blur-strong: 0px;
+    --glass-blur-backdrop: 0px;
 
     &.dark-mode {
-      --glass-surface: rgba(28, 27, 36, 0.97);
+      --glass-surface: #1c1b24;
+      --glass-surface-strong: #201e2c;
+      --glass-surface-hover: #2a2836;
+      --glass-input: #15141c;
+    }
+
+    // These mix their tint into the strong surface
+    .modal-content,
+    .login-container[style*='background'] .login-card {
+      --glass-tint-base: var(--glass-surface-strong);
+    }
+  }
+}
+
+// Forced colours (Windows high contrast): backgrounds and shadows are dropped,
+// so the surfaces that were told apart by fill, shadow or an inset accent get
+// real borders back
+@media (forced-colors: active) {
+  html body.glass-mode {
+    &::before {
+      display: none;
+    }
+
+    .sidebar,
+    .m-header,
+    .card,
+    gridster-item,
+    .list-group-box,
+    .accordion,
+    .alert,
+    .accessory-box,
+    .modal-content,
+    .dropdown-menu,
+    .tooltip-inner,
+    .login-card,
+    .setup-card,
+    .settings-nav-item,
+    #log-output,
+    #docker-terminal,
+    .form-control,
+    .form-select,
+    .custom-select,
+    .input-group-text {
+      border: 1px solid CanvasText !important;
+    }
+
+    .btn-elegant,
+    .btn-control,
+    .btn-primary,
+    .btn-default,
+    .btn-danger {
+      border: 1px solid ButtonText !important;
+    }
+
+    // The accents that were an inset shadow only
+    .alert-warning,
+    .alert-error,
+    .alert-danger,
+    .alert-info {
+      border-left-width: 4px !important;
+    }
+
+    // On or off was told by the tile's fill alone
+    .accessory-box.accessory-on {
+      border: 3px solid Highlight !important;
+    }
+
+    .sidebar .link-row.active,
+    .settings-nav-item.active {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .rendux-label {
+      border: 1px solid CanvasText !important;
     }
   }
 }
