@@ -144,7 +144,8 @@ export class TerminalService {
           client.emit('process-exit', exitInfo.exitCode)
         }
       } catch (e) {
-        // The client socket probably closed
+        // The client socket probably closed - nobody is left to tell
+        this.logger.debug(`Could not tell the terminal client the session ended: ${e?.message ?? e}`)
       }
     })
 
@@ -160,7 +161,8 @@ export class TerminalService {
       try {
         term.resize(resize.cols, resize.rows)
       } catch {
-        // The terminal has probably already exited
+        // The terminal has probably already exited: a resize can race its
+        // exit, there is nothing left to resize, and onExit tells the client
       }
     }
 
@@ -187,8 +189,9 @@ export class TerminalService {
       try {
         this.logger.debug('Terminal session ended.')
         term.kill()
-      } catch {
+      } catch (e) {
         // The terminal has probably already exited
+        this.logger.debug(`Could not stop the terminal process: ${e?.message ?? e}`)
       }
     }
 
@@ -301,7 +304,9 @@ export class TerminalService {
       try {
         TerminalService.persistentTerminal.resize(size.cols, size.rows)
       } catch {
-        // The terminal has probably already exited
+        // The terminal has probably already exited: its exit handler clears
+        // the persistent terminal and tells every client, so the attach
+        // carries on and nothing is left to resize
       }
     }
 
@@ -348,7 +353,8 @@ export class TerminalService {
           TerminalService.persistentTerminal.resize(resize.cols, resize.rows)
         }
       } catch {
-        // The terminal has probably already exited
+        // The terminal has probably already exited: a resize can race its
+        // exit, and its exit handler tells every client
       }
     }
 

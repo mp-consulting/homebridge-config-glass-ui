@@ -425,7 +425,11 @@ export class UpdateAllService {
         this.logger.error(`Update All: failed to schedule the UI restart (${e.message}).`)
         try {
           await this.journalService.finishRun({ ...finalRestartState, ui: 'pending' })
-        } catch {}
+        } catch (journalError) {
+          // Best effort: the journal already holds the finale's result, and
+          // run-complete below must still be sent
+          this.logger.debug(`Update All: could not record the UI restart as pending (${journalError?.message ?? journalError}).`)
+        }
       }
     }
 
