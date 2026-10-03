@@ -354,7 +354,7 @@ export function createConfigSchema(t: TFunction, flags: ConfigSchemaFlags) {
                 },
                 wallpaper: {
                   title: t('settings.display.wallpaper'),
-                  description: 'The full path to the .jpg file.',
+                  description: 'Set by uploading a wallpaper in the settings: a ui-wallpaper.jpg, .jpeg, .png, .webp or .gif file in the Homebridge storage folder.',
                   type: 'string',
                 },
                 homebridgePackagePath: {
@@ -474,6 +474,12 @@ export function createConfigSchema(t: TFunction, flags: ConfigSchemaFlags) {
                   type: 'string',
                   pattern: '^[^{}/ :\\\\]+(?::\\d+)?$',
                   description: t('settings.network.proxy_desc'),
+                },
+                trustProxy: {
+                  title: t('settings.network.trust_proxy'),
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: t('settings.network.trust_proxy_desc'),
                 },
                 scheduledBackupPath: {
                   title: t('backup.settings_path'),

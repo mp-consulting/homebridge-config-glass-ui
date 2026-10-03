@@ -8,7 +8,6 @@ import {
   controlRvcDevice,
   getActivePowerWatts,
   getAirQualityValue,
-  getAreaProgress,
   getBrightnessLevel,
   getBrightnessPercentage,
   getCarbonMonoxideValue,
@@ -373,7 +372,6 @@ describe('matter-device.utils', () => {
     it('defaults the area and clean mode readings', () => {
       expect(getSelectedAreas(device())).toEqual([])
       expect(getCurrentArea(device())).toBeNull()
-      expect(getAreaProgress(device())).toEqual([])
       expect(getCleanModes(device())).toEqual([])
       expect(getCurrentCleanMode(device())).toBe(0)
       expect(hasCleanModeCluster(device())).toBe(false)

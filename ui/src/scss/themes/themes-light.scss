@@ -1,6 +1,8 @@
 @use 'sass:color';
 @use 'sass:list';
 
+@use './contrast';
+
 // The light themes: `.glass-ui-<name>` on the body (and on a plugin custom UI
 // iframe's body). Each theme only sets custom properties; one shared rule set,
 // scoped to all the theme classes, reads them. Only one theme class is ever
@@ -75,6 +77,11 @@ $themes: (
       #{color.channel($primary, 'red', $space: rgb)}, #{color.channel($primary, 'green', $space: rgb)},
       #{color.channel($primary, 'blue', $space: rgb)};
     --glass-primary-dark: #{$primary-dark};
+    // Accessible variants (4.5:1): the accent as text on the light glass, and
+    // the filled button's gradient under white text
+    --glass-primary-text: #{contrast.darken-to-contrast($primary, #e8eaf2)};
+    --glass-primary-btn: #{contrast.darken-to-contrast($primary, #ffffff)};
+    --glass-primary-btn-dark: #{contrast.darken-to-contrast($primary-dark, #ffffff)};
 
     // Read by the shared theme rules below
     --glass-theme-primary: #{$primary};

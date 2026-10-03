@@ -244,6 +244,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
               <input
                 type="text"
                 className="form-control font-monospace"
+                aria-label={t('settings.security.selfsigned_hostnames')}
                 placeholder="localhost, 127.0.0.1, homebridge.local"
                 value={config.hostnames}
                 onChange={event => update({ hostnames: event.target.value })}
@@ -256,14 +257,14 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
           <ul className="list-group list-group-box mt-4 mb-0">
             <li className="list-group-item">
               {t('settings.security.key')}
-              <input ref={keyInputRef} type="file" className="form-control" accept=".pem,.key" onChange={onFileChange('key')} />
+              <input ref={keyInputRef} type="file" className="form-control" aria-label={t('settings.security.key')} accept=".pem,.key" onChange={onFileChange('key')} />
               {pending.key
                 ? <small className="form-text primary-text font-monospace">{pending.key.name}</small>
                 : config.keyPath && <small className="form-text grey-text font-monospace">{config.keyPath}</small>}
             </li>
             <li className="list-group-item">
               {t('settings.security.cert')}
-              <input ref={certInputRef} type="file" className="form-control" accept=".pem,.crt" onChange={onFileChange('cert')} />
+              <input ref={certInputRef} type="file" className="form-control" aria-label={t('settings.security.cert')} accept=".pem,.crt" onChange={onFileChange('cert')} />
               {pending.cert
                 ? <small className="form-text primary-text font-monospace">{pending.cert.name}</small>
                 : config.certPath && <small className="form-text grey-text font-monospace">{config.certPath}</small>}
@@ -274,7 +275,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
           <ul className="list-group list-group-box mt-4 mb-0">
             <li className="list-group-item">
               {t('settings.security.pfx')}
-              <input ref={pfxInputRef} type="file" className="form-control" accept=".pfx,.p12" onChange={onFileChange('pfx')} />
+              <input ref={pfxInputRef} type="file" className="form-control" aria-label={t('settings.security.pfx')} accept=".pfx,.p12" onChange={onFileChange('pfx')} />
               {pending.pfx
                 ? <small className="form-text primary-text font-monospace">{pending.pfx.name}</small>
                 : config.pfxPath && <small className="form-text grey-text font-monospace">{config.pfxPath}</small>}
@@ -284,6 +285,7 @@ export function SslSettingsModal({ activeModal }: ModalComponentProps<SslMode>) 
               <input
                 type="password"
                 className="form-control font-monospace"
+                aria-label={t('settings.security.pass')}
                 placeholder="••••••••"
                 value={config.passphrase}
                 onChange={event => update({ passphrase: event.target.value })}

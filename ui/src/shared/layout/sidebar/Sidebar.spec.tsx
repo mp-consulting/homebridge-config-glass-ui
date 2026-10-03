@@ -170,9 +170,11 @@ describe('sidebar', () => {
     it('marks the current page, for sight and for screen readers', () => {
       render()
 
-      const status = screen.getByRole('button', { name: 'menu.label_status, menu.current_page' })
+      const status = screen.getByRole('button', { name: 'menu.label_status' })
       expect(status).toHaveClass('active')
+      expect(status).toHaveAttribute('aria-current', 'page')
       expect(screen.getByRole('button', { name: 'menu.label_plugins' })).not.toHaveClass('active')
+      expect(screen.getByRole('button', { name: 'menu.label_plugins' })).not.toHaveAttribute('aria-current')
     })
 
     it('goes to the page it names', async () => {
@@ -183,7 +185,8 @@ describe('sidebar', () => {
       })
 
       expect(router.state.location.pathname).toBe('/plugins')
-      expect(screen.getByRole('button', { name: 'menu.label_plugins, menu.current_page' })).toHaveClass('active')
+      expect(screen.getByRole('button', { name: 'menu.label_plugins' })).toHaveClass('active')
+      expect(screen.getByRole('button', { name: 'menu.label_plugins' })).toHaveAttribute('aria-current', 'page')
     })
 
     it('keeps a section marked on its sub pages', async () => {
@@ -193,7 +196,7 @@ describe('sidebar', () => {
         await router.navigate('/plugins/homebridge-hue')
       })
 
-      expect(screen.getByRole('button', { name: 'menu.label_plugins, menu.current_page' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'menu.label_plugins' })).toHaveAttribute('aria-current', 'page')
       expect(screen.getByRole('button', { name: 'menu.label_status' })).not.toHaveClass('active')
     })
 
@@ -583,6 +586,28 @@ describe('sidebar', () => {
 
       expect(isExpanded()).toBe(true)
       expect(header()).toHaveAttribute('aria-expanded', 'true')
+    })
+
+    it('toggles the menu from the phone header with space, without scrolling', () => {
+      render({ narrow: true })
+
+      const notPrevented = fireEvent.keyDown(header(), { key: ' ' })
+
+      expect(isExpanded()).toBe(true)
+      expect(notPrevented).toBe(false)
+    })
+
+    it('closes the open phone menu on escape and gives focus back to the toggle', () => {
+      render({ narrow: true })
+      fireEvent.keyDown(header(), { key: 'Enter' })
+      const link = screen.getByRole('button', { name: 'menu.label_plugins' })
+      link.focus()
+
+      fireEvent.keyDown(link, { key: 'Escape' })
+
+      expect(isExpanded()).toBe(false)
+      expect(header()).toHaveAttribute('aria-expanded', 'false')
+      expect(document.activeElement).toBe(header())
     })
   })
 

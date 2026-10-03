@@ -4,6 +4,7 @@ import type { FakeApi, FakeOpenModal, FakeToast } from '@/testing'
 import { act, fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { Confirm } from '@/core/components/confirm/Confirm'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import * as modalModule from '@/core/ui/modal'
 import * as toastModule from '@/core/ui/toast'
@@ -129,9 +130,37 @@ describe('backup', () => {
       const { container } = await open()
 
       // Only the list is missing; downloading a fresh backup still works, so
-      // this failure is logged rather than shown
-      expect(container.querySelectorAll('.list-group-box')).toHaveLength(1)
+      // the failure is said in place of the list rather than toasted
+      expect(container.querySelectorAll('.list-group-box')).toHaveLength(2)
+      expect(screen.getByText('backup.files_load_error')).toBeInTheDocument()
       expect(toast.at('error')).toHaveLength(0)
+
+      api.respond('get', '/backup/scheduled-backups', scheduledBackups)
+      await click(button('form.button_retry'))
+
+      expect(screen.queryByText('backup.files_load_error')).toBeNull()
+      expect(screen.getAllByRole('button', { name: 'form.button_restore' })).toHaveLength(2)
+    })
+
+    it('shows that the list is loading', async () => {
+      api.respond('get', '/backup/scheduled-backups', () => new Promise(() => {}))
+      renderWithProviders(<Backup activeModal={{ ...activeModal, update: vi.fn() }} />)
+
+      expect(screen.getByRole('status', { name: 'common.a11y.loading' })).toBeInTheDocument()
+    })
+
+    it('says when there are no stored backups yet', async () => {
+      api.respond('get', '/backup/scheduled-backups', [])
+      await open()
+
+      expect(screen.getByText('backup.files_none')).toBeInTheDocument()
+    })
+
+    it('lets the keyboard reach the file name tooltip', async () => {
+      await open()
+
+      // A tooltip on a plain span only ever opened for a mouse
+      expect(screen.getAllByText(/2026/)[0].closest('[tabindex="0"]')).not.toBeNull()
     })
   })
 
@@ -203,11 +232,23 @@ describe('backup', () => {
       expect(saveAs).not.toHaveBeenCalled()
     })
 
+    it('asks before deleting one', async () => {
+      await open()
+
+      await click(button('form.button_delete', 0))
+      expect(modal.lastOpened()?.component).toBe(Confirm)
+      expect(modal.lastOpened()?.props?.confirmButtonClass).toBe('btn-danger')
+      await act(async () => modal.lastOpened()!.ref.dismiss('Dismiss'))
+
+      expect(api.callsTo('delete', '/backup/scheduled-backups/backup-1')).toHaveLength(0)
+    })
+
     it('deletes one and reloads the list', async () => {
       await open()
       api.clearCalls()
 
       await click(button('form.button_delete', 0))
+      await act(async () => modal.lastOpened()!.ref.close())
 
       expect(api.callsTo('delete', '/backup/scheduled-backups/backup-1')).toHaveLength(1)
       expect(api.callsTo('get', '/backup/scheduled-backups')).toHaveLength(1)
@@ -219,6 +260,7 @@ describe('backup', () => {
       const { container } = await open()
 
       await click(button('form.button_delete', 0))
+      await act(async () => modal.lastOpened()!.ref.close())
 
       // Otherwise that one row keeps its spinner for as long as the modal is open
       expect(container.querySelector('.fa-circle-notch')).toBeNull()

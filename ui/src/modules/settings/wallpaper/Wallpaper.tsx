@@ -109,7 +109,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
                 <div className="position-relative d-inline-block">
                   <img
                     className="img-fluid rounded mx-auto d-block wallpaper-preview"
-                    alt="Current Wallpaper"
+                    alt={t('settings.display.wallpaper_current')}
                     src={wallpaperUrl}
                   />
                   <button
@@ -130,7 +130,7 @@ export function Wallpaper({ activeModal }: ModalComponentProps) {
             type="file"
             id="wallpaper"
             className="form-control"
-            accept="image/*"
+            accept=".jpg,.jpeg,.png,.webp,.gif"
             onChange={onFileChange}
           />
         </div>

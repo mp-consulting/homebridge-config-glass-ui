@@ -7,9 +7,11 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/core/api'
+import { Confirm } from '@/core/components/confirm/Confirm'
 import { formatDate } from '@/core/pipes/date'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
 import { t } from '@/core/ui/i18n'
+import { openModal } from '@/core/ui/modal'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
@@ -94,6 +96,21 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
   }
 
   const deleteAllBackups = async (): Promise<void> => {
+    const ref = openModal(Confirm, {
+      title: t('form.button_delete_all'),
+      message: t('config.restore.delete_all_confirm'),
+      message2: t('common.phrases.are_you_sure'),
+      confirmButtonLabel: t('form.button_delete_all'),
+      confirmButtonClass: 'btn-danger',
+      faIconClass: 'fas fa-trash primary-text',
+    })
+    try {
+      await ref.result
+    } catch {
+      // Called off
+      return
+    }
+
     setDeleting('all')
     try {
       await api.delete('/config-editor/backups')
@@ -196,7 +213,7 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
                 <span>
                   {translate('form.button_delete_all')}
                   <br />
-                  <span className="grey-text small">{translate('common.labels.no_confirmation')}</span>
+                  <span className="grey-text small">{translate('config.restore.delete_all_desc')}</span>
                 </span>
                 <span className="d-flex flex-nowrap">
                   <HoverTooltip text={translate('form.button_delete_all')} placement="bottom">

@@ -11,12 +11,13 @@ export interface HoverTooltipProps {
 }
 
 /**
- * The `ngbTooltip` the templates used everywhere: `triggers="hover"` and
- * `[openDelay]="150"`, rendered as Bootstrap's `.tooltip` markup.
+ * The `ngbTooltip` the templates used everywhere (`[openDelay]="150"`),
+ * rendered as Bootstrap's `.tooltip` markup. It opens on focus as well as
+ * hover, so keyboard users get the same hint; the child must be focusable.
  */
 export function HoverTooltip({ text, placement, children }: HoverTooltipProps) {
   return (
-    <OverlayTrigger placement={placement ?? 'top'} trigger={['hover']} delay={{ show: 150, hide: 0 }} overlay={<Tooltip>{text}</Tooltip>}>
+    <OverlayTrigger placement={placement ?? 'top'} trigger={['hover', 'focus']} delay={{ show: 150, hide: 0 }} overlay={<Tooltip>{text}</Tooltip>}>
       {children}
     </OverlayTrigger>
   )

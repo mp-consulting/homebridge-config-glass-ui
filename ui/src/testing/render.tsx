@@ -1,7 +1,7 @@
 import type { RenderOptions, RenderResult } from '@testing-library/react'
 import type { i18n as I18n } from 'i18next'
 import type { ReactElement, ReactNode } from 'react'
-import type { RouteObject } from 'react-router'
+import type { InitialEntry, RouteObject } from 'react-router'
 
 import { render } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
@@ -33,8 +33,8 @@ export interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper
    * (e.g. `/plugins/:pluginName`). Defaults to `/`.
    */
   route?: string
-  /** The history to start from. Defaults to `[route]` (params left as written). */
-  initialEntries?: string[]
+  /** The history to start from (paths, or locations with router state). Defaults to `[route]` (params left as written). */
+  initialEntries?: InitialEntry[]
   /** Extra routes next to the one under test, e.g. a redirect target. */
   routes?: RouteObject[]
   /** Replace the app's i18n instance, e.g. one with test resources. */

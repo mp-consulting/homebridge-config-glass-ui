@@ -357,20 +357,43 @@ describe('restarting homebridge', () => {
       expect(toast.at('error')).toHaveLength(1)
     })
 
-    it('sends the host restart to its own page', async () => {
+    it('asks before restarting the host, then sends it to its own page with the confirmation', async () => {
       const view = await open('power', { env: { canShutdownRestartHost: true } })
 
       fireEvent.click(screen.getByText('menu.linux.label_restart_server'))
 
+      // A misclick must not reboot the machine
+      expect(modal.lastOpened()?.component).toBe(Confirm)
+      expect(path(view)).toBe('/power-options')
+
+      await act(async () => modal.lastOpened()!.ref.close())
+
       expect(path(view)).toBe('/platform-tools/linux/restart-server')
+      expect(view.router.state.location.state).toEqual({ hostActionConfirmed: true })
     })
 
-    it('sends a container restart to its own page', async () => {
+    it('asks before restarting the container, then sends it to its own page with the confirmation', async () => {
       const view = await open('power', { env: { runningInDocker: true } })
 
       fireEvent.click(screen.getByText('menu.docker.restart_container'))
+      expect(modal.lastOpened()?.component).toBe(Confirm)
+      expect(path(view)).toBe('/power-options')
+
+      await act(async () => modal.lastOpened()!.ref.close())
 
       expect(path(view)).toBe('/platform-tools/docker/restart-container')
+      expect(view.router.state.location.state).toEqual({ hostActionConfirmed: true })
+    })
+
+    it('does nothing when a host or container restart is called off', async () => {
+      const view = await open('power', { env: { canShutdownRestartHost: true, runningInDocker: true } })
+
+      fireEvent.click(screen.getByText('menu.linux.label_restart_server'))
+      await act(async () => modal.lastOpened()!.ref.dismiss('Dismiss'))
+      fireEvent.click(screen.getByText('menu.docker.restart_container'))
+      await act(async () => modal.lastOpened()!.ref.dismiss('Dismiss'))
+
+      expect(path(view)).toBe('/power-options')
     })
 
     it('asks before shutting the machine down', async () => {
@@ -391,6 +414,7 @@ describe('restarting homebridge', () => {
       await act(async () => modal.lastOpened()!.ref.close())
 
       expect(path(view)).toBe('/platform-tools/linux/shutdown-server')
+      expect(view.router.state.location.state).toEqual({ hostActionConfirmed: true })
     })
 
     it('does nothing when the shutdown is called off', async () => {

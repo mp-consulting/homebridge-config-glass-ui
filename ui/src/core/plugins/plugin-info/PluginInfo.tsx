@@ -35,7 +35,7 @@ export function PluginInfo({ activeModal, plugin }: PluginInfoProps) {
     <div className="modal-content hb-plugin-info">
       <ModalHeader title={t('plugins.manage.information')} onClose={dismissModal} />
       <div className="modal-body text-center">
-        <img alt="Plugin Icon" className="mb-3 plugin-icon-card" src={pluginIcon} onError={() => setIconError(true)} />
+        <img alt={t('plugins.manage.plugin_icon')} className="mb-3 plugin-icon-card" src={pluginIcon} onError={() => setIconError(true)} />
         <h4 className="mb-1">{plugin.displayName}</h4>
         <p className="grey-text mb-0 font-monospace">{plugin.name}</p>
         <p className="grey-text mb-1 font-monospace">

@@ -12,7 +12,7 @@ export function PluginSupport({ activeModal }: ModalComponentProps) {
   const dismissModal = () => activeModal.dismiss('Dismiss')
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="plugin-support-modal-title">
+    <div className="modal-content">
       <form>
         <ModalHeader title={t('support.title')} titleId="plugin-support-modal-title" onClose={dismissModal} />
         <div className="modal-body">

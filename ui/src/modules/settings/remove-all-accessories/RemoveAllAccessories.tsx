@@ -121,9 +121,17 @@ export function RemoveAllAccessories({ activeModal }: ModalComponentProps) {
               className="btn btn-danger"
               data-bs-dismiss="modal"
               disabled={clicked}
+              aria-busy={clicked}
               onClick={() => void onResetCachedAccessoriesClick()}
             >
-              {!clicked ? t('form.button_remove') : <i className="fas fa-circle-notch fa-spin"></i>}
+              {!clicked
+                ? t('form.button_remove')
+                : (
+                    <>
+                      <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+                      <span className="visually-hidden">{t('form.button_remove')}</span>
+                    </>
+                  )}
             </button>
           )}
         </div>

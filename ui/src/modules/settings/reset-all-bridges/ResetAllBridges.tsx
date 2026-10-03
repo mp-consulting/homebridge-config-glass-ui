@@ -79,17 +79,25 @@ export function ResetAllBridges({ activeModal }: ModalComponentProps) {
           {confirmMode
             ? (
                 <>
-                  <button type="button" className="btn btn-elegant me-2" disabled={clicked} onClick={toggleConfirmMode}>
-                    <i className="fas fa-undo"></i>
+                  <button type="button" className="btn btn-elegant me-2" disabled={clicked} aria-label={t('form.button_back')} onClick={toggleConfirmMode}>
+                    <i className="fas fa-undo" aria-hidden="true"></i>
                   </button>
                   <button
                     type="button"
                     className="btn btn-danger"
                     data-bs-dismiss="modal"
                     disabled={clicked}
+                    aria-busy={clicked}
                     onClick={() => void onResetHomebridgeAccessoryClick()}
                   >
-                    {!clicked ? t('form.button_reset') : <i className="fas fa-circle-notch fa-spin"></i>}
+                    {!clicked
+                      ? t('form.button_reset')
+                      : (
+                          <>
+                            <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+                            <span className="visually-hidden">{t('form.button_reset')}</span>
+                          </>
+                        )}
                   </button>
                 </>
               )

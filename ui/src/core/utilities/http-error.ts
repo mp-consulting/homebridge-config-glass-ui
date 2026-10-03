@@ -39,6 +39,3 @@ export function toToastMessage(err: unknown, fallbackKey = 'toast.api_error_gene
 export function toastApiError(err: unknown, fallbackKey?: string): ActiveToast {
   return toast.error(toToastMessage(err, fallbackKey), i18n.t('toast.title_error'))
 }
-
-/** The same function under the old service's shape, so ported call sites read the same. */
-export const httpError = { toToastMessage }

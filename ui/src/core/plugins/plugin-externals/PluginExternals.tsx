@@ -7,10 +7,9 @@ import { useTranslation } from 'react-i18next'
 
 import { serverPairingsCache } from '@/core/caching'
 import { QrCode } from '@/core/components/qrcode/QrCode'
-import { i18n } from '@/core/ui/i18n'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
-import { toast } from '@/core/ui/toast'
 import { cx } from '@/core/utilities/cx'
+import { toastApiError } from '@/core/utilities/http-error'
 
 import './plugin-externals.scss'
 
@@ -54,7 +53,7 @@ export function PluginExternals({ activeModal, plugin }: PluginExternalsProps) {
         }
       } catch (error) {
         console.error(error)
-        toast.error(i18n.t('external_accessories.toast_failed_to_load'), i18n.t('toast.title_error'))
+        toastApiError(error, 'external_accessories.toast_failed_to_load')
         if (!cancelled) {
           setAccessories([])
         }

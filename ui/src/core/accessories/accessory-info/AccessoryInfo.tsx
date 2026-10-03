@@ -265,7 +265,7 @@ export function AccessoryInfo({ activeModal, service, accessoryCache, pairingCac
   ))
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="accessory-info-modal-title">
+    <div className="modal-content">
       <ModalHeader title={service.customName || service.serviceName} titleId="accessory-info-modal-title" onClose={dismissModal} />
       <div className="modal-body">
         <ul className="list-group list-group-box mb-3">

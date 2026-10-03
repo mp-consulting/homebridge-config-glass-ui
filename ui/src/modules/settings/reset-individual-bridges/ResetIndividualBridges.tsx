@@ -220,11 +220,17 @@ export function ResetIndividualBridges({ activeModal }: ModalComponentProps) {
               className="btn btn-danger"
               data-bs-dismiss="modal"
               disabled={!toDelete.length || clicked}
+              aria-busy={clicked}
               onClick={() => void removeBridges()}
             >
               {!clicked
                 ? `${t('form.button_reset')}${toDelete.length > 0 ? ` (${toDelete.length})` : ''}`
-                : <i className="fas fa-circle-notch fa-spin"></i>}
+                : (
+                    <>
+                      <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+                      <span className="visually-hidden">{t('form.button_reset')}</span>
+                    </>
+                  )}
             </button>
           )}
         </div>

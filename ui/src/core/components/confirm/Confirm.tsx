@@ -20,7 +20,7 @@ export function Confirm({ activeModal, title, message, message2, message3, confi
   const closeModal = () => activeModal.close()
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div className="modal-content">
       <ModalHeader title={title} titleId="confirm-modal-title" onClose={dismissModal} />
       <div className="modal-body text-center">
         {faIconClass && <i className={`fas ${faIconClass} mb-3 icon-xl`}></i>}

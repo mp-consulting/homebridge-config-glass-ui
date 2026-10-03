@@ -42,7 +42,12 @@ describe('the sensor tiles', () => {
   })
 
   const label = (container: HTMLElement) => container.querySelectorAll('.accessory-label')[1]
-  const announced = (container: HTMLElement) => container.querySelector('[role="status"]')!.textContent?.trim()
+  // The tile's screen reader text. It is not a live region: a dashboard of
+  // tiles each announcing every sensor change would talk over the user
+  const announced = (container: HTMLElement) => {
+    expect(container.querySelector('[aria-live], [role="status"]')).toBeNull()
+    return container.querySelector('.accessory-box > .visually-hidden')!.textContent?.trim()
+  }
 
   describe('the HAP air quality tile', () => {
     function sensor(values: Record<string, number> = {}) {

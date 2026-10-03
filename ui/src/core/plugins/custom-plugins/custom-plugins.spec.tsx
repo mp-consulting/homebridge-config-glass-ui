@@ -589,14 +589,15 @@ describe('the custom plugin ui', () => {
     it.each([
       ['hap', 'getHap', 'cachedAccessories.get'],
       ['matter', 'getMatter', 'cachedMatterAccessories.get'],
-    ] as const)('toasts rather than throwing when the %s cache is unreachable', async (_case, method, action) => {
+    ] as const)('toasts and rejects the request when the %s cache is unreachable', async (_case, method, action) => {
       await open()
       await ready()
       accessoryCache[method].mockRejectedValueOnce(new Error('cache down'))
 
       await post({ action, requestId: 'r1' })
 
-      expect(toast.error).toHaveBeenCalledWith('toast.title_error')
+      expect(toast.error).toHaveBeenCalledWith('toast.api_error_generic', 'toast.title_error')
+      expect(lastReply()).toMatchObject({ requestId: 'r1', success: false, data: { message: 'toast.api_error_generic' } })
     })
   })
 

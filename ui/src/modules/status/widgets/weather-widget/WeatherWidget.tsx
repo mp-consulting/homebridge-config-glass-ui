@@ -61,6 +61,8 @@ export function WeatherWidget({ widget, configureEvent }: WidgetProps) {
   const [cachedWeather, setCachedWeather] = useState<OpenWeatherMapResponse | null>(() => (locationId ? readFreshCache(locationId) : null))
   // The live fetch result
   const [weather, setWeather] = useState<OpenWeatherMapResponse | null>(null)
+  // The last request failed (shown only when there is no reading to fall back on)
+  const [failed, setFailed] = useState(false)
 
   // Bumped to re-check the cache (and fetch if it is stale) on reconnect / reconfigure / timer
   const [refreshTrigger, setRefreshTrigger] = useState(0)
@@ -91,6 +93,8 @@ export function WeatherWidget({ widget, configureEvent }: WidgetProps) {
     }
     const controller = new AbortController()
     inFlightRef.current = true
+    // eslint-disable-next-line react/set-state-in-effect
+    setFailed(false)
     const params = new URLSearchParams({
       id: String(locationId),
       appid: environment.owm.appid,
@@ -114,7 +118,10 @@ export function WeatherWidget({ widget, configureEvent }: WidgetProps) {
         } catch {}
       })
       .catch(() => {
-        // Keep showing the last good reading
+        // Keep showing the last good reading; with none, say so rather than spin forever
+        if (!controller.signal.aborted) {
+          setFailed(true)
+        }
       })
       .finally(() => {
         if (!controller.signal.aborted) {
@@ -170,13 +177,25 @@ export function WeatherWidget({ widget, configureEvent }: WidgetProps) {
                 </div>
               </div>
             )
-          : (
-              <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
-                <div className="d-flex flex-column w-100 pb-2">
-                  <h1><i className="fas fa-circle-notch fa-spin"></i></h1>
+          : failed
+            ? (
+                <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
+                  <div className="d-flex flex-column align-items-center w-100 pb-2">
+                    <h1><i className="fas fa-cloud grey-text" aria-hidden="true"></i></h1>
+                    <p className="grey-text">{t('status.widget.weather.error_loading')}</p>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={refresh}>
+                      {t('form.button_retry')}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )
+            : (
+                <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
+                  <div className="d-flex flex-column w-100 pb-2" role="status" aria-label={t('common.a11y.loading')}>
+                    <h1><i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i></h1>
+                  </div>
+                </div>
+              )}
     </div>
   )
 }

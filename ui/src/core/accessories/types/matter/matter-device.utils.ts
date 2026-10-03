@@ -1096,13 +1096,6 @@ export function getCurrentArea(service: ServiceTypeX): number | null {
 }
 
 /**
- * Get area progress information
- */
-export function getAreaProgress(service: ServiceTypeX): Array<{ areaId: number, status: number }> {
-  return service.clusters?.serviceArea?.progress ?? []
-}
-
-/**
  * Get supported clean modes
  */
 export function getCleanModes(service: ServiceTypeX): Array<{ label: string, mode: number }> {

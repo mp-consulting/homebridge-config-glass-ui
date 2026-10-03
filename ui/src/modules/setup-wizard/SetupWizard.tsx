@@ -350,6 +350,7 @@ export function SetupWizard() {
                     className={fieldClass('username')}
                     required
                     readOnly={loading}
+                    aria-label={t('users.label_username')}
                     placeholder={t('users.label_username')}
                     value={values.username}
                     onChange={setField('username')}
@@ -365,6 +366,7 @@ export function SetupWizard() {
                     className={fieldClass('password')}
                     required
                     readOnly={loading}
+                    aria-label={t('users.label_password')}
                     placeholder={t('users.label_password')}
                     value={values.password}
                     onChange={setField('password')}
@@ -380,6 +382,7 @@ export function SetupWizard() {
                     className={fieldClass('passwordConfirm')}
                     required
                     readOnly={loading}
+                    aria-label={t('users.label_confirm_password')}
                     placeholder={t('users.label_confirm_password')}
                     value={values.passwordConfirm}
                     onChange={setField('passwordConfirm')}
@@ -405,6 +408,7 @@ export function SetupWizard() {
               type="file"
               className="form-control custom-input mb-3"
               id="restoreFileUpload"
+              aria-label={t('backup.label_backup_file')}
               accept="application/gzip, .gz"
               onChange={handleRestoreFileInput}
             />

@@ -185,7 +185,7 @@ export function Users2faEnable({ activeModal }: Users2faEnableProps) {
                       id="enable-2fa-code"
                       type="text"
                       className={`form-control custom-input${codeTouched && codeInvalid ? ' is-invalid' : ''}`}
-                      placeholder="eg. 123456"
+                      placeholder={t('common.labels.example_value', { value: '123456' })}
                       autoComplete="one-time-code"
                       autoCapitalize="none"
                       inputMode="numeric"

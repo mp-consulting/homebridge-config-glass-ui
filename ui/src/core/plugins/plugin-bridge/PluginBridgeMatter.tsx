@@ -183,7 +183,7 @@ export function PluginBridgeMatter({ store }: { store: PluginBridgeStore }) {
                 className={`form-control custom-input font-monospace${portError ? ' is-invalid' : ''}`}
                 min="1024"
                 max="65535"
-                placeholder="e.g. 5540"
+                placeholder={t('common.labels.example_value', { value: '5540' })}
                 value={block._bridge.matter.port ?? ''}
                 onChange={(event) => {
                   block._bridge.matter.port = numberValue(event.target.value)

@@ -38,10 +38,12 @@ html body.glass-mode {
   --glass-shadow-lift: 0 12px 36px rgba(40, 30, 90, 0.16), inset 0 1px 0 rgba(255, 255, 255, 1);
   --glass-text: #1d1b26;
   --glass-muted: #55525f;
-  // The accent as TEXT. Backgrounds and fills keep --glass-primary; in dark mode
-  // the text tint is mixed halfway to white, which clears 4.5:1 on the dark base
-  // for every theme colour.
-  --glass-text-accent: var(--glass-primary);
+  // The accent as TEXT. Backgrounds and fills keep --glass-primary. In light
+  // mode each theme exports a --glass-primary-text darkened just enough to clear
+  // 4.5:1 on the light glass (themes-light.scss); in dark mode the text tint is
+  // mixed halfway to white, which clears 4.5:1 on the dark base for every theme
+  // colour.
+  --glass-text-accent: var(--glass-primary-text, var(--glass-primary));
   --glass-input: rgba(255, 255, 255, 0.7);
   --glass-blur: 22px;
   --glass-bg-glow-1: 0.34;
@@ -353,7 +355,13 @@ html body.glass-mode {
     padding-left: 1.4rem;
     padding-right: 1.4rem;
     color: #ffffff !important;
-    background: linear-gradient(180deg, var(--glass-primary), var(--glass-primary-dark)) !important;
+    // The theme's button variants keep white text at 4.5:1 (the light orange,
+    // cyan, grey… primaries do not)
+    background: linear-gradient(
+      180deg,
+      var(--glass-primary-btn, var(--glass-primary)),
+      var(--glass-primary-btn-dark, var(--glass-primary-dark))
+    ) !important;
     box-shadow:
       0 6px 18px rgba(var(--glass-primary-rgb), 0.35),
       inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;

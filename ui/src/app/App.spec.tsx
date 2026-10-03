@@ -157,7 +157,7 @@ describe('app', () => {
   })
 
   describe('right to left languages', () => {
-    it('turns the layout around for hebrew', async () => {
+    it('marks hebrew as rtl and sets the page language', async () => {
       shell()
 
       await act(async () => {
@@ -165,6 +165,7 @@ describe('app', () => {
       })
 
       expect(useSettingsStore.getState().rtl).toBe(true)
+      expect(document.documentElement.lang).toBe('he')
     })
 
     it('leaves it alone for every other language', async () => {
@@ -175,6 +176,8 @@ describe('app', () => {
       })
 
       expect(useSettingsStore.getState().rtl).toBe(false)
+      // The page says which language it is in, for screen readers
+      expect(document.documentElement.lang).toBe('de')
     })
   })
 

@@ -42,7 +42,7 @@ export function MatterSmokeCoAlarmTile({ service }: Pick<MatterTileProps, 'servi
 
   return (
     <div className={cx('accessory-box hb-matter-smoke-co-alarm', triggered && 'accessory-on')}>
-      <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+      <span className="visually-hidden">
         {srText}
       </span>
       <div className="d-flex flex-column h-100">

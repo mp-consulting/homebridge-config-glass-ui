@@ -27,7 +27,7 @@ export function Information({ activeModal, title, subtitle, message, markdownMes
   )
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="information-modal-title">
+    <div className="modal-content">
       <ModalHeader title={title} titleId="information-modal-title" onClose={dismissModal} />
       <div className="modal-body text-center">
         {faIconClass && <i aria-hidden="true" className={`fas ${faIconClass} mb-3 icon-xl`}></i>}

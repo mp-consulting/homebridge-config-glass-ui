@@ -33,7 +33,7 @@ export function MatterPumpTile({ service, readyForControl = false }: MatterTileP
       onClick={onClick}
       onKeyDown={onEnterOrSpace(onClick)}
     >
-      <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+      <span className="visually-hidden">
         {srText}
       </span>
       <div className="d-flex flex-column h-100">

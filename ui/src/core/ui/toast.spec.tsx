@@ -175,6 +175,21 @@ describe('toast', () => {
       expect(toastEls()[0].classList).toContain('toast-out')
     })
 
+    it('stays while focus is inside it, and leaves the extended timeout after', async () => {
+      act(() => {
+        toast.info('x')
+      })
+      await tick()
+
+      fireEvent.focus(toastEls()[0])
+      await tick(10000)
+      expect(toastEls()[0].classList).not.toContain('toast-out')
+
+      fireEvent.blur(toastEls()[0])
+      await tick(1000)
+      expect(toastEls()[0].classList).toContain('toast-out')
+    })
+
     it('never times out with disableTimeOut', async () => {
       act(() => {
         toast.info('x', undefined, { disableTimeOut: true })

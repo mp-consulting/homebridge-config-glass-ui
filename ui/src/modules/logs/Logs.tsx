@@ -211,6 +211,7 @@ export function Logs() {
                 className={`search-bar${terminalTheme === 'light' ? ' search-bar-light' : ''}${searchInputInvalid ? ' is-invalid' : ''}`}
                 name="query"
                 value={query}
+                aria-label={t('logs.placeholder_search_logs')}
                 placeholder={t('logs.placeholder_search_logs')}
                 onChange={event => setQueryValue(event.target.value)}
               />

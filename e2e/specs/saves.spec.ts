@@ -81,8 +81,8 @@ test.describe('saving', () => {
     expect((await saved).ok()).toBe(true)
 
     // A bridge change needs Homebridge restarted
-    // (.modal-content: the modal wrapper carries role=dialog too)
-    const prompt = page.locator('.modal-content[role=dialog]').filter({ has: page.locator('#restart-homebridge-modal-title') })
+    // The modal window is the one dialog, named after its title
+    const prompt = page.getByRole('dialog', { name: 'Restart Required' })
     await expect(prompt).toBeVisible()
     await expect(prompt.locator('#restart-homebridge-modal-title')).toHaveText('Restart Required')
     await prompt.getByRole('button', { name: 'Close' }).first().click()

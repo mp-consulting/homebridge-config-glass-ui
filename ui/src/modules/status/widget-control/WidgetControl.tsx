@@ -353,7 +353,7 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
   }
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="widget-control-modal-title">
+    <div className="modal-content">
       <ModalHeader title={t('status.widget.title_manage_widget')} titleId="widget-control-modal-title" onClose={dismissModal} />
       <div className="modal-body">
         <ul className="list-group list-group-box mb-0">

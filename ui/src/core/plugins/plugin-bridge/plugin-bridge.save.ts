@@ -137,7 +137,7 @@ async function deleteUnusedBridges(state: PluginBridgeState): Promise<void> {
       await api.delete(`/server/pairings/${bridge.id.replace(RE_COLON, '')}`)
     } catch (error) {
       console.error(error)
-      toast.error(t('settings.reset_bridge.error'), t('toast.title_error'))
+      toastApiError(error, 'settings.reset_bridge.error')
     }
   }
 
@@ -151,7 +151,7 @@ async function deleteUnusedBridges(state: PluginBridgeState): Promise<void> {
       await api.delete(`/server/pairings/${matterBridge.username.replace(RE_COLON, '')}/matter`)
     } catch (error) {
       console.error(error)
-      toast.error(t('settings.reset_bridge.error'), t('toast.title_error'))
+      toastApiError(error, 'settings.reset_bridge.error')
     }
   }
 }

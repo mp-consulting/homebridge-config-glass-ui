@@ -59,10 +59,19 @@ export function App({ router }: AppProps) {
     }
   }, [])
 
-  // Which languages use RTL
+  // Which languages use RTL; the page's language follows the UI language, so
+  // screen readers pronounce it in the right voice. The direction stays ltr,
+  // as in the Angular UI: the stylesheets are not built for rtl yet
   useEffect(() => {
     const onLanguageChanged = (lang: string) => {
-      settingsActions.setItem('rtl', isRtl(lang))
+      const rtl = isRtl(lang)
+      settingsActions.setItem('rtl', rtl)
+      if (lang && lang !== 'cimode') {
+        document.documentElement.lang = lang
+      }
+    }
+    if (i18n.language) {
+      onLanguageChanged(i18n.language)
     }
     i18n.on('languageChanged', onLanguageChanged)
     return () => {

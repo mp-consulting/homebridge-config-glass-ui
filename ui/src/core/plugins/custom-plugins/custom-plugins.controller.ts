@@ -15,6 +15,7 @@ import { i18n, t } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
 import { childBridges } from '@/core/utilities/child-bridges'
 import { createEmitter } from '@/core/utilities/emitter'
+import { toastApiError, toToastMessage } from '@/core/utilities/http-error'
 import { ws } from '@/core/ws'
 import { environment } from '@/environments/environment'
 import en from '@/i18n/en.json'
@@ -258,7 +259,7 @@ export class CustomPluginsController {
       return true
     } catch (error) {
       console.error(error)
-      toast.error(t('config.failed_to_save_config'), t('toast.title_error'))
+      toastApiError(error, 'config.failed_to_save_config')
       this.setState({ saveInProgress: false })
       return false
     }
@@ -614,7 +615,9 @@ export class CustomPluginsController {
       return this.requestResponse(event, cached.filter(x => x.plugin === this.plugin.name))
     } catch (error) {
       console.error(kind === 'hap' ? 'Failed to get cached accessories:' : 'Failed to get cached Matter accessories:', error)
-      toast.error(t('toast.title_error'))
+      toastApiError(error)
+      // Answer anyway, so the plugin UI's promise rejects instead of hanging
+      return this.requestResponse(event, { message: toToastMessage(error) }, false)
     }
   }
 }

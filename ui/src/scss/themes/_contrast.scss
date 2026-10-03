@@ -1,0 +1,40 @@
+@use 'sass:color';
+@use 'sass:math';
+
+// WCAG contrast helpers for the theme colours, worked out at build time so each
+// theme only darkens as much as it needs to (the default deep purple already
+// clears 4.5:1 and comes out unchanged).
+
+@function -channel($value) {
+  $v: math.div($value, 255);
+  @if $v <= 0.04045 {
+    @return math.div($v, 12.92);
+  }
+  @return math.pow(math.div($v + 0.055, 1.055), 2.4);
+}
+
+/// The relative luminance of a colour (WCAG 2.x).
+@function luminance($color) {
+  $r: -channel(color.channel($color, 'red', $space: rgb));
+  $g: -channel(color.channel($color, 'green', $space: rgb));
+  $b: -channel(color.channel($color, 'blue', $space: rgb));
+  @return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+}
+
+/// The contrast ratio of two colours.
+@function contrast($a, $b) {
+  $la: luminance($a);
+  $lb: luminance($b);
+  @return math.div(math.max($la, $lb) + 0.05, math.min($la, $lb) + 0.05);
+}
+
+/// The colour mixed with just enough black to reach `$target` against `$against`.
+@function darken-to-contrast($color, $against, $target: 4.6) {
+  $mixed: $color;
+  $weight: 0;
+  @while contrast($mixed, $against) < $target and $weight < 100 {
+    $weight: $weight + 2;
+    $mixed: color.mix(#000000, $color, $weight * 1%);
+  }
+  @return $mixed;
+}

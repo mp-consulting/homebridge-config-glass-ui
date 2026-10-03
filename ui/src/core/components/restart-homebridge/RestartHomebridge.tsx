@@ -19,7 +19,7 @@ export function RestartHomebridge({ activeModal }: ModalComponentProps) {
   const dismissModal = () => activeModal.dismiss('Dismiss')
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="restart-homebridge-modal-title">
+    <div className="modal-content">
       <ModalHeader title={t('platform.version.service_restart_required')} titleId="restart-homebridge-modal-title" onClose={dismissModal} />
       <div className="modal-body text-center">
         <i className="fas fa-power-off primary-text mb-3 icon-xl"></i>

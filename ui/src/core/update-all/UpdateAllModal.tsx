@@ -469,7 +469,7 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
           : t('update_all.restart_none')
 
   return (
-    <div className="modal-content" role="dialog" aria-modal="true" aria-labelledby="update-all-modal-title">
+    <div className="modal-content">
       <ModalHeader title={t('update_all.title')} titleId="update-all-modal-title" onClose={closeModal} />
       <div className="modal-body">
         {phase === 'loading'

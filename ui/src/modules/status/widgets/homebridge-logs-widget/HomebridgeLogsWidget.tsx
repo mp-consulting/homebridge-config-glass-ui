@@ -266,6 +266,7 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
               type="text"
               className={`search-bar${theme === 'light' ? ' search-bar-light' : ''}${searchInputInvalid ? ' is-invalid' : ''}`}
               name="query"
+              aria-label={t('logs.placeholder_search_logs')}
               placeholder={t('logs.placeholder_search_logs')}
               value={query}
               onChange={event => setQueryValue(event.target.value)}

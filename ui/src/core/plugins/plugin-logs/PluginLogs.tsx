@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Subject } from 'rxjs'
 
-import { api, ApiError } from '@/core/api'
+import { api } from '@/core/api'
 import { Confirm } from '@/core/components/confirm/Confirm'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
@@ -65,7 +65,7 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
           return
         }
         console.error(error)
-        toastApiError(error, 'toast.title_error')
+        toastApiError(error)
         activeModal.dismiss()
       }
     }
@@ -89,7 +89,7 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
       setMidAction(false)
     } catch (error) {
       console.error(error)
-      toast.error(t('plugins.manage.child_bridge_restart_failed'), t('toast.title_error'))
+      toastApiError(error, 'plugins.manage.child_bridge_restart_failed')
       setMidAction(false)
     }
   }
@@ -119,16 +119,9 @@ export function PluginLogs({ activeModal, plugin, childBridges: childBridgesProp
           fileSaver.saveAs(new Blob([finalOutput], { type: 'text/plain;charset=utf-8' }), `${plugin.name}.log.txt`)
         }
         setMidAction(false)
-      } catch (err: any) {
-        let message: string | undefined
-        try {
-          if (err instanceof ApiError && err.error?.text) {
-            message = JSON.parse(await err.error.text()).message
-          }
-        } catch (error) {
-          console.error(error)
-        }
-        toast.error(message || t('logs.download.error'), t('toast.title_error'))
+      } catch (err) {
+        console.error(err)
+        toastApiError(err, 'logs.download.error')
         setMidAction(false)
       }
     } catch {

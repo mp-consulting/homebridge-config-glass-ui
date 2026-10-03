@@ -383,10 +383,11 @@ describe('restore', () => {
         fireEvent.click(screen.getByRole('button', { name: 'menu.hbrestart.title' }))
       })
 
-      // Swallowed on purpose: the server going away mid-request is the normal
-      // case here, and the page reload is what actually recovers
+      // The server answers before it restarts (on a timer), so a failed
+      // request means no restart: say so, and keep the button there to retry
       expect(activeModal.close).not.toHaveBeenCalled()
       expect(router.state.location.pathname).toBe('/settings')
+      expect(toast.at('error')).toHaveLength(1)
     })
 
     it('goes back to the backup modal on request', async () => {

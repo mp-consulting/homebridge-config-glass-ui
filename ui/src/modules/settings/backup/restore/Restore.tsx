@@ -15,6 +15,7 @@ import { t } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toast } from '@/core/ui/toast'
+import { toastApiError } from '@/core/utilities/http-error'
 import { hideXtermInputFromScreenReader } from '@/core/utilities/terminal/log.service'
 import { ws } from '@/core/ws'
 import { Backup } from '@/modules/settings/backup/Backup'
@@ -55,8 +56,8 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       await api.put('/backup/restart', {})
       activeModal.close(true)
       void navigate('/')
-    } catch {
-      /* do nothing */
+    } catch (error) {
+      toastApiError(error)
     }
   }
 
@@ -222,7 +223,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       {!restoreStarted && !setupWizardRestore && (
         <div className="modal-body">
           <div className="text-center mb-3">
-            <i className="fas fa-hard-drive primary-text icon-xl"></i>
+            <i className="fas fa-hard-drive primary-text icon-xl" aria-hidden="true"></i>
           </div>
           <ul className="mb-3">
             <li>{translate('backup.restore_help_one')}</li>
@@ -231,12 +232,13 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
             <li>{translate('backup.restore_warning')}</li>
           </ul>
           {selectedBackup
-            ? <input className="form-control custom-input" type="text" disabled defaultValue={selectedBackup.fileName} />
+            ? <input className="form-control custom-input" type="text" disabled aria-label={translate('backup.label_backup_file')} defaultValue={selectedBackup.fileName} />
             : (
                 <input
                   type="file"
                   className="form-control"
                   id="restoreFileUpload"
+                  aria-label={translate('backup.label_backup_file')}
                   accept="application/gzip, .gz, .hbfx"
                   onChange={handleRestoreFileInput}
                 />

@@ -1,6 +1,6 @@
 import type { Mock } from 'vitest'
 
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useSettingsStore } from '@/core/settings'
@@ -84,6 +84,24 @@ describe('the weather widget', () => {
     const { container } = await open(london)
 
     expect(container.querySelector('.fa-circle-notch')).not.toBeNull()
+    expect(screen.getByRole('status', { name: 'common.a11y.loading' })).toBeInTheDocument()
+  })
+
+  it('says the weather could not be loaded, with a retry, instead of spinning forever', async () => {
+    fetchMock.mockImplementation(async () => ({ ok: false, status: 401, json: async () => ({}) }))
+    const { container } = await open(london)
+
+    expect(container.querySelector('.fa-circle-notch')).toBeNull()
+    expect(screen.getByText('status.widget.weather.error_loading')).toBeInTheDocument()
+
+    fetchMock.mockImplementation(async () => ({ ok: true, json: async () => reading }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'form.button_retry' }))
+    })
+
+    expect(owmCalls()).toHaveLength(2)
+    expect(container.querySelector('.weather-now h2')).toHaveTextContent('18°C')
+    expect(screen.queryByText('status.widget.weather.error_loading')).toBeNull()
   })
 
   it('remembers the reading for next time', async () => {

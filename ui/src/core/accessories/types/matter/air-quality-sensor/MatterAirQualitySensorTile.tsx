@@ -52,7 +52,7 @@ export function MatterAirQualitySensorTile({ service }: MatterTileProps) {
       aria-label={canShowModal ? srText : undefined}
       onKeyDown={onEnterOrSpace(() => canShowModal && onLongClick())}
     >
-      <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+      <span className="visually-hidden">
         {srText}
       </span>
       <div className="d-flex flex-column h-100">

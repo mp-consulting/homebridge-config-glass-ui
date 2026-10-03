@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
 import { backupService } from '@/core/backup'
+import { Confirm } from '@/core/components/confirm/Confirm'
 import { formatMegabytes } from '@/core/pipes/bytes'
 import { formatDate } from '@/core/pipes/date'
 import { settingsActions, useSettingsStore } from '@/core/settings'
@@ -32,6 +33,8 @@ export function Backup({ activeModal }: BackupProps) {
   const { t: translate } = useTranslation()
   const [clicked, setClicked] = useState(false)
   const [scheduledBackups, setScheduledBackups] = useState<ScheduledBackup[]>([])
+  // The stored backups list: loading on open, or failed to load
+  const [listState, setListState] = useState<'loading' | 'loaded' | 'error'>('loading')
   const [backupTime, setBackupTime] = useState('')
   const [deleting, setDeleting] = useState<string | null>(null)
   // The config key is a negative (`scheduledBackupDisable`) and the switch is a positive
@@ -46,8 +49,10 @@ export function Backup({ activeModal }: BackupProps) {
     try {
       const data = await api.get<ScheduledBackup[]>('/backup/scheduled-backups')
       setScheduledBackups(data)
+      setListState('loaded')
     } catch (error) {
       console.error(error)
+      setListState('error')
     }
   }
 
@@ -128,7 +133,27 @@ export function Backup({ activeModal }: BackupProps) {
     })
   }
 
+  const retryScheduledBackups = (): void => {
+    setListState('loading')
+    void getScheduledBackups()
+  }
+
   const deleteBackup = async (backup: ScheduledBackup): Promise<void> => {
+    const ref = openModal(Confirm, {
+      title: t('form.button_delete'),
+      message: t('backup.delete_confirm', { date: `${formatDate(backup.timestamp, 'mediumDate')} ${formatDate(backup.timestamp, 'shortTime')}` }),
+      message2: t('common.phrases.are_you_sure'),
+      confirmButtonLabel: t('form.button_delete'),
+      confirmButtonClass: 'btn-danger',
+      faIconClass: 'fas fa-trash primary-text',
+    })
+    try {
+      await ref.result
+    } catch {
+      // Called off
+      return
+    }
+
     setDeleting(backup.id)
     try {
       await api.delete(`/backup/scheduled-backups/${backup.id}`)
@@ -279,81 +304,96 @@ export function Backup({ activeModal }: BackupProps) {
             </button>
           </li>
         </ul>
-        {scheduledBackups.length > 0 && (
-          <ul className="list-group list-group-box mt-3 mb-0">
-            <li className="list-group-item">
-              <h6 className="mb-0 text-center">{translate('backup.files_auto')}</h6>
+        <ul className="list-group list-group-box mt-3 mb-0">
+          <li className="list-group-item">
+            <h6 className="mb-0 text-center">{translate('backup.files_auto')}</h6>
+          </li>
+          {listState === 'loading' && (
+            <li className="list-group-item text-center primary-text" role="status" aria-label={translate('common.a11y.loading')}>
+              <i aria-hidden="true" className="fas fa-circle-notch fa-spin"></i>
             </li>
-            {scheduledBackups.map(backup => (
-              <li key={backup.id} className="list-group-item d-flex justify-content-between align-items-center">
-                <span>
-                  <HoverTooltip text={backup.fileName}>
-                    <span>{formatDate(backup.timestamp, 'mediumDate')}</span>
-                  </HoverTooltip>
-                  <br />
-                  <small className="grey-text">
-                    {formatDate(backup.timestamp, 'shortTime')}
-                    {' '}
-                    &middot;
-                    {' '}
-                    {backup.size > maxBackupSize
-                      ? (
-                          <HoverTooltip text={translate('backup.backup_exceeds_max_size', { backupSize: `${backup.size}MB`, maxBackupSizeText })}>
-                            <span className="red-text">
-                              <i aria-hidden="true" className="fas fa-exclamation-circle"></i>
-                              {' '}
-                              {backup.size}
-                              MB
-                            </span>
-                          </HoverTooltip>
-                        )
-                      : (
-                          <span>
+          )}
+          {listState === 'error' && (
+            <li className="list-group-item d-flex justify-content-between align-items-center">
+              <span className="grey-text">{translate('backup.files_load_error')}</span>
+              <button type="button" className="btn btn-primary m-0 ms-3 py-1" onClick={retryScheduledBackups}>
+                {translate('form.button_retry')}
+              </button>
+            </li>
+          )}
+          {listState === 'loaded' && scheduledBackups.length === 0 && (
+            <li className="list-group-item text-center grey-text">{translate('backup.files_none')}</li>
+          )}
+          {scheduledBackups.map(backup => (
+            <li key={backup.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <span>
+                <HoverTooltip text={backup.fileName}>
+                  {/* Focusable, so the file name can be reached from the keyboard too */}
+                  <span tabIndex={0}>{formatDate(backup.timestamp, 'mediumDate')}</span>
+                </HoverTooltip>
+                <br />
+                <small className="grey-text">
+                  {formatDate(backup.timestamp, 'shortTime')}
+                  {' '}
+                  &middot;
+                  {' '}
+                  {backup.size > maxBackupSize
+                    ? (
+                        <HoverTooltip text={translate('backup.backup_exceeds_max_size', { backupSize: `${backup.size}MB`, maxBackupSizeText })}>
+                          <span className="red-text" tabIndex={0}>
+                            <i aria-hidden="true" className="fas fa-exclamation-circle"></i>
+                            {' '}
                             {backup.size}
                             MB
                           </span>
-                        )}
-                  </small>
-                </span>
-                <span className="d-flex flex-nowrap" role="group" aria-label={translate('backup.aria_actions')}>
-                  <HoverTooltip text={translate('form.button_restore')} placement="bottom">
-                    <button
-                      type="button"
-                      className="btn btn-primary m-0 ms-3 py-1"
-                      disabled={busy || backup.size > maxBackupSize}
-                      aria-label={translate('form.button_restore')}
-                      onClick={() => restore(backup)}
-                    >
-                      <i aria-hidden="true" className="fas fa-history"></i>
-                    </button>
-                  </HoverTooltip>
-                  <HoverTooltip text={translate('form.button_download')} placement="bottom">
-                    <button
-                      type="button"
-                      className="btn btn-primary m-0 ms-2"
-                      disabled={busy}
-                      aria-label={translate('form.button_download')}
-                      onClick={() => void download(backup)}
-                    >
-                      <i aria-hidden="true" className="fas fa-download"></i>
-                    </button>
-                  </HoverTooltip>
-                  <HoverTooltip text={translate('form.button_delete')} placement="bottom">
-                    <button
-                      type="button"
-                      className="btn btn-danger m-0 ms-2"
-                      disabled={busy}
-                      aria-label={translate('form.button_delete')}
-                      onClick={() => void deleteBackup(backup)}
-                    >
-                      <i aria-hidden="true" className={backup.id === deleting ? 'fas fa-circle-notch fa-spin' : 'fas fa-trash'}></i>
-                    </button>
-                  </HoverTooltip>
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+                        </HoverTooltip>
+                      )
+                    : (
+                        <span>
+                          {backup.size}
+                          MB
+                        </span>
+                      )}
+                </small>
+              </span>
+              <span className="d-flex flex-nowrap" role="group" aria-label={translate('backup.aria_actions')}>
+                <HoverTooltip text={translate('form.button_restore')} placement="bottom">
+                  <button
+                    type="button"
+                    className="btn btn-primary m-0 ms-3 py-1"
+                    disabled={busy || backup.size > maxBackupSize}
+                    aria-label={translate('form.button_restore')}
+                    onClick={() => restore(backup)}
+                  >
+                    <i aria-hidden="true" className="fas fa-history"></i>
+                  </button>
+                </HoverTooltip>
+                <HoverTooltip text={translate('form.button_download')} placement="bottom">
+                  <button
+                    type="button"
+                    className="btn btn-primary m-0 ms-2"
+                    disabled={busy}
+                    aria-label={translate('form.button_download')}
+                    onClick={() => void download(backup)}
+                  >
+                    <i aria-hidden="true" className="fas fa-download"></i>
+                  </button>
+                </HoverTooltip>
+                <HoverTooltip text={translate('form.button_delete')} placement="bottom">
+                  <button
+                    type="button"
+                    className="btn btn-danger m-0 ms-2"
+                    disabled={busy}
+                    aria-label={translate('form.button_delete')}
+                    onClick={() => void deleteBackup(backup)}
+                  >
+                    <i aria-hidden="true" className={backup.id === deleting ? 'fas fa-circle-notch fa-spin' : 'fas fa-trash'}></i>
+                  </button>
+                </HoverTooltip>
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <ModalFooter>

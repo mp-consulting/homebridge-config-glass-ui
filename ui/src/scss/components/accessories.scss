@@ -223,3 +223,16 @@
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
+
+// The accessory tiles flash, pulse and spin forever while a sensor is triggered
+// or a device runs, and blinds and windows slide for seconds. For someone who
+// asked the system for less motion, show the end state instead.
+@media (prefers-reduced-motion: reduce) {
+  .accessory-box,
+  .accessory-box *,
+  .accessory-svg,
+  .accessory-svg * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

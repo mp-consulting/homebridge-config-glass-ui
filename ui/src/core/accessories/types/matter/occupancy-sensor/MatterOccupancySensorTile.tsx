@@ -18,7 +18,7 @@ export function MatterOccupancySensorTile({ service }: MatterTileProps) {
 
   return (
     <div className={cx('accessory-box hb-matter-occupancy-sensor', occupied && 'accessory-on')}>
-      <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+      <span className="visually-hidden">
         {srText}
       </span>
       <div className="d-flex flex-column h-100">

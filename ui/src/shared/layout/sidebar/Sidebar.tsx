@@ -1,4 +1,4 @@
-import type { MouseEvent as ReactMouseEvent } from 'react'
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react'
 
 import { isStandalonePWA } from 'is-standalone-pwa'
 import { useEffect, useRef, useState } from 'react'
@@ -286,8 +286,6 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
     ? location.pathname === path
     : location.pathname === path || location.pathname.startsWith(`${path}/`)
 
-  const linkLabel = (label: string, active: boolean) => label + (active ? `, ${t('menu.current_page')}` : '')
-
   const navButton = (path: string, label: string, icon: string, exact = false) => {
     const active = isActive(path, exact)
     return (
@@ -295,7 +293,8 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
         <button
           type="button"
           className={`link-row${active ? ' active' : ''}`}
-          aria-label={linkLabel(label, active)}
+          aria-label={label}
+          aria-current={active ? 'page' : undefined}
           onClick={() => void navigate(path)}
         >
           <div className="icon"><i aria-hidden="true" className={icon}></i></div>
@@ -303,6 +302,15 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
         </button>
       </div>
     )
+  }
+
+  // Escape closes the open phone menu and hands focus back to its toggle
+  const onEscape = (event: ReactKeyboardEvent) => {
+    if (event.key === 'Escape' && isMobile && expandedRef.current) {
+      event.preventDefault()
+      closeSidebar()
+      headerRef.current?.focus()
+    }
   }
 
   const goHome = (e: ReactMouseEvent) => {
@@ -322,7 +330,10 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
         aria-controls={isMobile ? 'sidebar' : undefined}
         aria-label={isMobile ? t('menu.sidebar.aria_menu') : undefined}
         onClick={toggleSidebar}
-        onKeyDown={handleMenuKeydown}
+        onKeyDown={(event) => {
+          handleMenuKeydown(event)
+          onEscape(event)
+        }}
       >
         <span className="me-2 d-block d-lg-none m-header-label"></span>
         <a tabIndex={-1} aria-hidden="true" href="./" onClick={goHome}>
@@ -346,6 +357,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
         aria-label={isMobile ? undefined : t('menu.sidebar.aria_menu')}
         // A closed phone menu is off screen: keep its links out of the tab order
         inert={isMobile && !isExpanded}
+        onKeyDown={onEscape}
       >
         <div className="header">
           <a tabIndex={-1} aria-hidden="true" href="./" onClick={goHome}>

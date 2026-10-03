@@ -43,6 +43,7 @@ export function StartupSection() {
   const platform = useSettingsPageState(state => state.flags.platform)
   const runningOnRaspberryPi = useSettingsPageState(state => state.flags.runningOnRaspberryPi)
   const runningInDocker = useSettingsPageState(state => state.flags.runningInDocker)
+  const enableTerminalAccess = useSettingsPageState(state => state.flags.enableTerminalAccess)
   const [hbInsecure] = useField('hbInsecure')
   const securityControlHidden = useItemHidden('setting-security-control')
 
@@ -181,7 +182,7 @@ export function StartupSection() {
             <SafeHtml as="small" className="grey-text pe-2" html={t('settings.service.debug_tooltip', { link: linkDebug(t('settings.link_debug_values')) })} />
           </span>
           <div className={CONTROL_WRAP}>
-            <TextInput field="hbEnvDebug" className={MONO_INPUT} placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service" />
+            <TextInput field="hbEnvDebug" aria-label="DEBUG" className={MONO_INPUT} placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service" />
             <FieldSaveIndicator saving="hbEnvDebug" />
           </div>
         </div>
@@ -194,12 +195,12 @@ export function StartupSection() {
             <small className="grey-text pe-2">{t('settings.service.node_tooltip')}</small>
           </span>
           <div className={CONTROL_WRAP}>
-            <TextInput field="hbEnvNode" className={MONO_INPUT} placeholder="--max-old-space-size=512 --max-http-header-size=8192" />
+            <TextInput field="hbEnvNode" aria-label="NODE_OPTIONS" className={MONO_INPUT} placeholder="--max-old-space-size=512 --max-http-header-size=8192" />
             <FieldSaveIndicator saving="hbEnvNode" />
           </div>
         </div>
       </SettingRow>
-      {runningInDocker && (
+      {runningInDocker && enableTerminalAccess && (
         <SettingRow item="setting-docker-startup">
           <div className={INNER_FLEX}>
             <span>

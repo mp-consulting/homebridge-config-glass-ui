@@ -9,6 +9,7 @@ import { settingsActions, useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { openModal } from '@/core/ui/modal'
 import { toastApiError } from '@/core/utilities/http-error'
+import { HOST_ACTION_CONFIRMED } from '@/modules/platform-tools/host-action'
 
 /** The ways to restart: Homebridge, the hb-service, the host, the container. */
 export function PowerOptions() {
@@ -41,18 +42,18 @@ export function PowerOptions() {
     }
   }
 
-  const restartServer = () => {
+  /**
+   * Ask first, then go to the page that acts. The pages behind these routes
+   * fire their request on mount, so they only act when reached with the
+   * one-time confirmation in the router state.
+   */
+  const confirmHostAction = async (title: string, message: string, target: string) => {
     closeRestartToast()
-    void navigate('/platform-tools/linux/restart-server')
-  }
-
-  const shutdownServer = async () => {
-    closeRestartToast()
-    // Confirmation dialog
     const ref = openModal(Confirm, {
-      title: i18n.t('menu.linux.label_shutdown_server'),
-      message: i18n.t('menu.linux.label_shutdown_modal'),
+      title,
+      message,
       confirmButtonLabel: i18n.t('form.button_continue'),
+      confirmButtonClass: 'btn-danger',
       faIconClass: 'fas fa-power-off primary-text',
     }, {
       size: 'lg',
@@ -61,16 +62,30 @@ export function PowerOptions() {
 
     try {
       await ref.result
-      void navigate('/platform-tools/linux/shutdown-server')
     } catch {
       // Modal dismissed, do nothing
+      return
     }
+    void navigate(target, { state: HOST_ACTION_CONFIRMED })
   }
 
-  const dockerRestartContainer = () => {
-    closeRestartToast()
-    void navigate('/platform-tools/docker/restart-container')
-  }
+  const restartServer = () => confirmHostAction(
+    i18n.t('menu.linux.label_restart_server'),
+    i18n.t('menu.linux.label_restart_modal'),
+    '/platform-tools/linux/restart-server',
+  )
+
+  const shutdownServer = () => confirmHostAction(
+    i18n.t('menu.linux.label_shutdown_server'),
+    i18n.t('menu.linux.label_shutdown_modal'),
+    '/platform-tools/linux/shutdown-server',
+  )
+
+  const dockerRestartContainer = () => confirmHostAction(
+    i18n.t('menu.docker.restart_container'),
+    i18n.t('menu.docker.restart_container_modal'),
+    '/platform-tools/docker/restart-container',
+  )
 
   return (
     <>
@@ -99,7 +114,7 @@ export function PowerOptions() {
         </p>
         {canShutdownRestartHost && (
           <p className="w-100 text-center my-5">
-            <button type="button" className="btn btn-primary p-3 my-0 w-85" onClick={restartServer}>
+            <button type="button" className="btn btn-primary p-3 my-0 w-85" onClick={() => void restartServer()}>
               {t('menu.linux.label_restart_server')}
             </button>
           </p>
@@ -113,7 +128,7 @@ export function PowerOptions() {
         )}
         {runningInDocker && (
           <p className="w-100 text-center my-5">
-            <button type="button" className="btn btn-primary p-3 my-0 w-85" onClick={dockerRestartContainer}>
+            <button type="button" className="btn btn-primary p-3 my-0 w-85" onClick={() => void dockerRestartContainer()}>
               {t('menu.docker.restart_container')}
             </button>
           </p>

@@ -204,9 +204,17 @@ export function AccessoryControlLists({ activeModal, existingBlacklist }: Access
             className="btn btn-primary"
             data-bs-dismiss="modal"
             disabled={!blacklistHasUpdated || clicked}
+            aria-busy={clicked}
             onClick={() => void updateBlacklist()}
           >
-            {!clicked ? t('form.button_save') : <i className="fas fa-circle-notch fa-spin"></i>}
+            {!clicked
+              ? t('form.button_save')
+              : (
+                  <>
+                    <i className="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+                    <span className="visually-hidden">{t('form.button_save')}</span>
+                  </>
+                )}
           </button>
         </div>
       </ModalFooter>

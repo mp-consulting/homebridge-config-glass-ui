@@ -1,7 +1,7 @@
 import type { ModalView } from '@/core/ui/modal'
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react'
 
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 
 import { ActiveModalContext, ModalDismissReasons, stack } from '@/core/ui/modal'
@@ -96,6 +96,39 @@ function setAriaHidden(element: Element) {
 }
 
 /**
+ * The id of the dialog's `.modal-title` (the first one, giving it a generated
+ * id when it has none), kept up to date as the modal's content changes, so the
+ * dialog is named after its visible title without every caller passing
+ * `ariaLabelledBy`.
+ */
+function useTitleId(ref: { current: HTMLElement | null }, fallbackId: string, explicitId: string | undefined): string | undefined {
+  const [titleId, setTitleId] = useState<string | undefined>(explicitId)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (explicitId || !el) {
+      return
+    }
+    const read = () => {
+      const title = el.querySelector<HTMLElement>('.modal-title')
+      if (title && !title.id) {
+        title.id = fallbackId
+      }
+      // eslint-disable-next-line react/set-state-in-effect -- the title is only in the DOM once the modal content has rendered
+      setTitleId(title?.id || undefined)
+    }
+
+    read()
+    if (typeof MutationObserver === 'undefined') {
+      return
+    }
+    const observer = new MutationObserver(read)
+    observer.observe(el, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [ref, fallbackId, explicitId])
+  return explicitId ?? titleId
+}
+
+/**
  * Whether the element should carry `show`: added right after mount (after a
  * reflow, so the fade runs from the un-shown state), removed when closing.
  */
@@ -128,6 +161,8 @@ function ModalWindow({ view, isTop }: { view: ModalView, isTop: boolean }) {
   const lastFocusedRef = useRef<Element | null>(null)
   const [bumping, setBumping] = useState(false)
   const shown = useShown(windowRef, options.animation, closing)
+  const generatedTitleId = useId()
+  const labelledBy = useTitleId(windowRef, generatedTitleId, options.ariaLabelledBy)
 
   // Move focus in
   useLayoutEffect(() => {
@@ -248,7 +283,7 @@ function ModalWindow({ view, isTop }: { view: ModalView, isTop: boolean }) {
       className={windowClassName}
       tabIndex={-1}
       aria-modal="true"
-      aria-labelledby={options.ariaLabelledBy}
+      aria-labelledby={labelledBy}
       aria-describedby={options.ariaDescribedBy}
       role={options.role}
       onKeyDown={onKeyDown}

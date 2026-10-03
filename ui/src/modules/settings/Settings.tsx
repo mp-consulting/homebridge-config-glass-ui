@@ -138,6 +138,7 @@ export function Settings({ deps }: SettingsProps) {
                   ref={searchInputRef}
                   type="text"
                   className="search-bar"
+                  aria-label={t('form.search')}
                   placeholder={t('form.search')}
                   value={searchQuery}
                   onChange={event => page.onSearchChange(event.target.value)}

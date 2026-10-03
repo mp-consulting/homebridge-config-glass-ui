@@ -258,7 +258,8 @@ export function getUnavailableItems(state: AvailabilityState): string[] {
   }
 
   if (!state.enableTerminalAccess) {
-    unavailable.push('setting-terminal-persistence', 'setting-terminal-warning', 'setting-terminal-buffer')
+    // The startup script runs as root in the container, so the server only edits it with terminal access
+    unavailable.push('setting-terminal-persistence', 'setting-terminal-warning', 'setting-terminal-buffer', 'setting-docker-startup')
   } else if (state.uiTerminalPersistence) {
     unavailable.push('setting-terminal-warning')
   } else {

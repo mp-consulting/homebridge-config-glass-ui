@@ -234,6 +234,14 @@ export function ToastFrame({ toast: controller, onClick, children }: { toast: To
       style={style}
       onMouseEnter={controller.stickAround}
       onMouseLeave={controller.delayedHideToast}
+      // A keyboard user reading or reaching for the toast's buttons gets the
+      // same pause as a pointer resting on it
+      onFocus={controller.stickAround}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          controller.delayedHideToast()
+        }
+      }}
       onClick={onClick}
       onAnimationEnd={() => setEntering(false)}
     >

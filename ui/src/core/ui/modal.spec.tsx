@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { dismissAllModals, hasOpenModals, ModalDismissReasons, openModal, resetModals, useActiveModal } from '@/core/ui/modal'
 import { ModalHost } from '@/core/ui/ModalHost'
+import { ModalHeader } from '@/core/ui/ModalParts'
 
 function Dialog({ activeModal, label = 'Hello' }: ModalComponentProps<string> & { label?: string }) {
   return (
@@ -88,6 +89,42 @@ describe('modal', () => {
       const [win] = windows()
       expect(win.classList).toContain('wide')
       expect(win.querySelector('.modal-dialog')?.className).toBe('modal-dialog modal-dialog-centered modal-fullscreen-md-down modal-dialog-scrollable x')
+    })
+
+    it('is named after the title of its ModalHeader', () => {
+      function Titled({ activeModal }: ModalComponentProps) {
+        return (
+          <div className="modal-content">
+            <ModalHeader title="My title" onClose={() => activeModal.dismiss()} />
+          </div>
+        )
+      }
+      act(() => {
+        openModal(Titled, {})
+      })
+
+      const [win] = windows()
+      const title = win.querySelector('.modal-title')!
+      expect(title.id).not.toBe('')
+      expect(win.getAttribute('aria-labelledby')).toBe(title.id)
+      // One dialog: the component's own .modal-content is not another one
+      expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1)
+    })
+
+    it('names the dialog after a hand-written .modal-title too, and prefers ariaLabelledBy', () => {
+      function Plain() {
+        return <div className="modal-content"><h5 className="modal-title">Plain</h5></div>
+      }
+      act(() => {
+        openModal(Plain, {})
+        openModal(Plain, {}, { ariaLabelledBy: 'given' })
+      })
+
+      const [first, second] = windows()
+      const title = first.querySelector('.modal-title')!
+      expect(title.id).not.toBe('')
+      expect(first.getAttribute('aria-labelledby')).toBe(title.id)
+      expect(second.getAttribute('aria-labelledby')).toBe('given')
     })
 
     it('marks the body while a modal is open', async () => {

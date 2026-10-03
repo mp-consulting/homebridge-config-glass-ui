@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+
+- **Child bridge pairing codes are admin-only**, as the main bridge's already were. Non-admin users no longer receive a child bridge's HomeKit or Matter setup code or PIN, from the REST endpoint, the status reply or the live updates.
+- **The `wallpaper` setting accepts only an uploaded wallpaper** (`ui-wallpaper.jpg`, `.jpeg`, `.png`, `.webp` or `.gif` in the storage folder). It could be set to any path, which the login page then served without a session (including `.uix-secrets`), and which replacing or removing the wallpaper deleted. Config saves, the settings page and backup restores refuse other values. Uploads take only those five image types. A wallpaper set to another path is no longer shown; upload it again.
+- **The Docker startup script needs terminal access.** It runs as root in the container, so it is now read and saved only when terminal access is enabled, and the settings link is hidden otherwise.
+- **`log.path` cannot point at the UI's own secrets**: `.uix-secrets`, `auth.json`, `config.json`, `persist/`, `ssl-certs/`, backups and the like are refused on save and when tailing, downloading or truncating the log.
+- **Guessing spread across many addresses is slowed.** Besides the per-address limit, a username that collects 50 failed sign-ins from anywhere gets a cooldown that doubles up to 15 minutes. An address that has signed in as that user before is exempt, so an attacker cannot keep the owner out.
+- New `ui.trustProxy` setting (addresses or CIDR ranges): behind a reverse proxy, sign-in limits then apply to the real client address instead of the proxy's.
+- Non-admin users no longer see the server's file paths, service user, network details, machine serial or install paths.
+- The network widget accepts only interface names the system reports.
+
+### Fixed
+
+- A plugin custom UI asking for its cached accessories gets an error back when they cannot be loaded, instead of waiting forever. Plugin log, plugin settings and child bridge errors show the server's message.
+- Restart OS, Restart Container and Shut Down ask for confirmation, and their pages no longer act when reached by a reload, the back button or a typed URL.
+- Deleting a stored backup, and "Delete all" config backups, ask for confirmation. The backup list shows loading, empty and failed states.
+- The weather widget shows an error with a Retry button instead of spinning forever when it cannot load.
+- The Restart button after a restore reports a failure instead of doing nothing.
+
+### Accessibility
+
+- Every dialog is named by its title for screen readers.
+- The page language follows the UI language.
+- Light themes with a pale primary colour (orange, cyan, grey, green, teal, red, pink, blue-grey) use a darker shade for accent text and button backgrounds, to meet WCAG contrast.
+- Accessory animations stop when the system asks for reduced motion.
+- Accessory tiles no longer announce every sensor reading.
+- Labels for the setup wizard, startup, SSL, restore and search fields; tooltips open on keyboard focus; toasts pause while focused; the mobile menu opens with Space and closes with Escape; the current page is marked with `aria-current`; busy buttons keep their name.
+
+### Performance
+
+- Opening the accessories page re-renders only the tiles whose data changed, and the server no longer sends the same accessory list again or reloads once per discovered bridge.
+- Plugin installs and updates no longer empty npm's cache first; it is cleaned only to retry an install that failed on a corrupt cache.
+- The plugins page loads about 660 KB less up front: the settings form, config editor and other plugin dialogs load when opened.
+- The installed-plugin scan checks the npm registry 12 plugins at a time, and plugin search no longer fetches dozens of packages for short search terms.
+- Typing in a plugin settings form re-renders it once per burst rather than per key.
+- Chart widgets stop polling in a background tab and no longer animate each reading.
+- The log viewer keeps at most 2 MB of output and does less work per frame.
+- Identical simultaneous requests to Homebridge share one request.
+
 ## [2.0.0-beta.0] - 2026-10-03
 
 The browser UI is rewritten in React (from Angular). Pages, themes, glass mode, dark mode, translations, saved dashboard and accessory layouts, and plugin custom settings UIs all carry over unchanged: the new UI keeps the old markup, so it looks and behaves the same. This is a major version because plugin custom UIs run inside a new host page, even though the three tested (Ring, Camera FFmpeg, UniFi Protect) work as before.

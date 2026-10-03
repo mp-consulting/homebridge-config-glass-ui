@@ -1,6 +1,8 @@
 @use 'sass:color';
 @use 'sass:list';
 
+@use './contrast';
+
 // The dark themes: `.glass-ui-dark-mode-<name>`. As with the light themes, each
 // theme only sets custom properties and one shared rule set reads them; only
 // one theme class is ever applied, and `:is()` keeps a single class's specificity.
@@ -34,6 +36,9 @@ $themes: (
       #{color.channel($darkModePrimary, 'red', $space: rgb)}, #{color.channel($darkModePrimary, 'green', $space: rgb)},
       #{color.channel($darkModePrimary, 'blue', $space: rgb)};
     --glass-primary-dark: #{color.adjust($darkModePrimary, $lightness: -15%)};
+    // The filled button's gradient under white text, at 4.5:1
+    --glass-primary-btn: #{contrast.darken-to-contrast($darkModePrimary, #ffffff)};
+    --glass-primary-btn-dark: #{contrast.darken-to-contrast(color.adjust($darkModePrimary, $lightness: -15%), #ffffff)};
 
     // Read by the shared theme rules below
     --glass-theme-primary: #{$darkModePrimary};

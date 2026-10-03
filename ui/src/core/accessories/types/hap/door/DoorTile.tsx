@@ -65,7 +65,7 @@ export function DoorTile({ service, readyForControl = false }: HapTileProps) {
         }
       }}
     >
-      <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+      <span className="visually-hidden">
         {srText}
       </span>
       <div className="d-flex flex-column h-100">
