@@ -4,7 +4,6 @@ import type { PluginModalData } from '@/core/ui/modal-data'
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { v4 as uuid } from 'uuid'
 
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
@@ -20,6 +19,7 @@ import { toast } from '@/core/ui/toast'
 import { childBridges as childBridgesService } from '@/core/utilities/child-bridges'
 import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
+import { randomUuid } from '@/core/utilities/random-uuid'
 import { SchemaForm } from '@/schema-form'
 
 import './plugin-config.scss'
@@ -73,7 +73,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
 
   function newBlock(): PluginConfigBlock {
     return {
-      __uuid__: uuid(),
+      __uuid__: randomUuid(),
       name: schema.pluginAlias,
       config: {
         [pluginType]: schema.pluginAlias,
@@ -139,7 +139,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
           return
         }
         const configBlocks: PluginConfigBlock[] = loaded.map((block: Record<string, any>) => ({
-          __uuid__: uuid(),
+          __uuid__: randomUuid(),
           name: block.name || schema.pluginAlias,
           config: block,
         }))

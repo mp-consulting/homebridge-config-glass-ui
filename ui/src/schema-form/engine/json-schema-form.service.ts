@@ -46,12 +46,12 @@ import { JsonPointer } from './jsonpointer.functions'
 import { buildSchemaFromLayout, buildSchemaFromData, generatedFunctionBodies, removeRecursiveReferences } from './json-schema.functions'
 import { buildFormGroupTemplate, buildFormGroup, formatFormData, getControl, setControl } from './form-group.functions'
 import { buildLayout, getLayoutNode } from './layout.functions'
-import { v4 } from 'uuid'
+import { randomUuid } from '@/core/utilities/random-uuid'
 import def from 'ajv-keywords/dist/definitions/dynamicDefaults'
 
 // DEFAULTS entries are factories that return the generator function
 // (see ajv-keywords' own: `timestamp: () => () => Date.now()`)
-def.DEFAULTS.uuid = () => v4;
+def.DEFAULTS.uuid = () => randomUuid;
 
 // Plugin-written condition functionBody strings already reported (once per page load)
 const warnedFunctionBodies = new Set();
