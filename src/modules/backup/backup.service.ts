@@ -1,16 +1,15 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { FastifyReply } from 'fastify'
+import type { Readable } from 'node:stream'
 
-import type { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
+import type { CreatedBackup } from './backup-scheduler.js'
 
 import { EventEmitter } from 'node:events'
-import { constants, createReadStream, createWriteStream, statSync } from 'node:fs'
-import { access, chmod, lstat, mkdir, mkdtemp, readdir, realpath } from 'node:fs/promises'
+import { createReadStream, statSync } from 'node:fs'
+import { lstat, mkdtemp, realpath } from 'node:fs/promises'
 import { platform, tmpdir } from 'node:os'
-import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 import process from 'node:process'
-import { pipeline, Transform } from 'node:stream'
-import { promisify } from 'node:util'
 
 import {
   BadRequestException,
@@ -21,25 +20,18 @@ import {
   NotFoundException,
   StreamableFile,
 } from '@nestjs/common'
-import { cyan, green, red, yellow } from 'bash-color'
-import dayjs from 'dayjs'
-import { copy, ensureDir, pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
-import { networkInterfaces } from 'systeminformation'
-import { create, extract, ReadEntry } from 'tar'
-import { Parse } from 'unzipper'
+import { green } from 'bash-color'
+import { copy, pathExists, remove, writeJson } from 'fs-extra/esm'
+import { create } from 'tar'
 
-import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
-import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
-import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
-import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
-import { findUnsafeBridgeEnvValues, findUnsafeUiValues, removeUnsafeBridgeEnvValues, removeUnsafeUiValues } from '../config-editor/config-safety.js'
+import { RE_COLON } from '../../core/regex.constants.js'
 import { PluginsService } from '../plugins/plugins.service.js'
-import { BACKUP_DIR_MODE, BACKUP_EXCLUDED_NAMES, BACKUP_FILE_MODE } from './backup.constants.js'
-
-const pump = promisify(pipeline)
+import { assertUploadComplete, extractTarSafely, extractZipSafely } from './archive-safety.js'
+import { BackupRestoreService } from './backup-restore.service.js'
+import { BackupScheduler } from './backup-scheduler.js'
+import { BACKUP_EXCLUDED_NAMES, BACKUP_FILE_MODE } from './backup.constants.js'
 
 // Sentinel value placed in `restoreDirectory` between the moment an upload
 // reserves the slot and the moment the temp dir is actually created. Lets
@@ -47,151 +39,26 @@ const pump = promisify(pipeline)
 const RESTORE_PENDING = '__pending__'
 
 /**
- * Most a restore may expand to, as a multiple of the upload limit. Only the
- * compressed upload is size-limited, and a small gzip or zip bomb can
- * otherwise fill the disk holding the temp directory.
+ * Backups of this instance: creating and downloading them, the scheduled
+ * ones (BackupScheduler), and restoring one. A restore is staged in a single
+ * temp directory (the restore slot) by an upload, then run by
+ * BackupRestoreService.
  */
-const MAX_EXTRACT_RATIO = 20
-
-/**
- * An upload cut off at the size limit reaches the extractor as a short but
- * otherwise normal stream, so the partial archive must not be restored.
- */
-function assertUploadComplete(data: MultipartFile): void {
-  if (data.file.truncated) {
-    throw new BadRequestException(`Backup file exceeds maximum restore file size (${globalThis.backup.maxBackupSizeText}).`)
-  }
-}
-
 @Injectable()
 export class BackupService {
   private restoreDirectory: string
 
+  /** The path-validating .hbfx (zip) extractor - see archive-safety.ts */
+  private readonly extractZipSafely = extractZipSafely
+
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
-    @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
-    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(Logger) private readonly logger: Logger,
-    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
+    @Inject(BackupScheduler) private readonly scheduler: BackupScheduler,
+    @Inject(BackupRestoreService) private readonly restorer: BackupRestoreService,
   ) {
     this.scheduleInstanceBackups()
-  }
-
-  /**
-   * Tar `extract` filter that skips absolute paths, `..` segments, symlink
-   * and hardlink entries, and device/FIFO entries. Pairs with
-   * `strict: true, preservePaths: false` to keep crafted backups from
-   * writing outside the temp restore dir or diverting a later `copy`
-   * through a link onto the host.
-   */
-  private readonly tarSafeFilter = (path: string, entry: ReadEntry | import('node:fs').Stats): boolean => {
-    const type = (entry as ReadEntry).type
-    if (
-      type === 'SymbolicLink'
-      || type === 'Link'
-      || type === 'CharacterDevice'
-      || type === 'BlockDevice'
-      || type === 'FIFO'
-    ) {
-      return false
-    }
-    if (path.startsWith('/') || path.startsWith('..') || path.includes(`..${sep}`) || path.includes('../')) {
-      return false
-    }
-    return true
-  }
-
-  /**
-   * `tarSafeFilter` plus a budget on the total size extracted. tar enforces
-   * each entry's declared size, so summing it is exact. Entries past the
-   * budget are skipped, and `assertWithinBudget` fails the restore after.
-   */
-  private createTarRestoreFilter() {
-    const maxBytes = globalThis.backup.maxBackupSize * MAX_EXTRACT_RATIO
-    let extractedBytes = 0
-    return {
-      filter: (path: string, entry: ReadEntry | import('node:fs').Stats): boolean => {
-        if (!this.tarSafeFilter(path, entry)) {
-          return false
-        }
-        extractedBytes += entry.size || 0
-        return extractedBytes <= maxBytes
-      },
-      assertWithinBudget: () => {
-        if (extractedBytes > maxBytes) {
-          throw new BadRequestException(`Backup expands to more than ${(maxBytes / (1024 * 1024)).toFixed(0)}MB and cannot be restored.`)
-        }
-      },
-    }
-  }
-
-  /**
-   * Stream-based zip extractor with per-entry path validation. Rejects any
-   * entry whose resolved path escapes the destination directory (Zip Slip,
-   * CVE-2024-22363 / CVE-2024-43374), and stops once the bytes actually
-   * written exceed the extraction budget - a zip's declared sizes can lie.
-   */
-  private async extractZipSafely(source: import('node:stream').Readable, destDir: string): Promise<void> {
-    const normalisedDest = resolve(destDir)
-    const maxBytes = globalThis.backup.maxBackupSize * MAX_EXTRACT_RATIO
-    let extractedBytes = 0
-    const countBytes = () => new Transform({
-      transform(chunk, _encoding, callback) {
-        extractedBytes += chunk.length
-        callback(extractedBytes > maxBytes
-          ? new BadRequestException(`Backup expands to more than ${(maxBytes / (1024 * 1024)).toFixed(0)}MB and cannot be restored.`)
-          : null, chunk)
-      },
-    })
-    return new Promise<void>((res, rej) => {
-      let pending = 1
-      let aborted = false
-      let firstError: Error | undefined
-
-      const done = (err?: Error) => {
-        if (err && !firstError) {
-          firstError = err
-          aborted = true
-        }
-        pending--
-        if (pending === 0) {
-          firstError ? rej(firstError) : res()
-        }
-      }
-
-      // pipe() does not forward the source's errors (an aborted upload)
-      source.on('error', done)
-      source.pipe(Parse())
-        .on('entry', (entry: any) => {
-          if (aborted) {
-            entry.autodrain()
-            return
-          }
-          const entryPath = resolve(normalisedDest, entry.path)
-          const rel = relative(normalisedDest, entryPath)
-          if (rel.startsWith('..') || isAbsolute(rel)) {
-            entry.autodrain()
-            done(new Error(`Zip entry escapes destination: ${entry.path}`))
-            return
-          }
-          if (entry.type === 'Directory') {
-            pending++
-            mkdir(entryPath, { recursive: true })
-              .then(() => done())
-              .catch(done)
-            entry.autodrain()
-            return
-          }
-          pending++
-          mkdir(dirname(entryPath), { recursive: true })
-            .then(() => pump(entry, countBytes(), createWriteStream(entryPath)))
-            .then(() => done())
-            .catch(done)
-        })
-        .on('error', done)
-        .on('close', () => done())
-    })
   }
 
   /**
@@ -208,50 +75,49 @@ export class BackupService {
   }
 
   /**
-   * Defence-in-depth — walk an extracted archive and refuse to proceed if any
-   * entry is a symbolic link. `tarSafeFilter` and `extractZipSafely` already
-   * block symlink entries; this catches anything that slipped through.
+   * Take the restore slot, then extract an archive into a fresh temp
+   * directory that becomes the pending restore. On any failure the slot is
+   * released and the directory removed.
+   * @param extractInto - extracts the archive into the directory, and
+   * checks the result
    */
-  private async assertNoSymlinks(dir: string): Promise<void> {
-    const entries = await readdir(dir, { withFileTypes: true })
-    for (const entry of entries) {
-      const entryPath = join(dir, entry.name)
-      const stats = await lstat(entryPath)
-      if (stats.isSymbolicLink()) {
-        throw new Error(`Archive contains symlink at ${entryPath} — refusing to restore.`)
+  private async stageRestore(extractInto: (dir: string) => Promise<void>): Promise<void> {
+    // Reserve the singleton restore slot before any await so a concurrent
+    // upload loses the race and 409s.
+    this.reserveRestoreSlot()
+
+    let restoreDir: string | undefined
+    try {
+      // Prepare a temp working directory
+      restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+
+      await extractInto(restoreDir)
+
+      this.restoreDirectory = restoreDir
+    } catch (err) {
+      this.restoreDirectory = undefined
+      if (restoreDir) {
+        await remove(restoreDir).catch(() => undefined)
       }
-      if (entry.isDirectory()) {
-        await this.assertNoSymlinks(entryPath)
-      }
+      throw err
     }
+  }
+
+  /**
+   * The extracted archive waiting to be restored. Throws when there is none.
+   */
+  private pendingRestoreDirectory(): string {
+    if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
+      throw new BadRequestException()
+    }
+    return this.restoreDirectory
   }
 
   /**
    * Schedule the job to create an instance backup at recurring intervals
    */
   public scheduleInstanceBackups() {
-    // Always cancel any existing job first so this method is safe to
-    // call from a runtime toggle. Without this, toggling
-    // scheduledBackupDisable to true at runtime would leave the
-    // previously scheduled job firing until the next UI restart.
-    this.schedulerService.cancelJob('instance-backup')
-
-    if (this.configService.ui.scheduledBackupDisable === true) {
-      this.logger.debug('Scheduled backups disabled.')
-      return
-    }
-
-    const scheduleRule = new this.schedulerService.RecurrenceRule()
-    scheduleRule.hour = Math.floor(Math.random() * 7)
-    scheduleRule.minute = Math.floor(Math.random() * 59)
-    scheduleRule.second = Math.floor(Math.random() * 59)
-
-    this.schedulerService.scheduleJob('instance-backup', scheduleRule, () => {
-      this.logger.debug('Running scheduled instance backup...')
-      this.runScheduledBackupJob().catch((e) => {
-        this.logger.error(`Scheduled instance backup failed as ${e?.message || e}.`)
-      })
-    })
+    this.scheduler.schedule(() => this.runScheduledBackupJob())
   }
 
   /**
@@ -266,7 +132,7 @@ export class BackupService {
   /**
    * Creates the .tar.gz instance backup of the current Homebridge instance
    */
-  private async createBackup() {
+  private async createBackup(): Promise<CreatedBackup & { backupFileName: string }> {
     // Prepare a temp working directory
     const instanceId = this.configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
     const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
@@ -292,7 +158,8 @@ export class BackupService {
           try {
             const stat = await lstat(filePath)
             return (stat.isDirectory() || stat.isFile())
-          } catch (e) {
+          } catch {
+            // Gone or unreadable - nothing to archive
             return false
           }
         },
@@ -351,150 +218,35 @@ export class BackupService {
    * Ensures the scheduled backup path exists and is writable
    */
   async ensureScheduledBackupPath() {
-    if (this.configService.ui.scheduledBackupPath) {
-      // If using a custom backup path, check it exists
-      if (!await pathExists(this.configService.instanceBackupPath)) {
-        throw new Error('Custom instance backup path does not exist')
-      }
-
-      try {
-        await access(this.configService.instanceBackupPath, constants.W_OK | constants.R_OK)
-      } catch (e) {
-        throw new Error(`Custom instance backup path is not writable / readable by service: ${e.message}`)
-      }
-    } else {
-      // When not using a custom backup path, ensure it exists and only the
-      // service user can read the archives in it
-      await ensureDir(this.configService.instanceBackupPath, { mode: BACKUP_DIR_MODE })
-      await chmod(this.configService.instanceBackupPath, BACKUP_DIR_MODE).catch(() => undefined)
-    }
-  }
-
-  /**
-   * Copy a finished archive into the instance backup path, readable by the
-   * service user only (a custom path may be a shared directory).
-   */
-  private async saveToInstanceBackupPath(backupPath: string, instanceId: string): Promise<void> {
-    const target = resolve(
-      this.configService.instanceBackupPath,
-      `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
-    )
-    await copy(backupPath, target)
-    await chmod(target, BACKUP_FILE_MODE).catch(() => undefined)
+    return this.scheduler.ensureScheduledBackupPath()
   }
 
   /**
    * Runs the job to create a scheduled backup
    */
   async runScheduledBackupJob() {
-    // Ensure backup path exists
-    try {
-      await this.ensureScheduledBackupPath()
-    } catch (e) {
-      this.logger.warn(`Could not run scheduled backup as ${e.message}.`)
-      return
-    }
-
-    // Create the backup
-    try {
-      const { backupDir, backupPath, instanceId } = await this.createBackup()
-      await this.saveToInstanceBackupPath(backupPath, instanceId)
-      await remove(resolve(backupDir))
-    } catch (e) {
-      this.logger.warn(`Failed to create scheduled instance backup as ${e.message}.`)
-    }
-
-    // Remove backups older than 7 days
-    try {
-      const backups = await this.listScheduledBackups()
-
-      for (const backup of backups) {
-        if (dayjs().diff(dayjs(backup.timestamp), 'day') >= 7) {
-          await remove(resolve(this.configService.instanceBackupPath, backup.fileName))
-        }
-      }
-    } catch (e) {
-      this.logger.warn(`Failed to remove old backups as ${e.message}.`)
-    }
+    return this.scheduler.runJob(() => this.createBackup())
   }
 
   /**
    * Get the time the next backup will run
    */
   async getNextBackupTime() {
-    if (this.configService.ui.scheduledBackupDisable === true) {
-      return {
-        next: false,
-      }
-    } else {
-      return {
-        next: this.schedulerService.scheduledJobs['instance-backup']?.nextInvocation() || false,
-      }
-    }
+    return this.scheduler.getNextBackupTime()
   }
 
   /**
    * List the instance backups saved on disk
    */
   async listScheduledBackups() {
-    // Ensure backup path exists
-    try {
-      await this.ensureScheduledBackupPath()
-
-      const dirContents = await readdir(this.configService.instanceBackupPath, { withFileTypes: true })
-      return dirContents
-        .filter(x => x.isFile() && x.name.match(RE_BACKUP_FILENAME))
-        .map((x) => {
-          const split = x.name.split('.')
-          const instanceId = split[0].split('-')[2]
-          if (split.length === 4 && !Number.isNaN(split[1] as any)) {
-            return {
-              id: `${instanceId}.${split[1]}`,
-              instanceId: split[0].split('-')[2],
-              timestamp: new Date(Number.parseInt(split[1], 10)),
-              fileName: x.name,
-              size: (statSync(`${this.configService.instanceBackupPath}/${x.name}`).size / (1024 * 1024)).toFixed(1),
-              maxBackupSize: globalThis.backup.maxBackupSize / (1024 * 1024),
-              maxBackupSizeText: globalThis.backup.maxBackupSizeText,
-            }
-          } else {
-            return null
-          }
-        })
-        .filter(x => x !== null)
-        .sort((a, b) => {
-          if (a.id > b.id) {
-            return -1
-          } else if (a.id < b.id) {
-            return 1
-          } else {
-            return 0
-          }
-        })
-    } catch (e) {
-      this.logger.warn(`Could not get scheduled backups as ${e.message}.`)
-      throw new InternalServerErrorException(e.message)
-    }
+    return this.scheduler.listScheduledBackups()
   }
 
   /**
    * Downloads a scheduled backup .tar.gz
    */
   async getScheduledBackup(backupId: string): Promise<StreamableFile> {
-    if (!RE_BACKUP_ID.test(backupId)) {
-      throw new BadRequestException('Invalid backup ID.')
-    }
-
-    const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
-    if (!backupPath.startsWith(this.configService.instanceBackupPath)) {
-      throw new BadRequestException('Invalid backup ID.')
-    }
-
-    // Check the file exists
-    if (!await pathExists(backupPath)) {
-      throw new NotFoundException()
-    }
-
+    const backupPath = await this.scheduler.resolveScheduledBackup(backupId)
     return new StreamableFile(createReadStream(backupPath))
   }
 
@@ -502,19 +254,7 @@ export class BackupService {
    * Removes a scheduled backup .tar.gz
    */
   async deleteScheduledBackup(backupId: string): Promise<void> {
-    if (!RE_BACKUP_ID.test(backupId)) {
-      throw new BadRequestException('Invalid backup ID.')
-    }
-
-    const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
-    if (!backupPath.startsWith(this.configService.instanceBackupPath)) {
-      throw new BadRequestException('Invalid backup ID.')
-    }
-
-    // Check the file exists
-    if (!await pathExists(backupPath)) {
-      throw new NotFoundException()
-    }
+    const backupPath = await this.scheduler.resolveScheduledBackup(backupId)
 
     try {
       await remove(backupPath)
@@ -529,47 +269,10 @@ export class BackupService {
    * Restore a scheduled backup .tar.gz
    */
   async restoreScheduledBackup(backupId: string): Promise<void> {
-    if (!RE_BACKUP_ID.test(backupId)) {
-      throw new BadRequestException('Invalid backup ID.')
-    }
+    const backupPath = await this.scheduler.resolveScheduledBackup(backupId)
 
-    const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
-    if (!backupPath.startsWith(this.configService.instanceBackupPath)) {
-      throw new BadRequestException('Invalid backup ID.')
-    }
-
-    // Check the file exists
-    if (!await pathExists(backupPath)) {
-      throw new NotFoundException()
-    }
-
-    // Reserve the singleton restore slot synchronously — concurrent uploads
-    // must lose the race and 409.
-    this.reserveRestoreSlot()
-
-    let restoreDir: string | undefined
-    try {
-      // Prepare a temp working directory
-      restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
-
-      // Pipe the data to the temp directory
-      const { filter, assertWithinBudget } = this.createTarRestoreFilter()
-      await pump(createReadStream(backupPath), extract({
-        cwd: restoreDir,
-        strict: true,
-        preservePaths: false,
-        filter,
-      }))
-      assertWithinBudget()
-
-      this.restoreDirectory = restoreDir
-    } catch (err) {
-      this.restoreDirectory = undefined
-      if (restoreDir) {
-        await remove(restoreDir).catch(() => undefined)
-      }
-      throw err
-    }
+    // Pipe the data to the temp directory
+    await this.stageRestore(dir => extractTarSafely(createReadStream(backupPath), dir))
   }
 
   /**
@@ -606,7 +309,7 @@ export class BackupService {
     try {
       const { backupDir, backupPath, instanceId } = await this.createBackup()
 
-      await this.saveToInstanceBackupPath(backupPath, instanceId)
+      await this.scheduler.saveToInstanceBackupPath(backupPath, instanceId)
 
       await remove(resolve(backupDir))
     } catch (error) {
@@ -620,34 +323,11 @@ export class BackupService {
    * File upload handler
    */
   async uploadBackupRestore(data: MultipartFile) {
-    // Reserve the singleton restore slot before any await so a concurrent
-    // upload loses the race and 409s.
-    this.reserveRestoreSlot()
-
-    let backupDir: string | undefined
-    try {
-      // Prepare a temp working directory
-      backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
-
-      // Pipe the data to the temp directory
-      const { filter, assertWithinBudget } = this.createTarRestoreFilter()
-      await pump(data.file, extract({
-        cwd: backupDir,
-        strict: true,
-        preservePaths: false,
-        filter,
-      }))
-      assertWithinBudget()
+    // Pipe the data to the temp directory
+    await this.stageRestore(async (dir) => {
+      await extractTarSafely(data.file as Readable, dir)
       assertUploadComplete(data)
-
-      this.restoreDirectory = backupDir
-    } catch (err) {
-      this.restoreDirectory = undefined
-      if (backupDir) {
-        await remove(backupDir).catch(() => undefined)
-      }
-      throw err
-    }
+    })
   }
 
   /**
@@ -692,150 +372,10 @@ export class BackupService {
    * Restores the uploaded backup
    */
   async restoreFromBackup(client: EventEmitter, autoRestart = false) {
-    if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
-      throw new BadRequestException()
-    }
+    const dir = this.pendingRestoreDirectory()
 
-    // Check info.json exists
-    if (!await pathExists(resolve(this.restoreDirectory, 'info.json'))) {
-      await this.removeRestoreDirectory()
-      throw new Error('Uploaded file is not a valid Homebridge Backup Archive.')
-    }
-
-    // Check plugins.json exists
-    if (!await pathExists(resolve(this.restoreDirectory, 'plugins.json'))) {
-      await this.removeRestoreDirectory()
-      throw new Error('Uploaded file is not a valid Homebridge Backup Archive.')
-    }
-
-    // Check storage exists
-    if (!await pathExists(resolve(this.restoreDirectory, 'storage'))) {
-      await this.removeRestoreDirectory()
-      throw new Error('Uploaded file is not a valid Homebridge Backup Archive.')
-    }
-
-    // Reject the whole archive up front if any extracted entry is a symlink.
-    // tarSafeFilter already blocks symlink *entries* during extraction; this
-    // catches anything that slipped through (e.g. fs-extra dereferencing a
-    // dir entry whose contents are symlinks).
-    try {
-      await this.assertNoSymlinks(this.restoreDirectory)
-    } catch (err) {
-      await this.removeRestoreDirectory()
-      throw err
-    }
-
-    // Load info.json
-    const backupInfo = await readJson(resolve(this.restoreDirectory, 'info.json'))
-
-    // Display backup archive information
-    client.emit('stdout', cyan('Backup Archive Information\r\n'))
-    client.emit('stdout', `Source Node.js Version: ${backupInfo.node}\r\n`)
-    client.emit('stdout', `Source Homebridge Glass UI Version: v${backupInfo.uix}\r\n`)
-    client.emit('stdout', `Source Platform: ${backupInfo.platform}\r\n`)
-    client.emit('stdout', `Created: ${backupInfo.timestamp}\r\n`)
-
-    // Start restore
-    this.logger.warn('Starting backup restore...')
-    client.emit('stdout', cyan('\r\nRestoring backup...\r\n\r\n'))
-    await new Promise(res => setTimeout(res, 1000))
-
-    // Resolve the real path of the storage directory (in case it's a symbolic link)
-    const storagePath = await realpath(this.configService.storagePath)
-
-    // Restore files
-    client.emit('stdout', yellow(`Restoring Homebridge storage to ${storagePath}\r\n`))
-    await new Promise(res => setTimeout(res, 100))
-    await copy(resolve(this.restoreDirectory, 'storage'), storagePath, {
-      filter: async (filePath) => {
-        // Anything a backup leaves out is refused here too, so a crafted (or
-        // older) archive cannot plant the JWT secret, hb-service startup
-        // options, startup.sh, node_modules, ...
-        if (BACKUP_EXCLUDED_NAMES.includes(basename(filePath))) {
-          client.emit('stdout', `Skipping ${basename(filePath)}\r\n`)
-          return false
-        }
-
-        // Check each item is a real directory or real file (no symlinks, pipes, unix sockets etc.)
-        try {
-          const stat = await lstat(filePath)
-          if (stat.isDirectory() || stat.isFile()) {
-            client.emit('stdout', `Restoring ${basename(filePath)}\r\n`)
-            return true
-          } else {
-            client.emit('stdout', `Skipping ${basename(filePath)}\r\n`)
-            return false
-          }
-        } catch (e) {
-          client.emit('stdout', `Skipping ${basename(filePath)}\r\n`)
-          return false
-        }
-      },
-    })
-    client.emit('stdout', yellow('File restore complete.\r\n'))
-    await new Promise(res => setTimeout(res, 1000))
-
-    // Restore plugins
-    client.emit('stdout', cyan('\r\nRestoring plugins...\r\n'))
-    const plugins: HomebridgePlugin[] = (await readJson(resolve(this.restoreDirectory, 'plugins.json')))
-      .filter((x: HomebridgePlugin) => ![
-        '@mp-consulting/homebridge-config-glass-ui',
-      ].includes(x.name) && x.publicPackage) // list of plugins not to restore
-
-    for (const plugin of plugins) {
-      try {
-        client.emit('stdout', yellow(`\r\nInstalling ${plugin.name}...\r\n`))
-        await this.pluginsService.managePlugin('install', { name: plugin.name, version: plugin.installedVersion }, client)
-      } catch (e) {
-        client.emit('stdout', red(`Failed to install ${plugin.name}.\r\n`))
-      }
-    }
-
-    // Load restored config
-    const restoredConfig: HomebridgeConfig = await readJson(this.configService.configPath)
-
-    // Ensure the bridge port does not change
-    if (restoredConfig.bridge) {
-      restoredConfig.bridge.port = this.configService.homebridgeConfig.bridge.port
-    }
-
-    // Check the bridge.bind config contains valid interface names
-    if (restoredConfig.bridge?.bind) {
-      await this.checkBridgeBindConfig(restoredConfig)
-    }
-
-    // Ensure platforms in an array
-    if (!Array.isArray(restoredConfig.platforms)) {
-      restoredConfig.platforms = []
-    }
-
-    // Apply the same command checks as a config save
-    this.sanitiseRestoredUiConfig(restoredConfig, client)
-
-    // Load the ui config block
-    const uiConfigBlock = restoredConfig.platforms.find(x => x.platform === 'config')
-
-    if (uiConfigBlock) {
-      uiConfigBlock.port = this.configService.ui.port
-    } else {
-      restoredConfig.platforms.push({
-        name: 'Config',
-        port: this.configService.ui.port,
-        platform: 'config',
-      })
-    }
-
-    // Save the config (atomic write under the JSON store lock so a
-    // crash mid-write doesn't leave config.json half-truncated).
-    await this.jsonStore.write(this.configService.configPath, restoredConfig)
-
-    // Remove temp files
-    await this.removeRestoreDirectory()
-
-    client.emit('stdout', green('\r\nRestore Complete!\r\n'))
-
-    // Ensure ui is restarted on next restart
-    this.configService.hbServiceUiRestartRequired = true
+    await this.restorer.restoreInstanceBackup(dir, client, () => this.removeRestoreDirectory())
+    await this.finishRestore(client)
 
     // Auto restart if told to
     if (autoRestart) {
@@ -849,183 +389,33 @@ export class BackupService {
    * Upload a .hbfx backup file
    */
   async uploadHbfxRestore(data: MultipartFile) {
-    // Reserve the singleton restore slot before any await so a concurrent
-    // upload loses the race and 409s.
-    this.reserveRestoreSlot()
-
-    let backupDir: string | undefined
-    try {
-      // Prepare a temp working directory
-      backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
-
-      this.logger.log(`Extracting .hbfx file to ${backupDir}.`)
+    await this.stageRestore(async (dir) => {
+      this.logger.log(`Extracting .hbfx file to ${dir}.`)
 
       // Pipe the data through a path-validating extractor so a crafted .hbfx
-      // can't write outside backupDir (Zip Slip).
-      await this.extractZipSafely(data.file, backupDir)
+      // can't write outside the restore directory (Zip Slip).
+      await this.extractZipSafely(data.file as Readable, dir)
       assertUploadComplete(data)
-
-      this.restoreDirectory = backupDir
-    } catch (err) {
-      this.restoreDirectory = undefined
-      if (backupDir) {
-        await remove(backupDir).catch(() => undefined)
-      }
-      throw err
-    }
+    })
   }
 
   /**
    * Restore .hbfx backup file
    */
   async restoreHbfxBackup(client: EventEmitter) {
-    if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
-      throw new BadRequestException()
-    }
+    const dir = this.pendingRestoreDirectory()
 
-    // Check package.json exists
-    if (!await pathExists(resolve(this.restoreDirectory, 'package.json'))) {
-      await this.removeRestoreDirectory()
-      throw new Error('Uploaded file is not a valid HBFX Backup Archive.')
-    }
+    await this.restorer.restoreHbfxBackup(dir, client, () => this.removeRestoreDirectory())
+    await this.finishRestore(client)
 
-    // Check config.json exists
-    if (!await pathExists(resolve(this.restoreDirectory, 'etc', 'config.json'))) {
-      await this.removeRestoreDirectory()
-      throw new Error('Uploaded file is not a valid HBFX Backup Archive.')
-    }
+    return { status: 0 }
+  }
 
-    // Defence-in-depth — reject the archive if any extracted entry is a
-    // symlink.
-    try {
-      await this.assertNoSymlinks(this.restoreDirectory)
-    } catch (err) {
-      await this.removeRestoreDirectory()
-      throw err
-    }
-
-    // Load package.json
-    const backupInfo = await readJson(resolve(this.restoreDirectory, 'package.json'))
-
-    // Display backup archive information
-    client.emit('stdout', cyan('Backup Archive Information\r\n'))
-    client.emit('stdout', `Backup Source: ${backupInfo.name}\r\n`)
-    client.emit('stdout', `Version: v${backupInfo.version}\r\n`)
-
-    // Start restore
-    this.logger.warn('Starting hbfx restore...')
-    client.emit('stdout', cyan('\r\nRestoring hbfx backup...\r\n\r\n'))
-    await new Promise(res => setTimeout(res, 1000))
-
-    // Resolve the real path of the storage directory (in case it's a symbolic link)
-    const storagePath = await realpath(this.configService.storagePath)
-
-    // Restore files
-    client.emit('stdout', yellow(`Restoring Homebridge storage to ${storagePath}\r\n`))
-    await copy(resolve(this.restoreDirectory, 'etc'), resolve(storagePath), {
-      filter: (filePath) => {
-        if (
-          [
-            'access.json',
-            'dashboard.json',
-            'layout.json',
-            'config.json',
-            ...BACKUP_EXCLUDED_NAMES,
-          ].includes(basename(filePath))
-        ) {
-          return false
-        }
-        client.emit('stdout', `Restoring ${basename(filePath)}\r\n`)
-        return true
-      },
-    })
-
-    // Restore accessories
-    const sourceAccessoriesPath = resolve(this.restoreDirectory, 'etc', 'accessories')
-    const targetAccessoriesPath = resolve(storagePath, 'accessories')
-    if (await pathExists(sourceAccessoriesPath)) {
-      await copy(sourceAccessoriesPath, targetAccessoriesPath, {
-        filter: (filePath) => {
-          client.emit('stdout', `Restoring ${basename(filePath)}\r\n`)
-          return true
-        },
-      })
-    }
-
-    // Load source config.json
-    const sourceConfig = await readJson(resolve(this.restoreDirectory, 'etc', 'config.json'))
-
-    // Map hbfx plugins to homebridge plugins
-    const pluginMap = {
-      'hue': 'homebridge-hue',
-      'chamberlain': 'homebridge-chamberlain',
-      'google-home': 'homebridge-gsh',
-      'ikea-tradfri': 'homebridge-ikea-tradfri-gateway',
-      'nest': 'homebridge-nest',
-      'ring': 'homebridge-ring',
-      'roborock': 'homebridge-roborock',
-      'shelly': 'homebridge-shelly',
-      'wink': 'homebridge-wink3',
-      'homebridge-tuya-web': '@milo526/homebridge-tuya-web',
-    }
-
-    // Install plugins
-    if (sourceConfig.plugins?.length) {
-      for (let plugin of sourceConfig.plugins) {
-        if (plugin in pluginMap) {
-          plugin = pluginMap[plugin]
-        }
-        try {
-          client.emit('stdout', yellow(`\r\nInstalling ${plugin}...\r\n`))
-          await this.pluginsService.managePlugin('install', { name: plugin, version: 'latest' }, client)
-        } catch (e) {
-          client.emit('stdout', red(`Failed to install ${plugin}.\r\n`))
-        }
-      }
-    }
-
-    // Clone elements from the source config that we care about
-    const targetConfig: HomebridgeConfig = JSON.parse(JSON.stringify({
-      bridge: sourceConfig.bridge && typeof sourceConfig.bridge === 'object' ? sourceConfig.bridge : {},
-      accessories: sourceConfig.accessories?.map((x: any) => {
-        delete x.plugin_map
-        return x
-      }) || [],
-      // The UI block is replaced with this instance's own below
-      platforms: sourceConfig.platforms?.filter((x: any) => x?.platform !== 'config').map((x: any) => {
-        if (x.platform === 'google-home') {
-          x.platform = 'google-smarthome'
-          x.notice = 'Keep your token a secret!'
-        }
-        delete x.plugin_map
-        return x
-      }) || [],
-    }))
-
-    // An hbfx config without a bridge username keeps this instance's one
-    if (typeof targetConfig.bridge.username !== 'string' || !targetConfig.bridge.username) {
-      targetConfig.bridge.username = this.configService.homebridgeConfig.bridge.username
-    }
-
-    // Correct bridge name
-    targetConfig.bridge.name = `Homebridge ${targetConfig.bridge.username.substring(targetConfig.bridge.username.length - 5).replace(RE_COLON, '')}`
-
-    // Check the bridge.bind config contains valid interface names
-    if (targetConfig.bridge.bind) {
-      await this.checkBridgeBindConfig(targetConfig)
-    }
-
-    this.sanitiseRestoredBridgeEnv(targetConfig, client)
-
-    // Add config ui platform
-    targetConfig.platforms.push({
-      ...this.configService.ui,
-      platform: 'config',
-    })
-
-    // Save the config (atomic write under the JSON store lock).
-    await this.jsonStore.write(this.configService.configPath, targetConfig)
-
+  /**
+   * The last step of every restore: release the slot and its temp files, and
+   * have hb-service restart the UI with the restored setup
+   */
+  private async finishRestore(client: EventEmitter) {
     // Remove temp files
     await this.removeRestoreDirectory()
 
@@ -1033,98 +423,12 @@ export class BackupService {
 
     // Ensure ui is restarted on next restart
     this.configService.hbServiceUiRestartRequired = true
-
-    return { status: 0 }
   }
 
   /**
    * Send SIGKILL to Homebridge to prevent accessory cache being re-generated on shutdown
    */
   postBackupRestoreRestart() {
-    setTimeout(async () => {
-      // Kill homebridge first. If `kill()` returns false the signal
-      // didn't land — Homebridge is still running. Self-killing the
-      // UI from that state would leave Homebridge alive on the OLD
-      // pre-restore config and the service supervisor would bring the
-      // UI back up to a mismatched setup.
-      const delivered = await this.homebridgeIpcService.killHomebridge()
-      if (!delivered) {
-        this.logger.error('Skipping UI self-kill: Homebridge SIGKILL was not delivered.')
-        return
-      }
-
-      // Kill self
-      setTimeout(() => {
-        process.kill(process.pid, 'SIGKILL')
-      }, 500)
-    }, 500)
-
-    return { status: 0 }
-  }
-
-  /**
-   * Run the restored UI block(s), and every child bridge's NODE_OPTIONS,
-   * through the checks a config save uses, dropping any unsafe value so the
-   * restore still completes.
-   */
-  private sanitiseRestoredUiConfig(restoredConfig: HomebridgeConfig, client: EventEmitter) {
-    for (const uiBlock of restoredConfig.platforms.filter(x => x?.platform === 'config')) {
-      const unsafe = findUnsafeUiValues(uiBlock, this.configService.ui, {
-        terminalEnabled: this.configService.enableTerminalAccess,
-        storagePath: this.configService.storagePath,
-      })
-      if (!unsafe.length) {
-        continue
-      }
-      removeUnsafeUiValues(uiBlock, unsafe)
-      for (const { path, reason } of unsafe) {
-        this.logger.warn(`Backup restore removed the unsafe "${path}" value from the restored config.json. ${reason}`)
-        client.emit('stdout', red(`Removed unsafe "${path}" from the restored config.json. ${reason}\r\n`))
-      }
-    }
-
-    this.sanitiseRestoredBridgeEnv(restoredConfig, client)
-  }
-
-  /**
-   * Drop a child bridge `_bridge.env.NODE_OPTIONS` that a config save would
-   * refuse (see `findUnsafeBridgeEnvValues`): Homebridge hands it to the child
-   * bridge process, so it would load code just like the startup NODE_OPTIONS.
-   */
-  private sanitiseRestoredBridgeEnv(restoredConfig: HomebridgeConfig, client: EventEmitter) {
-    const unsafe = findUnsafeBridgeEnvValues(restoredConfig)
-    removeUnsafeBridgeEnvValues(restoredConfig, unsafe)
-    for (const { path, reason } of unsafe) {
-      this.logger.warn(`Backup restore removed the unsafe "${path}" value from the restored config.json. ${reason}`)
-      client.emit('stdout', red(`Removed unsafe "${path}" from the restored config.json. ${reason}\r\n`))
-    }
-  }
-
-  /**
-   * Checks the 'bridge.bind' options are valid for the current system when restoring.
-   */
-  private async checkBridgeBindConfig(restoredConfig: HomebridgeConfig) {
-    if (restoredConfig.bridge.bind) {
-      // If it's a string, convert to an array
-      if (typeof restoredConfig.bridge.bind === 'string') {
-        restoredConfig.bridge.bind = [restoredConfig.bridge.bind]
-      }
-
-      // If it's still not an array, delete it
-      if (!Array.isArray(restoredConfig.bridge.bind)) {
-        delete restoredConfig.bridge.bind
-        return
-      }
-
-      // Check each interface exists on the new host
-      const interfaces = await networkInterfaces()
-      const ifaceNames = interfaces.map(i => i.iface)
-      restoredConfig.bridge.bind = restoredConfig.bridge.bind.filter(x => ifaceNames.includes(x))
-
-      // If empty delete
-      if (!restoredConfig.bridge.bind.length) {
-        delete restoredConfig.bridge.bind
-      }
-    }
+    return this.restorer.restartAfterRestore()
   }
 }

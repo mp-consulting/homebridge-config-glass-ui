@@ -7,6 +7,8 @@ import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.mo
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { SchedulerModule } from '../../core/scheduler/scheduler.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
+import { BackupRestoreService } from './backup-restore.service.js'
+import { BackupScheduler } from './backup-scheduler.js'
 import { BackupController } from './backup.controller.js'
 import { BackupGateway } from './backup.gateway.js'
 import { BackupService } from './backup.service.js'
@@ -23,6 +25,8 @@ import { BackupService } from './backup.service.js'
   ],
   providers: [
     BackupService,
+    BackupScheduler,
+    BackupRestoreService,
     BackupGateway,
   ],
   controllers: [
