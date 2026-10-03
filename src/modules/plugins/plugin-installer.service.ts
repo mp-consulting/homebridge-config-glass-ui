@@ -38,6 +38,18 @@ import { PluginRegistryService } from './plugin-registry.service.js'
 import { PluginActionDto, RE_NPM_VERSION } from './plugins.dto.js'
 
 /**
+ * npm settings given as `npm_config_*` environment variables, as the
+ * equivalent command-line options (`npm_config_prefer_online: 'true'` becomes
+ * `--prefer-online=true`). Used under sudo, which does not pass the
+ * environment on to npm.
+ */
+export function npmSettingsAsOptions(settings: Record<string, string>): string[] {
+  return Object.entries(settings)
+    .filter(([key]) => key.startsWith('npm_config_'))
+    .map(([key, value]) => `--${key.slice('npm_config_'.length).replace(/_/g, '-')}=${value}`)
+}
+
+/**
  * Installs, updates and uninstalls packages: the npm process handling, the
  * one-at-a-time package operation queue, plugin bundles and install-script
  * permissions.
@@ -583,9 +595,12 @@ export class PluginInstallerService {
     let timeoutTimer: NodeJS.Timeout
     command = command.map(x => String(x)).filter(x => x.length)
 
-    // Sudo mode is requested in plugin config
-    if (this.configService.ui.sudo) {
-      command.unshift('sudo', '-E', '-n')
+    // Sudo mode is requested in plugin config. Plain `sudo -n`, not `-E`: the
+    // hb-service sudoers entry has no SETENV, so sudo resets the environment
+    // and npm's settings are passed as options below instead.
+    const useSudo = Boolean(this.configService.ui.sudo)
+    if (useSudo) {
+      command.unshift('sudo', '-n')
     } else {
       // Do a pre-check to test for write access when not using sudo mode
       const npmInstallPath = await this.installed.getNpmGlobalRoot() ?? resolve(cwd, 'node_modules')
@@ -612,20 +627,25 @@ export class PluginInstallerService {
     // keys (cloud creds, CI tokens, *_SECRET / *_PASSWORD / *_PRIVATE_KEY)
     // that happened to be set when the UI was launched.
     const env = this.sanitizeNpmEnv(process.env)
-    Object.assign(env, {
+    const npmSettings: Record<string, string> = {
       npm_config_global_style: 'true',
       npm_config_update_notifier: 'false',
       npm_config_prefer_online: 'true',
       npm_config_foreground_scripts: 'true',
       npm_config_loglevel: 'error',
-    })
+    }
 
     // Set global prefix for unix based systems
     if (command.includes('-g') && basename(cwd) === 'lib') {
       cwd = dirname(cwd)
-      Object.assign(env, {
-        npm_config_prefix: cwd,
-      })
+      npmSettings.npm_config_prefix = cwd
+    }
+
+    Object.assign(env, npmSettings)
+    // sudo does not pass the environment on (see above), so the same settings
+    // go on npm's command line, where they mean the same thing
+    if (useSudo) {
+      command.push(...npmSettingsAsOptions(npmSettings))
     }
 
     // On windows, we want to ensure the global prefix is the same as the installation path
@@ -794,7 +814,7 @@ export class PluginInstallerService {
     const command: string[] = [...this.npm, 'cache', 'clean', '--force']
 
     if (this.configService.ui.sudo) {
-      command.unshift('sudo', '-E', '-n')
+      command.unshift('sudo', '-n')
     }
 
     return new Promise((res) => {

@@ -241,6 +241,39 @@ describe('Backup security (e2e)', { timeout: 30_000 }, () => {
       expect(loginRes.json().access_token).toBeTruthy()
     })
 
+    it('strips an unsafe child bridge NODE_OPTIONS from the restored config.json', async () => {
+      const tarPath = await buildTarball({
+        'info.json': { timestamp: new Date().toISOString(), platform: 'linux', uix: '1.0.0', node: 'v22.12.0' },
+        'plugins.json': [],
+        'storage/config.json': {
+          bridge: { name: 'Restored Bridge', port: 51999, pin: '111-22-333', username: '0E:11:22:33:44:55' },
+          accessories: [{ accessory: 'Acc', name: 'A', _bridge: { username: '0E:11:22:33:44:57', env: { NODE_OPTIONS: '--loader ./evil.mjs' } } }],
+          platforms: [
+            { platform: 'config', name: 'Config', port: 9999 },
+            { platform: 'Evil', _bridge: { username: '0E:11:22:33:44:56', env: { DEBUG: '*', NODE_OPTIONS: '--require /tmp/evil.js' } } },
+            { platform: 'Fine', _bridge: { username: '0E:11:22:33:44:58', env: { NODE_OPTIONS: '--max-old-space-size=256' } } },
+          ],
+        },
+      })
+
+      await backupService.uploadBackupRestore({ file: createReadStream(tarPath) } as any)
+      await remove(tarPath)
+
+      const client = new EventEmitter()
+      const emit = vi.spyOn(client, 'emit')
+      const warn = vi.spyOn((backupService as any).logger, 'warn')
+
+      await backupService.restoreFromBackup(client)
+
+      const restored = await readJson(configPath)
+      expect(restored.platforms.find((p: any) => p.platform === 'Evil')._bridge).toEqual({ username: '0E:11:22:33:44:56', env: { DEBUG: '*' } })
+      expect(restored.accessories[0]._bridge).toEqual({ username: '0E:11:22:33:44:57' })
+      expect(restored.platforms.find((p: any) => p.platform === 'Fine')._bridge.env).toEqual({ NODE_OPTIONS: '--max-old-space-size=256' })
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('removed the unsafe "platforms[1]._bridge.env.NODE_OPTIONS" value'))
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('removed the unsafe "accessories[0]._bridge.env.NODE_OPTIONS" value'))
+      expect(emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Removed unsafe "platforms[1]._bridge.env.NODE_OPTIONS"'))
+    })
+
     it('refuses an archive without info.json and removes the temp directory', async () => {
       const tarPath = await buildTarball({
         'plugins.json': [],

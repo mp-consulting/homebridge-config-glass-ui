@@ -25,7 +25,8 @@ function tryRebuildNodePtyModule() {
     })
   } catch (e) {
     if (platform() !== 'win32') {
-      execSync('sudo -E -n npm run install', {
+      // Plain `sudo -n`: the hb-service sudoers entry has no SETENV, so `-E` is refused
+      execSync('sudo -n npm run install', {
         cwd: modulePath,
         stdio: 'ignore',
       })

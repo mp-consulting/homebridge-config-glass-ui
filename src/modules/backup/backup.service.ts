@@ -35,7 +35,7 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
-import { findUnsafeUiValues, removeUnsafeUiValues } from '../config-editor/config-safety.js'
+import { findUnsafeBridgeEnvValues, findUnsafeUiValues, removeUnsafeBridgeEnvValues, removeUnsafeUiValues } from '../config-editor/config-safety.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { BACKUP_DIR_MODE, BACKUP_EXCLUDED_NAMES, BACKUP_FILE_MODE } from './backup.constants.js'
 
@@ -1015,6 +1015,8 @@ export class BackupService {
       await this.checkBridgeBindConfig(targetConfig)
     }
 
+    this.sanitiseRestoredBridgeEnv(targetConfig, client)
+
     // Add config ui platform
     targetConfig.platforms.push({
       ...this.configService.ui,
@@ -1061,8 +1063,9 @@ export class BackupService {
   }
 
   /**
-   * Run the restored UI block(s) through the command checks a config save
-   * uses, dropping any unsafe value so the restore still completes.
+   * Run the restored UI block(s), and every child bridge's NODE_OPTIONS,
+   * through the checks a config save uses, dropping any unsafe value so the
+   * restore still completes.
    */
   private sanitiseRestoredUiConfig(restoredConfig: HomebridgeConfig, client: EventEmitter) {
     for (const uiBlock of restoredConfig.platforms.filter(x => x?.platform === 'config')) {
@@ -1078,6 +1081,22 @@ export class BackupService {
         this.logger.warn(`Backup restore removed the unsafe "${path}" value from the restored config.json. ${reason}`)
         client.emit('stdout', red(`Removed unsafe "${path}" from the restored config.json. ${reason}\r\n`))
       }
+    }
+
+    this.sanitiseRestoredBridgeEnv(restoredConfig, client)
+  }
+
+  /**
+   * Drop a child bridge `_bridge.env.NODE_OPTIONS` that a config save would
+   * refuse (see `findUnsafeBridgeEnvValues`): Homebridge hands it to the child
+   * bridge process, so it would load code just like the startup NODE_OPTIONS.
+   */
+  private sanitiseRestoredBridgeEnv(restoredConfig: HomebridgeConfig, client: EventEmitter) {
+    const unsafe = findUnsafeBridgeEnvValues(restoredConfig)
+    removeUnsafeBridgeEnvValues(restoredConfig, unsafe)
+    for (const { path, reason } of unsafe) {
+      this.logger.warn(`Backup restore removed the unsafe "${path}" value from the restored config.json. ${reason}`)
+      client.emit('stdout', red(`Removed unsafe "${path}" from the restored config.json. ${reason}\r\n`))
     }
   }
 

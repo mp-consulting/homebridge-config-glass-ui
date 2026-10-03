@@ -14,16 +14,18 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { createGuardrails } from '@otplib/core'
-import { pathExists, readJson } from 'fs-extra/esm'
+import { readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { generateSecret, generateURI, verify } from 'otplib'
 
 import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { UserDto } from '../../modules/users/users.dto.js'
+import { HomebridgeConfig } from '../config/config.interfaces.js'
 import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
 import { revalidateWsClients } from './guards/ws-auth.js'
+import { isLiveSetupWizardToken, SETUP_WIZARD_CLAIM, SETUP_WIZARD_USERNAME } from './setup-wizard-token.js'
 
 // OWASP-recommended PBKDF2-HMAC-SHA512 work factor. New and changed passwords
 // are hashed at this strength.
@@ -57,6 +59,25 @@ const KNOWN_SOURCE_SECONDS = 30 * 24 * 60 * 60
 // Bounds the memory a flood of made-up usernames can take; past it, only
 // usernames already being counted are tracked (the per-source limit still applies)
 const USERNAME_FAILURE_MAX_ENTRIES = 10_000
+
+// Per-source budget across every username. The per-key limit above is keyed
+// on `username|source`, so a single address rotating through made-up
+// usernames was never slowed down - and every attempt costs a full-strength
+// password hash. Once a source has this many failures within the window
+// (refreshed on each failure), it is refused before any hashing is done.
+// A source that has signed in as the named user before is exempt, as above.
+const SOURCE_MAX_FAILURES = 20
+const SOURCE_FAILURE_WINDOW_SECONDS = 900
+// Bounds the memory a flood from many addresses can take, as above. Past it,
+// new sources are not counted - the hash concurrency limit below still holds.
+const SOURCE_FAILURE_MAX_ENTRIES = 10_000
+
+// How many sign-in attempts may hash a password at the same time. Each one is
+// a 210,000-iteration PBKDF2 on the libuv thread pool, so without a limit a
+// flood of attempts (from as many addresses as an attacker has) starves the
+// server. Past it, an attempt is refused with a 429 before any work, and does
+// not count as a failure.
+const MAX_CONCURRENT_LOGIN_HASHES = 2
 
 interface UsernameFailureState {
   failures: number
@@ -136,6 +157,13 @@ export class AuthService {
   // worst case for a legitimate user is one bounded cooldown.
   private knownLoginSources = new NodeCache({ stdTTL: KNOWN_SOURCE_SECONDS, useClones: false })
 
+  // Failed logins per source address (IPv6 per /64), for every username. See
+  // SOURCE_MAX_FAILURES. Refreshed on each failure.
+  private sourceFailureCache = new NodeCache({ stdTTL: SOURCE_FAILURE_WINDOW_SECONDS })
+
+  // Sign-in attempts currently hashing a password (see MAX_CONCURRENT_LOGIN_HASHES)
+  private activeLoginHashes = 0
+
   // Short-lived cache of the auth file, so validating a token on every request
   // is not a file read each time. Cleared by invalidateUserCache() on writes.
   private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
@@ -170,12 +198,21 @@ export class AuthService {
    */
   async authenticate(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
     const normalisedUsername = String(username || '').toLowerCase()
-    const throttleKey = `${normalisedUsername}|${loginThrottleSource(clientId)}`
+    const source = loginThrottleSource(clientId)
+    const throttleKey = `${normalisedUsername}|${source}`
 
     // Reject before doing any work once the failure threshold is reached, so
     // password and 2FA guessing cannot run unbounded.
     this.assertNotLockedOut(throttleKey, username)
+    this.assertSourceNotLockedOut(source, throttleKey)
     this.assertUsernameNotCoolingDown(normalisedUsername, throttleKey, username)
+
+    // Taken synchronously, before the first `await`, so concurrent attempts
+    // cannot all pass the check together
+    if (this.activeLoginHashes >= MAX_CONCURRENT_LOGIN_HASHES) {
+      throw new HttpException('Too many sign-in attempts in progress. Please try again in a moment.', 429)
+    }
+    this.activeLoginHashes++
 
     try {
       const user = await this.findByUsername(username)
@@ -202,8 +239,9 @@ export class AuthService {
       await this.upgradePasswordHashIfNeeded(user, password)
 
       // Success clears the failure count for this key, and exempts this
-      // source from the per-username cooldown. The per-username count is
-      // left alone: it counts guesses from everywhere else as well.
+      // source from the per-username cooldown. The per-username and
+      // per-source counts are left alone: they count guesses at other
+      // usernames, or from elsewhere, as well.
       this.loginFailureCache.del(throttleKey)
       this.knownLoginSources.set(throttleKey, true)
 
@@ -223,6 +261,7 @@ export class AuthService {
       const is2faPrompt = e instanceof HttpException && e.getStatus() === 412 && e.message === '2FA Code Required'
       if (!is2faPrompt) {
         this.recordFailedAttempt(throttleKey)
+        this.recordSourceFailure(source)
         this.recordUsernameFailure(normalisedUsername)
       }
 
@@ -238,7 +277,37 @@ export class AuthService {
       }
 
       throw new ForbiddenException()
+    } finally {
+      this.activeLoginHashes--
     }
+  }
+
+  /**
+   * Throw a 429 once a source address has failed too often, whichever
+   * usernames it tried (see SOURCE_MAX_FAILURES). A source that has signed
+   * in as the named user before is exempt.
+   */
+  private assertSourceNotLockedOut(source: string, throttleKey: string) {
+    // No source (an internal caller) - nothing to key on
+    if (!source || this.knownLoginSources.has(throttleKey)) {
+      return
+    }
+    if ((this.sourceFailureCache.get<number>(source) || 0) >= SOURCE_MAX_FAILURES) {
+      this.logger.warn(`Too many failed login attempts from ${source} - temporarily refusing sign-in attempts from this address.`)
+      throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
+    }
+  }
+
+  private recordSourceFailure(source: string) {
+    if (!source) {
+      return
+    }
+    const existing = this.sourceFailureCache.get<number>(source)
+    if (existing === undefined && this.sourceFailureCache.getStats().keys >= SOURCE_FAILURE_MAX_ENTRIES) {
+      return
+    }
+    // Re-set to refresh the window
+    this.sourceFailureCache.set(source, (existing || 0) + 1)
   }
 
   /**
@@ -526,9 +595,9 @@ export class AuthService {
    */
   async validateUser(payload: any): Promise<any> {
     // The setup-wizard token deliberately has no user record behind it. It is
-    // already constrained to the live wizard by the instanceId checks in
+    // already constrained to the live wizard, and to the restore routes, by
     // JwtStrategy and the websocket guards.
-    if (payload?.username === 'setup-wizard' && this.configService.setupWizardComplete === false) {
+    if (isLiveSetupWizardToken(payload, this.configService)) {
       return payload
     }
 
@@ -695,9 +764,41 @@ export class AuthService {
 
       this.configService.setupWizardComplete = true
 
+      await this.restrictLogsForNewInstall()
+
       return createdUser
     } finally {
       this.firstUserSetupInProgress = false
+    }
+  }
+
+  /**
+   * Plugin output in the Homebridge log routinely contains credentials, so a
+   * new install restricts the log viewer to administrators. Existing installs
+   * keep the long-standing behaviour (any signed-in user may read it): this
+   * only runs when the setup wizard creates the first user, and only sets the
+   * option when the UI config does not already have a value for it.
+   */
+  private async restrictLogsForNewInstall() {
+    try {
+      let changed = false
+      await this.jsonStore.mutate<HomebridgeConfig>(this.configService.configPath, (config) => {
+        const ui = Array.isArray(config?.platforms) ? config.platforms.find(x => x?.platform === 'config') : undefined
+        if (!ui || ui.restrictLogsToAdmins !== undefined) {
+          return null
+        }
+        ui.restrictLogsToAdmins = true
+        changed = true
+        return config
+      }, { spaces: 4 })
+      if (changed) {
+        this.configService.ui.restrictLogsToAdmins = true
+        this.configService.restrictLogsToAdmins = true
+        this.logger.log('Restricted the Homebridge log to administrators (restrictLogsToAdmins), the default for new installs.')
+      }
+    } catch (e) {
+      // The user exists; failing setup over a default would be worse
+      this.logger.warn(`Could not set restrictLogsToAdmins for the new install: ${e.message}`)
     }
   }
 
@@ -711,10 +812,12 @@ export class AuthService {
     }
 
     // Generate a token
+    // Only usable for the wizard's restore step - see setup-wizard-token.ts
     const token = this.jwtService.sign({
-      username: 'setup-wizard',
-      name: 'setup-wizard',
+      username: SETUP_WIZARD_USERNAME,
+      name: SETUP_WIZARD_USERNAME,
       admin: true,
+      [SETUP_WIZARD_CLAIM]: true,
       instanceId: 'xxxxx', // intentionally wrong
     }, { expiresIn: '5m' })
 
@@ -729,19 +832,38 @@ export class AuthService {
    * Executed on startup to see if the auth file is set up yet
    */
   async checkAuthFile() {
-    if (!await pathExists(this.configService.authPath)) {
-      this.configService.setupWizardComplete = false
+    let authfile: unknown
+    try {
+      authfile = await readJson(this.configService.authPath)
+    } catch (e) {
+      // Only a missing file means "no users yet". Anything else - unreadable,
+      // half-written, corrupt - must fail closed: opening the wizard would let
+      // whoever reaches the page first create an administrator.
+      if (e?.code === 'ENOENT') {
+        this.configService.setupWizardComplete = false
+        return
+      }
+      this.failAuthFileClosed(`it could not be read (${e?.message ?? e})`)
       return
     }
-    try {
-      const authfile: UserDto[] = await readJson(this.configService.authPath)
-      // There must be at least one admin user
-      if (!authfile.some(x => x.admin === true)) {
-        this.configService.setupWizardComplete = false
-      }
-    } catch (e) {
+    if (!Array.isArray(authfile)) {
+      this.failAuthFileClosed('it does not contain a list of users')
+      return
+    }
+    // There must be at least one admin user
+    if (!authfile.some(x => x?.admin === true)) {
       this.configService.setupWizardComplete = false
     }
+  }
+
+  /**
+   * Keep the setup wizard closed when auth.json exists but is not usable, and
+   * say how to recover.
+   */
+  private failAuthFileClosed(reason: string) {
+    this.configService.setupWizardComplete = true
+    this.logger.error(`The users file ${this.configService.authPath} exists but ${reason}. Nobody can sign in until it is fixed. `
+      + 'To start again with the setup wizard, delete the file and restart Homebridge.')
   }
 
   /**

@@ -1,12 +1,39 @@
+import type { EventEmitter } from 'node:events'
+import type { Socket } from 'socket.io'
+
 import type { UserDto } from '../../../modules/users/users.dto.js'
 import type { ConfigService } from '../../config/config.service.js'
 import type { AuthService } from '../auth.service.js'
 
 import jwt from 'jsonwebtoken'
 
+import { isLiveSetupWizardToken, isSetupWizardToken, isSetupWizardTokenNamespace } from '../setup-wizard-token.js'
 import { extractWsToken } from './ws-token.js'
 
 export type WsUser = UserDto & { instanceId?: string, exp?: number }
+
+/** What the WS guards keep on `client.data` for an authorised socket */
+export interface WsClientData {
+  /** The verified user, re-checked by `revalidateUser` */
+  user?: WsUser
+  /** Epoch ms of the last successful check */
+  verifiedAt?: number
+  /** Re-checks the user - see WsRevalidate */
+  revalidateUser?: WsRevalidate
+  /** Whether the socket's namespace requires an admin (re-read on every sweep) */
+  adminRequired?: () => boolean
+  /** The refreshed access token the client last re-authenticated with */
+  wsToken?: string
+}
+
+/** A socket.io socket carrying WsClientData */
+export type WsClient = Socket<any, any, any, WsClientData>
+
+/**
+ * What services with raw listeners hand in: the gateway's socket, which
+ * several of them type as a plain EventEmitter. At runtime it is a WsClient.
+ */
+export type WsClientLike = WsClient | EventEmitter
 
 /**
  * How long past its token's `exp` an open socket stays authorised. The UI
@@ -24,7 +51,7 @@ const WS_SWEEP_INTERVAL_MS = 60 * 1000
 export const WS_REAUTH_EVENT = 'reauth'
 
 /** The token a socket currently stands on: the last one it re-authenticated with, else its handshake's. */
-export function currentWsToken(client: any): string | undefined {
+export function currentWsToken(client: WsClient): string | undefined {
   return client?.data?.wsToken || extractWsToken(client?.handshake)
 }
 
@@ -32,13 +59,13 @@ export function currentWsToken(client: any): string | undefined {
  * Verify the token a socket connected with and check it against the stored
  * user. Throws if the token is invalid, stale or its user no longer matches.
  *
- * Mirrors JwtStrategy.validate: a mismatched instanceId is rejected so the
- * setup-wizard token (intentionally signed with a wrong instanceId) cannot
- * reach socket endpoints once the wizard has completed, and validateUser
- * catches a deleted or demoted user, or changed credentials.
+ * Mirrors JwtStrategy.validate: a mismatched instanceId is rejected, the
+ * setup-wizard token (intentionally signed with a wrong instanceId) is only
+ * accepted on the backup namespace while the wizard is in progress, and
+ * validateUser catches a deleted or demoted user, or changed credentials.
  */
 export async function verifyWsClient(
-  client: any,
+  client: WsClient,
   configService: ConfigService,
   authService: AuthService,
   options: { ignoreExpiration?: boolean, token?: string } = {},
@@ -58,12 +85,13 @@ export async function verifyWsClient(
     throw new Error('Token expired')
   }
 
-  if (payload?.instanceId !== configService.instanceId) {
-    const isLiveWizardToken = payload?.username === 'setup-wizard'
-      && configService.setupWizardComplete === false
-    if (!isLiveWizardToken) {
-      throw new Error('Stale token')
+  if (isSetupWizardToken(payload)) {
+    // Only while the wizard runs, and only on the namespace its restore step uses
+    if (!isLiveSetupWizardToken(payload, configService) || !isSetupWizardTokenNamespace(client?.nsp?.name)) {
+      throw new Error('Setup wizard token not allowed here')
     }
+  } else if (payload?.instanceId !== configService.instanceId) {
+    throw new Error('Stale token')
   }
 
   if (!await authService.validateUser(payload)) {
@@ -86,7 +114,7 @@ export type WsRevalidate = (token?: string) => Promise<WsUser>
  * session can be cut off everywhere at once rather than only when the socket
  * next sends something. Entries leave on disconnect.
  */
-const authorizedClients = new Set<any>()
+const authorizedClients = new Set<WsClient>()
 let sweepTimer: ReturnType<typeof setInterval> | undefined
 
 /**
@@ -105,7 +133,7 @@ let sweepTimer: ReturnType<typeof setInterval> | undefined
  * `options.admin` says whether the socket's namespace requires an admin. It is
  * re-read on every sweep, as the log namespace's answer follows a setting.
  */
-export function rememberWsUser(client: any, user: WsUser, revalidate: WsRevalidate, options: { admin?: () => boolean } = {}): void {
+export function rememberWsUser(client: WsClient, user: WsUser, revalidate: WsRevalidate, options: { admin?: () => boolean } = {}): void {
   if (!client.data) {
     return
   }
@@ -130,11 +158,12 @@ export function rememberWsUser(client: any, user: WsUser, revalidate: WsRevalida
  * Verify a socket's token and remember its user - what every WS guard does.
  */
 export async function authorizeWsGuardClient(
-  client: any,
+  clientLike: WsClientLike,
   configService: ConfigService,
   authService: AuthService,
   options: { admin?: () => boolean } = {},
 ): Promise<WsUser> {
+  const client = clientLike as WsClient
   const user = await verifyWsClient(client, configService, authService)
   // A requirement the user fails right now is the guard's to refuse, for this
   // one message. Recording it would have the sweep drop the whole socket - a
@@ -153,7 +182,7 @@ export async function authorizeWsGuardClient(
  * Swap a socket onto a refreshed access token. The new token must verify
  * strictly and belong to the same user: a socket never changes hands.
  */
-async function reauthenticateWsClient(client: any, payload: any, respond: (resp: any) => void): Promise<void> {
+async function reauthenticateWsClient(client: WsClient, payload: any, respond: (resp: any) => void): Promise<void> {
   try {
     const token = typeof payload?.token === 'string' ? payload.token : ''
     const revalidate = client.data?.revalidateUser as WsRevalidate | undefined
@@ -222,7 +251,8 @@ export function disconnectWsClientsWithToken(token: string | undefined): void {
  * stopped refreshing. What matters beyond that is whether its user is still
  * current - validateUser, which is cached for a few seconds.
  */
-export async function isWsClientAuthorized(client: any, options: { admin: boolean }): Promise<boolean> {
+export async function isWsClientAuthorized(clientLike: WsClientLike, options: { admin: boolean }): Promise<boolean> {
+  const client = clientLike as WsClient
   try {
     const revalidate = client.data?.revalidateUser as WsRevalidate | undefined
     if (!revalidate) {
@@ -248,7 +278,7 @@ export async function isWsClientAuthorized(client: any, options: { admin: boolea
  */
 const WS_RECHECK_INTERVAL_MS = 5000
 
-function isRecentlyAuthorized(client: any, options: { admin: boolean }): boolean {
+function isRecentlyAuthorized(client: WsClient, options: { admin: boolean }): boolean {
   return Date.now() - (client.data?.verifiedAt ?? 0) < WS_RECHECK_INTERVAL_MS
     && (!options.admin || client.data?.user?.admin === true)
 }
@@ -263,9 +293,10 @@ function isRecentlyAuthorized(client: any, options: { admin: boolean }): boolean
  * reordered, even when one check has to re-read the auth file.
  */
 export function createAuthorizedRunner(
-  client: any,
+  clientLike: WsClientLike,
   runnerOptions: { admin: boolean | (() => boolean) },
 ): (action: () => unknown) => void {
+  const client = clientLike as WsClient
   let queue: Promise<unknown> = Promise.resolve()
   let queued = 0
 

@@ -8,10 +8,12 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { isValidWallpaperName, resolveWallpaperPath, wallpaperExtension } from '../../src/core/config/wallpaper.js'
 import {
+  findUnsafeBridgeEnvValues,
   findUnsafeNodeOption,
   findUnsafeUiValues,
   isLogCommandAllowed,
   isProtectedStoragePath,
+  removeUnsafeBridgeEnvValues,
   sanitiseStartupEnv,
 } from '../../src/modules/config-editor/config-safety.js'
 import { HbServiceService } from '../../src/modules/platform-tools/hb-service/hb-service.service.js'
@@ -53,6 +55,68 @@ describe('config-safety', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('--require'))
     expect(sanitiseStartupEnv({ NODE_OPTIONS: '--max-old-space-size=256' }, warn)).toEqual({ NODE_OPTIONS: '--max-old-space-size=256' })
     expect(sanitiseStartupEnv(undefined, warn)).toEqual({})
+  })
+
+  describe('log command reading protected storage files', () => {
+    const storagePath = join(tmpdir(), 'hb-storage')
+
+    it.each([
+      `cat ${join(storagePath, '.uix-secrets')}`,
+      `tail -n 500 -f ${join(storagePath, 'auth.json')}`,
+      `sudo -n cat ${join(storagePath, 'persist', 'AccessoryInfo.json')}`,
+      `tail -f /var/log/homebridge.log ${join(storagePath, 'config.json')}`,
+      'cat .uix-secrets',
+      `journalctl --file=${join(storagePath, 'backups', 'x.journal')}`,
+      `journalctl -D${join(storagePath, 'ssl-certs')}`,
+      `cat ${join(storagePath, 'logs', '..', 'AUTH.JSON')}`,
+    ])('refuses %s', (command) => {
+      expect(isLogCommandAllowed(command, false, storagePath)).toBe(false)
+      expect(findUnsafeUiValues({ log: { method: 'custom', command } }, {}, { terminalEnabled: false, storagePath }))
+        .toEqual([{ path: 'log.command', reason: expect.stringContaining('may not read the UI secrets') }])
+    })
+
+    it.each([
+      'tail -n 500 -f /var/log/homebridge.log',
+      `tail -f ${join(storagePath, 'homebridge.log')}`,
+      'sudo -n journalctl -o cat -f -u homebridge',
+      'docker logs -f homebridge',
+    ])('allows %s', (command) => {
+      expect(isLogCommandAllowed(command, false, storagePath)).toBe(true)
+    })
+  })
+
+  describe('child bridge NODE_OPTIONS', () => {
+    it('finds an unsafe value in platforms and accessories, ignoring safe and absent ones', () => {
+      const config = {
+        platforms: [
+          { platform: 'config' },
+          { platform: 'A', _bridge: { username: 'x', env: { DEBUG: '*', NODE_OPTIONS: '--require /tmp/x.js' } } },
+          { platform: 'B', _bridge: { env: { NODE_OPTIONS: '--max-old-space-size=256' } } },
+          null,
+        ],
+        accessories: [{ accessory: 'C', _bridge: { env: { NODE_OPTIONS: '-r./x.js' } } }],
+      }
+      const unsafe = findUnsafeBridgeEnvValues(config)
+      expect(unsafe).toEqual([
+        { path: 'platforms[1]._bridge.env.NODE_OPTIONS', reason: expect.stringContaining('"--require" is not allowed') },
+        { path: 'accessories[0]._bridge.env.NODE_OPTIONS', reason: expect.stringContaining('NODE_OPTIONS may not use') },
+      ])
+
+      removeUnsafeBridgeEnvValues(config, unsafe)
+      expect(config.platforms[1]).toEqual({ platform: 'A', _bridge: { username: 'x', env: { DEBUG: '*' } } })
+      expect(config.platforms[2]).toEqual({ platform: 'B', _bridge: { env: { NODE_OPTIONS: '--max-old-space-size=256' } } })
+      expect(config.accessories[0]).toEqual({ accessory: 'C', _bridge: {} })
+      expect(findUnsafeBridgeEnvValues(config)).toEqual([])
+    })
+
+    it('treats a non-string NODE_OPTIONS as unsafe', () => {
+      expect(findUnsafeBridgeEnvValues({ platforms: [{ _bridge: { env: { NODE_OPTIONS: ['--require', 'x'] } } }] })).toHaveLength(1)
+    })
+
+    it('copes with a config that has no blocks', () => {
+      expect(findUnsafeBridgeEnvValues(undefined)).toEqual([])
+      expect(findUnsafeBridgeEnvValues({ platforms: 'nope' })).toEqual([])
+    })
   })
 
   it('isLogCommandAllowed: allowlist without terminal, anything with terminal', () => {

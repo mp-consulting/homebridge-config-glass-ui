@@ -1,9 +1,12 @@
+import type { FastifyRequest } from 'fastify'
+
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { ConfigService } from '../config/config.service.js'
 import { AuthService } from './auth.service.js'
+import { isLiveSetupWizardToken, isSetupWizardToken, isSetupWizardTokenRoute } from './setup-wizard-token.js'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,21 +17,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.secrets.secretKey,
+      passReqToCallback: true,
     })
   }
 
-  async validate(payload: any) {
-    // Reject tokens whose `instanceId` doesn't match this server. The
-    // setup-wizard token is signed with a sentinel `instanceId: 'xxxxx'`
-    // and carries `admin: true`, so it must only unlock requests while the
-    // wizard is still in progress — otherwise its 5-minute window would
-    // grant full admin access to every endpoint after first-user setup.
-    if (payload?.instanceId !== this.configService.instanceId) {
-      const isLiveWizardToken = payload?.username === 'setup-wizard'
-        && this.configService.setupWizardComplete === false
-      if (!isLiveWizardToken) {
+  async validate(req: FastifyRequest, payload: any) {
+    // The setup-wizard token is signed with a sentinel `instanceId: 'xxxxx'`
+    // and carries `admin: true`. It must only unlock requests while the
+    // wizard is still in progress (otherwise its 5-minute window would grant
+    // admin access after first-user setup), and even then only the few routes
+    // the wizard's restore step calls - it is not an administrator session.
+    if (isSetupWizardToken(payload)) {
+      if (!isLiveSetupWizardToken(payload, this.configService) || !isSetupWizardTokenRoute(req?.method, req?.routeOptions?.url)) {
         throw new UnauthorizedException()
       }
+    } else if (payload?.instanceId !== this.configService.instanceId) {
+      // A token minted for a different instance
+      throw new UnauthorizedException()
     }
     const user = await this.authService.validateUser(payload)
     if (!user) {

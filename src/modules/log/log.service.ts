@@ -489,7 +489,7 @@ export class LogService {
     // edit the config. Allow any command only when the terminal is enabled
     // (an admin has a shell anyway), otherwise only the log-command allowlist.
     const command = this.configService.ui.log.command
-    if (!isLogCommandAllowed(command, this.configService.enableTerminalAccess)) {
+    if (!isLogCommandAllowed(command, this.configService.enableTerminalAccess, this.configService.storagePath)) {
       this.command = null
       this.refusedCommand = String(command)
       return
