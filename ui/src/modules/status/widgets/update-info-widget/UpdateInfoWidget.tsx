@@ -12,6 +12,7 @@ import { HbV2Modal } from '@/core/components/hb-v2-modal/HbV2Modal'
 import { Information } from '@/core/components/information/Information'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
+import { ignoreDismiss } from '@/core/ui/ignore-dismiss'
 import { openModal } from '@/core/ui/modal'
 import { cx } from '@/core/utilities/cx'
 import { useNamespace } from '@/core/ws'
@@ -114,7 +115,7 @@ export function UpdateInfoWidget({ widget, saveWidgets }: WidgetProps) {
         return
       }
       void info.loadAllData()
-    }, () => {})
+    }, ignoreDismiss)
   }
 
   const dockerUpdateModal = (): void => {

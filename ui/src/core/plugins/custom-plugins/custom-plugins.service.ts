@@ -4,6 +4,7 @@ import type { ComponentType } from 'react'
 
 import { api } from '@/core/api'
 import { CustomPlugins } from '@/core/plugins/custom-plugins/CustomPlugins'
+import { ignoreDismiss } from '@/core/ui/ignore-dismiss'
 import { openModal } from '@/core/ui/modal'
 
 const open = openModal as (component: unknown, props: Record<string, any>, options?: Record<string, any>) => ModalRef
@@ -30,7 +31,7 @@ export const customPlugins = {
       editorContext,
     }, { size: 'lg', backdrop: 'static' })
 
-    return ref.result.catch(() => { /* modal dismissed */ })
+    return ref.result.catch(ignoreDismiss)
   },
 
   async openCustomSettingsUi(plugin: Plugin, schema: any, editorContext?: PluginEditorContext): Promise<unknown> {
@@ -43,6 +44,6 @@ export const customPlugins = {
       editorContext,
     }, { size: 'lg', backdrop: 'static' })
 
-    return ref.result.catch(() => { /* modal dismissed */ })
+    return ref.result.catch(ignoreDismiss)
   },
 }
