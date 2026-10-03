@@ -107,11 +107,12 @@ describe('api', () => {
 
     it('resolves the whole response when asked to observe it', async () => {
       // The backup and log downloads read the file name from the headers
-      reply = { body: new Blob(['backup']), headers: { 'Content-Disposition': 'attachment; filename="backup.tar.gz"' } }
+      // A string body: Node 22's Response cannot read jsdom's Blob (no .stream())
+      reply = { body: 'backup', headers: { 'Content-Disposition': 'attachment; filename="backup.tar.gz"' } }
 
-      const response = await api.get('/backup/download', { observe: 'response', responseType: 'blob' })
+      const response = await api.get<Blob>('/backup/download', { observe: 'response', responseType: 'blob' })
 
-      expect(response.body).toBeInstanceOf(Blob)
+      expect(await response.body!.text()).toBe('backup')
       expect(response.headers.get('Content-Disposition')).toContain('backup.tar.gz')
       expect(response.status).toBe(200)
     })
