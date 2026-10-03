@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ColorTemperatureLightManage } from '@/core/accessories/types/matter/color-temperature-light/ColorTemperatureLightManage'
 import { getBrightnessPercentage, getDeviceActiveState, toggleDimmableLight } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { colour } from '@/core/utilities/colour'
@@ -42,7 +42,6 @@ export function ColorTemperatureLightTile({ service, readyForControl = false }: 
       tabIndex={0}
       aria-checked={on}
       aria-label={srText}
-      onKeyDown={onEnterOrSpace(onClick)}
     >
       <span className="visually-hidden">
         {srText}

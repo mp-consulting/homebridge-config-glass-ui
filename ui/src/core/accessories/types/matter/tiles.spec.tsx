@@ -222,6 +222,19 @@ describe('the matter accessory tiles', () => {
 
       expect(service.writes.map(write => write.cluster)).toEqual([tile.cluster].flat())
     })
+
+    it.each([['Enter', 'Enter'], ['Space', ' ']])('writes exactly once on %s', async (_keyName, key) => {
+      // ⚠️ A tile that answered the key itself AND through the long-press hook
+      // toggled twice - on, then straight back off
+      const service = matterService({ clusters: tile.clusters, deviceType: tile.deviceType })
+      const element = create(tile.type, service, true)
+
+      fireEvent.keyDown(element, { key })
+      fireEvent.keyUp(element, { key })
+      await settle()
+
+      expect(service.writes.map(write => write.cluster)).toEqual([tile.cluster].flat())
+    })
   })
 
   // Six of the tiles also open a manage modal on a long press

@@ -69,14 +69,6 @@ export function AirPurifierTile({ service, readyForControl = false }: HapTilePro
       role="button"
       tabIndex={0}
       aria-label={srText}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') {
-          onClick()
-        } else if (event.key === ' ') {
-          event.preventDefault()
-          onClick()
-        }
-      }}
     >
       <span className="visually-hidden">
         {srText}

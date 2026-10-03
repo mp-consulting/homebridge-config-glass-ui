@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getWindowCoveringOpenPercentage, toggleWindowCovering } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { WindowCoveringManage } from '@/core/accessories/types/matter/window-covering/WindowCoveringManage'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { cx } from '@/core/utilities/cx'
@@ -59,7 +59,6 @@ export function MatterWindowCoveringTile({ service, readyForControl = false }: M
       aria-valuenow={pos}
       aria-valuetext={stateText}
       aria-label={srText}
-      onKeyDown={onEnterOrSpace(onClick)}
     >
       <span className="visually-hidden">
         {srText}

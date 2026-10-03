@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ExtendedColorLightManage } from '@/core/accessories/types/matter/extended-color-light/ExtendedColorLightManage'
 import { getBrightnessPercentage, getColorMode, getColorTemperatureMireds, getDeviceActiveState, getHue, getSaturation, hasClusterFeature, hasColorTemperature, toggleDimmableLight } from '@/core/accessories/types/matter/matter-device.utils'
-import { onEnterOrSpace, openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
+import { openManageModal, tileName, tileSrText } from '@/core/accessories/types/matter/matter-tile'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { useLongPress } from '@/core/ui/use-long-press'
 import { colour } from '@/core/utilities/colour'
@@ -85,7 +85,6 @@ export function ExtendedColorLightTile({ service, readyForControl = false }: Mat
       tabIndex={0}
       aria-checked={on}
       aria-label={srText}
-      onKeyDown={onEnterOrSpace(onClick)}
     >
       <span className="visually-hidden">
         {srText}

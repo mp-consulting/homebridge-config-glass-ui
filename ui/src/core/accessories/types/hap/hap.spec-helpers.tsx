@@ -63,6 +63,18 @@ export function tap(container: HTMLElement) {
 }
 
 /**
+ * A key press on a focused tile, the way a real key arrives: keydown then keyup.
+ * @param container - the render container
+ * @param key - the `KeyboardEvent.key`
+ * @param init - modifiers (`{ shiftKey: true }`, …)
+ */
+export function pressKey(container: HTMLElement, key: string, init: Partial<Pick<KeyboardEvent, 'shiftKey' | 'ctrlKey' | 'altKey' | 'metaKey'>> = {}) {
+  const box = tileBox(container)
+  fireEvent.keyDown(box, { key, ...init })
+  fireEvent.keyUp(box, { key, ...init })
+}
+
+/**
  * A long press on a tile. Needs fake timers.
  * @param container - the render container
  */
@@ -88,6 +100,7 @@ export function renderTile(Tile: ComponentType<any>, service: ServiceTypeX, read
     ...result,
     box: () => tileBox(result.container),
     tap: () => tap(result.container),
+    press: (key: string, init?: Partial<Pick<KeyboardEvent, 'shiftKey' | 'ctrlKey' | 'altKey' | 'metaKey'>>) => pressKey(result.container, key, init),
     setService: (next: ServiceTypeX) => result.rerender(<Tile service={next} readyForControl={readyForControl} {...extra} />),
     longPress: () => longPress(result.container),
   }

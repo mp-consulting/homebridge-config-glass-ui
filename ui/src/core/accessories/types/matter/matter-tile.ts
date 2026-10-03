@@ -37,6 +37,8 @@ export function tileSrText(service: ServiceTypeX, srType: string, stateText: str
 export function onEnterOrSpace(handler: () => void) {
   return (event: KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
+      // Space would otherwise scroll the page
+      event.preventDefault()
       handler()
     }
   }
