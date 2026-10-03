@@ -12,11 +12,11 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useAdaptiveLighting } from '@/core/accessories/types/hap/lightbulb/adaptive-lighting'
+import { ManageModal } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
 import { useLatest } from '@/core/hooks/use-latest'
 import { convertMired } from '@/core/pipes/convert-mired'
-import { ModalHeader } from '@/core/ui/ModalParts'
 import { colour } from '@/core/utilities/colour'
 import { cx } from '@/core/utilities/cx'
 
@@ -174,8 +174,7 @@ export function LightbulbManage({ service: initialService, activeModal, adaptive
   )
 
   return (
-    <div className="modal-content">
-      <ModalHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <div
           className="btn-group-vertical d-flex justify-content-center mb-0 p-0"
@@ -293,7 +292,6 @@ export function LightbulbManage({ service: initialService, activeModal, adaptive
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

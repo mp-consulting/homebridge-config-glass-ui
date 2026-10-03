@@ -15,13 +15,15 @@ import { useTranslation } from 'react-i18next'
  * The title always has an id (`titleId`, else a generated one): `<ModalHost/>`
  * names the dialog after the `.modal-title` it finds inside it.
  */
-export function ModalHeader({ title, onClose, titleId, closeDisabled, children }: {
+export function ModalHeader({ title, onClose, titleId, closeDisabled, hideClose, children }: {
   title: ReactNode
   onClose: MouseEventHandler<HTMLButtonElement>
   /** The title's id (generated when not given); the dialog is labelled by it. */
   titleId?: string
   /** Disable the close button (while the modal is busy). */
   closeDisabled?: boolean
+  /** Leave the close button out (a modal that must not be dismissed yet). */
+  hideClose?: boolean
   /** Extra header content, rendered between the title and the close button. */
   children?: ReactNode
 }) {
@@ -31,15 +33,17 @@ export function ModalHeader({ title, onClose, titleId, closeDisabled, children }
     <div className="modal-header">
       <h5 className="modal-title" id={titleId ?? generatedId}>{title}</h5>
       {children}
-      <button
-        type="button"
-        className="btn-close"
-        data-bs-dismiss="modal"
-        aria-label={t('form.button_close')}
-        disabled={closeDisabled}
-        onClick={onClose}
-      >
-      </button>
+      {!hideClose && (
+        <button
+          type="button"
+          className="btn-close"
+          data-bs-dismiss="modal"
+          aria-label={t('form.button_close')}
+          disabled={closeDisabled}
+          onClick={onClose}
+        >
+        </button>
+      )}
     </div>
   )
 }

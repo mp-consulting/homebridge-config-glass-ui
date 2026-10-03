@@ -15,7 +15,7 @@ import {
   hasCleanModeCluster,
   hasServiceAreaCluster,
 } from '@/core/accessories/types/matter/matter-device.utils'
-import { MatterManageHeader, ModeButton } from '@/core/accessories/types/matter/matter-manage'
+import { MatterManageModal, ModeButton } from '@/core/accessories/types/matter/matter-manage'
 import { useStateRef } from '@/core/accessories/types/matter/use-state-ref'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 
@@ -185,8 +185,7 @@ export function RoboticVacuumCleanerManage({ service: initial, activeModal }: Ac
   const isPauseDisabled = currentMode === RvcRunMode.Idle
 
   return (
-    <div className="modal-content hb-matter-robotic-vacuum-cleaner-manage">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal} className="hb-matter-robotic-vacuum-cleaner-manage">
       <div className="modal-body text-center px-5">
         <div className="d-flex justify-content-center mb-4 p-0">
           <div className="mb-0 mx-0 p-3 btn-read w-100">
@@ -268,7 +267,6 @@ export function RoboticVacuumCleanerManage({ service: initial, activeModal }: Ac
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

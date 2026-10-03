@@ -5,13 +5,27 @@ import { useTranslation } from 'react-i18next'
 
 import { tileName } from '@/core/accessories/types/matter/matter-tile'
 import { ModalHeader } from '@/core/ui/ModalParts'
+import { cx } from '@/core/utilities/cx'
 
 /**
- * The `.modal-header` every Matter manage modal opens with: the accessory's
- * name and a close button.
+ * The shell every Matter manage modal renders: the `.modal-content` box, a
+ * `.modal-header` with the accessory's name and a close button, the modal's
+ * body (`children`) and the empty `.modal-footer` the Angular template kept.
  */
-export function MatterManageHeader({ service, onDismiss }: { service: ServiceTypeX, onDismiss: () => void }) {
-  return <ModalHeader title={tileName(service)} onClose={onDismiss} />
+export function MatterManageModal({ service, onDismiss, className, children }: {
+  service: ServiceTypeX
+  onDismiss: () => void
+  /** Extra classes for the `.modal-content` box. */
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <div className={cx('modal-content', className)}>
+      <ModalHeader title={tileName(service)} onClose={onDismiss} />
+      {children}
+      <div className="modal-footer"></div>
+    </div>
+  )
 }
 
 /**

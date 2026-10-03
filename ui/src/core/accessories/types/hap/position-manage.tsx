@@ -4,7 +4,7 @@ import type { HapManageProps } from '@/core/accessories/types/hap/hap-tile'
 import { useReducer, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ManageHeader } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
 import { useLatest } from '@/core/hooks/use-latest'
@@ -160,8 +160,7 @@ export function PositionManage({ service: initialService, activeModal, a11y = fa
   )
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <div className="d-flex justify-content-center mb-0 p-0">
           <div className="mb-0 mx-0 p-3 btn-read w-100" {...status}>
@@ -210,7 +209,6 @@ export function PositionManage({ service: initialService, activeModal, a11y = fa
           service.getCharacteristic!('CurrentVerticalTiltAngle')?.value as number,
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

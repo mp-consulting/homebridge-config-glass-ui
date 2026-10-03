@@ -4,7 +4,7 @@ import type { MouseEvent } from 'react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ManageHeader } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { cx } from '@/core/utilities/cx'
 
@@ -63,8 +63,7 @@ export function GarageDoorOpenerManage({ service: initialService, activeModal }:
   )
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <div className="d-flex justify-content-center mb-4 p-0">
           <div className="mb-0 mx-0 p-3 btn-read w-100" role="status" aria-live="polite" aria-atomic="true">
@@ -81,7 +80,6 @@ export function GarageDoorOpenerManage({ service: initialService, activeModal }:
           {button(1, t('accessories.control.close'))}
         </div>
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

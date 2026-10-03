@@ -11,7 +11,7 @@ import { PluginBridgeAdvanced } from '@/core/plugins/plugin-bridge/PluginBridgeA
 import { PluginBridgeHap } from '@/core/plugins/plugin-bridge/PluginBridgeHap'
 import { PluginBridgeMatter } from '@/core/plugins/plugin-bridge/PluginBridgeMatter'
 import { usePluginBridge } from '@/core/plugins/plugin-bridge/usePluginBridge'
-import { ModalFooter } from '@/core/ui/ModalParts'
+import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 
 import './plugin-bridge.scss'
@@ -61,20 +61,12 @@ export function PluginBridge({ activeModal, ...data }: PluginBridgeProps) {
 
   return (
     <div className="modal-content hb-plugin-bridge">
-      <div className="modal-header">
-        <h5 className="modal-title">{plugin.displayName || plugin.name}</h5>
-        {!justInstalled && (
-          <button
-            type="button"
-            className="btn-close"
-            data-bs-dismiss="modal"
-            aria-label={t('form.button_close')}
-            disabled={saveInProgress}
-            onClick={() => actions.closeModal()}
-          >
-          </button>
-        )}
-      </div>
+      <ModalHeader
+        title={plugin.displayName || plugin.name}
+        onClose={() => actions.closeModal()}
+        closeDisabled={saveInProgress}
+        hideClose={justInstalled}
+      />
       <div className="modal-body">
         {loading
           ? (

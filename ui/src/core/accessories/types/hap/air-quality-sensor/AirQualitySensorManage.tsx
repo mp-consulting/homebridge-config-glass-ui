@@ -3,7 +3,7 @@ import type { HapManageProps } from '@/core/accessories/types/hap/hap-tile'
 import { useTranslation } from 'react-i18next'
 
 import { AIR_QUALITY_LABELS, airQualityReadings } from '@/core/accessories/types/hap/air-quality-sensor/air-quality-sensor.utils'
-import { ManageHeader } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal } from '@/core/accessories/types/hap/manage-parts'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { cx } from '@/core/utilities/cx'
 
@@ -16,8 +16,7 @@ export function AirQualitySensorManage({ service: initialService, activeModal }:
   const { airQuality, readings } = airQualityReadings(service)
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName || service.displayName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName || service.displayName} onClose={m.dismissModal}>
       <div className="modal-body px-4">
         <div className="text-center mb-3">
           <span
@@ -42,7 +41,6 @@ export function AirQualitySensorManage({ service: initialService, activeModal }:
           </ul>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

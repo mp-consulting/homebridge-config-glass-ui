@@ -16,7 +16,7 @@ import {
   setThermostatHeatingSetpoint,
   setThermostatSystemMode,
 } from '@/core/accessories/types/matter/matter-device.utils'
-import { MatterManageHeader, ModeButton } from '@/core/accessories/types/matter/matter-manage'
+import { MatterManageModal, ModeButton } from '@/core/accessories/types/matter/matter-manage'
 import { useStateRef } from '@/core/accessories/types/matter/use-state-ref'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { Slider } from '@/core/components/slider/Slider'
@@ -172,8 +172,7 @@ export function MatterThermostatManage({ service: initial, activeModal }: Access
   const temp = (value: number) => formatDecimal(convertTemp(value), '1.0-1')
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body text-center px-5">
         {currentTemperature !== null && (
           <h6 className="mt-2 mb-4 fs-4">
@@ -280,7 +279,6 @@ export function MatterThermostatManage({ service: initial, activeModal }: Access
           </>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

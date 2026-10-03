@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DoorLockState } from '@/core/accessories/types/matter/matter-device.constants'
 import { getDoorLockState, setDoorLockState } from '@/core/accessories/types/matter/matter-device.utils'
-import { MatterManageHeader, ModeButton } from '@/core/accessories/types/matter/matter-manage'
+import { MatterManageModal, ModeButton } from '@/core/accessories/types/matter/matter-manage'
 import { useStateRef } from '@/core/accessories/types/matter/use-state-ref'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 
@@ -48,8 +48,7 @@ export function DoorLockManage({ service: initial, activeModal }: AccessoryManag
   }
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body text-center px-5">
         <div
           className="btn-group-vertical d-flex justify-content-center p-0"
@@ -64,7 +63,6 @@ export function DoorLockManage({ service: initial, activeModal }: AccessoryManag
           </ModeButton>
         </div>
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }

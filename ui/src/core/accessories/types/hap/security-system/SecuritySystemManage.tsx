@@ -4,7 +4,7 @@ import type { MouseEvent } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ManageHeader } from '@/core/accessories/types/hap/manage-parts'
+import { ManageModal } from '@/core/accessories/types/hap/manage-parts'
 import { securityTransition } from '@/core/accessories/types/hap/security-system/security-system.utils'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { cx } from '@/core/utilities/cx'
@@ -51,8 +51,7 @@ export function SecuritySystemManage({ service: initialService, activeModal }: H
   ]
 
   return (
-    <div className="modal-content">
-      <ManageHeader title={service.customName || service.serviceName} onClose={m.dismissModal} />
+    <ManageModal title={service.customName || service.serviceName} onClose={m.dismissModal}>
       <div className="modal-body text-center px-5">
         <div className="d-flex justify-content-center mb-4 p-0">
           <div className={cx('mb-0 mx-0 p-3 btn-read w-100', triggered && 'text-danger')}>
@@ -76,7 +75,6 @@ export function SecuritySystemManage({ service: initialService, activeModal }: H
           ))}
         </div>
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </ManageModal>
   )
 }

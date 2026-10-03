@@ -14,7 +14,7 @@ import {
   getPm25Value,
   hasConcentrationData,
 } from '@/core/accessories/types/matter/matter-device.utils'
-import { MatterManageHeader } from '@/core/accessories/types/matter/matter-manage'
+import { MatterManageModal } from '@/core/accessories/types/matter/matter-manage'
 import { useManageAccessory } from '@/core/accessories/types/use-manage-accessory'
 import { cx } from '@/core/utilities/cx'
 
@@ -47,8 +47,7 @@ export function AirQualitySensorManage({ service: initial, activeModal }: Access
   ] as const
 
   return (
-    <div className="modal-content">
-      <MatterManageHeader service={service} onDismiss={manage.dismissModal} />
+    <MatterManageModal service={service} onDismiss={manage.dismissModal}>
       <div className="modal-body px-4">
         <div className="text-center mb-3">
           <span
@@ -77,7 +76,6 @@ export function AirQualitySensorManage({ service: initial, activeModal }: Access
           </ul>
         )}
       </div>
-      <div className="modal-footer"></div>
-    </div>
+    </MatterManageModal>
   )
 }
