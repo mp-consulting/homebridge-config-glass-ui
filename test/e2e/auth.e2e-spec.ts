@@ -1189,7 +1189,7 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: {} },
+          handshake: { auth: {} },
           disconnect,
         }),
       }),
@@ -1204,7 +1204,7 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: 'not.a.valid.jwt' } },
+          handshake: { auth: { token: 'not.a.valid.jwt' } },
           disconnect,
         }),
       }),
@@ -1231,7 +1231,7 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: expiredToken } },
+          handshake: { auth: { token: expiredToken } },
           disconnect,
         }),
       }),
@@ -1262,7 +1262,7 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: nonAdminToken } },
+          handshake: { auth: { token: nonAdminToken } },
           disconnect,
         }),
       }),
@@ -1273,9 +1273,7 @@ describe('AuthController (e2e)', () => {
 
   it('WsGuard accepts a token from the handshake auth payload', async () => {
     // Clients send the token in `auth` so it does not end up in the URL (and
-    // therefore in proxy and access logs). The `query` form is still accepted
-    // for a browser running a pre-upgrade bundle, which the other guard tests
-    // above exercise.
+    // therefore in proxy and access logs).
     const token = (await authService.signIn('admin', 'admin')).access_token
     const disconnect = vi.fn()
     const context: any = {
@@ -1289,6 +1287,23 @@ describe('AuthController (e2e)', () => {
 
     expect(await app.get(WsGuard).canActivate(context)).toBe(true)
     expect(disconnect).not.toHaveBeenCalled()
+  })
+
+  it('WsGuard rejects a valid token sent in the handshake query string', async () => {
+    // A query-string token ends up in proxy and access logs: it is not accepted
+    const token = (await authService.signIn('admin', 'admin')).access_token
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { auth: {}, query: { token } },
+          disconnect,
+        }),
+      }),
+    }
+
+    await expect(app.get(WsGuard).canActivate(context)).rejects.toThrow(WsException)
+    expect(disconnect).toHaveBeenCalled()
   })
 
   it('WsLogGuard follows the restrictLogsToAdmins setting', async () => {
@@ -1327,7 +1342,7 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: wizardToken } },
+          handshake: { auth: { token: wizardToken } },
           disconnect,
         }),
       }),
