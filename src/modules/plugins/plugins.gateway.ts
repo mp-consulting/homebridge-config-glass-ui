@@ -2,10 +2,10 @@ import type { EventEmitter } from 'node:events'
 
 import { Inject, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
-import { red } from 'bash-color'
 
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
+import { red } from '../../core/logger/colors.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 import { PluginsService } from './plugins.service.js'

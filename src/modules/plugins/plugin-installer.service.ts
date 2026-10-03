@@ -20,13 +20,13 @@ import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, readJson, remove } from 'fs-extra/esm'
 import { firstValueFrom } from 'rxjs'
 import { satisfies } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { getUiNodeModulesPath } from '../../core/install-paths.js'
+import { cyan, green, red, yellow } from '../../core/logger/colors.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import {

@@ -7,11 +7,11 @@ import { platform } from 'node:os'
 import process from 'node:process'
 
 import { Inject, Injectable } from '@nestjs/common'
-import { cyan, green, red, yellow } from 'bash-color'
 import { satisfies } from 'semver'
 
 import { createAuthorizedRunner } from '../../core/auth/guards/ws-auth.js'
 import { ConfigService } from '../../core/config/config.service.js'
+import { cyan, green, red, yellow } from '../../core/logger/colors.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
 import { isLogCommandAllowed, isProtectedStoragePath, LOG_COMMAND_RULE, LOG_PATH_RULE } from '../config-editor/config-safety.js'
