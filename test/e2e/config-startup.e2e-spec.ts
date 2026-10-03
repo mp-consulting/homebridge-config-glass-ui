@@ -1,5 +1,8 @@
+import { createPrivateKey, X509Certificate } from 'node:crypto'
+import { readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
+import { createSecureContext } from 'node:tls'
 
 import Fastify from 'fastify'
 import { writeJson } from 'fs-extra'
@@ -27,6 +30,21 @@ describe('getStartupConfig', () => {
     // Falls back to HTTP (so the UI stays reachable to fix it) - and says so
     expect(config.httpsOptions).toBeUndefined()
     expect(config.sslError).toMatch(/Could not load the configured certificate/)
+  })
+
+  it('generates a self-signed certificate under the storage path, then reuses it', async () => {
+    await rm(resolve(testStoragePath, 'ssl-certs'), { recursive: true, force: true })
+    const first = await startupWith({ ssl: { selfSigned: true, selfSignedHostnames: ['localhost', '127.0.0.1'] } })
+
+    expect(first.sslError).toBeUndefined()
+    const cert = new X509Certificate(first.httpsOptions.cert)
+    expect(cert.subjectAltName).toBe('DNS:localhost, IP Address:127.0.0.1')
+    expect(cert.checkPrivateKey(createPrivateKey(first.httpsOptions.key))).toBe(true)
+    expect(() => createSecureContext({ key: first.httpsOptions.key, cert: first.httpsOptions.cert })).not.toThrow()
+    expect(await readFile(resolve(testStoragePath, 'ssl-certs', 'certificate.pem'))).toEqual(first.httpsOptions.cert)
+
+    const second = await startupWith({ ssl: { selfSigned: true } })
+    expect(second.httpsOptions.cert).toEqual(first.httpsOptions.cert)
   })
 
   it('reports nothing when SSL is not configured', async () => {

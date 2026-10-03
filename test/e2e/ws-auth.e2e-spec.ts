@@ -13,6 +13,7 @@ import {
   WS_REAUTH_EVENT,
   WS_TOKEN_GRACE_SECONDS,
 } from '../../src/core/auth/guards/ws-auth.js'
+import { extractWsToken } from '../../src/core/auth/guards/ws-token.js'
 import { devServerCorsConfig } from '../../src/core/cors.config.js'
 import { authorizeWsClient } from '../ws-client.js'
 
@@ -203,6 +204,21 @@ describe('websocket sessions', () => {
     expect(await reauth(client, jwt.sign({ username: 'admin', admin: true, instanceId: 'instance', sessionVersion: 1 }, 'other'))).toEqual({ error: 'Unauthorized' })
     expect(await reauth(client, sign('bob', { admin: false }))).toEqual({ error: 'Unauthorized' })
     expect(client.data.user.username).toBe('admin')
+  })
+
+  it('ignores a token sent in the handshake query string', async () => {
+    // Query strings end up in proxy and access logs - only the `auth` payload counts
+    const token = sign('admin')
+    expect(extractWsToken({ query: { token } })).toBeUndefined()
+    expect(extractWsToken({ auth: { token }, query: { token: 'other' } })).toBe(token)
+
+    const client = Object.assign(new EventEmitter(), {
+      handshake: { auth: {}, query: { token } },
+      data: {} as any,
+      disconnect: vi.fn(),
+    })
+    await expect(authorizeWsGuardClient(client, configService, authService)).rejects.toThrow()
+    expect(client.data.user).toBeUndefined()
   })
 
   it('ends the sockets of a browser that logged out locally, and only those', async () => {

@@ -9,7 +9,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
-import { SpaFilter } from '../../src/core/spa/spa.filter.js'
+import { IndexHtmlCache, SpaFilter } from '../../src/core/spa/spa.filter.js'
 import { testStoragePath } from '../storage-path.js'
 
 @Module({})
@@ -17,7 +17,7 @@ class EmptyModule {}
 
 describe('SpaFilter (e2e)', () => {
   let app: NestFastifyApplication
-  let filter: SpaFilter
+  const indexHtml = new IndexHtmlCache()
   const indexPath = resolve(testStoragePath, 'public', 'index.html')
 
   beforeAll(async () => {
@@ -28,8 +28,7 @@ describe('SpaFilter (e2e)', () => {
     }).compile()
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
-    filter = new SpaFilter()
-    app.useGlobalFilters(filter)
+    app.useGlobalFilters(new SpaFilter(indexHtml))
 
     await app.init()
     await app.getHttpAdapter().getInstance().ready()
@@ -37,7 +36,7 @@ describe('SpaFilter (e2e)', () => {
 
   afterEach(async () => {
     // every test starts from a cold filter and no index.html
-    ;(filter as any).indexHtml = null
+    indexHtml.clear()
     await rm(resolve(testStoragePath, 'public'), { recursive: true, force: true })
   })
 
