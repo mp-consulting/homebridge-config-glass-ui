@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **One-step install:** `npx @mp-consulting/homebridge-config-glass-ui` replaces the official web interface with Glass UI, and `... revert` puts it back (the version it replaced). On the Synology, Debian, Raspberry Pi and Docker packages it also links the folder those packages start the interface from (`homebridge-config-ui-x`) to Glass UI; without that link they no longer started Homebridge after the switch. A plain `npm install -g` also stopped on the official interface's `hb-service` command (`EEXIST`). If Glass UI fails to install, the official interface is put back.
+
 ## [2.0.0-beta.1] - 2026-10-03
 
 ### Security

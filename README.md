@@ -22,28 +22,38 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 
 ## Installation
 
-Install it from the Plugins screen of your current Homebridge web interface, or with npm:
+One command replaces your current Homebridge web interface with Glass UI. Run it from the Homebridge shell: the terminal in your current web interface, `hb-shell` on the Synology, Debian and Raspberry Pi packages, or `docker exec -it <container> hb-shell` with Docker:
+
+```sh
+npx @mp-consulting/homebridge-config-glass-ui
+```
+
+It removes the official interface (`homebridge-config-ui-x`), installs Glass UI in its place and, on the Synology, Debian, Raspberry Pi and Docker packages, links the folder those packages start the interface from to Glass UI. If anything fails, it puts the official interface back. Then restart Homebridge (Package Center on a Synology, `sudo hb-service restart` elsewhere, or restart the container). Your login, settings, plugins and accessories carry over: Glass UI uses the same `config` platform block and the same `hb-service` command.
+
+Run the same command again to update, or after an update of the Homebridge package or a new container has brought the official interface back. To go back to the official interface:
+
+```sh
+npx @mp-consulting/homebridge-config-glass-ui revert
+```
+
+Add `@next` to the package name for the current beta.
+
+### New installs
+
+On a machine without Homebridge, install it with npm and set it up as a system service:
 
 ```sh
 npm install -g --allow-scripts=@homebridge/node-pty-prebuilt-multiarch @mp-consulting/homebridge-config-glass-ui
+sudo hb-service install
 ```
 
 npm 12 and later skip dependency install scripts unless they are allowed. `--allow-scripts` lets the terminal's native module install; without it the built-in terminal won't work.
 
-To run Homebridge and the UI as a system service:
-
-```sh
-sudo hb-service install
-```
-
 The UI then listens on port `8581`, for example `http://localhost:8581`. The default username and password are both `admin`.
 
-> [!NOTE]
-> Homebridge Glass UI replaces your existing Homebridge web interface. It uses the same `config` platform block in `config.json` and the same `hb-service` command, so uninstall the other interface first.
+### Installing by hand
 
-### Synology DSM package
-
-The Homebridge package for Synology bundles the official web interface, and its launcher starts the UI from that package's folder (`homebridge-config-ui-x`) rather than through `hb-service`. Replace the bundled interface and point that folder name at Glass UI. Run these as the `homebridge` user, from the package's shell:
+What the command does on the Synology package, as the `homebridge` user in `hb-shell` (the Debian, Raspberry Pi and Docker packages use `/opt/homebridge` instead of `/var/packages/homebridge/target/app`):
 
 ```sh
 npm uninstall -g homebridge-config-ui-x
@@ -51,10 +61,7 @@ npm install -g --allow-scripts=@homebridge/node-pty-prebuilt-multiarch @mp-consu
 ln -s @mp-consulting/homebridge-config-glass-ui /var/packages/homebridge/target/app/lib/node_modules/homebridge-config-ui-x
 ```
 
-Then restart Homebridge from Package Center. Without the link, the package no longer starts Homebridge at all.
-
-- An update of the Homebridge package can reinstall the official interface over the link. If it does, run the three commands again.
-- To go back, remove the link and run `npm install -g homebridge-config-ui-x`.
+The packages start the interface from that `homebridge-config-ui-x` folder rather than through `hb-service`; without the link they no longer start Homebridge at all.
 
 ## Configuration
 
