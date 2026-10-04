@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { lt } from 'semver'
 
+import { AiHost } from '@/core/ai/AiHost'
 import { authActions, useAuthStore } from '@/core/auth'
 import { Confirm } from '@/core/components/confirm/Confirm'
 import { escapeHtml } from '@/core/helpers/html.helper'
@@ -131,6 +132,7 @@ export function Layout() {
         )}
         <Outlet />
       </main>
+      <AiHost />
     </div>
   )
 }

@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useNavigation } from 'react-router'
 
+import { openAssistant } from '@/core/ai/ai-entry'
+import { useAiEnabled } from '@/core/ai/ai.store'
 import { authActions, useAuthStore } from '@/core/auth'
 import { Information } from '@/core/components/information/Information'
 import { notifications, useNotification } from '@/core/notifications'
@@ -35,6 +37,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
   const navigation = useNavigation()
 
   const isAdmin = useAuthStore(s => !!s.user?.admin)
+  const aiEnabled = useAiEnabled()
   const settingsFormAuth = useSettingsStore(s => s.formAuth)
   const menuMode = useSettingsStore(s => s.menuMode)
   const enableTerminalAccess = useSettingsStore(s => s.env.enableTerminalAccess)
@@ -390,6 +393,20 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
           {enableTerminalAccess && isAdmin && navButton('/platform-tools/terminal', t('menu.linux.label_terminal'), 'fas fa-terminal')}
           {isAdmin && navButton('/config', t('menu.config_json_editor'), 'fas fa-code')}
           {isAdmin && navButton('/settings', t('menu.label_settings'), 'fas fa-cog')}
+          {aiEnabled && (
+            <div className="link">
+              <button
+                type="button"
+                className="link-row hb-ai-menu-button"
+                aria-label={t('ai.palette.open')}
+                aria-keyshortcuts="Control+K Meta+K"
+                onClick={() => openAssistant()}
+              >
+                <div className="icon"><i aria-hidden="true" className="fas fa-wand-magic-sparkles"></i></div>
+                <div className="title">{t('ai.palette.title')}</div>
+              </button>
+            </div>
+          )}
           {navButton('/support', t('support.title'), 'far fa-circle-question')}
           {isAdmin && navButton('/power-options', t('menu.restart.title'), 'fas fa-power-off')}
 

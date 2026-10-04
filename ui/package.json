@@ -19,6 +19,7 @@
     "@dnd-kit/utilities": "3.2.2",
     "@homebridge/hap-client": "5.3.0",
     "@monaco-editor/react": "4.7.0",
+    "@mp-consulting/homebridge-ui-kit": "file:../../homebridge-ui-kit",
     "@xterm/addon-fit": "0.12.0-beta.301",
     "@xterm/addon-web-links": "0.13.0-beta.301",
     "@xterm/xterm": "6.1.0-beta.304",

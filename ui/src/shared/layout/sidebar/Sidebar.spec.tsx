@@ -3,6 +3,7 @@ import type { FakeOpenModal, FakeToast } from '@/testing'
 import { act, fireEvent, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { aiActions } from '@/core/ai/ai.store'
 import { authActions, useAuthStore } from '@/core/auth'
 import { Information } from '@/core/components/information/Information'
 import { notifications } from '@/core/notifications'
@@ -137,6 +138,25 @@ describe('sidebar', () => {
       render({ admin: false, terminal: true })
 
       expect(items()).not.toContain(label)
+    })
+  })
+
+  describe('the assistant', () => {
+    afterEach(() => aiActions.reset())
+
+    it('is offered to every user while it is on, and opens the palette', () => {
+      aiActions.setStatus({ enabled: true } as any)
+      render({ admin: false })
+      expect(items()).toContain('ai.palette.title')
+
+      fireEvent.click(screen.getByRole('button', { name: 'ai.palette.open' }))
+      expect(modal.openModal).toHaveBeenCalledWith(expect.anything(), {}, expect.objectContaining({ windowClass: 'hb-ai-palette-window' }))
+    })
+
+    it('is hidden while it is off', () => {
+      aiActions.setStatus({ enabled: false } as any)
+      render()
+      expect(items()).not.toContain('ai.palette.title')
     })
   })
 

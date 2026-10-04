@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 
+import { openLogDoctor } from '@/core/ai/ai-entry'
+import { useAiEnabled } from '@/core/ai/ai.store'
 import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { HoverTooltip } from '@/core/ui/HoverTooltip'
@@ -23,6 +25,7 @@ const stopPropagation = (event: SyntheticEvent) => event.stopPropagation()
 export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => state.user.admin)
+  const aiEnabled = useAiEnabled()
 
   const widgetContainerRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
@@ -220,6 +223,20 @@ export function HomebridgeLogsWidget({ widget, resizeEvent }: WidgetProps) {
                 <i className="fas fa-up-right-and-down-left-from-center" aria-hidden="true"></i>
               </Link>
             </HoverTooltip>
+            {aiEnabled && (
+              <HoverTooltip text={t('ai.log_doctor.diagnose')} placement="bottom">
+                <button
+                  type="button"
+                  className="widget-toolbar-button hb-ai-widget-diagnose"
+                  aria-label={t('ai.log_doctor.diagnose')}
+                  onMouseDown={stopPropagation}
+                  onTouchStart={stopPropagation}
+                  onClick={() => openLogDoctor()}
+                >
+                  <i className="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+                </button>
+              </HoverTooltip>
+            )}
             <HoverTooltip text={t('form.search')} placement="bottom">
               <button
                 type="button"

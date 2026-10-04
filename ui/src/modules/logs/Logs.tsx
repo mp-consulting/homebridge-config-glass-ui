@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
+import { openLogDoctor } from '@/core/ai/ai-entry'
+import { useAiEnabled } from '@/core/ai/ai.store'
+import { AiButton } from '@/core/ai/AiButton'
 import { useAuthStore } from '@/core/auth'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
@@ -28,6 +31,7 @@ function ToolbarTooltip({ id, label, children }: { id: string, label: string, ch
 export function Logs() {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => state.user.admin)
+  const aiEnabled = useAiEnabled()
   // Read once, at mount, like the Angular `terminalTheme` field
   const [terminalTheme] = useState(() => settingsActions.getEffectiveTerminalLightingMode())
 
@@ -165,6 +169,13 @@ export function Logs() {
         </div>
         {isAdmin && (
           <div className="col-6 text-end">
+            {aiEnabled && (
+              <AiButton
+                className="my-0 me-2 align-middle hb-logs-diagnose"
+                label={t('ai.log_doctor.diagnose')}
+                onClick={() => openLogDoctor()}
+              />
+            )}
             <ToolbarTooltip id="logs-search-tooltip" label={t('form.search')}>
               <button
                 type="button"
