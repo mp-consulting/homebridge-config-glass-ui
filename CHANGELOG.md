@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Untranslated keys report.** `npm run i18n:report` lists, per locale, the keys whose text is still exactly the English one (`lang-sync` copies English into every locale, so the gaps did not show): a count per locale, `--locale <code>` for the keys, `--since <git ref>` for only the keys added since then, `--json`. Brand names and strings meant to stay the same go in `scripts/i18n-allowlist.json`. CI prints it, and on a pull request also the new keys still in English; it never fails the build.
+
 ## [2.0.0-beta.7] - 2026-10-04
 
 ### Added

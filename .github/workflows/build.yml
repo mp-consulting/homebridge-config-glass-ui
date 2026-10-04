@@ -69,6 +69,20 @@ jobs:
         if: steps.schema-corpus.outputs.cache-hit != 'true'
         run: node scripts/schema-corpus/fetch.mjs --from-manifest
 
+      # Translators' report: keys still in English per locale and, on a pull request, the
+      # new en.json keys it adds. It never fails the build (see scripts/i18n-report.ts).
+      - name: Untranslated keys report
+        if: matrix.node-version == '24.x'
+        continue-on-error: true
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          npm run --silent i18n:report
+          if [ -n "$BASE_REF" ]; then
+            git fetch --depth=1 origin "$BASE_REF"
+            npm run --silent i18n:report -- --since FETCH_HEAD --keys
+          fi
+
       - name: Test UI
         if: matrix.node-version != '24.x'
         run: npm run test:ui

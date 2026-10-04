@@ -1,0 +1,28 @@
+{
+  "$comment": "Strings that may stay identical to English: see scripts/i18n-report.ts. `values` applies to every locale, `keys` to every locale, `locales` to one locale (e.g. a word that is the same in German).",
+  "values": [
+    "API",
+    "Docker",
+    "Homebridge",
+    "Homebridge Glass UI",
+    "HomeKit",
+    "IPv4",
+    "IPv6",
+    "JSON",
+    "Matter",
+    "MCP",
+    "Node.js",
+    "npm",
+    "ntfy",
+    "OK",
+    "PM10",
+    "PM2.5",
+    "Pushover",
+    "Telegram",
+    "URL",
+    "VOC",
+    "Webhook"
+  ],
+  "keys": [],
+  "locales": {}
+}
