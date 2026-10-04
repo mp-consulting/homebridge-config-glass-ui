@@ -1,6 +1,6 @@
 import { api } from '@/core/api'
 
-export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram'
+export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram' | 'browser'
 export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'rollbackSuggested' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
 
 export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'rollbackSuggested', 'updatesAvailable', 'backupFailed', 'dailyDigest']
@@ -15,6 +15,8 @@ export interface NotificationSettings {
     ntfy: { enabled: boolean, server: string, topic: string, token: string }
     pushover: { enabled: boolean, userKey: string, appToken: string }
     telegram: { enabled: boolean, botToken: string, chatId: string }
+    /** Web Push to the subscribed devices (BrowserPushSettings); absent on an older server. */
+    browser?: { enabled: boolean }
   }
   events: Record<NotificationEvent, boolean>
   /** When the daily digest is sent, HH:mm in the server's local time. */
@@ -61,6 +63,8 @@ export const CHANNEL_FIELDS: Array<{ channel: ChannelName, fields: ChannelField[
       { name: 'chatId', label: 'settings.notifications.telegram_chat' },
     ],
   },
+  // Its devices are set up under the switch (BrowserPushSettings)
+  { channel: 'browser', fields: [] },
 ]
 
 export function loadNotificationSettings(): Promise<NotificationSettings> {

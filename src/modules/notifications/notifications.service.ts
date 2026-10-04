@@ -26,6 +26,7 @@ import {
   SECRET_PLACEHOLDER,
   sendToChannel,
 } from './notification-channels.js'
+import { WebPushService } from './web-push.service.js'
 
 /** The same event (and subject) is not sent again within this time. */
 export const EVENT_COOLDOWN_MS = 15 * 60_000
@@ -91,6 +92,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     @Inject(SchedulerService) private readonly scheduler: SchedulerService,
     @Inject(AiService) private readonly ai: AiService,
     @Inject(PluginRollbackService) private readonly rollback: PluginRollbackService,
+    @Inject(WebPushService) private readonly webPush: WebPushService,
   ) {
     this.settingsPath = resolve(this.configService.storagePath, '.uix-notifications.json')
   }
@@ -311,7 +313,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     const targets = CHANNEL_NAMES.filter(name => (only ? only.includes(name) : channels[name].enabled) && isChannelConfigured(name, channels))
     return Promise.all(targets.map(async (channel) => {
       try {
-        await sendToChannel(channel, channels, msg, this.instanceName)
+        await sendToChannel(channel, channels, msg, this.instanceName, { browser: (m, instance) => this.webPush.send(m, instance) })
         return { channel, ok: true }
       } catch (e) {
         const error = this.scrub(e?.message ?? String(e), channels)
@@ -360,16 +362,21 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     return this.sentLog.length >= MAX_PER_HOUR ? 'cap' : null
   }
 
+  /** Count a test message against MAX_TESTS_PER_MINUTE, or refuse it. */
+  private takeTestSlot(now = Date.now()): void {
+    this.testLog = this.testLog.filter(at => now - at < 60_000)
+    if (this.testLog.length >= MAX_TESTS_PER_MINUTE) {
+      throw new BadRequestException('Too many test notifications - try again in a minute.')
+    }
+  }
+
   /** "Send test": to the given channel, or every enabled one, whether or not any event is on. */
   public async sendTest(channel?: unknown): Promise<ChannelResult[]> {
     if (channel !== undefined && !CHANNEL_NAMES.includes(channel as ChannelName)) {
       throw new BadRequestException('Unknown channel.')
     }
     const now = Date.now()
-    this.testLog = this.testLog.filter(at => now - at < 60_000)
-    if (this.testLog.length >= MAX_TESTS_PER_MINUTE) {
-      throw new BadRequestException('Too many test notifications - try again in a minute.')
-    }
+    this.takeTestSlot(now)
     const { channels } = await this.load()
     const only = channel ? [channel as ChannelName] : CHANNEL_NAMES.filter(name => channels[name].enabled)
     if (!only.some(name => isChannelConfigured(name, channels))) {
@@ -377,6 +384,25 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     }
     this.testLog.push(now)
     return this.sendAll({ event: 'test', title: 'Test notification', message: 'Notifications from Homebridge Glass UI are working.' }, only)
+  }
+
+  /**
+   * A test notification to the browser with this endpoint (Settings, "Send
+   * test" on this device), or to every subscribed device, whether or not
+   * the browser channel is on.
+   */
+  public async sendBrowserTest(endpoint?: string): Promise<ChannelResult> {
+    const now = Date.now()
+    this.takeTestSlot(now)
+    this.testLog.push(now)
+    try {
+      await this.webPush.send({ event: 'test', title: 'Test notification', message: 'Browser notifications from Homebridge Glass UI are working.', path: '/settings?section=notifications' }, this.instanceName, endpoint ? { endpoint } : undefined)
+      return { channel: 'browser', ok: true }
+    } catch (e) {
+      const error = String(e?.message ?? e).slice(0, 300)
+      this.logger.warn(`Failed to send the test notification to the browser as ${error}.`)
+      return { channel: 'browser', ok: false, error }
+    }
   }
 
   // Event sources

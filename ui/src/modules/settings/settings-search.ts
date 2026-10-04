@@ -123,6 +123,7 @@ export const sectionItems: Record<string, string[]> = {
     'setting-notifications-ntfy',
     'setting-notifications-pushover',
     'setting-notifications-telegram',
+    'setting-notifications-browser',
     'setting-notifications-events',
   ],
   instances: [
@@ -250,6 +251,7 @@ export function getItemsContent(): Record<string, string> {
     'setting-notifications-ntfy': 'ntfy',
     'setting-notifications-pushover': 'Pushover',
     'setting-notifications-telegram': 'Telegram',
+    'setting-notifications-browser': `${t('settings.notifications.browser')} push PWA`,
     'setting-notifications-events': `${t('settings.notifications.events')} ${t('settings.notifications.event_daily_digest')}`,
 
     // Instances section

@@ -12,6 +12,8 @@ import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
 import { NotificationsController } from './notifications.controller.js'
 import { NotificationsService } from './notifications.service.js'
+import { WebPushController } from './web-push.controller.js'
+import { WebPushService } from './web-push.service.js'
 
 @Module({
   imports: [
@@ -26,8 +28,8 @@ import { NotificationsService } from './notifications.service.js'
     SchedulerModule,
     AiModule,
   ],
-  providers: [NotificationsService],
-  controllers: [NotificationsController],
-  exports: [NotificationsService],
+  providers: [NotificationsService, WebPushService],
+  controllers: [NotificationsController, WebPushController],
+  exports: [NotificationsService, WebPushService],
 })
 export class NotificationsModule {}

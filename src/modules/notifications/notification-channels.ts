@@ -7,8 +7,8 @@
 
 import { Buffer } from 'node:buffer'
 
-export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram'
-export const CHANNEL_NAMES: ChannelName[] = ['webhook', 'ntfy', 'pushover', 'telegram']
+export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram' | 'browser'
+export const CHANNEL_NAMES: ChannelName[] = ['webhook', 'ntfy', 'pushover', 'telegram', 'browser']
 
 export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'rollbackSuggested' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
 export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'rollbackSuggested', 'updatesAvailable', 'backupFailed', 'dailyDigest']
@@ -21,6 +21,8 @@ export interface NotificationChannels {
   ntfy: { enabled: boolean, server: string, topic: string, token: string }
   pushover: { enabled: boolean, userKey: string, appToken: string }
   telegram: { enabled: boolean, botToken: string, chatId: string }
+  /** Web Push to the devices subscribed under `/notifications/web-push` (see WebPushService). */
+  browser: { enabled: boolean }
 }
 
 export interface NotificationSettings {
@@ -38,6 +40,7 @@ export const SECRET_FIELDS: { [C in ChannelName]: Array<keyof NotificationChanne
   ntfy: ['token'],
   pushover: ['userKey', 'appToken'],
   telegram: ['botToken'],
+  browser: [],
 }
 
 /** What a stored secret reads as in the API. Sent back unchanged, it keeps the stored value. */
@@ -50,6 +53,7 @@ export function defaultNotificationSettings(): NotificationSettings {
       ntfy: { enabled: false, server: 'https://ntfy.sh', topic: '', token: '' },
       pushover: { enabled: false, userKey: '', appToken: '' },
       telegram: { enabled: false, botToken: '', chatId: '' },
+      browser: { enabled: false },
     },
     events: {
       homebridgeDown: true,
@@ -89,6 +93,8 @@ export const MESSAGE_LIMITS: { [C in ChannelName]: { max: number, unit: 'chars' 
   ntfy: { max: 4096, unit: 'bytes' },
   pushover: { max: 1024, unit: 'chars' },
   telegram: { max: TELEGRAM_MAX, unit: 'chars' },
+  // Its own limit is applied by WebPushService (the payload has to fit one 4 KB record)
+  browser: null,
 }
 /** Pushover's title limit. */
 const PUSHOVER_TITLE_MAX = 250
@@ -137,11 +143,19 @@ export function isChannelConfigured(name: ChannelName, channels: NotificationCha
       return !!channels.pushover.userKey && !!channels.pushover.appToken
     case 'telegram':
       return !!channels.telegram.botToken && !!channels.telegram.chatId
+    case 'browser':
+      // Whether any device is subscribed is known only to WebPushService
+      return true
   }
 }
 
+/** How channels that need more than their settings are sent (the browser channel). */
+export interface ChannelSenders {
+  browser?: (msg: NotificationMessage, instance: string) => Promise<unknown>
+}
+
 /** Send one message on one channel. */
-export async function sendToChannel(name: ChannelName, channels: NotificationChannels, msg: NotificationMessage, instance: string): Promise<void> {
+export async function sendToChannel(name: ChannelName, channels: NotificationChannels, msg: NotificationMessage, instance: string, senders: ChannelSenders = {}): Promise<void> {
   const title = `${instance}: ${msg.title}`
   const limit = MESSAGE_LIMITS[name]
   const message = limit ? truncateText(msg.message, limit.max, limit.unit) : msg.message
@@ -180,5 +194,10 @@ export async function sendToChannel(name: ChannelName, channels: NotificationCha
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ chat_id: channels.telegram.chatId, text: truncateText(`${title}\n${msg.message}`, TELEGRAM_MAX), disable_web_page_preview: true }),
       })
+    case 'browser':
+      if (!senders.browser) {
+        throw new Error('Browser notifications are not available.')
+      }
+      await senders.browser(msg, instance)
   }
 }

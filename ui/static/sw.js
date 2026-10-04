@@ -96,3 +96,44 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(request, request))
   }
 })
+
+/* Browser notifications (Settings, Notifications, Browser): the server sends
+ * { title, body, tag, path, urgent } encrypted with Web Push. A click opens
+ * (or focuses) the UI on `path`.
+ */
+self.addEventListener('push', (event) => {
+  let data = {}
+  try {
+    data = event.data ? event.data.json() : {}
+  } catch {
+    data = { body: event.data ? event.data.text() : '' }
+  }
+  const title = typeof data.title === 'string' && data.title ? data.title : 'Homebridge'
+  event.waitUntil(self.registration.showNotification(title, {
+    body: typeof data.body === 'string' ? data.body : '',
+    tag: typeof data.tag === 'string' ? data.tag : undefined,
+    icon: `${SCOPE_PATH}assets/android-chrome-192x192.png`,
+    badge: `${SCOPE_PATH}assets/favicon-32x32.png`,
+    requireInteraction: data.urgent === true,
+    data: { path: typeof data.path === 'string' && data.path.startsWith('/') && !data.path.startsWith('//') ? data.path : '/' },
+  }))
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const path = (event.notification.data && event.notification.data.path) || '/'
+  const target = new URL(SCOPE_PATH + path.replace(/^\/+/, ''), self.location.origin).href
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    for (const client of windows) {
+      if (client.url.startsWith(new URL(SCOPE_PATH, self.location.origin).href) && 'focus' in client) {
+        await client.focus()
+        if ('navigate' in client) {
+          await client.navigate(target).catch(() => undefined)
+        }
+        return
+      }
+    }
+    await self.clients.openWindow(target)
+  })())
+})
