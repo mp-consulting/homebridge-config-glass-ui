@@ -345,6 +345,15 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
                   : <span className="grey-text">{t('status.widget.network.none_selected')}</span>}
               </div>
             </li>
+            <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
+              <label htmlFor="network-unit" className="mb-2 mb-md-0 w-100 w-md-50">{t('status.widget.network.unit')}</label>
+              <div className="text-start text-md-end w-100 w-md-50">
+                <select id="network-unit" className="custom-select" value={widget.networkUnit ?? 'bits'} onChange={event => set({ networkUnit: event.target.value as 'bits' | 'bytes' })}>
+                  <option value="bits">{t('status.widget.network.unit_bits')}</option>
+                  <option value="bytes">{t('status.widget.network.unit_bytes')}</option>
+                </select>
+              </div>
+            </li>
             {refreshAndHistory('network')}
           </>
         )

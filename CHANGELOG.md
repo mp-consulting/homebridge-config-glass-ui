@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Network widget units and directions.** The network widget's settings now choose bits or bytes per second, and the rates scale to the unit that fits (b/s up to Gb/s, or B/s up to GB/s). Received and sent traffic are charted separately, received above the axis and sent mirrored below it.
+
 ## [2.0.0-beta.4] - 2026-10-03
 
 ### Fixed

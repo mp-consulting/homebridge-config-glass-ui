@@ -13,7 +13,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - Install, configure, update and remove Homebridge plugins
 - Visual settings forms for plugins that ship a config schema
 - Edit `config.json` with syntax checking, validation and automatic backups
-- A customisable widget dashboard for monitoring your server
+- A customisable widget dashboard for monitoring your server (network traffic in bits or bytes, sent and received charted separately)
 - Live Homebridge logs and a web terminal
 - View and control your accessories from any browser
 - Run plugins as child bridges

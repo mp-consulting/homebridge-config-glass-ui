@@ -57,6 +57,7 @@ export interface Widget {
   refreshInterval?: number // cpu widget, memory widget, disk widget, network widget
   historyItems?: number // cpu widget, memory widget, disk widget, network widget
   networkInterface?: string // network widget
+  networkUnit?: 'bits' | 'bytes' // network widget (default bits)
   location?: {
     id: string // weather widget
     [key: string]: unknown

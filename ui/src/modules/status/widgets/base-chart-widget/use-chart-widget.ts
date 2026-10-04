@@ -32,6 +32,8 @@ export interface ChartWidget {
   chartData: ChartData<'line', number[], string>
   chartOptions: ChartOptions<'line'>
   series: ChartSeries
+  /** One series per dataset (`options.seriesCount`); `series` is the first. */
+  seriesList: ChartSeries[]
   refreshInterval: number
   historyItems: number
 }
@@ -83,7 +85,12 @@ function baseOptions(color?: string): ChartOptions<'line'> {
  * @param fetchData - asks the server for a reading; the latest one is always called. It gets the
  * refresh interval (seconds) to send along, so the server samples at least that often.
  */
-export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, series: ChartSeries, refreshInterval: number) => void): ChartWidget {
+export function useChartWidget(
+  props: WidgetProps,
+  fetchData: (io: IoNamespace, series: ChartSeries, refreshInterval: number, seriesList: ChartSeries[]) => void,
+  options: { seriesCount?: number } = {},
+): ChartWidget {
+  const seriesCount = Math.max(1, options.seriesCount ?? 1)
   const { widget, configureEvent, updateWidget } = props
   const io = useNamespace('status')
   const backgroundRef = useRef<HTMLDivElement | null>(null)
@@ -109,29 +116,33 @@ export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, 
 
   // The points live in a ref so a reading that arrives between renders sees the
   // ones before it; `points` is the copy the chart is drawn from
-  const pointsRef = useRef<number[]>([])
-  const [points, setPoints] = useState<number[]>([])
+  const pointsRef = useRef<number[][]>([])
+  const [points, setPoints] = useState<number[][]>([])
   const historyItemsRef = useRef(historyItems)
   historyItemsRef.current = historyItems
 
-  const series = useMemo<ChartSeries>(() => {
+  const seriesList = useMemo<ChartSeries[]>(() => Array.from({ length: seriesCount }, (_, index) => {
+    const current = () => pointsRef.current[index] ?? []
     const commit = (next: number[]) => {
-      pointsRef.current = next
-      setPoints(next)
+      const all = Array.from({ length: seriesCount }, (__, i) => pointsRef.current[i] ?? [])
+      all[index] = next
+      pointsRef.current = all
+      setPoints(all)
     }
     return {
-      isEmpty: () => pointsRef.current.length === 0,
+      isEmpty: () => current().length === 0,
       initialize: history => commit(history.slice(-historyItemsRef.current)),
       push: (value) => {
         // Make room first so the series never holds more than historyItems points
-        const current = pointsRef.current.length >= historyItemsRef.current
-          ? pointsRef.current.slice(1)
-          : pointsRef.current
-        commit([...current, value])
+        const existing = current().length >= historyItemsRef.current
+          ? current().slice(1)
+          : current()
+        commit([...existing, value])
       },
       clear: () => commit([]),
     }
-  }, [])
+  }), [seriesCount])
+  const series = seriesList[0]
 
   const fetchRef = useRef(fetchData)
   fetchRef.current = fetchData
@@ -139,9 +150,9 @@ export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, 
   refreshIntervalRef.current = refreshInterval
   const fetchNow = useCallback(() => {
     if (io) {
-      fetchRef.current(io, series, refreshIntervalRef.current)
+      fetchRef.current(io, series, refreshIntervalRef.current, seriesList)
     }
-  }, [io, series])
+  }, [io, series, seriesList])
 
   // Lookup the chart color based on the current theme
   useLayoutEffect(() => {
@@ -182,19 +193,19 @@ export function useChartWidget(props: WidgetProps, fetchData: (io: IoNamespace, 
   // Listen for configuration changes
   useEffect(() => configureEvent.subscribe(() => {
     // The old points were sampled at the old settings: start the chart over
-    series.clear()
+    seriesList.forEach(item => item.clear())
     setGeneration(value => value + 1)
     if (io?.socket.connected) {
       fetchNow()
     }
-  }), [configureEvent, series, io, fetchNow])
+  }), [configureEvent, seriesList, io, fetchNow])
 
   const chartData = useMemo<ChartData<'line', number[], string>>(() => ({
-    labels: points.map(() => 'point'),
-    datasets: [{ data: points }],
-  }), [points])
+    labels: (points[0] ?? []).map(() => 'point'),
+    datasets: Array.from({ length: seriesCount }, (_, index) => ({ data: points[index] ?? [] })),
+  }), [points, seriesCount])
 
   const chartOptions = useMemo(() => baseOptions(userColor), [userColor])
 
-  return { io, backgroundRef, chartData, chartOptions, series, refreshInterval, historyItems }
+  return { io, backgroundRef, chartData, chartOptions, series, seriesList, refreshInterval, historyItems }
 }

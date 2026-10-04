@@ -388,7 +388,7 @@ describe('StatusService - shared metric sampling', () => {
 
     expect(networkStatsMock).toHaveBeenCalledTimes(1)
     expect(networkStatsMock).toHaveBeenCalledWith('eth0')
-    expect(tab1).toEqual({ net: { iface: 'eth0', rx_sec: 2 * 1024 * 1024, tx_sec: 0 }, point: 2 })
+    expect(tab1).toEqual({ net: { iface: 'eth0', rx_sec: 2 * 1024 * 1024, tx_sec: 0 }, point: 2, received: 2 * 1024 * 1024, sent: 0 })
     expect(tab2).toBe(tab1)
 
     const wlan = await statusService.getCurrentNetworkUsage(['wlan0'])
@@ -399,6 +399,24 @@ describe('StatusService - shared metric sampling', () => {
 
     await vi.advanceTimersByTimeAsync(10_000)
     expect(networkStatsMock).toHaveBeenCalledTimes(6)
+  })
+
+  it('reports received and sent bytes per second separately', async () => {
+    networkStatsMock.mockResolvedValue([{ iface: 'eth0', rx_sec: 3000, tx_sec: 1000 }])
+
+    const usage = await statusService.getCurrentNetworkUsage(['eth0'])
+
+    expect(usage.received).toBe(3000)
+    expect(usage.sent).toBe(1000)
+    expect(usage.point).toBeCloseTo(4000 / 1024 / 1024)
+  })
+
+  it('reports zero rather than null before systeminformation has two readings', async () => {
+    networkStatsMock.mockResolvedValue([{ iface: 'eth0', rx_sec: null, tx_sec: null }])
+
+    const usage = await statusService.getCurrentNetworkUsage(['eth0'])
+
+    expect(usage).toMatchObject({ received: 0, sent: 0, point: 0 })
   })
 
   it('only hands systeminformation an interface name the host has, else uses the default', async () => {

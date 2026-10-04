@@ -314,6 +314,16 @@ describe('the dashboard widget modals', () => {
       expect(options).toEqual(['eth0', 'wlan0'])
     })
 
+    it('lets the network widget switch between bits and bytes', async () => {
+      await openControl({ component: 'NetworkWidgetComponent' })
+
+      const select = screen.getByLabelText<HTMLSelectElement>('status.widget.network.unit')
+      expect(select.value).toBe('bits')
+      fireEvent.change(select, { target: { value: 'bytes' } })
+
+      expect(saveButton()).toBeEnabled()
+    })
+
     it('says so when there are no interfaces to offer', async () => {
       await openControl({ component: 'NetworkWidgetComponent' }, { interfaces: [] })
 
@@ -342,6 +352,7 @@ describe('the dashboard widget modals', () => {
         ['refreshInterval', 30],
         ['historyItems', 50],
         ['networkInterface', 'wlan0'],
+        ['networkUnit', 'bytes'],
         ['showToolbar', true],
       ]
 
