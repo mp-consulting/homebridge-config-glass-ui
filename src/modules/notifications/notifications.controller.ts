@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Inject, Post, Put, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { NotificationSettingsDto, NotificationTestDto } from './notifications.dto.js'
 import { NotificationsService } from './notifications.service.js'
 
 @ApiTags('Notifications')
@@ -24,16 +25,14 @@ export class NotificationsController {
     summary: 'Replace the notification settings.',
     description: 'A secret sent back as `********` keeps the stored value; an empty string clears it.',
   })
-  @ApiBody({ schema: { type: 'object' } })
   @Put('settings')
-  updateSettings(@Body() body: unknown) {
+  updateSettings(@Body() body: NotificationSettingsDto) {
     return this.notificationsService.updateSettings(body)
   }
 
   @ApiOperation({ summary: 'Send a test notification to one channel, or to every enabled one.' })
-  @ApiBody({ schema: { type: 'object', properties: { channel: { type: 'string', enum: ['webhook', 'ntfy', 'pushover', 'telegram'] } } } })
   @Post('test')
-  sendTest(@Body() body: { channel?: string } | undefined) {
+  sendTest(@Body() body: NotificationTestDto) {
     return this.notificationsService.sendTest(body?.channel)
   }
 }

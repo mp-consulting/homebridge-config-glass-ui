@@ -1,20 +1,10 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { SceneDto } from './scenes.dto.js'
 import { ScenesService } from './scenes.service.js'
-
-const SCENE_BODY = {
-  schema: {
-    type: 'object',
-    properties: {
-      name: { type: 'string' },
-      actions: { type: 'array', items: { type: 'object', properties: { uniqueId: { type: 'string' }, characteristicType: { type: 'string' }, value: {} } } },
-      schedules: { type: 'array', items: { type: 'object', properties: { cron: { type: 'string', example: '0 7 * * 1-5' }, enabled: { type: 'boolean' } } } },
-    },
-  },
-}
 
 @ApiTags('Scenes')
 @ApiBearerAuth()
@@ -40,18 +30,16 @@ export class ScenesController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Create a scene.' })
-  @ApiBody(SCENE_BODY)
   @Post()
-  create(@Body() body: unknown) {
+  create(@Body() body: SceneDto) {
     return this.scenesService.create(body)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Replace a scene\'s name, actions and schedules.' })
   @ApiParam({ name: 'id' })
-  @ApiBody(SCENE_BODY)
   @Put(':id')
-  update(@Param('id') id: string, @Body() body: unknown) {
+  update(@Param('id') id: string, @Body() body: SceneDto) {
     return this.scenesService.update(id, body)
   }
 

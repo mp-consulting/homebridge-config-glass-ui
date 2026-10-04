@@ -24,6 +24,7 @@ import {
   SECRET_PLACEHOLDER,
   sendToChannel,
 } from './notification-channels.js'
+import { NotificationSettingsDto } from './notifications.dto.js'
 
 /** The same event (and subject) is not sent again within this time. */
 export const EVENT_COOLDOWN_MS = 15 * 60_000
@@ -174,37 +175,23 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
    * Replace the settings. A secret sent back as SECRET_PLACEHOLDER keeps the
    * stored value; an empty string clears it.
    */
-  public async updateSettings(body: unknown): Promise<NotificationSettings> {
-    if (!body || typeof body !== 'object') {
-      throw new BadRequestException('Expected an object.')
-    }
+  public async updateSettings(input: NotificationSettingsDto): Promise<NotificationSettings> {
     const current = await this.load()
-    const input = body as { channels?: Record<string, Record<string, unknown>>, events?: Record<string, unknown>, dailyDigestTime?: unknown, explainCrashLoops?: unknown }
     const channels = structuredClone(current.channels)
 
     for (const name of CHANNEL_NAMES) {
       const given = input.channels?.[name]
-      if (given === undefined) {
+      if (!given) {
         continue
       }
-      if (!given || typeof given !== 'object') {
-        throw new BadRequestException(`Invalid ${name} settings.`)
-      }
-      const target = channels[name] as unknown as Record<string, unknown>
-      for (const field of Object.keys(target)) {
-        if (!(field in given)) {
+      const target = channels[name] as unknown as Record<string, string | boolean>
+      for (const [field, value] of Object.entries(given) as Array<[string, string | boolean | undefined]>) {
+        if (value === undefined || !(field in target)) {
           continue
         }
-        const value = given[field]
-        if (field === 'enabled') {
-          if (typeof value !== 'boolean') {
-            throw new BadRequestException(`${name}.enabled must be a boolean.`)
-          }
-          target.enabled = value
+        if (typeof value === 'boolean') {
+          target[field] = value
           continue
-        }
-        if (typeof value !== 'string' || value.length > 2048) {
-          throw new BadRequestException(`Invalid ${name}.${field}.`)
         }
         if ((SECRET_FIELDS[name] as string[]).includes(field) && value === SECRET_PLACEHOLDER) {
           continue
@@ -217,28 +204,12 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     const events = { ...current.events }
     for (const event of NOTIFICATION_EVENTS) {
       const value = input.events?.[event]
-      if (value === undefined) {
-        continue
+      if (typeof value === 'boolean') {
+        events[event] = value
       }
-      if (typeof value !== 'boolean') {
-        throw new BadRequestException(`events.${event} must be a boolean.`)
-      }
-      events[event] = value
     }
-
-    let { dailyDigestTime, explainCrashLoops } = current
-    if (input.dailyDigestTime !== undefined) {
-      if (typeof input.dailyDigestTime !== 'string' || !RE_TIME_OF_DAY.test(input.dailyDigestTime)) {
-        throw new BadRequestException('dailyDigestTime must be a time of day as HH:mm.')
-      }
-      dailyDigestTime = input.dailyDigestTime
-    }
-    if (input.explainCrashLoops !== undefined) {
-      if (typeof input.explainCrashLoops !== 'boolean') {
-        throw new BadRequestException('explainCrashLoops must be a boolean.')
-      }
-      explainCrashLoops = input.explainCrashLoops
-    }
+    const dailyDigestTime = input.dailyDigestTime ?? current.dailyDigestTime
+    const explainCrashLoops = input.explainCrashLoops ?? current.explainCrashLoops
 
     await this.save({ ...current, channels, events, dailyDigestTime, explainCrashLoops })
     await this.scheduleDailyDigest()
@@ -356,17 +327,14 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   }
 
   /** "Send test": to the given channel, or every enabled one, whether or not any event is on. */
-  public async sendTest(channel?: unknown): Promise<ChannelResult[]> {
-    if (channel !== undefined && !CHANNEL_NAMES.includes(channel as ChannelName)) {
-      throw new BadRequestException('Unknown channel.')
-    }
+  public async sendTest(channel?: ChannelName): Promise<ChannelResult[]> {
     const now = Date.now()
     this.testLog = this.testLog.filter(at => now - at < 60_000)
     if (this.testLog.length >= MAX_TESTS_PER_MINUTE) {
       throw new BadRequestException('Too many test notifications - try again in a minute.')
     }
     const { channels } = await this.load()
-    const only = channel ? [channel as ChannelName] : CHANNEL_NAMES.filter(name => channels[name].enabled)
+    const only = channel ? [channel] : CHANNEL_NAMES.filter(name => channels[name].enabled)
     if (!only.some(name => isChannelConfigured(name, channels))) {
       throw new BadRequestException('No channel is set up to send to.')
     }

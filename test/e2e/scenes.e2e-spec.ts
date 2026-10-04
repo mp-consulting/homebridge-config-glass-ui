@@ -178,6 +178,37 @@ describe('Scenes (e2e)', () => {
     expect(Object.keys(scheduler.scheduledJobs).filter(name => name.startsWith('scene-validate'))).toEqual([])
   })
 
+  it('validates the body with the scene DTO', async () => {
+    const noName = { actions: evening.actions, schedules: evening.schedules }
+    const missing = await create(noName)
+    expect(missing.statusCode).toBe(400)
+    expect(missing.json().message).toContain('The name must be 1 to 64 characters.')
+
+    expect((await create({ ...evening, name: '   ' })).statusCode).toBe(400)
+    expect((await create({ ...evening, name: 'x'.repeat(65) })).statusCode).toBe(400)
+    expect((await create({ name: 'No actions' })).statusCode).toBe(400)
+    expect((await create({ ...evening, actions: [null] })).statusCode).toBe(400)
+    expect((await create({ ...evening, schedules: 'daily' })).statusCode).toBe(400)
+
+    const bad = await create({ ...evening, actions: [{ uniqueId: LAMP, value: true }] })
+    expect(bad.statusCode).toBe(400)
+    expect(bad.json().message.join(' ')).toContain('characteristicType')
+
+    const cron = await create({ ...evening, schedules: [{ cron: '61 * * * *' }] })
+    expect(cron.json().message).toBe('Schedule 1: invalid cron expression.')
+  })
+
+  it('drops unknown fields and trims the name', async () => {
+    const res = await create({ ...evening, name: '  Evening  ', id: 'ffffffffffffffff', extra: true, actions: [{ ...evening.actions[0], note: 'x' }] })
+    expect(res.statusCode).toBe(201)
+    const scene = res.json()
+    expect(scene.name).toBe('Evening')
+    expect(scene.id).not.toBe('ffffffffffffffff')
+    expect(scene).not.toHaveProperty('extra')
+    expect(scene.actions[0]).not.toHaveProperty('note')
+    expect(scene.schedules.every((schedule: { enabled: boolean }) => typeof schedule.enabled === 'boolean')).toBe(true)
+  })
+
   it('answers 404 for a scene that does not exist', async () => {
     expect((await app.inject({ method: 'POST', path: '/scenes/0123456789abcdef/run', headers: { authorization } })).statusCode).toBe(404)
   })

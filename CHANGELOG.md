@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Scenes and notification settings are validated with DTOs.** `POST /api/scenes`, `PUT /api/scenes/:id`, `PUT /api/notifications/settings` and `POST /api/notifications/test` now check their bodies with class-validator DTOs (shown in Swagger with every field) instead of by hand. Unknown fields are dropped; a missing or wrong field answers `400` with the field named. The checks themselves are the same (cron expressions and channel formats are still checked by the services).
+
 ## [2.0.0-beta.7] - 2026-10-04
 
 ### Added

@@ -142,6 +142,27 @@ describe('Notifications (e2e)', () => {
     expect((await put({ explainCrashLoops: 'yes' })).statusCode).toBe(400)
   })
 
+  it('validates the settings with DTOs and ignores unknown fields', async () => {
+    expect((await put({ channels: { telegram: 'on' } })).statusCode).toBe(400)
+    expect((await put({ channels: { telegram: { enabled: 'yes' } } })).statusCode).toBe(400)
+    expect((await put({ channels: { webhook: { url: 'x'.repeat(2049) } } })).statusCode).toBe(400)
+    const time = await put({ dailyDigestTime: '25:00' })
+    expect(time.json().message).toContain('dailyDigestTime must be a time of day as HH:mm.')
+
+    const res = await put({ channels: { ntfy: { topic: '  hb-alerts  ', bogus: 'x' } }, events: { unknown: true }, other: 1 })
+    expect(res.statusCode).toBe(200)
+    const stored = await readJson(service.settingsPath)
+    expect(stored.channels.ntfy.topic).toBe('hb-alerts')
+    expect(stored.channels.ntfy).not.toHaveProperty('bogus')
+    expect(stored.events).not.toHaveProperty('unknown')
+    expect(stored).not.toHaveProperty('other')
+  })
+
+  it('refuses a test to an unknown channel', async () => {
+    const res = await app.inject({ method: 'POST', path: '/notifications/test', headers: { authorization }, payload: { channel: 'email' } })
+    expect(res.statusCode).toBe(400)
+  })
+
   it('is for administrators only', async () => {
     const res = await app.inject({ method: 'GET', path: '/notifications/settings' })
     expect(res.statusCode).toBe(401)

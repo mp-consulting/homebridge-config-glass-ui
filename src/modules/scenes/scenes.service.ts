@@ -10,6 +10,7 @@ import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
+import { SceneDto } from './scenes.dto.js'
 
 export type SceneValue = number | boolean | string
 
@@ -48,11 +49,7 @@ interface ScenesFile {
 }
 
 const MAX_SCENES = 100
-const MAX_ACTIONS = 50
-const MAX_SCHEDULES = 10
 const JOB_PREFIX = 'scene-'
-const RE_UNIQUE_ID = /^[\w:.-]{1,128}$/
-const RE_CHARACTERISTIC = /^\w{1,64}$/
 const RE_SCENE_ID = /^[a-f0-9]{16}$/
 
 /**
@@ -109,7 +106,7 @@ export class ScenesService implements OnModuleInit, OnModuleDestroy {
     return scene
   }
 
-  public async create(body: unknown): Promise<Scene> {
+  public async create(body: SceneDto): Promise<Scene> {
     const scene: Scene = { id: randomBytes(8).toString('hex'), ...this.validate(body) }
     await this.mutate((scenes) => {
       if (scenes.length >= MAX_SCENES) {
@@ -120,7 +117,7 @@ export class ScenesService implements OnModuleInit, OnModuleDestroy {
     return scene
   }
 
-  public async update(id: string, body: unknown): Promise<Scene> {
+  public async update(id: string, body: SceneDto): Promise<Scene> {
     const fields = this.validate(body)
     let updated: Scene | undefined
     await this.mutate(scenes => scenes.map((scene) => {
@@ -158,48 +155,20 @@ export class ScenesService implements OnModuleInit, OnModuleDestroy {
     return next
   }
 
-  /** The fields of a scene from a request body, or a 400. */
-  private validate(body: unknown): Omit<Scene, 'id'> {
-    const fail = (message: string): never => {
-      throw new BadRequestException(message)
+  /**
+   * The fields of a scene from a validated body (SceneDto): the name trimmed,
+   * each cron expression checked with the scheduler, or a 400.
+   */
+  private validate(body: SceneDto): Omit<Scene, 'id'> {
+    const name = body.name.trim()
+    if (!name) {
+      throw new BadRequestException('The name must be 1 to 64 characters.')
     }
-    if (!body || typeof body !== 'object') {
-      fail('Expected a scene.')
-    }
-    const input = body as Record<string, unknown>
-    const name = typeof input.name === 'string' ? input.name.trim() : ''
-    if (!name || name.length > 64) {
-      fail('The name must be 1 to 64 characters.')
-    }
-    if (!Array.isArray(input.actions) || input.actions.length === 0 || input.actions.length > MAX_ACTIONS) {
-      fail(`A scene needs 1 to ${MAX_ACTIONS} actions.`)
-    }
-    const actions = (input.actions as unknown[]).map((raw, index): SceneAction => {
-      const action = (raw ?? {}) as Record<string, unknown>
-      if (typeof action.uniqueId !== 'string' || !RE_UNIQUE_ID.test(action.uniqueId)) {
-        fail(`Action ${index + 1}: invalid accessory.`)
-      }
-      if (typeof action.characteristicType !== 'string' || !RE_CHARACTERISTIC.test(action.characteristicType)) {
-        fail(`Action ${index + 1}: invalid characteristic.`)
-      }
-      const value = action.value
-      const valid = typeof value === 'boolean'
-        || (typeof value === 'number' && Number.isFinite(value))
-        || (typeof value === 'string' && value.length <= 256)
-      if (!valid) {
-        fail(`Action ${index + 1}: the value must be a boolean, a number or a short text.`)
-      }
-      return { uniqueId: action.uniqueId as string, characteristicType: action.characteristicType as string, value: value as SceneValue }
-    })
-    const rawSchedules = input.schedules ?? []
-    if (!Array.isArray(rawSchedules) || rawSchedules.length > MAX_SCHEDULES) {
-      fail(`At most ${MAX_SCHEDULES} schedules.`)
-    }
-    const schedules = (rawSchedules as unknown[]).map((raw, index): SceneSchedule => {
-      const schedule = (raw ?? {}) as Record<string, unknown>
-      const cron = typeof schedule.cron === 'string' ? schedule.cron.trim() : ''
-      if (!cron || cron.length > 100 || !this.isValidCron(cron)) {
-        fail(`Schedule ${index + 1}: invalid cron expression.`)
+    const actions = body.actions.map(({ uniqueId, characteristicType, value }): SceneAction => ({ uniqueId, characteristicType, value }))
+    const schedules = (body.schedules ?? []).map((schedule, index): SceneSchedule => {
+      const cron = schedule.cron.trim()
+      if (!cron || !this.isValidCron(cron)) {
+        throw new BadRequestException(`Schedule ${index + 1}: invalid cron expression.`)
       }
       return { cron, enabled: schedule.enabled !== false }
     })
