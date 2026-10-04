@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Accessory history says why it does not record.** It needs Homebridge in insecure mode, and without it nothing was recorded, without a word. Settings, Accessories, **Record Accessory History** and an empty Accessory History widget now say so, with an **Open the setting** link (administrators) to Startup Options, and the UI logs it once at start. A recorder that fails to attach is logged as a warning (it was a debug line) and shown with its error. `GET /api/accessories/history/status` returns `{ enabled, insecureMode, recording, reason, error?, retentionDays }` (`reason`: `disabled`, `insecureModeRequired`, `starting`, `error` or null). `/settings?section=startup` (any section key) opens that section. Why recording over Homebridge's IPC instead is not possible yet: `docs/accessory-history.md`.
+
 ## [2.0.0-beta.7] - 2026-10-04
 
 ### Added

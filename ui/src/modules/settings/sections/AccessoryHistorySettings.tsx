@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { AccessoryHistoryNotice } from '@/core/accessories/history/AccessoryHistoryNotice'
 import { api } from '@/core/api'
 import { toastApiError } from '@/core/utilities/http-error'
 import { INNER_BLOCK, INNER_FLEX, SaveIndicator, SettingRow } from '@/modules/settings/sections/rows'
@@ -99,6 +100,7 @@ export function AccessoryHistorySettings() {
           <SaveIndicator show={saving} />
         </div>
       </div>
+      {enabled && <AccessoryHistoryNotice className="mt-2" />}
       {enabled && (
         <div className={`${INNER_BLOCK} mt-2`}>
           <label htmlFor="accessoryHistoryDays" className="small grey-text">{t('settings.accessory.history_retention')}</label>

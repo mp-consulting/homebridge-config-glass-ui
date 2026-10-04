@@ -3,7 +3,7 @@ import type { SettingsPageDeps } from '@/modules/settings/settings-page.store'
 import { isStandalonePWA } from 'is-standalone-pwa'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { useStore } from 'zustand'
 
 import { Spinner } from '@/core/components/spinner/Spinner'
@@ -23,7 +23,7 @@ import { StartupSection } from '@/modules/settings/sections/StartupSection'
 import { TerminalSection } from '@/modules/settings/sections/TerminalSection'
 import { SettingsPageContext } from '@/modules/settings/settings-page.context'
 import { createSettingsPage } from '@/modules/settings/settings-page.store'
-import { isSectionVisible as sectionVisible } from '@/modules/settings/settings-search'
+import { allSections, isSectionVisible as sectionVisible } from '@/modules/settings/settings-search'
 
 import './settings.scss'
 
@@ -87,6 +87,9 @@ export function Settings({ deps }: SettingsProps) {
   const isThemeTransitioning = useStore(page.store, state => state.isThemeTransitioning)
   const isMatterSupported = useStore(page.store, state => state.flags.isMatterSupported)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  // `?section=startup` opens and scrolls to a section (links from other pages)
+  const [searchParams] = useSearchParams()
+  const linkedSection = allSections.find(section => section.key === searchParams.get('section'))?.key
 
   useEffect(() => {
     void page.init()
@@ -102,6 +105,12 @@ export function Settings({ deps }: SettingsProps) {
       throttled.cancel()
     }
   }, [page])
+
+  useEffect(() => {
+    if (!loading && linkedSection) {
+      page.scrollToSection(linkedSection)
+    }
+  }, [page, loading, linkedSection])
 
   useEffect(() => {
     // Focus on search input once it is shown

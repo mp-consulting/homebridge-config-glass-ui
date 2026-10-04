@@ -56,6 +56,21 @@ export interface HistorySeries {
   points: Array<[number, number]>
 }
 
+/**
+ * Whether the recorder runs, and why not. `reason`: `disabled` (switched off in
+ * the settings), `insecureModeRequired` (Homebridge is not in insecure mode, so
+ * the UI cannot read the accessories), `starting` (it starts 15 seconds after
+ * the UI), `error` (it could not attach; `error` says why), or null while it records.
+ */
+export interface AccessoryHistoryStatus {
+  enabled: boolean
+  insecureMode: boolean
+  recording: boolean
+  reason: 'disabled' | 'insecureModeRequired' | 'starting' | 'error' | null
+  error?: string
+  retentionDays: number
+}
+
 export interface AccessoryHistory {
   uniqueId: string
   from: number
@@ -118,6 +133,8 @@ export class AccessoryHistoryService implements OnModuleInit, OnModuleDestroy {
   private timers: Array<ReturnType<typeof setTimeout>> = []
   private monitor: { on: (event: string, cb: (...args: any[]) => void) => void, off?: (event: string, cb: (...args: any[]) => void) => void } | null = null
   private fullDays = new Set<string>()
+  private startError: string | null = null
+  private insecureNoticeLogged = false
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -156,9 +173,17 @@ export class AccessoryHistoryService implements OnModuleInit, OnModuleDestroy {
 
   /** Attach to the shared HAP characteristic monitor and record the current values. */
   public async start(): Promise<void> {
-    if (!this.enabled || !this.configService.homebridgeInsecureMode || this.monitor) {
+    if (!this.enabled || this.monitor) {
       return
     }
+    if (!this.configService.homebridgeInsecureMode) {
+      if (!this.insecureNoticeLogged) {
+        this.insecureNoticeLogged = true
+        this.logger.log('Accessory history is not recorded: it needs Homebridge in insecure mode (Settings, Startup Options, Enable UI Accessory Control).')
+      }
+      return
+    }
+    this.startError = null
     try {
       await mkdir(this.dir, { recursive: true, mode: 0o700 })
       await this.prune()
@@ -167,8 +192,28 @@ export class AccessoryHistoryService implements OnModuleInit, OnModuleDestroy {
       monitor.on('service-update', this.onServiceUpdate)
       this.monitor = monitor as unknown as typeof this.monitor
     } catch (e) {
-      this.logger.debug(`Accessory history recorder not started as ${e.message}.`)
+      this.startError = String(e?.message ?? e).slice(0, 300)
+      this.logger.warn(`Accessory history recorder not started as ${this.startError}.`)
     }
+  }
+
+  /** Whether the recorder runs, and why not (`GET /accessories/history/status`). */
+  public status(): AccessoryHistoryStatus {
+    const insecureMode = !!this.configService.homebridgeInsecureMode
+    const base = { enabled: this.enabled, insecureMode, retentionDays: this.retentionDays }
+    if (!this.enabled) {
+      return { ...base, recording: false, reason: 'disabled' }
+    }
+    if (!insecureMode) {
+      return { ...base, recording: false, reason: 'insecureModeRequired' }
+    }
+    if (this.monitor) {
+      return { ...base, recording: true, reason: null }
+    }
+    if (this.startError) {
+      return { ...base, recording: false, reason: 'error', error: this.startError }
+    }
+    return { ...base, recording: false, reason: 'starting' }
   }
 
   private onServiceUpdate = (services: ServiceType[]) => {

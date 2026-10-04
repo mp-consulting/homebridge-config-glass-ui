@@ -208,4 +208,42 @@ describe('Accessory history (e2e)', () => {
 
     expect(load).not.toHaveBeenCalled()
   })
+
+  it('reports the recorder status, and why it does not record', async () => {
+    const status = async () => (await app.inject({ method: 'GET', path: '/accessories/history/status', headers: { authorization } })).json()
+
+    expect(await status()).toMatchObject({ enabled: true, insecureMode: true, recording: false, reason: 'starting', retentionDays: 7 })
+
+    const monitor = new EventEmitter()
+    const accessories = app.get(AccessoriesService)
+    vi.spyOn(accessories, 'loadAccessories').mockResolvedValue([])
+    vi.spyOn(accessories, 'getHapMonitor').mockResolvedValue(monitor as any)
+    await history.start()
+    expect(await status()).toMatchObject({ recording: true, reason: null })
+
+    ;(history as any).monitor = null
+    configService.homebridgeInsecureMode = false
+    try {
+      expect(await status()).toMatchObject({ insecureMode: false, recording: false, reason: 'insecureModeRequired' })
+      await history.start()
+      expect((history as any).monitor).toBeNull()
+    } finally {
+      configService.homebridgeInsecureMode = true
+    }
+
+    configService.ui.accessoryHistory = { enabled: false }
+    expect(await status()).toMatchObject({ enabled: false, reason: 'disabled' })
+  })
+
+  it('reports why the recorder could not attach', async () => {
+    const accessories = app.get(AccessoriesService)
+    vi.spyOn(accessories, 'loadAccessories').mockRejectedValue(new Error('no bridge'))
+    await history.start()
+    expect(history.status()).toMatchObject({ recording: false, reason: 'error', error: 'no bridge' })
+    ;(history as any).startError = null
+  })
+
+  it('needs a login for the status', async () => {
+    expect((await app.inject({ method: 'GET', path: '/accessories/history/status' })).statusCode).toBe(401)
+  })
 })

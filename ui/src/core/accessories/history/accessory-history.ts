@@ -56,3 +56,17 @@ export function summarise(points: Array<[number, number]>): { latest: number, mi
   const values = points.map(([, value]) => value)
   return { latest: values.at(-1)!, min: Math.min(...values), max: Math.max(...values) }
 }
+
+/** `GET /accessories/history/status`: whether the recorder runs, and why not. */
+export interface AccessoryHistoryStatus {
+  enabled: boolean
+  insecureMode: boolean
+  recording: boolean
+  reason: 'disabled' | 'insecureModeRequired' | 'starting' | 'error' | null
+  error?: string
+  retentionDays: number
+}
+
+export function fetchAccessoryHistoryStatus(): Promise<AccessoryHistoryStatus> {
+  return api.get<AccessoryHistoryStatus>('/accessories/history/status')
+}
