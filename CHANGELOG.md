@@ -9,6 +9,17 @@ All notable changes to this project will be documented in this file.
 - **API tokens.** Administrators can create long-lived tokens (`hbg_…`) under **Users**, **API Tokens**, for scripts and the Assistant's MCP server: `GET/POST /api/auth/tokens` and `DELETE /api/auth/tokens/:id`. A token is shown once and stored only as a hash (`.uix-api-tokens.json`). `Authorization: Bearer hbg_…` works on the REST API and in the socket.io handshake; a `read` token is a non-admin user limited to `GET`/`HEAD` (and cannot control accessories over the socket), an `admin` token is an administrator. Expired and revoked tokens are refused, and open sockets using a revoked token are closed.
 - **Plugin jobs over REST.** `POST /api/plugins/install`, `/update` and `/uninstall` (`{ name, version? }`) start the same install/update/uninstall the Plugins page runs and answer `202 { jobId }`; `GET /api/plugins/jobs/:jobId` reports the job's status and npm output (the latest 64 KiB, without colour codes). Jobs are kept in memory for an hour after they finish. Administrators only.
 - `AuthService.mintShortLivedToken(user, ttlSeconds = 300)` signs a short-lived session token for a user, for the Assistant to call the API on that user's behalf.
+- **Assistant** (optional, off until an administrator enables it under **Settings**, **Assistant**), built on `@mp-consulting/homebridge-ai-kit` with Anthropic, OpenAI, Gemini or an OpenAI-compatible server:
+  - **Log Doctor**: a **Diagnose** button on the Logs page and in the logs widget streams an explanation of the recent log into a side drawer.
+  - **Config Copilot**: describe a plugin's settings in plain words (plugin settings, or the config editor); the schema-valid block is shown as a Monaco diff and **Apply** saves it through the usual save, which keeps a backup.
+  - **Assistant chat**: Cmd/Ctrl+K or the menu entry. Its tools run with the signed-in user's own five-minute token, so their permissions apply; non-admins get read-only tools, and destructive tools ask for confirmation (denied after a minute without an answer). A halo glows around the page while it works.
+  - **Update risk briefing** in the plugin update dialog and Update All, **Suggest rooms & names** on the Accessories page, and a **Daily Digest** dashboard widget.
+  - Settings edit the `HomebridgeAiKit` block of `config.json`; the API key is write-only. Secrets are redacted before anything reaches the provider. Every Assistant entry point is hidden while it is off.
+  - API: `GET /api/ai/status`, `PUT /api/ai/settings`, `POST /api/ai/test`, `/diagnose-logs`, `/plugin-config`, `/chat`, `/update-risk`, `/organize`, `GET /api/ai/digest`, and the socket.io namespace `ai` for streaming and confirmations. `409` while the Assistant is off, `429` past 20 requests a minute per user.
+
+### Changed
+
+- `@mp-consulting/homebridge-ai-kit` (server) and `@mp-consulting/homebridge-ui-kit` (UI, its `ai.css`) are `file:` dependencies on local checkouts while they are unpublished. **Before release they must become semver ranges: `^2.0.0` for ai-kit and `^1.2.0` for ui-kit.**
 
 ## [2.0.0-beta.4] - 2026-10-03
 

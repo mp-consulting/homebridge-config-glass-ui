@@ -18,6 +18,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - View and control your accessories from any browser
 - Run plugins as child bridges
 - Back up and restore your whole Homebridge instance
+- An optional **Assistant** (bring your own AI provider): Log Doctor, Config Copilot, a chat that can look things up and act for you, update risk briefings, room suggestions and a daily digest
 - A REST API (documented at `/swagger`) with API tokens for scripts and the Assistant's MCP server
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
 
@@ -108,6 +109,32 @@ Endpoints the Assistant relies on:
 | `GET /api/plugins/jobs/:jobId`                                             | A job's `status` (`running`, `succeeded`, `failed`) and npm `output`; kept for an hour after it finishes (admin) |
 | `GET /api/status/homebridge/child-bridges`                                 | Child bridges and their status                                                                                   |
 | `PUT /api/server/restart/:deviceId`, `/stop/:deviceId`, `/start/:deviceId` | Restart, stop or start a child bridge (admin)                                                                    |
+
+## Assistant
+
+The Assistant is off until an administrator turns it on under **Settings**, **Assistant**. It uses [`@mp-consulting/homebridge-ai-kit`](https://github.com/mp-consulting/homebridge-ai-kit) and the AI provider you choose: Anthropic (Claude), OpenAI, Google Gemini, or any OpenAI-compatible server such as Ollama or LM Studio on your own network. Settings live in the kit's `HomebridgeAiKit` platform block of `config.json`; installing the kit as a Homebridge plugin as well is recommended, so Homebridge knows the platform.
+
+| Setting                | What it does                                                                                       |
+| ---------------------- | -------------------------------------------------------------------------------------------------- |
+| Enable                 | Turns every Assistant feature on or off. While it is off, no Assistant button is shown.            |
+| Provider, Model        | Leave the model empty for the provider's default (`claude-sonnet-5-5`, `gpt-5`, `gemini-2.5-pro`). |
+| API key                | Write-only: it is saved to `config.json` and never sent back to the browser.                       |
+| Server URL             | For an OpenAI-compatible server, e.g. `http://127.0.0.1:11434/v1` (no key needed).                 |
+| Maximum answer length  | Output tokens per answer (default 2048).                                                           |
+| Test connection, Usage | A one-word test with the saved settings, and the tokens used since Glass UI started.               |
+
+What it adds:
+
+- **Log Doctor**: **Diagnose** on the Logs page and in the logs widget reads the end of the Homebridge log and explains what is wrong, in a side panel.
+- **Config Copilot**: **Describe what you want** in a plugin's settings, or the wand button in the config editor. The Assistant writes the config block from the plugin's schema; you review it as a diff and **Apply** saves it the usual way (with a backup), or **Reject** it.
+- **Assistant chat**: Cmd+K (Ctrl+K) or **Assistant** in the menu. It uses the Homebridge tools of ai-kit with your own permissions: non-admins get read-only tools, and every change an administrator's Assistant makes (restart, config write, uninstall…) asks for confirmation first. No answer within a minute is a no.
+- **Update risk**: **Assess update risk** in a plugin's update dialog and in Update All summarises the release notes and flags breaking changes.
+- **Suggest rooms & names** on the Accessories page proposes rooms and clearer names; you tick the ones to keep.
+- **Daily Digest**, a dashboard widget for administrators.
+
+Privacy: logs, configs and accessory names are sent to the provider you picked, with passwords, tokens and keys replaced by `__REDACTED__` first (and restored when a config comes back). Each user may start 20 Assistant requests a minute.
+
+API: `GET /api/ai/status` (any user), `PUT /api/ai/settings`, `POST /api/ai/test`, `POST /api/ai/diagnose-logs`, `POST /api/ai/plugin-config`, `POST /api/ai/update-risk`, `POST /api/ai/organize`, `GET /api/ai/digest` (admin), `POST /api/ai/chat` (any user). They answer `409` while the Assistant is off. Streaming and tool confirmations use the socket.io namespace `ai` (`ai:chunk`, `ai:tool`, `ai:confirm`, `ai:done`, `ai:error`). The chat's tools call this server on `127.0.0.1` with a five-minute token of the signed-in user; set `UIX_AI_LOCAL_URL` if the UI is only reachable at another address (with HTTPS, a certificate Node trusts is needed).
 
 ## Screens
 
