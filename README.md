@@ -21,7 +21,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - Back up and restore your whole Homebridge instance
 - An optional **Assistant** (bring your own AI provider): Log Doctor, Config Copilot, a chat that can look things up and act for you, update risk briefings, room suggestions and a daily digest
 - A REST API (documented at `/swagger`) with API tokens for scripts and the Assistant's MCP server
-- Notifications by webhook, ntfy, Pushover or Telegram when Homebridge goes down, a child bridge crash loops, updates are available or a backup fails
+- Notifications by webhook, ntfy, Pushover or Telegram when Homebridge goes down, a child bridge crash loops (explained by the Assistant when it is on), updates are available or a backup fails, and the Assistant's daily digest at a time you pick
 - Switch between several Homebridge instances from the menu
 - Installs to your phone's home screen as an app, with a Quick Controls page for your favourite accessories
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
@@ -136,7 +136,8 @@ What it adds:
 - **Assistant chat**: Cmd+K (Ctrl+K) or **Assistant** in the menu. It uses the Homebridge tools of ai-kit with your own permissions: non-admins get read-only tools, and every change an administrator's Assistant makes (restart, config write, uninstall…) asks for confirmation first. No answer within a minute is a no.
 - **Update risk**: **Assess update risk** in a plugin's update dialog and in Update All summarises the release notes and flags breaking changes.
 - **Suggest rooms & names** on the Accessories page proposes rooms and clearer names; you tick the ones to keep. The server reads the accessories from Homebridge (insecure mode, like the Accessories page) and your saved rooms itself, and sends them to the model in batches. The page asks over the `ai` socket (message `organize`, with `ai:progress` { done, total } per batch), so a large installation is not cut off by a proxy's HTTP timeout (Cloudflare stops a request at 100 s). `POST /api/ai/organize` does the same over HTTP for scripts, takes no list, only an optional `{ onlyRooms: [...] }` filter, and can run into that timeout on a big setup behind such a proxy.
-- **Daily Digest**, a dashboard widget for administrators.
+- **Daily Digest**, a dashboard widget for administrators. Turn on **The Assistant's daily digest is ready** under **Settings**, **Notifications** to also get it every day, at the time you pick (server time), on your notification channels.
+- **Crash loop explanations**: while the Assistant is on, a child bridge crash loop notification adds a few sentences on what the bridge's log points to (at most 20 seconds' wait; without them if the Assistant fails). **Explain with the Assistant** under **Settings**, **Notifications** turns this off.
 
 Privacy: logs, configs and accessory names are sent to the provider you picked, with passwords, tokens and keys replaced by `__REDACTED__` first (and restored when a config comes back). Each user may start 20 Assistant requests a minute.
 
@@ -149,7 +150,7 @@ API: `GET /api/ai/status` (any user), `PUT /api/ai/settings`, `POST /api/ai/test
 1. Install the **Homebridge AI Kit** plugin (`@mp-consulting/homebridge-ai-kit`) from the Plugins page: it runs the HTTP MCP server.
 2. Turn on **MCP server**, and keep the address `127.0.0.1` (this machine only) unless the client runs elsewhere on a network you trust (`0.0.0.0`). The port defaults to 8582.
 3. **Client token**: **Generate** makes a random token and shows it once, with a copy button; afterwards the page only says that one is set. **Regenerate** replaces it (clients using the old one stop working), **Clear** removes it, or paste a token of your own (16 characters or more). The server does not start without one.
-4. **Homebridge access**: **Create access token** makes a Glass UI API token named "MCP server" (read-only, or admin to let clients change things) for the server's tools, and stores it in the settings; it is never shown. **Replace** revokes the old one, **Remove** revokes it and takes it out. **Glass UI address** is where the server calls this UI (empty for this UI on this machine).
+4. **Homebridge access**: **Create access token** makes a Glass UI API token named "MCP server" (read-only, or admin to let clients change things) for the server's tools, and stores it in the settings; it is never shown. **Replace** revokes the old one, **Remove** revokes it and takes it out. Under **Advanced**, **Glass UI address** is where the server calls this UI: leave it empty for this UI on this machine, and set it only when the server cannot reach Glass UI at that default address, for example behind a reverse proxy or when it runs on another host.
 5. Restart Homebridge.
 6. **Connect a client** has ready-made configurations for Claude Desktop (`claude_desktop_config.json`, through `mcp-remote`), Claude Code (`claude mcp add --transport http …`) and Cursor (`.cursor/mcp.json`). Right after generating the client token you can include it in them; later they show `<your MCP token>`. **Run locally** gives the configurations that start the MCP server on the client's machine instead (`npx -y @mp-consulting/homebridge-ai-kit mcp`, with `HOMEBRIDGE_URL` set to this UI and `HOMEBRIDGE_TOKEN` to an API token from **Users**, **API Tokens**).
 

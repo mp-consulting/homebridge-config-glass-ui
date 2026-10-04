@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **The Assistant's daily digest as a notification.** Settings, Notifications has a new event, **The Assistant's daily digest is ready** (`dailyDigest`, off by default), and a time to send it at (`dailyDigestTime`, HH:mm in the server's local time, 08:00 by default). Once a day the digest the Daily Digest widget shows (the same one, when the widget already made it that day) goes to every enabled channel. It runs on the shared scheduler, as a system user that is not an administrator and has its own Assistant rate limit (the digest calls no tool and mints no token). It is skipped quietly while the Assistant is off or not set up, a digest that fails to generate is logged and not sent, it goes through the usual cooldown and hourly cap, and it is sent at most once a day.
+- **Crash loop notifications explain themselves.** While the Assistant is on, a child bridge crash loop notification ends with two or three sentences from the Assistant on what that bridge's log points to: Log Doctor over the lines that name the bridge, its plugin or its identifier (with the stack traces after them), redacted as always. It waits at most 20 seconds; a timeout cancels the request, and a timeout, an error (logged) or a log with nothing from the bridge sends the notification without it. The Assistant is only asked when the notification will go out. **Explain with the Assistant** in Settings, Notifications (`explainCrashLoops`, on by default) turns it off. Both new settings are in `GET`/`PUT /api/notifications/settings`.
+
+### Changed
+
+- **Notifications fit their channel.** A message longer than the channel takes is cut, ending with `…`: Telegram 4096 characters (with the title), Pushover 1024 (title 250), ntfy 4096 bytes (above that it arrived as an attachment). The webhook gets the whole message.
+- **The MCP server's Glass UI address is under Advanced.** In Settings, Assistant, MCP server, the **Glass UI address** sits behind a collapsed **Advanced** toggle, with a line on when you need it: the MCP server cannot reach Glass UI at its default address, for example behind a reverse proxy or when it runs on another host. It opens by itself when an address other than the default is set, or when a settings search matches it.
+
+### Fixed
+
+- **A config editor test could time out on CI** (Node 26): the first plugin lookup in `GET /config-editor/plugin/:pluginName` asked registry.npmjs.org for the latest version of the running UI. The spec now stubs that lookup (1.1 s to 4 ms).
+
 ## [2.0.0-beta.6] - 2026-10-04
 
 ### Added
