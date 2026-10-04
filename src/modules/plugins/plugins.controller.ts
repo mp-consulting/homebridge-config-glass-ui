@@ -1,8 +1,9 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
+import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, Inject, Param, Post, Query, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { checkPluginCompatibility, parseTargetVersion } from './plugin-compatibility.js'
 import { PluginJobsService } from './plugin-jobs.service.js'
 import { PluginJobRequestDto } from './plugins.dto.js'
@@ -37,10 +38,10 @@ export class PluginsController {
     example: 'config',
   })
   @Get()
-  pluginsGet(@Request() req: any, @Query('include') include?: string) {
+  pluginsGet(@User() user: AuthUser, @Query('include') include?: string) {
     const includes = (include ?? '').split(',').map(s => s.trim()).filter(Boolean)
     if (includes.includes('config')) {
-      if (!req.user?.admin) {
+      if (!user.admin) {
         throw new ForbiddenException('Admin role required to include plugin config blocks.')
       }
       return this.pluginsService.getInstalledPluginsWithConfig()

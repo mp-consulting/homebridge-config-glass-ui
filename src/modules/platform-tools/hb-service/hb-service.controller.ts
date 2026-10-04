@@ -5,13 +5,13 @@ import {
   Inject,
   Put,
   Query,
-  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { AuthUser, User } from '../../../core/auth/user.decorator.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 import { HbServiceService } from './hb-service.service.js'
 
@@ -59,7 +59,7 @@ export class HbServiceController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Truncate/empty the log file.' })
   @Put('log/truncate')
-  truncateLogFile(@Request() req) {
-    return this.hbServiceService.truncateLogFile(req.user.username)
+  truncateLogFile(@User() user: AuthUser) {
+    return this.hbServiceService.truncateLogFile(user.username)
   }
 }

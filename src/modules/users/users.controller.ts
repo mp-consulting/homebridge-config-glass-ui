@@ -8,7 +8,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -23,6 +22,7 @@ import {
 
 import { AuthService } from '../../core/auth/auth.service.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto.js'
 
 @ApiTags('User Management')
@@ -70,27 +70,27 @@ export class UsersController {
   @ApiOperation({ summary: 'Update the password for the current user.' })
   @ApiBody({ type: UserUpdatePasswordDto })
   @Post('/change-password')
-  updateOwnPassword(@Request() req, @Body() body: UserUpdatePasswordDto) {
-    return this.authService.updateOwnPassword(req.user.username, body.currentPassword, body.newPassword)
+  updateOwnPassword(@User() user: AuthUser, @Body() body: UserUpdatePasswordDto) {
+    return this.authService.updateOwnPassword(user.username, body.currentPassword, body.newPassword)
   }
 
   @ApiOperation({ summary: 'Start 2FA setup for the current user.' })
   @Post('/otp/setup')
-  setupOtp(@Request() req) {
-    return this.authService.setupOtp(req.user.username)
+  setupOtp(@User() user: AuthUser) {
+    return this.authService.setupOtp(user.username)
   }
 
   @ApiOperation({ summary: 'Activate 2FA setup for the current user.' })
   @ApiBody({ type: UserActivateOtpDto })
   @Post('/otp/activate')
-  activateOtp(@Request() req, @Body() body: UserActivateOtpDto) {
-    return this.authService.activateOtp(req.user.username, body.code)
+  activateOtp(@User() user: AuthUser, @Body() body: UserActivateOtpDto) {
+    return this.authService.activateOtp(user.username, body.code)
   }
 
   @ApiOperation({ summary: 'Deactivate 2FA setup for the current user.' })
   @ApiBody({ type: UserDeactivateOtpDto })
   @Post('/otp/deactivate')
-  deactivateOtp(@Request() req, @Body() body: UserDeactivateOtpDto) {
-    return this.authService.deactivateOtp(req.user.username, body.password)
+  deactivateOtp(@User() user: AuthUser, @Body() body: UserDeactivateOtpDto) {
+    return this.authService.deactivateOtp(user.username, body.password)
   }
 }

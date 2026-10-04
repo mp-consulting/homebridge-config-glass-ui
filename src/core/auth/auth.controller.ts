@@ -25,6 +25,7 @@ import { AuthDto, LogoutDto, RefreshTokenDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
 import { disconnectWsClientsWithToken } from './guards/ws-auth.js'
+import { AuthUser } from './user.decorator.js'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -49,8 +50,8 @@ export class AuthController {
   @Get('/settings')
   @ApiOperation({ summary: 'Return settings required to load the UI before authentication.' })
   @UseGuards(CustomGuard)
-  getSettings(@Request() req: any) {
-    const settings: any = this.configService.uiSettings(req.user)
+  getSettings(@Request() req: FastifyRequest & { user?: AuthUser }) {
+    const settings: any = this.configService.uiSettings(Boolean(req.user))
     // Inline a flag the accessories page uses to gate its "no plugins" empty state,
     // so it doesn't need a separate GET /plugins call on every mount.
     //
@@ -106,7 +107,7 @@ export class AuthController {
   @UseGuards(AuthGuard())
   @Post('/refresh')
   async refreshToken(
-    @Request() req: any,
+    @Request() req: FastifyRequest & { user: AuthUser },
     @Body() body: RefreshTokenDto = {},
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
@@ -120,7 +121,7 @@ export class AuthController {
     description: 'Called on page load so the access token never has to be persisted in browser storage.',
   })
   @Post('/session')
-  async restoreSession(@Request() req: any, @Res({ passthrough: true }) res: FastifyReply) {
+  async restoreSession(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     try {
       const payload = this.readRefreshCookie(req.headers?.cookie)
       if (!payload) {

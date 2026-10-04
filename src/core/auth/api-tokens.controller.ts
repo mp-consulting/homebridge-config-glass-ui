@@ -7,7 +7,6 @@ import {
   Inject,
   Param,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -17,6 +16,7 @@ import { ApiTokenService } from './api-token.service.js'
 import { CreateApiTokenDto } from './auth.dto.js'
 import { AdminGuard } from './guards/admin.guard.js'
 import { UserSessionGuard } from './guards/user-session.guard.js'
+import { AuthUser, User } from './user.decorator.js'
 
 const API_TOKEN_VIEW_SCHEMA = {
   type: 'object',
@@ -68,8 +68,8 @@ export class ApiTokensController {
     },
   })
   @Post()
-  createToken(@Body() body: CreateApiTokenDto, @Request() req: any) {
-    return this.apiTokens.create(body, req.user?.username)
+  createToken(@Body() body: CreateApiTokenDto, @User() user: AuthUser) {
+    return this.apiTokens.create(body, user.username)
   }
 
   @ApiOperation({ summary: 'Revoke an API token.' })

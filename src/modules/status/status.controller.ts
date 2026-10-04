@@ -1,8 +1,9 @@
-import { Controller, Get, Inject, Request, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { serverInfoForUser, StatusService, withoutInstallPath } from './status.service.js'
 
@@ -55,9 +56,9 @@ export class StatusController {
     summary: 'Return an array of the active child bridges and their status.',
   })
   @Get('/homebridge/child-bridges')
-  async getChildBridges(@Request() req: any) {
+  async getChildBridges(@User() user: AuthUser) {
     // Pairing codes (HomeKit / Matter PIN and setup URI) only for administrators
-    return this.childBridgesService.getChildBridgesForUser(req.user?.admin === true)
+    return this.childBridgesService.getChildBridgesForUser(user.admin === true)
   }
 
   @UseGuards(AdminGuard)
@@ -78,16 +79,16 @@ export class StatusController {
 
   @ApiOperation({ summary: 'Return general information about the host environment.' })
   @Get('/server-information')
-  async getHomebridgeServerInfo(@Request() req: any) {
+  async getHomebridgeServerInfo(@User() user: AuthUser) {
     // Paths, service user and network details for administrators only
-    return serverInfoForUser(await this.statusService.getHomebridgeServerInfo(), req.user?.admin === true)
+    return serverInfoForUser(await this.statusService.getHomebridgeServerInfo(), user.admin === true)
   }
 
   @ApiOperation({ summary: 'Return current Node.js version and update availability information.' })
   @Get('/nodejs')
-  async getNodeVersionInfo(@Request() req: any) {
+  async getNodeVersionInfo(@User() user: AuthUser) {
     // The install path for administrators only
-    return withoutInstallPath(await this.statusService.getNodeVersionInfo(), req.user?.admin === true)
+    return withoutInstallPath(await this.statusService.getNodeVersionInfo(), user.admin === true)
   }
 
   @ApiOperation({ summary: 'Returns throttled status for Raspberry Pi.' })

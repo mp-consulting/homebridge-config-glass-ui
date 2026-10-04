@@ -1,8 +1,9 @@
-import { Body, CanActivate, Controller, Delete, ExecutionContext, ForbiddenException, Get, HttpCode, Inject, Injectable, Post, Put, Query, Request, UseGuards } from '@nestjs/common'
+import { Body, CanActivate, Controller, Delete, ExecutionContext, ForbiddenException, Get, HttpCode, Inject, Injectable, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { AiMcpService } from './ai-mcp.service.js'
 import { AiMcpHomebridgeTokenDto, AiMcpSettingsDto } from './ai.dto.js'
 
@@ -54,37 +55,37 @@ export class AiMcpController {
   @ApiOperation({ summary: 'Enable the HTTP MCP server, set its address and port, the Glass UI address it calls, or a client token of your own (write-only). Applies after Homebridge restarts.' })
   @ApiQuery(ORIGIN_QUERY)
   @Put()
-  updateSettings(@Body() body: AiMcpSettingsDto, @Request() req: any, @Query('origin') from?: string) {
-    return this.mcpService.updateSettings(body, req.user, origin(from))
+  updateSettings(@Body() body: AiMcpSettingsDto, @User() user: AuthUser, @Query('origin') from?: string) {
+    return this.mcpService.updateSettings(body, user, origin(from))
   }
 
   @ApiOperation({ summary: 'Generate a new client token (replaces the stored one). The token, and snippets that contain it, are returned this once.' })
   @ApiQuery(ORIGIN_QUERY)
   @HttpCode(201)
   @Post('token')
-  generateToken(@Request() req: any, @Query('origin') from?: string) {
-    return this.mcpService.generateToken(req.user, origin(from))
+  generateToken(@User() user: AuthUser, @Query('origin') from?: string) {
+    return this.mcpService.generateToken(user, origin(from))
   }
 
   @ApiOperation({ summary: 'Remove the client token. The server does not start without one.' })
   @ApiQuery(ORIGIN_QUERY)
   @Delete('token')
-  clearToken(@Request() req: any, @Query('origin') from?: string) {
-    return this.mcpService.clearToken(req.user, origin(from))
+  clearToken(@User() user: AuthUser, @Query('origin') from?: string) {
+    return this.mcpService.clearToken(user, origin(from))
   }
 
   @ApiOperation({ summary: 'Create the Glass UI API token ("MCP server") the MCP server\'s tools act with, and store it in the settings. One created here before is revoked. The token is never returned.' })
   @ApiQuery(ORIGIN_QUERY)
   @HttpCode(201)
   @Post('homebridge-token')
-  createHomebridgeToken(@Body() body: AiMcpHomebridgeTokenDto, @Request() req: any, @Query('origin') from?: string) {
-    return this.mcpService.createHomebridgeToken(body.scope, req.user, origin(from))
+  createHomebridgeToken(@Body() body: AiMcpHomebridgeTokenDto, @User() user: AuthUser, @Query('origin') from?: string) {
+    return this.mcpService.createHomebridgeToken(body.scope, user, origin(from))
   }
 
   @ApiOperation({ summary: 'Remove the MCP server\'s API token from the settings and revoke it.' })
   @ApiQuery(ORIGIN_QUERY)
   @Delete('homebridge-token')
-  removeHomebridgeToken(@Request() req: any, @Query('origin') from?: string) {
-    return this.mcpService.removeHomebridgeToken(req.user, origin(from))
+  removeHomebridgeToken(@User() user: AuthUser, @Query('origin') from?: string) {
+    return this.mcpService.removeHomebridgeToken(user, origin(from))
   }
 }

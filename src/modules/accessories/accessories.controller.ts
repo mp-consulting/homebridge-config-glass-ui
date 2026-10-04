@@ -5,12 +5,12 @@ import {
   Inject,
   Param,
   Put,
-  Request,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
+import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { AccessorySetCharacteristicDto } from './accessories.dto.js'
 import { AccessoriesService } from './accessories.service.js'
 
@@ -36,8 +36,8 @@ export class AccessoriesController {
     summary: 'Get the accessory and room layout for the authenticating user.',
   })
   @Get('/layout')
-  getAccessoryLayout(@Request() req) {
-    return this.accessoriesService.getAccessoryLayout(req.user.username)
+  getAccessoryLayout(@User() user: AuthUser) {
+    return this.accessoriesService.getAccessoryLayout(user.username)
   }
 
   @ApiOperation({
