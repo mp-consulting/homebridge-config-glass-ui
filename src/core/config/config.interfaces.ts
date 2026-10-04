@@ -188,4 +188,9 @@ export interface HomebridgeUiConfig {
     fontWeight?: string | number
     lightingMode?: 'light' | 'dark'
   }
+  // Accessory sensor history recorder (see AccessoryHistoryService)
+  accessoryHistory?: {
+    enabled?: boolean
+    retentionDays?: number
+  }
 }

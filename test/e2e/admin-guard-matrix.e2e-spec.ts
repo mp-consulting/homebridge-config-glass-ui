@@ -41,6 +41,7 @@ const UNGUARDED_ALLOW_LIST = new Set([
   'GET /accessories',
   'GET /accessories/:uniqueId',
   'GET /accessories/layout',
+  'GET /accessories/:uniqueId/history',
   'PUT /accessories/:uniqueId',
   // plugins: the handler rejects `include=config` for non-admins itself
   'GET /plugins',

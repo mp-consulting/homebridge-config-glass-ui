@@ -109,6 +109,7 @@ export const sectionItems: Record<string, string[]> = {
   ],
   cache: [
     'setting-accessory-debug',
+    'setting-accessory-history',
     'setting-reset-accessory-ind',
     'setting-reset-bridge-accessories',
     'setting-reset-accessory-all',
@@ -215,6 +216,7 @@ export function getItemsContent(): Record<string, string> {
 
     // Cache section
     'setting-accessory-debug': t('settings.accessory.debug'),
+    'setting-accessory-history': `${t('settings.accessory.history')} ${t('settings.accessory.history_desc')}`,
     'setting-reset-accessory-ind': t('reset.accessory_ind.title'),
     'setting-reset-bridge-accessories': t('reset.bridge_accessories.title'),
     'setting-reset-accessory-all': t('reset.accessory_all.title'),

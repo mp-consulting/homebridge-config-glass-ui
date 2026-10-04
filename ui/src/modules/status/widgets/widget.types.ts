@@ -58,6 +58,10 @@ export interface Widget {
   historyItems?: number // cpu widget, memory widget, disk widget, network widget
   networkInterface?: string // network widget
   networkUnit?: 'bits' | 'bytes' // network widget (default bits)
+  historyAccessory?: string // accessory history widget: the accessory uniqueId
+  historyType?: string // accessory history widget: the characteristic type
+  historyLabel?: string // accessory history widget: what the title shows
+  historyHours?: number // accessory history widget: how far back
   location?: {
     id: string // weather widget
     [key: string]: unknown
@@ -107,6 +111,7 @@ export const WIDGETS_WITH_SETTINGS = [
   'MemoryWidgetComponent',
   'NetworkWidgetComponent',
   'HomebridgeLogsWidgetComponent',
+  'AccessoryHistoryWidgetComponent',
 ] as const
 
 // Available widget component names, for filtering the saved layout
@@ -125,4 +130,5 @@ export const AVAILABLE_WIDGETS: readonly string[] = [
   'ClockWidgetComponent',
   'BridgesWidgetComponent',
   'MatterQrcodeWidgetComponent',
+  'AccessoryHistoryWidgetComponent',
 ]

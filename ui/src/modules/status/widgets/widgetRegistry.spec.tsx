@@ -30,6 +30,7 @@ vi.mock('./weather-widget/WeatherWidget', () => stub('WeatherWidget'))
 vi.mock('./accessories-widget/AccessoriesWidget', () => stub('AccessoriesWidget'))
 vi.mock('./clock-widget/ClockWidget', () => stub('ClockWidget'))
 vi.mock('./bridges-widget/BridgesWidget', () => stub('BridgesWidget'))
+vi.mock('./accessory-history-widget/AccessoryHistoryWidget', () => stub('AccessoryHistoryWidget'))
 
 describe('widgetRegistry', () => {
   it('has a widget for exactly the available widget keys', () => {

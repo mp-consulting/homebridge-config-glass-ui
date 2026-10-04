@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import { AccessoryHistorySettings } from '@/modules/settings/sections/AccessoryHistorySettings'
 import { INNER_FLEX, ModalRow, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useSettingsPage } from '@/modules/settings/settings-page.context'
 
@@ -20,6 +21,7 @@ export function CacheSection() {
           <SwitchControl field="uiAccDebug" id="accessoryDebug" label={t('settings.accessory.debug')} />
         </div>
       </SettingRow>
+      <AccessoryHistorySettings />
       <ModalRow
         item="setting-reset-accessory-ind"
         title={t('reset.accessory_ind.title')}

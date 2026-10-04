@@ -8,6 +8,7 @@ import type { WeatherLocation } from './widget-control.helpers'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { isRecordedCharacteristic } from '@/core/accessories/history/accessory-history'
 import { api } from '@/core/api'
 import { formatDatePattern } from '@/core/pipes/date-pattern'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -159,6 +160,27 @@ function CityTypeahead({ value, onChange, onSearchingChange }: CityTypeaheadProp
   )
 }
 
+/** One accessory characteristic the history widget can chart. */
+interface HistoryOption {
+  value: string
+  uniqueId: string
+  type: string
+  label: string
+}
+
+const HISTORY_HOURS = [6, 24, 72, 168]
+
+function historyOptionsOf(services: Array<{ uniqueId?: string, serviceName: string, serviceCharacteristics: Array<{ type: string, description: string, format: string }> }>): HistoryOption[] {
+  return (Array.isArray(services) ? services : []).flatMap(service => (service.uniqueId && Array.isArray(service.serviceCharacteristics)
+    ? service.serviceCharacteristics.filter(isRecordedCharacteristic).map(characteristic => ({
+        value: `${service.uniqueId}|${characteristic.type}`,
+        uniqueId: service.uniqueId!,
+        type: characteristic.type,
+        label: `${service.serviceName} - ${characteristic.description}`,
+      }))
+    : [])).sort((a, b) => a.label.localeCompare(b.label))
+}
+
 function numberValue(event: ChangeEvent<HTMLInputElement>): number | undefined {
   // ngModel on a number input gave null for an empty box
   return event.target.value === '' ? null as unknown as undefined : Number(event.target.value)
@@ -175,6 +197,7 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
   const [searching, setSearching] = useState(false)
   const [serverInfo, setServerInfo] = useState<{ homebridgeRunningInDocker?: boolean } | null>(null)
   const [networkInterfaces, setNetworkInterfaces] = useState<string[]>([])
+  const [historyOptions, setHistoryOptions] = useState<HistoryOption[]>([])
   const [currentDate] = useState(() => new Date())
 
   const set = (patch: Partial<Widget>) => setWidget(w => ({ ...w, ...patch }))
@@ -187,6 +210,18 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
         (adapters) => {
           if (active) {
             setNetworkInterfaces(adapters)
+          }
+        },
+        (error) => {
+          console.error(error)
+        },
+      )
+    }
+    if (original.component === 'AccessoryHistoryWidgetComponent') {
+      api.get<Array<{ uniqueId?: string, serviceName: string, serviceCharacteristics: Array<{ type: string, description: string, format: string }> }>>('/accessories').then(
+        (services) => {
+          if (active) {
+            setHistoryOptions(historyOptionsOf(services))
           }
         },
         (error) => {
@@ -355,6 +390,40 @@ export function WidgetControl({ activeModal, widget: original }: WidgetControlPr
               </div>
             </li>
             {refreshAndHistory('network')}
+          </>
+        )
+      case 'AccessoryHistoryWidgetComponent':
+        return (
+          <>
+            <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
+              <label htmlFor="history-characteristic" className="mb-2 mb-md-0 w-100 w-md-50">{t('status.widget.history.characteristic')}</label>
+              <div className="text-start text-md-end w-100 w-md-50">
+                {historyOptions.length
+                  ? (
+                      <select
+                        id="history-characteristic"
+                        className="custom-select"
+                        value={widget.historyAccessory && widget.historyType ? `${widget.historyAccessory}|${widget.historyType}` : ''}
+                        onChange={(event) => {
+                          const option = historyOptions.find(item => item.value === event.target.value)
+                          set({ historyAccessory: option?.uniqueId, historyType: option?.type, historyLabel: option?.label })
+                        }}
+                      >
+                        <option value="">{t('status.widget.history.choose')}</option>
+                        {historyOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+                      </select>
+                    )
+                  : <span className="grey-text">{t('status.widget.history.none_recorded')}</span>}
+              </div>
+            </li>
+            <li className="list-group-item d-flex flex-column flex-md-row align-items-center">
+              <label htmlFor="history-hours" className="mb-2 mb-md-0 w-100 w-md-50">{t('status.widget.history.period')}</label>
+              <div className="text-start text-md-end w-100 w-md-50">
+                <select id="history-hours" className="custom-select" value={widget.historyHours ?? 24} onChange={event => set({ historyHours: Number(event.target.value) })}>
+                  {HISTORY_HOURS.map(hours => <option key={hours} value={hours}>{t('status.widget.history.hours', { hours })}</option>)}
+                </select>
+              </div>
+            </li>
           </>
         )
       default:

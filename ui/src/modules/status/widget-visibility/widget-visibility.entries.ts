@@ -30,6 +30,7 @@ export function visibilityEntries(dashboard: Array<Partial<Widget>>, t: TFunctio
     { name: t('status.widget.weather.title_weather'), component: 'WeatherWidgetComponent', hidden: false, cols: 3, rows: 5, mobileOrder: 20, requiresConfig: true },
     { name: t('menu.label_accessories'), component: 'AccessoriesWidgetComponent', hidden: !env.enableAccessories, cols: 7, rows: 9, mobileOrder: 30 },
     { name: t('child_bridge.bridges'), component: 'BridgesWidgetComponent', hidden: false, cols: 5, rows: 9, mobileOrder: 35 },
+    { name: t('status.widget.history.title'), component: 'AccessoryHistoryWidgetComponent', hidden: !env.enableAccessories, cols: 5, rows: 5, mobileOrder: 37, requiresConfig: true },
     { name: t('status.cpu.title_cpu'), component: 'CpuWidgetComponent', hidden: false, cols: 5, rows: 3, mobileOrder: 40 },
     { name: t('status.memory.title_memory'), component: 'MemoryWidgetComponent', hidden: false, cols: 5, rows: 3, mobileOrder: 50 },
     { name: t('status.network.title_network'), component: 'NetworkWidgetComponent', hidden: false, cols: 10, rows: 3, mobileOrder: 55 },

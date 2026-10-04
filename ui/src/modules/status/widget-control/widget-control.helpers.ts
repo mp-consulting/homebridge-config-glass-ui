@@ -48,6 +48,9 @@ export function hasChanges(w: Partial<Widget>, o: Partial<Widget>): boolean {
     || w.historyItems !== o.historyItems
     || w.networkInterface !== o.networkInterface
     || w.networkUnit !== o.networkUnit
+    || w.historyAccessory !== o.historyAccessory
+    || w.historyType !== o.historyType
+    || w.historyHours !== o.historyHours
     || w.showToolbar !== o.showToolbar
 }
 
