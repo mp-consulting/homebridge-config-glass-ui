@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.6] - 2026-10-04
+
+### Added
+
+- **MCP server settings.** Settings, Assistant has an **MCP server** part (administrators) for the HTTP MCP server the Homebridge AI Kit plugin runs, so Claude Desktop, Claude Code and Cursor can reach Homebridge: turn it on, set its address and port, **Generate** a client token (random, shown once with a copy button, then only "set"; **Regenerate**, **Clear**, or paste your own), and **Create access token** for its tools: a Glass UI API token named "MCP server", read-only or admin, stored in the settings and never shown (**Replace** revokes the old one, **Remove** revokes it). **Connect a client** has ready-made configurations for the three clients, over HTTP or launching the server locally, with the token in them right after it is generated. Changes apply after Homebridge restarts. They are the `mcp.http` part of the `HomebridgeAiKit` block. API: `GET/PUT /api/ai/mcp`, `POST/DELETE /api/ai/mcp/token`, `POST/DELETE /api/ai/mcp/homebridge-token` (admin, signed-in session only: API and service tokens get `403`); no response contains either token after it is generated.
+
+### Fixed
+
+- **Suggest rooms & names failed on larger installations** with a `524` behind Cloudflare (which stops an HTTP request after 100 s), and earlier with a `502` when the model's JSON reply was cut off at the output limit. The organiser now runs over the `ai` socket (message `organize`, cancelled when the dialog closes) and shows how many batches are done (`ai:progress`); `POST /api/ai/organize` stays for scripts. With `@mp-consulting/homebridge-ai-kit` 2.0.2 the accessories go to the model in batches that fit the output limit (three at a time), with short ids instead of the long HomeKit ones, and a reply cut off at the limit says so. Provider and JSON errors are shown in the dialog and logged.
+- **The Assistant buttons' glow was clipped** to a box around the button: the Test button in Settings, Assistant (the settings row clips its contents for its collapse animation), Send in the Assistant chat, Diagnose in Log Doctor, Generate in Config Copilot, Describe what you want in plugin settings and Assess update risk in the plugin update dialog. The glow now has room; nothing else moves.
+
+### Changed
+
+- `@mp-consulting/homebridge-ai-kit` ^2.0.2 and `@mp-consulting/homebridge-ui-kit` ^1.2.1.
+
 ## [2.0.0-beta.5] - 2026-10-04
 
 ### Added
