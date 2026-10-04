@@ -5,13 +5,14 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**/*.ts'],
-      // Enforced on `--coverage` runs (CI runs one). About two points under
-      // the measured levels; raise them as coverage grows.
+      // Enforced on `--coverage` runs (CI runs one). The measured levels
+      // rounded down (76.6 / 72.8 / 81.2 / 76.5 on macOS, Node 24); raise them
+      // as coverage grows.
       thresholds: {
-        statements: 66,
-        branches: 63,
-        functions: 73,
-        lines: 66,
+        statements: 76,
+        branches: 72,
+        functions: 81,
+        lines: 76,
       },
     },
     // Each spec file gets its own storage directory (test/storage-path.ts)
