@@ -109,20 +109,32 @@ export function normaliseConfig(
 }
 
 /**
+ * UI settings that are on unless set to `false` (read as `!== false`), so
+ * their `false` must be kept. Dotted paths from the UI config block's root.
+ */
+export const UI_CONFIG_DEFAULT_TRUE = new Set(['glassMode', 'accessoryHistory.enabled'])
+
+/**
  * Removes empty objects and arrays from the provided object
  * Warning: This will modify the object in place, so use with caution.
  * @param {Record<string, any>} obj
+ * @param {Set<string>} keepFalse - dotted paths whose `false` is kept
+ * @param {string} prefix - the path of `obj` (used while recursing)
  * @return {void}
  * @private
  */
-export function removeEmpty(obj: Record<string, any>): void {
+export function removeEmpty(obj: Record<string, any>, keepFalse: ReadonlySet<string> = new Set(), prefix = ''): void {
   Object.keys(obj).forEach((key) => {
     const value = obj[key]
+    const path = prefix ? `${prefix}.${key}` : key
+    if (value === false && keepFalse.has(path)) {
+      return
+    }
     if (value === '' || value === null || value === undefined || value === false || (Array.isArray(value) && value.length === 0)) {
-      // Checking for 'false' is okay for the UI as all defaults are false
+      // Dropping 'false' is fine for settings that default to false
       delete obj[key]
     } else if (typeof value === 'object') {
-      removeEmpty(value)
+      removeEmpty(value, keepFalse, Array.isArray(value) ? `${path}[]` : path)
       if (Object.keys(value).length === 0) {
         delete obj[key]
       }
@@ -152,6 +164,6 @@ export function cleanUpUiConfig(uiConfig: Record<string, any>): PlatformConfig {
     cleanedUiConfig.bridges = cleanedUiConfig.bridges.filter(bridge => bridge && bridge.username)
   }
 
-  removeEmpty(cleanedUiConfig)
+  removeEmpty(cleanedUiConfig, UI_CONFIG_DEFAULT_TRUE)
   return cleanedUiConfig
 }

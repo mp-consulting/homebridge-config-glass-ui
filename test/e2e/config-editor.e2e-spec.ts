@@ -1826,6 +1826,34 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result.length).toBe(0)
   })
 
+  it('keeps false for UI settings that default to on (glassMode, accessoryHistory.enabled)', async () => {
+    // Regression: the cleanup dropped every false, so turning these off never stuck.
+    let res = await app.inject({
+      method: 'PATCH',
+      url: '/config-editor/ui',
+      headers: { authorization },
+      payload: { 'glassMode': false, 'accessoryHistory.enabled': false, 'sudo': false },
+    })
+    expect(res.statusCode).toBe(200)
+
+    let ui = (await readJson(configFilePath)).platforms.find((x: { platform: string }) => x.platform === 'config')
+    expect(ui.glassMode).toBe(false)
+    expect(ui.accessoryHistory).toEqual({ enabled: false })
+    // Settings that default to false are still dropped
+    expect(ui).not.toHaveProperty('sudo')
+
+    res = await app.inject({
+      method: 'PATCH',
+      url: '/config-editor/ui',
+      headers: { authorization },
+      payload: { 'glassMode': true, 'accessoryHistory.enabled': true },
+    })
+    expect(res.statusCode).toBe(200)
+    ui = (await readJson(configFilePath)).platforms.find((x: { platform: string }) => x.platform === 'config')
+    expect(ui.glassMode).toBe(true)
+    expect(ui.accessoryHistory).toEqual({ enabled: true })
+  })
+
   it('concurrent targeted mutations do not clobber each other', async () => {
     // Regression: the targeted mutation endpoints read the config outside the
     // lock and then persisted the whole file, so two concurrent calls both

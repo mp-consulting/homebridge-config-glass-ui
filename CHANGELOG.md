@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- **Turning glass mode or the accessory history off did not stick.** Saving the UI settings dropped every `false`, which is only right for settings that default to off; `glassMode` and `accessoryHistory.enabled` default to on, so they came back on. Their `false` is now kept.
 - **A scheduled backup that could not be created was not notified**: the job logged it and carried on, so **A scheduled backup fails** only fired for errors outside it. It now reports a missing or unwritable backup path and a failed archive too.
 - **Plugin settings forms check `contains` and schema `dependencies`.** The form's own validators (vendored from ng-formworks) left `contains` unfinished (always valid) and broke schema dependencies (each rule was given a raw value instead of a field, with keyword and value swapped, so a rule such as `"dependencies": { "port": { "properties": { "host": { "minLength": 3 } } } }` never applied). Both now follow JSON Schema: `contains` passes when at least one item matches its schema, and a schema dependency checks `properties`, `required`, `allOf`/`anyOf`/`oneOf`/`not` and the usual keywords once its field has a value. `const` also compares objects and arrays.
 
