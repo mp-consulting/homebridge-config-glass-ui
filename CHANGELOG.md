@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.5] - 2026-10-04
+
 ### Added
 
 - **API tokens.** Administrators can create long-lived tokens (`hbg_…`) under **Users**, **API Tokens**, for scripts and the Assistant's MCP server: `GET/POST /api/auth/tokens` and `DELETE /api/auth/tokens/:id`. A token is shown once and stored only as a hash (`.uix-api-tokens.json`). `Authorization: Bearer hbg_…` works on the REST API and in the socket.io handshake; a `read` token is a non-admin user limited to `GET`/`HEAD` (and cannot control accessories over the socket), an `admin` token is an administrator. Expired and revoked tokens are refused, and open sockets using a revoked token are closed. Tokens cannot manage tokens: `/api/auth/tokens` answers `403` to any API token (even an `admin` one) and to service tokens, and needs a signed-in session.
