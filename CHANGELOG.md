@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Scenes v2: sunrise/sunset, accessory value triggers, and conditions.** Besides cron schedules, a scene can run at sunrise or sunset with an offset in minutes (computed on the server for the dashboard's Weather widget city, no new dependency) or when an accessory value changes or starts to match a comparison (the live accessory feed; needs insecure mode, at most once every 5 s). Conditions (a time window in `HH:mm`/`sunrise`/`sunset`, spanning midnight if needed, and accessory value comparisons) must hold for an automatic run; a run held back is recorded as `lastSkipped` and shown in the list. The scene editor has **Run it** and **Only if** sections. `scenes.json` becomes version 2 (`triggers`, `conditions`): version 1 scenes are read as cron triggers, and `schedules` is still returned and accepted. API: `triggers`/`conditions` on `POST`/`PUT /api/scenes`, `GET /api/scenes/automation`. See `docs/scenes.md`.
+
 - **Off-site backups and retention.** Settings, General, **Off-site Backups** uploads each scheduled backup to WebDAV and/or an S3-compatible bucket (AWS, MinIO, R2, B2…; SigV4 on node:crypto, no new dependency), with **Test connection**, and keeps each destination's newest N copies of this instance's backups (7 by default). Locally, keep the last 7 days as before or the newest N. A failed upload sends **A scheduled backup fails**, and a new opt-in event, **A scheduled backup is done (and uploaded)** (`backupSucceeded`), reports successes. Secrets are stored owner-only in `.uix-backup-destinations.json` and never returned. API: `GET`/`PUT /api/backup/destinations`, `POST /api/backup/destinations/test`. See `docs/offsite-backups.md`.
 
 ### Fixed

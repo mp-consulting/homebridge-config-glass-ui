@@ -1,6 +1,6 @@
 import type { ModalComponentProps } from '@/core/ui/modal'
 
-import type { ControllableAccessory, Scene, SceneAction, SceneInput, SceneSchedule } from './scenes'
+import type { ControllableAccessory, Scene, SceneAction, SceneAutomationInfo, SceneCondition, SceneInput, SceneTrigger } from './scenes'
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,28 +9,37 @@ import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { toastApiError } from '@/core/utilities/http-error'
 
-import { loadControllableAccessories, parseSceneValue, scenesApi } from './scenes'
+import { isConditionValid, isTriggerValid, loadSceneAccessories, parseSceneValue, scenesApi, triggersOf } from './scenes'
+import { ConditionsEditor, TriggersEditor } from './SceneTriggers'
 
 export interface SceneEditorProps extends ModalComponentProps<Scene> {
   /** The scene to edit; a new one when absent. */
   scene?: Scene
 }
 
-/** Add or edit a scene: its name, the values it sets and when it runs. Closes with the saved scene. */
+/**
+ * Add or edit a scene: its name, the values it sets, what runs it (cron,
+ * sunrise / sunset, a characteristic change) and the conditions an automatic
+ * run checks. Closes with the saved scene.
+ */
 export function SceneEditor({ activeModal, scene }: SceneEditorProps) {
   const { t } = useTranslation()
   const [name, setName] = useState(scene?.name ?? '')
   const [actions, setActions] = useState<SceneAction[]>(scene?.actions ?? [])
-  const [schedules, setSchedules] = useState<SceneSchedule[]>(scene?.schedules ?? [])
+  const [triggers, setTriggers] = useState<SceneTrigger[]>(() => (scene ? triggersOf(scene) : []))
+  const [conditions, setConditions] = useState<SceneCondition[]>(scene?.conditions ?? [])
   const [accessories, setAccessories] = useState<ControllableAccessory[] | null>(null)
+  const [readable, setReadable] = useState<ControllableAccessory[]>([])
+  const [info, setInfo] = useState<SceneAutomationInfo | null>(null)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     let active = true
-    loadControllableAccessories().then(
-      (list) => {
+    loadSceneAccessories().then(
+      (lists) => {
         if (active) {
-          setAccessories(list)
+          setAccessories(lists.writable)
+          setReadable(lists.readable)
         }
       },
       (error) => {
@@ -39,6 +48,15 @@ export function SceneEditor({ activeModal, scene }: SceneEditorProps) {
           setAccessories([])
         }
       },
+    )
+    // An older server has no automation info: sun triggers then say nothing about the location
+    scenesApi.automation().then(
+      (value) => {
+        if (active) {
+          setInfo(value)
+        }
+      },
+      () => undefined,
     )
     return () => {
       active = false
@@ -77,7 +95,7 @@ export function SceneEditor({ activeModal, scene }: SceneEditorProps) {
   }
 
   const save = async () => {
-    const input: SceneInput = { name: name.trim(), actions, schedules }
+    const input: SceneInput = { name: name.trim(), actions, triggers, conditions }
     setSaving(true)
     try {
       activeModal.close(scene ? await scenesApi.update(scene.id, input) : await scenesApi.create(input))
@@ -88,7 +106,7 @@ export function SceneEditor({ activeModal, scene }: SceneEditorProps) {
     }
   }
 
-  const valid = name.trim().length > 0 && actions.length > 0 && schedules.every(schedule => schedule.cron.trim())
+  const valid = name.trim().length > 0 && actions.length > 0 && triggers.every(isTriggerValid) && conditions.every(isConditionValid)
 
   return (
     <div className="modal-content hb-scene-editor">
@@ -161,38 +179,8 @@ export function SceneEditor({ activeModal, scene }: SceneEditorProps) {
           {t('scenes.add_action')}
         </button>
 
-        <h6>{t('scenes.schedules')}</h6>
-        <p className="small grey-text mb-2">{t('scenes.schedules_help')}</p>
-        <ul className="list-group list-group-box mb-2">
-          {schedules.map((schedule, index) => (
-            // eslint-disable-next-line react/no-array-index-key -- rows have no identity of their own
-            <li key={index} className="list-group-item d-flex align-items-center gap-2" data-testid="scene-schedule">
-              <input
-                className="form-control custom-input font-monospace"
-                aria-label={t('scenes.cron')}
-                placeholder="0 19 * * *"
-                value={schedule.cron}
-                onChange={event => setSchedules(current => current.map((item, i) => (i === index ? { ...item, cron: event.target.value } : item)))}
-              />
-              <div className="form-check form-switch m-0">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  aria-label={t('common.labels.enabled')}
-                  checked={schedule.enabled}
-                  onChange={event => setSchedules(current => current.map((item, i) => (i === index ? { ...item, enabled: event.target.checked } : item)))}
-                />
-              </div>
-              <button type="button" className="btn btn-sm btn-danger m-0" aria-label={t('form.button_delete')} onClick={() => setSchedules(current => current.filter((_, i) => i !== index))}>
-                <i className="fas fa-trash" aria-hidden="true"></i>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <button type="button" className="btn btn-sm btn-elegant" onClick={() => setSchedules(current => [...current, { cron: '', enabled: true }])}>
-          <i className="fas fa-plus me-1" aria-hidden="true"></i>
-          {t('scenes.add_schedule')}
-        </button>
+        <TriggersEditor triggers={triggers} onChange={setTriggers} accessories={readable} info={info} />
+        <ConditionsEditor conditions={conditions} onChange={setConditions} accessories={readable} />
       </div>
       <ModalFooter>
         <div className="text-start">

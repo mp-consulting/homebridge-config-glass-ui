@@ -14,7 +14,7 @@ import { toast } from '@/core/ui/toast'
 import { toastApiError } from '@/core/utilities/http-error'
 
 import { SceneEditor } from './SceneEditor'
-import { scenesApi } from './scenes'
+import { describeTrigger, scenesApi, triggersOf } from './scenes'
 
 const MODAL_OPTIONS = { size: 'lg', backdrop: 'static' } as const
 
@@ -115,11 +115,17 @@ export function ScenesPage() {
                       <br />
                       <small className="grey-text">
                         {t('scenes.summary', { count: scene.actions.length })}
-                        {scene.schedules.some(schedule => schedule.enabled) && (
+                        {triggersOf(scene).some(trigger => trigger.enabled) && (
                           <>
                             {' · '}
                             <i className="far fa-clock me-1" aria-hidden="true"></i>
-                            {scene.schedules.filter(schedule => schedule.enabled).map(schedule => schedule.cron).join(', ')}
+                            {triggersOf(scene).filter(trigger => trigger.enabled).map(trigger => describeTrigger(trigger, t)).join(', ')}
+                          </>
+                        )}
+                        {!!scene.conditions?.length && (
+                          <>
+                            {' · '}
+                            {t('scenes.summary_conditions', { count: scene.conditions.length })}
                           </>
                         )}
                         {scene.lastRun && (
@@ -128,6 +134,11 @@ export function ScenesPage() {
                             {t('scenes.last_run', { date: `${formatDate(scene.lastRun.at, 'mediumDate')} ${formatDate(scene.lastRun.at, 'shortTime')}` })}
                             {!scene.lastRun.ok && <i className="fas fa-triangle-exclamation orange-text ms-1" aria-hidden="true"></i>}
                           </>
+                        )}
+                        {scene.lastSkipped && (!scene.lastRun || scene.lastSkipped.at > scene.lastRun.at) && (
+                          <span className="d-block" data-testid="scene-last-skipped">
+                            {t('scenes.last_skipped', { date: `${formatDate(scene.lastSkipped.at, 'mediumDate')} ${formatDate(scene.lastSkipped.at, 'shortTime')}`, reason: scene.lastSkipped.reason })}
+                          </span>
                         )}
                       </small>
                     </span>

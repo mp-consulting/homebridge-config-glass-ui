@@ -7,7 +7,7 @@ import process from 'node:process'
 import { BadRequestException, ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readJson, remove } from 'fs-extra'
+import { copy, readJson, remove, writeJson } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -15,7 +15,7 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 import { ScenesModule } from '../../src/modules/scenes/scenes.module.js'
-import { ScenesService } from '../../src/modules/scenes/scenes.service.js'
+import { CHARACTERISTIC_TRIGGER_COOLDOWN_MS, findCoordinates, ScenesService } from '../../src/modules/scenes/scenes.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 const LAMP = 'a'.repeat(64)
@@ -95,7 +95,10 @@ describe('Scenes (e2e)', () => {
     expect(res.statusCode).toBe(201)
     const scene = res.json()
     expect(scene.id).toMatch(/^[a-f0-9]{16}$/)
-    expect((await readJson(scenes.scenesPath)).scenes).toEqual([scene])
+    // Stored as version 2: the schedules are cron triggers
+    const { schedules, ...stored } = scene
+    expect(schedules).toEqual(evening.schedules)
+    expect(await readJson(scenes.scenesPath)).toEqual({ version: 2, scenes: [{ ...stored, triggers: [{ type: 'cron', cron: '0 19 * * *', enabled: true }], conditions: [] }] })
     expect(scheduler.scheduledJobs).toHaveProperty(`scene-${scene.id}-0`)
 
     const list = await app.inject({ method: 'GET', path: '/scenes', headers: { authorization } })
@@ -184,5 +187,122 @@ describe('Scenes (e2e)', () => {
 
   it('needs a login', async () => {
     expect((await app.inject({ method: 'GET', path: '/scenes' })).statusCode).toBe(401)
+  })
+
+  describe('v2: triggers and conditions', () => {
+    const PARIS = { lat: 48.8566, lon: 2.3522 }
+    const dashboardPath = () => resolve(testStoragePath, '.uix-dashboard.json')
+
+    beforeEach(async () => {
+      await writeJson(dashboardPath(), [{ component: 'WeatherWidgetComponent', location: { id: 2988507, name: 'Paris', coord: PARIS } }])
+      ;(scenes as any).locationCache = null
+      configService.homebridgeInsecureMode = true
+    })
+
+    afterEach(async () => {
+      await remove(dashboardPath())
+      configService.homebridgeInsecureMode = false
+      ;(scenes as any).detachMonitor()
+      ;(scenes as any).watched = []
+      ;(scenes as any).lastValues.clear()
+      ;(scenes as any).lastFired.clear()
+    })
+
+    it('reads a v1 scene as v2 and keeps it working', async () => {
+      await writeJson(scenes.scenesPath, { scenes: [{ id: '0123456789abcdef', name: 'Old', actions: evening.actions, schedules: [{ cron: '0 7 * * *', enabled: true }] }] })
+      await scenes.onModuleInit()
+
+      const [scene] = await scenes.list()
+      expect(scene).toMatchObject({ triggers: [{ type: 'cron', cron: '0 7 * * *', enabled: true }], conditions: [], schedules: [{ cron: '0 7 * * *', enabled: true }] })
+      expect(scheduler.scheduledJobs).toHaveProperty('scene-0123456789abcdef-0')
+    })
+
+    it('keeps the other triggers when an older client sends only schedules', async () => {
+      const { id } = (await create({ ...evening, triggers: [{ type: 'cron', cron: '0 19 * * *' }, { type: 'sun', event: 'sunset', offsetMinutes: -15 }] })).json()
+
+      const res = await app.inject({ method: 'PUT', path: `/scenes/${id}`, headers: { authorization }, payload: { ...evening, schedules: [{ cron: '0 20 * * *', enabled: true }] } })
+
+      expect(res.json().triggers).toEqual([{ type: 'cron', cron: '0 20 * * *', enabled: true }, { type: 'sun', event: 'sunset', offsetMinutes: -15, enabled: true }])
+    })
+
+    it('schedules a sun trigger at the next sunset plus its offset, at the weather widget\'s location', async () => {
+      const { id } = (await create({ ...evening, triggers: [{ type: 'sun', event: 'sunset', offsetMinutes: -30 }] })).json()
+
+      const job = scheduler.scheduledJobs[`scene-${id}-0`]
+      expect(job).toBeDefined()
+      const next = job.nextInvocation()!.getTime()
+      const info = (await app.inject({ method: 'GET', path: '/scenes/automation', headers: { authorization } })).json()
+      expect(info.location).toEqual({ ...PARIS, name: 'Paris' })
+      expect(info.characteristicTriggers).toBe(true)
+      // 30 minutes before a sunset (the next one, or the one after when it is already less than 30 minutes away)
+      const sunset = Date.parse(info.nextSunset)
+      expect([sunset - 30 * 60_000, sunset + 86_400_000 - 30 * 60_000].some(at => Math.abs(at - next) < 5 * 60_000)).toBe(true)
+    })
+
+    it('does not schedule a sun trigger without a location', async () => {
+      await remove(dashboardPath())
+      ;(scenes as any).locationCache = null
+      const { id } = (await create({ ...evening, triggers: [{ type: 'sun', event: 'sunrise' }] })).json()
+
+      expect(scheduler.scheduledJobs).not.toHaveProperty(`scene-${id}-0`)
+    })
+
+    it('runs on a characteristic change that starts to match, once per cooldown', async () => {
+      const MOTION = 'c'.repeat(64)
+      const sensor = (value: unknown) => [{ uniqueId: MOTION, serviceName: 'Hall', serviceCharacteristics: [{ type: 'MotionDetected', value }] }] as any
+      vi.spyOn(accessories, 'loadAccessories').mockResolvedValue(sensor(false))
+      const monitor = { on: vi.fn(), off: vi.fn() }
+      vi.spyOn(accessories, 'getHapMonitor').mockResolvedValue(monitor as any)
+      await create({ ...evening, triggers: [{ type: 'characteristic', uniqueId: MOTION, characteristicType: 'MotionDetected', operator: 'eq', value: true }] })
+      expect(monitor.on).toHaveBeenCalledWith('service-update', expect.any(Function))
+
+      const now = Date.now()
+      scenes.onServiceUpdate(sensor(true), true, now)
+      await vi.waitFor(() => expect(setCharacteristic).toHaveBeenCalledTimes(3))
+
+      // Back off and on within the cooldown: not again
+      scenes.onServiceUpdate(sensor(false), true, now + 1000)
+      scenes.onServiceUpdate(sensor(true), true, now + 2000)
+      // Still true: no new edge
+      scenes.onServiceUpdate(sensor(true), true, now + CHARACTERISTIC_TRIGGER_COOLDOWN_MS + 1000)
+      await new Promise(r => setTimeout(r, 50))
+      expect(setCharacteristic).toHaveBeenCalledTimes(3)
+    })
+
+    it('skips an automatic run whose conditions do not hold, and records why', async () => {
+      vi.spyOn(accessories, 'loadAccessories').mockResolvedValue([{ uniqueId: FAN, serviceCharacteristics: [{ type: 'Active', value: 1 }] }] as any)
+      const { id } = (await create({ ...evening, conditions: [{ type: 'characteristic', uniqueId: FAN, characteristicType: 'Active', operator: 'eq', value: 0 }] })).json()
+
+      const result = await scenes.run(id, 'schedule')
+
+      expect(result).toMatchObject({ ok: true, results: [], skipped: 'Active is 1, not eq 0' })
+      expect(setCharacteristic).not.toHaveBeenCalled()
+      expect((await scenes.get(id)).lastSkipped).toMatchObject({ trigger: 'schedule', reason: 'Active is 1, not eq 0' })
+
+      // A manual run ignores the conditions
+      expect((await scenes.run(id, 'manual')).results).toHaveLength(3)
+    })
+
+    it('checks a time window, across midnight and with the sun', async () => {
+      const at = (h: number, m = 0) => new Date(2026, 5, 21, h, m)
+      expect(await scenes.checkConditions([{ type: 'time', after: '22:00', before: '06:00' }], at(23))).toBeNull()
+      expect(await scenes.checkConditions([{ type: 'time', after: '22:00', before: '06:00' }], at(12))).toBe('outside 22:00–06:00')
+      expect(await scenes.checkConditions([{ type: 'time', after: 'sunrise', before: 'sunset' }], at(3))).not.toBeNull()
+    })
+
+    it('refuses invalid triggers and conditions', async () => {
+      expect((await create({ ...evening, triggers: [{ type: 'sun', event: 'noon' }] })).statusCode).toBe(400)
+      expect((await create({ ...evening, triggers: [{ type: 'sun', event: 'sunset', offsetMinutes: 900 }] })).statusCode).toBe(400)
+      expect((await create({ ...evening, triggers: [{ type: 'characteristic', uniqueId: LAMP, characteristicType: 'On', operator: 'gt' }] })).statusCode).toBe(400)
+      expect((await create({ ...evening, triggers: [{ type: 'webhook' }] })).statusCode).toBe(400)
+      expect((await create({ ...evening, conditions: [{ type: 'time', after: '25:00', before: '06:00' }] })).statusCode).toBe(400)
+      expect((await create({ ...evening, conditions: [{ type: 'time', after: '06:00', before: '06:00' }] })).statusCode).toBe(400)
+      expect((await create({ ...evening, conditions: [{ type: 'characteristic', uniqueId: LAMP, characteristicType: 'On', operator: 'changes', value: 1 }] })).statusCode).toBe(400)
+    })
+
+    it('finds the weather widget\'s coordinates in the dashboard layout', () => {
+      expect(findCoordinates({ dashboard: [{ component: 'Clock' }, { location: { name: 'Oslo', coord: { lat: 59.9, lon: 10.7 } } }] })).toEqual({ lat: 59.9, lon: 10.7, name: 'Oslo' })
+      expect(findCoordinates([{ location: { id: 1 } }])).toBeNull()
+    })
   })
 })
