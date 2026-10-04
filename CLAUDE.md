@@ -67,8 +67,8 @@ When standalone or in dev watch mode (`npm run watch`), there's no Homebridge pr
 
 `src/app.module.ts` imports feature modules from `src/modules/` and infrastructure from `src/core/`:
 
-- **`core/`** — cross-cutting: `auth` (JWT + passport, HTTP guards plus WS guards in `guards/`), `config` (loads/parses `config.json`, holds runtime env detection — Docker/Synology/RPi/etc.), `feature-flags`, `fs`, `homebridge-ipc`, `logger`, `matter` (interfaces), `node-pty` (terminal), `scheduler`, `spa` (catch-all filter so non-`/api` routes serve `index.html`), `ssl`.
-- **`modules/`** — one folder per feature surface, each with a `*.module.ts`, controller, service, gateway (when WS-enabled), and DTOs. The set is: `accessories`, `backup`, `child-bridges`, `config-editor`, `custom-plugins`, `log`, `platform-tools`, `plugins`, `server`, `setup-wizard`, `status`, `users`.
+- **`core/`** — cross-cutting: `audit` (append-only JSONL audit log; `@Audited()` on security-relevant handlers, API-token writes logged globally), `auth` (JWT + passport, HTTP guards plus WS guards in `guards/`; typed `@User()` param decorator in `user.decorator.ts`, use it instead of `@Request() req`), `events`, `config` (loads/parses `config.json`, holds runtime env detection — Docker/Synology/RPi/etc.), `feature-flags`, `fs`, `homebridge-ipc`, `logger`, `matter` (interfaces), `node-pty` (terminal), `scheduler`, `spa` (catch-all filter so non-`/api` routes serve `index.html`), `ssl`.
+- **`modules/`** — one folder per feature surface, each with a `*.module.ts`, controller, service, gateway (when WS-enabled), and DTOs. The set is: `accessories`, `ai` (Assistant + MCP server, built on `@mp-consulting/homebridge-ai-kit`), `backup` (incl. off-site WebDAV/S3 destinations), `child-bridges`, `config-editor`, `custom-plugins`, `log`, `notifications` (channels incl. Web Push), `platform-tools`, `plugins` (incl. update rollback), `scenes` (schedules, sun and characteristic triggers, conditions), `server`, `setup-wizard`, `status`, `update-all`, `users`. Request bodies are class-validator DTOs (`whitelist: true` strips undeclared fields, so add new fields to the DTO).
 
 ## Frontend layout
 
