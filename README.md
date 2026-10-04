@@ -125,7 +125,7 @@ The Assistant is off until an administrator turns it on under **Settings**, **As
 | Setting                | What it does                                                                                       |
 | ---------------------- | -------------------------------------------------------------------------------------------------- |
 | Enable                 | Turns every Assistant feature on or off. While it is off, no Assistant button is shown.            |
-| Provider, Model        | Leave the model empty for the provider's default (`claude-sonnet-5-5`, `gpt-5`, `gemini-2.5-pro`). |
+| Provider, Model        | Leave the model empty for the provider's default, which comes from `@mp-consulting/homebridge-ai-kit` and is shown in the field's placeholder. |
 | API key                | Write-only: it is saved to `config.json` and never sent back to the browser.                       |
 | Server URL             | For an OpenAI-compatible server, e.g. `http://127.0.0.1:11434/v1` (no key needed).                 |
 | Maximum answer length  | Output tokens per answer (default 2048).                                                           |
