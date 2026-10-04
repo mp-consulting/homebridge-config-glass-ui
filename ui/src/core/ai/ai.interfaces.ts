@@ -12,6 +12,39 @@ export interface AiUsageSummary {
   costUsd: number | null
 }
 
+/** A day's or month's usage, kept across restarts. */
+export interface AiUsagePeriod {
+  calls: number
+  inputTokens: number
+  outputTokens: number
+  /** USD of the calls whose model has a known price. */
+  costUsd: number
+  /** Calls whose model has no known price. */
+  unpricedCalls: number
+}
+
+/** Daily and monthly limits; null for none. */
+export interface AiBudget {
+  dailyTokens: number | null
+  monthlyTokens: number | null
+  dailyUsd: number | null
+  monthlyUsd: number | null
+}
+
+export interface AiUsage {
+  /** Since Homebridge Glass UI started. */
+  total: AiUsageSummary
+  byModel: Record<string, AiUsageSummary>
+  /** Server local date (YYYY-MM-DD) and month (YYYY-MM). */
+  day?: string
+  month?: string
+  today?: AiUsagePeriod
+  thisMonth?: AiUsagePeriod
+  budget?: AiBudget
+  /** Administrators only. */
+  byUser?: { today: Record<string, AiUsagePeriod>, thisMonth: Record<string, AiUsagePeriod> }
+}
+
 export interface AiSettings {
   configured: boolean
   enabled: boolean
@@ -31,7 +64,7 @@ export interface AiStatus {
   provider: AiProviderName | null
   model: string | null
   capabilities: { tools: boolean, streaming: boolean, contextTokens: number, jsonMode: boolean } | null
-  usage: { total: AiUsageSummary, byModel: Record<string, AiUsageSummary> }
+  usage: AiUsage
   /** Administrators only. */
   settings?: AiSettings
 }
@@ -44,6 +77,8 @@ export interface AiSettingsUpdate {
   clearApiKey?: boolean
   baseUrl?: string
   maxOutputTokens?: number
+  /** Null (or 0) removes a limit; a limit left out is kept. */
+  budget?: Partial<AiBudget>
 }
 
 /** `mcpClientSnippets` of the kit: one per client. */

@@ -5,6 +5,7 @@
  */
 export {
   assessPluginUpdate,
+  costOf,
   createProvider,
   dailyDigest,
   DEFAULT_MCP_HTTP_HOST,

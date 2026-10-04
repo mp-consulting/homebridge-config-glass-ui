@@ -1,4 +1,4 @@
-import type { AiProviderName, AiSettingsUpdate, AiStatus, AiTestResult } from '@/core/ai/ai.interfaces'
+import type { AiBudget, AiProviderName, AiSettingsUpdate, AiStatus, AiTestResult, AiUsagePeriod } from '@/core/ai/ai.interfaces'
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +18,54 @@ const PROVIDER_LABELS: Record<AiProviderName, string> = {
   'openai': 'OpenAI',
   'gemini': 'Google Gemini',
   'openai-compatible': 'OpenAI-compatible (Ollama, LM Studio)',
+}
+
+const tokensOf = (period: AiUsagePeriod | undefined) => (period ? period.inputTokens + period.outputTokens : 0)
+
+/** One budget limit: saved on blur, empty for none. */
+function BudgetInput({ field, label, budget, step, disabled, saving, onSave }: {
+  field: keyof AiBudget
+  label: string
+  budget: AiBudget | undefined
+  step: number
+  disabled: boolean
+  saving: boolean
+  onSave: (field: keyof AiBudget, value: number | null) => void
+}) {
+  const stored = budget?.[field] ?? null
+  const [value, setValue] = useState(stored === null ? '' : String(stored))
+  const [synced, setSynced] = useState(stored)
+  if (stored !== synced) {
+    setSynced(stored)
+    setValue(stored === null ? '' : String(stored))
+  }
+  const id = `aiBudget-${field}`
+  return (
+    <div className="d-flex align-items-center gap-2 mb-1">
+      <label htmlFor={id} className="mb-0 small grey-text text-nowrap">{label}</label>
+      <input
+        id={id}
+        type="number"
+        className="form-control custom-input font-monospace text-end-input"
+        min={0}
+        step={step}
+        value={value}
+        disabled={disabled}
+        onChange={event => setValue(event.target.value)}
+        onBlur={() => {
+          const parsed = value.trim() === '' ? null : Number(value)
+          if (parsed !== null && (!Number.isFinite(parsed) || parsed < 0)) {
+            return
+          }
+          const next = parsed === 0 ? null : parsed
+          if (next !== stored) {
+            onSave(field, next)
+          }
+        }}
+      />
+      <SaveIndicator show={saving} />
+    </div>
+  )
 }
 
 /**
@@ -90,6 +138,11 @@ export function AssistantSection() {
   const provider = settings?.provider ?? 'anthropic'
   const enabled = settings?.enabled ?? false
   const usage = status?.usage.total
+  const { today, thisMonth, budget } = status?.usage ?? {}
+  const ofBudget = (limit: number | null | undefined, format: (n: number) => string) =>
+    limit ? ` ${t('ai.settings.usage_of_budget', { budget: format(limit) })}` : ''
+  const usd = (n: number) => `$${n.toFixed(2)}`
+  const saveBudget = (field: keyof AiBudget, value: number | null) => void save(`budget-${field}`, { budget: { [field]: value } })
 
   const reasonKey: Record<NonNullable<AiStatus['reason']>, string> = {
     'not-configured': 'ai.settings.reason_not_configured',
@@ -298,6 +351,43 @@ export function AssistantSection() {
           </span>
         </div>
       </SettingRow>
+      {today && thisMonth && (
+        <SettingRow item="setting-ai-usage-period">
+          <div className={INNER_FLEX}>
+            <span>
+              {t('ai.settings.usage_period')}
+              <br />
+              <small className="grey-text pe-2">{t('ai.settings.usage_period_desc')}</small>
+            </span>
+            <span className="text-end small font-monospace" data-testid="ai-usage-period">
+              {t('ai.settings.usage_today', { tokens: tokensOf(today).toLocaleString() })}
+              {ofBudget(budget?.dailyTokens, n => n.toLocaleString())}
+              {today.costUsd > 0 && ` · ${usd(today.costUsd)}${ofBudget(budget?.dailyUsd, usd)}`}
+              <br />
+              {t('ai.settings.usage_month', { tokens: tokensOf(thisMonth).toLocaleString() })}
+              {ofBudget(budget?.monthlyTokens, n => n.toLocaleString())}
+              {thisMonth.costUsd > 0 && ` · ${usd(thisMonth.costUsd)}${ofBudget(budget?.monthlyUsd, usd)}`}
+            </span>
+          </div>
+        </SettingRow>
+      )}
+      {settings && (
+        <SettingRow item="setting-ai-budget">
+          <div className={INNER_BLOCK}>
+            <span>
+              {t('ai.settings.budget')}
+              <br />
+              <small className="grey-text pe-2">{t('ai.settings.budget_desc')}</small>
+            </span>
+            <div className="my-3 my-md-0 ps-0 ps-md-5" data-testid="ai-budget">
+              <BudgetInput field="dailyTokens" label={t('ai.settings.budget_daily_tokens')} budget={budget} step={1000} disabled={saving !== null} saving={saving === 'budget-dailyTokens'} onSave={saveBudget} />
+              <BudgetInput field="monthlyTokens" label={t('ai.settings.budget_monthly_tokens')} budget={budget} step={1000} disabled={saving !== null} saving={saving === 'budget-monthlyTokens'} onSave={saveBudget} />
+              <BudgetInput field="dailyUsd" label={t('ai.settings.budget_daily_usd')} budget={budget} step={0.01} disabled={saving !== null} saving={saving === 'budget-dailyUsd'} onSave={saveBudget} />
+              <BudgetInput field="monthlyUsd" label={t('ai.settings.budget_monthly_usd')} budget={budget} step={0.01} disabled={saving !== null} saving={saving === 'budget-monthlyUsd'} onSave={saveBudget} />
+            </div>
+          </div>
+        </SettingRow>
+      )}
       <McpServerSettings />
     </SectionShell>
   )

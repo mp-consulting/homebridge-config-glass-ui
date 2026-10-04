@@ -7,6 +7,7 @@ import {
   IsIn,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -23,6 +24,37 @@ export const AI_PROVIDERS = ['anthropic', 'openai', 'gemini', 'openai-compatible
 
 /** A plugin package name, scoped or not. */
 const RE_PLUGIN_PACKAGE = /^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w.-]+$/
+
+/** Daily and monthly limits, server local time. Null (or 0) removes one; a field left out keeps it. */
+export class AiBudgetDto {
+  @ApiPropertyOptional({ nullable: true, description: 'Input plus output tokens a day, all users together.', example: 200000 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(1_000_000_000)
+  dailyTokens?: number | null
+
+  @ApiPropertyOptional({ nullable: true, description: 'Input plus output tokens a calendar month.', example: 5000000 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100_000_000_000)
+  monthlyTokens?: number | null
+
+  @ApiPropertyOptional({ nullable: true, description: 'USD a day, counted for models with a known price only.', example: 1 })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(1_000_000)
+  dailyUsd?: number | null
+
+  @ApiPropertyOptional({ nullable: true, description: 'USD a calendar month, counted for models with a known price only.', example: 20 })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(10_000_000)
+  monthlyUsd?: number | null
+}
 
 export class AiSettingsDto {
   @ApiPropertyOptional()
@@ -65,6 +97,13 @@ export class AiSettingsDto {
   @Min(64)
   @Max(64000)
   maxOutputTokens?: number
+
+  @ApiPropertyOptional({ type: AiBudgetDto, description: 'Usage budgets: a request is refused (429) once one is used up. Stored by Glass UI, not in config.json.' })
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => AiBudgetDto)
+  budget?: AiBudgetDto
 }
 
 export class AiDiagnoseLogsDto {

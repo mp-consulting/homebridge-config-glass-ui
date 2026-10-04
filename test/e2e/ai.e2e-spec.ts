@@ -271,6 +271,87 @@ describe('Assistant (e2e)', () => {
       expect(status.json().usage.total).toMatchObject({ calls: 1, inputTokens: 10, outputTokens: 5 })
     })
 
+    describe('usage and budgets', () => {
+      const NO_BUDGET = { dailyTokens: null, monthlyTokens: null, dailyUsd: null, monthlyUsd: null }
+
+      beforeEach(async () => {
+        await inject('PUT', '/ai/settings', adminAuth, { budget: NO_BUDGET })
+      })
+
+      afterAll(async () => {
+        await inject('PUT', '/ai/settings', adminAuth, { budget: NO_BUDGET })
+      })
+
+      it('keeps today\'s and this month\'s usage per user in the storage directory, across restarts', async () => {
+        await enable()
+        const before = (await inject('GET', '/ai/status', adminAuth)).json().usage
+        fake.reply('Hello')
+        expect((await inject('POST', '/ai/chat', userAuth, { messages: [{ role: 'user', content: 'hi' }] })).statusCode).toBe(200)
+
+        const stored = await readJson(aiService.usagePath)
+        expect(stored.days[before.day].byUser.user).toMatchObject({ inputTokens: expect.any(Number) })
+
+        // A restart: the in-memory state is gone, the file is read again
+        ;(aiService as any).ledgerLoaded = undefined
+        ;(aiService as any).ledger.load(null)
+        const after = (await inject('GET', '/ai/status', adminAuth)).json().usage
+        expect(after.today.calls).toBe(before.today.calls + 1)
+        expect(after.today.inputTokens).toBe(before.today.inputTokens + 10)
+        expect(after.thisMonth.calls).toBe(before.thisMonth.calls + 1)
+        expect(after.byUser.today.user.calls).toBeGreaterThanOrEqual(1)
+        // A claude model has a price
+        expect(after.today.costUsd).toBeGreaterThan(before.today.costUsd)
+
+        // Non-admins see the totals, not who used what
+        const forUser = (await inject('GET', '/ai/status', userAuth)).json().usage
+        expect(forUser.today.calls).toBe(after.today.calls)
+        expect(forUser).not.toHaveProperty('byUser')
+      })
+
+      it('refuses requests once the daily token budget is used up', async () => {
+        await enable()
+        const used = (await inject('GET', '/ai/status', adminAuth)).json().usage.today
+        const res = await inject('PUT', '/ai/settings', adminAuth, { budget: { dailyTokens: used.inputTokens + used.outputTokens + 1 } })
+        expect(res.json().usage.budget).toEqual({ ...NO_BUDGET, dailyTokens: used.inputTokens + used.outputTokens + 1 })
+
+        fake.reply('First')
+        expect((await inject('POST', '/ai/chat', userAuth, { messages: [{ role: 'user', content: 'hi' }] })).statusCode).toBe(200)
+        const refused = await inject('POST', '/ai/chat', userAuth, { messages: [{ role: 'user', content: 'again' }] })
+        expect(refused.statusCode).toBe(429)
+        expect(refused.json().message).toMatch(/daily token budget is used up .* It resets at midnight/)
+        expect(fake.requests).toHaveLength(1)
+
+        // Clearing it lets requests through again
+        await inject('PUT', '/ai/settings', adminAuth, { budget: { dailyTokens: null } })
+        fake.reply('Again')
+        expect((await inject('POST', '/ai/chat', userAuth, { messages: [{ role: 'user', content: 'again' }] })).statusCode).toBe(200)
+      })
+
+      it('refuses requests once a monthly USD budget is used up', async () => {
+        await enable()
+        fake.reply('Costly')
+        await inject('POST', '/ai/chat', adminAuth, { messages: [{ role: 'user', content: 'hi' }] })
+        await inject('PUT', '/ai/settings', adminAuth, { budget: { monthlyUsd: 0.01 } })
+        ;(aiService as any).ledger.add('admin', { inputTokens: 0, outputTokens: 0 }, 1)
+        const refused = await inject('POST', '/ai/chat', adminAuth, { messages: [{ role: 'user', content: 'hi' }] })
+        expect(refused.statusCode).toBe(429)
+        expect(refused.json().message).toMatch(/monthly spending budget/)
+      })
+
+      it('sets a budget without creating the Assistant block, for administrators only, and validates it', async () => {
+        await disable()
+        const res = await inject('PUT', '/ai/settings', adminAuth, { budget: { monthlyTokens: 1000 } })
+        expect(res.statusCode).toBe(200)
+        expect((await readJson(process.env.UIX_CONFIG_PATH)).platforms.some((p: any) => p.platform === 'HomebridgeAiKit')).toBe(false)
+        expect(res.json().usage.budget.monthlyTokens).toBe(1000)
+
+        expect((await inject('PUT', '/ai/settings', userAuth, { budget: { monthlyTokens: 1 } })).statusCode).toBe(403)
+        expect((await inject('PUT', '/ai/settings', adminAuth, { budget: { dailyTokens: -1 } })).statusCode).toBe(400)
+        expect((await inject('PUT', '/ai/settings', adminAuth, { budget: { dailyUsd: 'lots' } })).statusCode).toBe(400)
+        expect((await inject('PUT', '/ai/settings', adminAuth, { budget: 5 })).statusCode).toBe(400)
+      })
+    })
+
     it('reports a failed connection test without the key', async () => {
       await enable()
       vi.spyOn(fake.provider, 'chat').mockRejectedValueOnce(new Error(`401 invalid x-api-key ${API_KEY}`))

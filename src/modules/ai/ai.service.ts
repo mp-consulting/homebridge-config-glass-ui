@@ -2,6 +2,7 @@ import type { AgentEvent, AiConfig, AiProvider, ChatMessage, ProviderCapabilitie
 import type { AiHomebridgeClientFactory, AiProviderFactory } from './ai.constants.js'
 import type { AiChatMessageDto, AiOrganizeDto, AiPluginConfigDto, AiSettingsDto, AiUpdateRiskDto } from './ai.dto.js'
 
+import { resolve } from 'node:path'
 import process from 'node:process'
 
 import {
@@ -19,6 +20,7 @@ import {
 import { auditActor, AuditService } from '../../core/audit/audit.service.js'
 import { AuthService } from '../../core/auth/auth.service.js'
 import { ConfigService } from '../../core/config/config.service.js'
+import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
@@ -27,6 +29,7 @@ import { PluginsService } from '../plugins/plugins.service.js'
 import { SlidingWindowLimiter, TtlCache } from './ai-cache.js'
 import {
   assessPluginUpdate,
+  costOf,
   dailyDigest,
   DEFAULT_MODELS,
   diagnoseLogs,
@@ -44,6 +47,7 @@ import {
 import { linesMentioning, problemLines, readLogTail } from './ai-logs.js'
 import { loadLoopbackFetch } from './ai-loopback.js'
 import { organizerInput } from './ai-organize.js'
+import { AiUsageLedger } from './ai-usage.js'
 import {
   AI_AGENT_RUNNER,
   AI_DISABLED_MESSAGE,
@@ -141,6 +145,9 @@ function countingProvider(provider: AiProvider, onReply: () => void): AiProvider
   }
 }
 
+/** Where the usage and budgets are kept, in the storage directory. */
+export const AI_USAGE_FILE = '.uix-ai-usage.json'
+
 const DIGEST_TTL_MS = 6 * 60 * 60 * 1000
 const RISK_TTL_MS = 24 * 60 * 60 * 1000
 /** Update risk briefings kept at most (one per plugin and version pair). */
@@ -148,7 +155,12 @@ export const RISK_CACHE_MAX = 200
 
 @Injectable()
 export class AiService {
+  /** Since this process started, by model. */
   private readonly usage = new UsageTracker()
+  /** Per day and user, persisted (AI_USAGE_FILE), with the budgets. */
+  private readonly ledger = new AiUsageLedger()
+  private ledgerLoaded: Promise<void> | undefined
+  private ledgerSaved: Promise<void> = Promise.resolve()
   /** Per-user rate limit; users idle for a window are forgotten. */
   private readonly requests = new SlidingWindowLimiter({ limit: AI_RATE_LIMIT, windowMs: AI_RATE_WINDOW_MS })
   private providerCache: { key: string, provider: AiProvider } | undefined
@@ -169,7 +181,67 @@ export class AiService {
     @Inject(AI_AGENT_RUNNER) private readonly runAgent: AiAgentRunner,
     @Inject(AI_HOMEBRIDGE_CLIENT_FACTORY) private readonly clientFactory: AiHomebridgeClientFactory,
     @Inject(AuditService) private readonly audit: AuditService,
+    @Inject(JsonFileStoreService) private readonly store: JsonFileStoreService,
   ) {}
+
+  // ── Usage and budgets ────────────────────────────────────────────
+
+  get usagePath(): string {
+    return resolve(this.configService.storagePath, AI_USAGE_FILE)
+  }
+
+  /** Read the stored usage once; a missing or broken file starts empty. */
+  private loadLedger(): Promise<void> {
+    this.ledgerLoaded ??= this.store.read(this.usagePath).then(
+      raw => this.ledger.load(raw),
+      (e) => {
+        if (e?.code !== 'ENOENT') {
+          this.logger.warn(`Assistant: failed to read the usage as ${e?.message ?? e}; starting from zero.`)
+        }
+      },
+    )
+    return this.ledgerLoaded
+  }
+
+  private saveLedger(): Promise<void> {
+    this.ledgerSaved = this.ledgerSaved
+      .then(() => this.store.write(this.usagePath, this.ledger.toJSON(), { spaces: 2 }))
+      .catch(e => this.logger.warn(`Assistant: failed to save the usage as ${e?.message ?? e}.`))
+    return this.ledgerSaved
+  }
+
+  /** Count one finished request: since start, and per day and user (persisted). */
+  private async recordUsage(user: AiUser | undefined, model: string, usage: TokenUsage): Promise<void> {
+    this.usage.add(model, usage)
+    await this.loadLedger()
+    this.ledger.add(user?.username ?? '(anonymous)', usage, costOf(model, usage))
+    await this.saveLedger()
+  }
+
+  /** 429 when a daily or monthly budget is used up. */
+  async checkBudget(): Promise<void> {
+    await this.loadLedger()
+    const reason = this.ledger.exceeded()
+    if (reason) {
+      throw new HttpException(reason, HttpStatus.TOO_MANY_REQUESTS)
+    }
+  }
+
+  /** Today's and this month's usage with the budgets; per user for administrators. */
+  private async usageStatus(user: AiUser | undefined) {
+    await this.loadLedger()
+    const { day, month, today, thisMonth, todayByUser, monthByUser } = this.ledger.summary()
+    return {
+      total: this.usage.total,
+      byModel: this.usage.byModel(),
+      day,
+      month,
+      today,
+      thisMonth,
+      budget: this.ledger.budget,
+      ...(user?.admin ? { byUser: { today: todayByUser, thisMonth: monthByUser } } : {}),
+    }
+  }
 
   // ── Settings ─────────────────────────────────────────────────────
 
@@ -228,7 +300,7 @@ export class AiService {
       provider: config?.provider ?? null,
       model: config?.model ?? null,
       capabilities,
-      usage: { total: this.usage.total, byModel: this.usage.byModel() },
+      usage: await this.usageStatus(user),
       ...(user?.admin
         ? {
             settings: {
@@ -252,6 +324,16 @@ export class AiService {
    * missing API key keeps the stored one; `clearApiKey` removes it.
    */
   async updateSettings(dto: AiSettingsDto, user: AiUser) {
+    const { budget, ...blockFields } = dto
+    if (budget) {
+      await this.loadLedger()
+      this.ledger.setBudget(budget)
+      await this.saveLedger()
+    }
+    if (Object.values(blockFields).every(value => value === undefined)) {
+      this.logger.log(`Assistant budget updated by ${user?.username ?? 'an administrator'}.`)
+      return this.getStatus(user)
+    }
     await this.configEditorService.updatePlatformBlock(PLATFORM_NAME, (block) => {
       const next: Record<string, any> = block ?? { name: 'AI Kit', enabled: true }
       if (dto.enabled !== undefined) {
@@ -307,7 +389,7 @@ export class AiService {
         messages: [{ role: 'user', content: 'Reply with the single word OK.' }],
         maxOutputTokens: 16,
       })
-      this.usage.add(config.model, result.usage)
+      await this.recordUsage(user, config.model, result.usage)
       return { ok: true, provider: config.provider, model: result.model || config.model, latencyMs: Date.now() - started, reply: result.text.slice(0, 200) }
     } catch (error) {
       return { ok: false, message: redactText((error as Error).message || String(error)) }
@@ -345,10 +427,11 @@ export class AiService {
   /** Run a feature: rate limit, ready check, usage accounting and provider errors as 502. */
   private async run<T extends { usage: TokenUsage }>(user: AiUser | undefined, work: (ready: Ready) => Promise<T>): Promise<T> {
     const ready = await this.requireReady()
+    await this.checkBudget()
     this.consume(user)
     try {
       const result = await work(ready)
-      this.usage.add(ready.config.model, result.usage)
+      await this.recordUsage(user, ready.config.model, result.usage)
       return result
     } catch (error) {
       throw this.toHttpError(error)

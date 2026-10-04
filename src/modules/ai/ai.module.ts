@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport'
 import { AuditModule } from '../../core/audit/audit.module.js'
 import { AuthModule } from '../../core/auth/auth.module.js'
 import { ConfigModule } from '../../core/config/config.module.js'
+import { FsModule } from '../../core/fs/fs.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { AccessoriesModule } from '../accessories/accessories.module.js'
 import { ConfigEditorModule } from '../config-editor/config-editor.module.js'
@@ -29,6 +30,7 @@ import { AiService } from './ai.service.js'
     AuditModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
+    FsModule,
     LoggerModule,
     AuthModule,
     PluginsModule,

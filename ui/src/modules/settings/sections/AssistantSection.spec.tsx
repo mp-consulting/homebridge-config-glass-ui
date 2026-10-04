@@ -158,4 +158,41 @@ describe('settings: assistant section', { timeout: 20_000 }, () => {
     expect(api.callsTo('post', '/ai/test')).toHaveLength(1)
     expect(section.getByText('ai.settings.test_failed')).toBeInTheDocument()
   })
+
+  it('shows today\'s and this month\'s usage against the budget, and saves a limit', async () => {
+    const period = (input: number, output: number, costUsd: number) => ({ calls: 2, inputTokens: input, outputTokens: output, costUsd, unpricedCalls: 0 })
+    const section = await render(status({ configured: true, enabled: true, hasApiKey: true }, {
+      usage: {
+        total: { inputTokens: 0, outputTokens: 0, calls: 0, costUsd: 0 },
+        byModel: {},
+        day: '2026-10-04',
+        month: '2026-10',
+        today: period(900, 100, 0.25),
+        thisMonth: period(9000, 1000, 2.5),
+        budget: { dailyTokens: 5000, monthlyTokens: null, dailyUsd: null, monthlyUsd: 10 },
+      },
+    }))
+
+    const shown = section.getByTestId('ai-usage-period')
+    expect(shown).toHaveTextContent('ai.settings.usage_today')
+    expect(shown).toHaveTextContent('ai.settings.usage_of_budget')
+    expect(shown).toHaveTextContent('$0.25')
+    expect(shown).toHaveTextContent('$2.50')
+
+    const daily = section.getByLabelText<HTMLInputElement>('ai.settings.budget_daily_tokens')
+    expect(daily.value).toBe('5000')
+    api.respond('put', '/ai/settings', status({ configured: true, enabled: true, hasApiKey: true }))
+    fireEvent.change(daily, { target: { value: '' } })
+    await act(async () => {
+      fireEvent.blur(daily)
+    })
+    expect(api.lastCall('put', '/ai/settings')?.body).toEqual({ budget: { dailyTokens: null } })
+
+    const monthlyUsd = section.getByLabelText<HTMLInputElement>('ai.settings.budget_monthly_usd')
+    fireEvent.change(monthlyUsd, { target: { value: '12.5' } })
+    await act(async () => {
+      fireEvent.blur(monthlyUsd)
+    })
+    expect(api.lastCall('put', '/ai/settings')?.body).toEqual({ budget: { monthlyUsd: 12.5 } })
+  })
 })
