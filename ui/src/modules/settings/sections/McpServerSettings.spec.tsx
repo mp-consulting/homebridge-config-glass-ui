@@ -51,6 +51,7 @@ describe('settings: MCP server', () => {
       </SettingsPageContext>,
     )
     await act(async () => {})
+    return page
   }
 
   beforeEach(() => {
@@ -207,6 +208,51 @@ describe('settings: MCP server', () => {
       fireEvent.click(screen.getByRole('button', { name: 'common.a11y.copy_to_clipboard' }))
     })
     expect(writeText).toHaveBeenCalledWith('claude mcp add homebridge -- npx')
+  })
+
+  describe('the Glass UI address', () => {
+    const toggle = () => screen.getByRole('button', { name: 'common.labels.advanced' })
+
+    it('sits under Advanced, closed by default, with a word on when it is needed', async () => {
+      await render(status())
+      expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+      expect(screen.getByText('ai.mcp.advanced_desc')).toBeInTheDocument()
+      expect(screen.queryByLabelText('ai.mcp.homebridge_url')).toBeNull()
+
+      fireEvent.click(toggle())
+      expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+      const field = screen.getByLabelText<HTMLInputElement>('ai.mcp.homebridge_url')
+      expect(field.placeholder).toBe('http://127.0.0.1:8581')
+
+      api.respond('put', '/ai/mcp', status({ homebridgeUrl: 'https://hb.example.com' }))
+      fireEvent.change(field, { target: { value: ' https://hb.example.com ' } })
+      await act(async () => {
+        fireEvent.blur(field)
+      })
+      expect(api.callsTo('put', '/ai/mcp')[0].body).toEqual({ homebridgeUrl: 'https://hb.example.com' })
+
+      fireEvent.click(toggle())
+      expect(screen.queryByLabelText('ai.mcp.homebridge_url')).toBeNull()
+    })
+
+    it('stays closed when it holds the default the access token filled in', async () => {
+      await render(status({ homebridgeUrl: 'http://127.0.0.1:8581' }))
+      expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('opens by itself when one was set by hand', async () => {
+      await render(status({ homebridgeUrl: 'https://hb.example.com' }))
+      expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+      expect(screen.getByLabelText<HTMLInputElement>('ai.mcp.homebridge_url').value).toBe('https://hb.example.com')
+    })
+
+    it('opens while a settings search matches it', async () => {
+      const page = await render(status())
+      act(() => page.onSearchChange('ai.mcp.homebridge_url'))
+      expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+      act(() => page.clearSearch())
+      expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+    })
   })
 
   it('shows the generated token with a copy button', async () => {

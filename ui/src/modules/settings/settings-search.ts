@@ -243,7 +243,7 @@ export function getItemsContent(): Record<string, string> {
     'setting-ai-mcp-address': `${t('ai.mcp.address')} MCP`,
     'setting-ai-mcp-token': `${t('ai.mcp.token')} MCP`,
     'setting-ai-mcp-access': `${t('ai.mcp.access')} MCP`,
-    'setting-ai-mcp-url': `${t('ai.mcp.homebridge_url')} MCP`,
+    'setting-ai-mcp-url': `${t('ai.mcp.homebridge_url')} ${t('common.labels.advanced')} MCP`,
     'setting-ai-mcp-clients': `${t('ai.mcp.clients')} MCP Claude Cursor`,
     // Notifications section
     'setting-notifications-webhook': `${t('settings.notifications.webhook')} webhook`,

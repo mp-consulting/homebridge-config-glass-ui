@@ -11,6 +11,7 @@ import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 import { CONTROL_WRAP, INNER_BLOCK, INNER_FLEX, SaveIndicator, SettingRow } from '@/modules/settings/sections/rows'
+import { useSettingsPageState } from '@/modules/settings/settings-page.context'
 
 const INPUT = 'form-control custom-input resp-input order-1 order-md-2'
 const MODAL_OPTIONS = { size: 'lg', backdrop: 'static' } as const
@@ -33,6 +34,14 @@ async function copyText(text: string) {
   } catch {
     fallbackCopyToClipboard(text)
   }
+}
+
+/**
+ * Whether the server is pointed somewhere other than this UI on this machine
+ * (creating the access token fills in the default, so that one does not count).
+ */
+function customHomebridgeUrl(http: McpStatus['http']) {
+  return http.homebridgeUrl !== '' && http.homebridgeUrl !== http.defaultHomebridgeUrl
 }
 
 /** The address the browser reached Glass UI at, for the client snippets. */
@@ -126,6 +135,10 @@ export function McpServerSettings() {
   const [fresh, setFresh] = useState<{ token: string, snippets: McpClientSnippets } | null>(null)
   const [includeToken, setIncludeToken] = useState(false)
   const [copied, setCopied] = useState(false)
+  // The Glass UI address sits under Advanced: closed unless one was set by hand
+  const [advanced, setAdvanced] = useState<boolean | null>(null)
+  // A settings search that matches it opens it too
+  const searchShowsAdvanced = useSettingsPageState(state => state.searchQuery.trim() !== '' && !state.hiddenItems['setting-ai-mcp-url'])
 
   const apply = (next: McpStatus | undefined) => {
     if (!next?.http) {
@@ -135,6 +148,7 @@ export function McpServerSettings() {
     setHost(next.http.host)
     setPort(String(next.http.port))
     setHomebridgeUrl(next.http.homebridgeUrl)
+    setAdvanced(open => open ?? customHomebridgeUrl(next.http))
   }
 
   useEffect(() => {
@@ -164,6 +178,7 @@ export function McpServerSettings() {
   const portNumber = Number(port)
   const portInvalid = !Number.isInteger(portNumber) || portNumber < 1 || portNumber > 65535
   const busy = saving !== null
+  const showAdvanced = Boolean(advanced) || searchShowsAdvanced
 
   const generate = async () => {
     setSaving('token')
@@ -359,28 +374,6 @@ export function McpServerSettings() {
         </div>
         {scope === 'admin' && <p className="small text-warning mt-2 mb-0">{t('users.api_tokens.scope_admin_warning')}</p>}
       </SettingRow>
-      <SettingRow item="setting-ai-mcp-url">
-        <div className={INNER_BLOCK}>
-          <span>
-            <label htmlFor="aiMcpHomebridgeUrl">{t('ai.mcp.homebridge_url')}</label>
-            <br />
-            <small className="grey-text pe-2">{t('ai.mcp.homebridge_url_desc')}</small>
-          </span>
-          <div className={CONTROL_WRAP}>
-            <input
-              id="aiMcpHomebridgeUrl"
-              type="url"
-              className={`${INPUT} font-monospace`}
-              value={homebridgeUrl}
-              maxLength={500}
-              placeholder={http.defaultHomebridgeUrl}
-              onChange={event => setHomebridgeUrl(event.target.value)}
-              onBlur={() => homebridgeUrl.trim() !== http.homebridgeUrl && void save('homebridgeUrl', { homebridgeUrl: homebridgeUrl.trim() })}
-            />
-            <SaveIndicator show={saving === 'homebridgeUrl'} />
-          </div>
-        </div>
-      </SettingRow>
       <SettingRow item="setting-ai-mcp-clients">
         <div className="setting-row-inner hb-mcp-clients">
           <span>
@@ -448,6 +441,46 @@ export function McpServerSettings() {
           <p className="small grey-text mt-2 mb-0">{t('ai.mcp.restart_note')}</p>
         </div>
       </SettingRow>
+      <SettingRow item="setting-ai-mcp-url">
+        <div className="setting-row-inner">
+          <button
+            type="button"
+            className="disclosure-toggle"
+            aria-expanded={showAdvanced ? 'true' : 'false'}
+            aria-controls="aiMcpAdvanced"
+            onClick={() => setAdvanced(!showAdvanced)}
+          >
+            <i aria-hidden="true" className={cx('fa', showAdvanced ? 'fa-chevron-down' : 'fa-chevron-right')}></i>
+            {' '}
+            {t('common.labels.advanced')}
+          </button>
+          <small className="grey-text d-block pe-2">{t('ai.mcp.advanced_desc')}</small>
+        </div>
+      </SettingRow>
+      {showAdvanced && (
+        <SettingRow item="setting-ai-mcp-url">
+          <div className={INNER_BLOCK} id="aiMcpAdvanced">
+            <span>
+              <label htmlFor="aiMcpHomebridgeUrl">{t('ai.mcp.homebridge_url')}</label>
+              <br />
+              <small className="grey-text pe-2">{t('ai.mcp.homebridge_url_desc')}</small>
+            </span>
+            <div className={CONTROL_WRAP}>
+              <input
+                id="aiMcpHomebridgeUrl"
+                type="url"
+                className={`${INPUT} font-monospace`}
+                value={homebridgeUrl}
+                maxLength={500}
+                placeholder={http.defaultHomebridgeUrl}
+                onChange={event => setHomebridgeUrl(event.target.value)}
+                onBlur={() => homebridgeUrl.trim() !== http.homebridgeUrl && void save('homebridgeUrl', { homebridgeUrl: homebridgeUrl.trim() })}
+              />
+              <SaveIndicator show={saving === 'homebridgeUrl'} />
+            </div>
+          </div>
+        </SettingRow>
+      )}
     </>
   )
 }

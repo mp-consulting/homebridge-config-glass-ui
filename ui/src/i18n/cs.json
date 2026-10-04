@@ -254,6 +254,7 @@
   "ai.mcp.access_revoked": "Its API token was revoked or has expired: replace it.",
   "ai.mcp.address": "Address and port",
   "ai.mcp.address_desc": "127.0.0.1 keeps it on this machine. Use 0.0.0.0 only on a trusted network.",
+  "ai.mcp.advanced_desc": "Only needed when the MCP server cannot reach Glass UI at its default address, for example behind a reverse proxy or when it runs on another host.",
   "ai.mcp.clients": "Connect a client",
   "ai.mcp.clients_http_desc": "Clients connect to {{url}} with the client token.",
   "ai.mcp.clients_stdio_desc": "The client starts the server itself with npx. Set HOMEBRIDGE_TOKEN to an API token from Users, API Tokens.",
