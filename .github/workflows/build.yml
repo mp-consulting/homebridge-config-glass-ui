@@ -136,7 +136,9 @@ jobs:
         if: steps.e2e-plugins.outputs.cache-hit != 'true'
         run: node e2e/install-plugins.mjs
 
-      # Visual baselines are machine-specific (fonts, rendering), so they only run locally
+      # Visual tests only run locally: their baselines are machine-specific (host name, IPs and
+      # versions on the dashboard, platform fonts and rendering) and gitignored. What running
+      # them here would take is in the header of e2e/specs/visual.spec.ts.
       - name: Run browser tests
         run: npx playwright test -c e2e --grep-invert visual --reporter=list,html
         env:

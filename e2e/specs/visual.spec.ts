@@ -1,10 +1,30 @@
 /**
  * Visual regression: screenshots of the main pages, also under dark, flat,
- * Hebrew and mobile settings, compared with the stored baseline
- * (`npx playwright test -c e2e visual --update-snapshots` records it).
- * Baselines are machine-specific (they show this host's name and IPs), so
- * they are gitignored: record one before a change, compare after it.
+ * Hebrew and mobile settings, compared with the stored baseline.
  * Moving parts (clock, charts, terminals, timestamps) are masked.
+ *
+ * Local only. Record a baseline before a change, compare after it:
+ *
+ *   npx playwright test -c e2e visual --update-snapshots   (before)
+ *   npx playwright test -c e2e visual                      (after)
+ *
+ * Baselines land in e2e/specs/visual.spec.ts-snapshots/, which is gitignored,
+ * and CI skips this file (`--grep-invert visual` in .github/workflows/build.yml)
+ * because a baseline only matches the machine that recorded it:
+ * - it shows this host: the dashboard's system, network and Homebridge widgets
+ *   print the host name, IP addresses, OS, Node version and paths, none of
+ *   which `masks()` hides;
+ * - Playwright suffixes each file with the platform (`status-darwin.png`),
+ *   and fonts and anti-aliasing differ between macOS, Linux and between Linux
+ *   distributions, well beyond `maxDiffPixelRatio`.
+ *
+ * Running it on CI would take: the tests run inside a pinned image
+ * (`mcr.microsoft.com/playwright:v1.63.0-noble`, in step with @playwright/test)
+ * so fonts never drift; masks for every host-specific widget (or a fixed host
+ * name, IPs and versions from the backend); Linux baselines committed under a
+ * platform-specific `snapshotPathTemplate` (and un-ignored); and a
+ * workflow_dispatch job that runs `--update-snapshots` in that image and
+ * uploads the new baselines, since they cannot be recorded on macOS.
  */
 
 import type { Page } from '@playwright/test'
