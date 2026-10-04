@@ -2,6 +2,7 @@ import type { Server } from 'node:https'
 import type { AddressInfo } from 'node:net'
 
 import { Buffer } from 'node:buffer'
+import { X509Certificate } from 'node:crypto'
 import { createServer } from 'node:https'
 import { resolve } from 'node:path'
 
@@ -9,7 +10,7 @@ import { outputFile } from 'fs-extra'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { SslCertGeneratorService } from '../../src/core/ssl/ssl-cert-generator.service.js'
-import { createLoopbackFetch, loadLoopbackFetch, uiCertificatePath } from '../../src/modules/ai/ai-loopback.js'
+import { createLoopbackFetch, loadLoopbackFetch, uiCertificateFingerprint, uiCertificatePath } from '../../src/modules/ai/ai-loopback.js'
 import { testStoragePath } from '../storage-path.js'
 
 /**
@@ -111,6 +112,15 @@ describe('Assistant loopback fetch (e2e)', () => {
     it('fails with a clear reason for a PFX certificate', async () => {
       const loaded = await loadLoopbackFetch({ pfx: '/bundle.pfx' }, testStoragePath)
       expect(loaded.error).toMatch(/PFX/)
+    })
+
+    it('reads the certificate\'s SHA-256 fingerprint for the MCP server to pin', async () => {
+      const storage = resolve(testStoragePath, 'fingerprint-storage')
+      await outputFile(resolve(storage, 'ssl-certs', 'certificate.pem'), own.certificate)
+
+      expect(await uiCertificateFingerprint({ selfSigned: true }, storage)).toBe(new X509Certificate(own.certificate).fingerprint256)
+      expect(await uiCertificateFingerprint({ pfx: '/bundle.pfx' }, storage)).toBeNull()
+      expect(await uiCertificateFingerprint({ key: '/nope/key.pem', cert: '/nope/cert.pem' }, storage)).toBeNull()
     })
 
     it('fails with a clear reason for a file that is not a certificate', async () => {

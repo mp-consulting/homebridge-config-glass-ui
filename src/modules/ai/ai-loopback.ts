@@ -28,6 +28,24 @@ export function uiCertificatePath(ssl: Record<string, unknown> | undefined, stor
 }
 
 /**
+ * The SHA-256 fingerprint of this server's own certificate (`AB:CD:…`), for
+ * the MCP server to pin. Null for a PFX bundle or an unreadable certificate.
+ * @param ssl - the `ssl` block of the UI config
+ * @param storagePath - the Homebridge storage path
+ */
+export async function uiCertificateFingerprint(ssl: Record<string, unknown> | undefined, storagePath: string): Promise<string | null> {
+  const path = uiCertificatePath(ssl, storagePath)
+  if (!path) {
+    return null
+  }
+  try {
+    return new X509Certificate(await readFile(path)).fingerprint256
+  } catch {
+    return null
+  }
+}
+
+/**
  * A fetch that trusts exactly this server's certificate, for the loopback
  * call from the Assistant's tools to `https://127.0.0.1:<port>`. Only this
  * fetch is affected: global fetch and every other connection keep Node's

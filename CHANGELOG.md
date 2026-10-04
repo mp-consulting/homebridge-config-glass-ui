@@ -11,11 +11,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- `@mp-consulting/homebridge-ai-kit` ^2.1.0 (the `get_accessory_history` tool, so the Assistant chat and MCP clients can read the recorded accessory history; certificate pinning) and `@mp-consulting/homebridge-ui-kit` ^1.2.2.
 - **Notifications fit their channel.** A message longer than the channel takes is cut, ending with `…`: Telegram 4096 characters (with the title), Pushover 1024 (title 250), ntfy 4096 bytes (above that it arrived as an attachment). The webhook gets the whole message.
 - **The MCP server's Glass UI address is under Advanced.** In Settings, Assistant, MCP server, the **Glass UI address** sits behind a collapsed **Advanced** toggle, with a line on when you need it: the MCP server cannot reach Glass UI at its default address, for example behind a reverse proxy or when it runs on another host. It opens by itself when an address other than the default is set, or when a settings search matches it.
 
 ### Fixed
 
+- **The MCP server can reach Glass UI over its own HTTPS.** With a self-signed certificate (or any certificate the MCP server's Node does not trust), its tools could not call Glass UI. **Create access token** now also stores this UI's certificate fingerprint as `homebridgeCertFingerprint` when the MCP server reaches Glass UI at its own HTTPS address, and the MCP server (`@mp-consulting/homebridge-ai-kit` 2.1.0) trusts exactly that certificate for those calls; it is removed when the address is plain HTTP. If the certificate is renewed, create the token again.
 - **A config editor test could time out on CI** (Node 26): the first plugin lookup in `GET /config-editor/plugin/:pluginName` asked registry.npmjs.org for the latest version of the running UI. The spec now stubs that lookup (1.1 s to 4 ms).
 
 ## [2.0.0-beta.6] - 2026-10-04

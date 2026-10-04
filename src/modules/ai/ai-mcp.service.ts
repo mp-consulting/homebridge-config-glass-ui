@@ -12,6 +12,7 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { DEFAULT_MCP_HTTP_HOST, DEFAULT_MCP_HTTP_PORT, findAiBlock, mcpClientSnippets, PLATFORM_NAME, resolveAiConfig } from './ai-kit.js'
+import { uiCertificateFingerprint } from './ai-loopback.js'
 import { AiService } from './ai.service.js'
 
 /** The plugin that runs the HTTP MCP server. */
@@ -179,12 +180,24 @@ export class AiMcpService {
   async createHomebridgeToken(scope: 'read' | 'admin', user: AiUser, origin?: string): Promise<McpStatus> {
     const previous = await this.currentHomebridgeTokenId()
     const created = await this.apiTokens.create({ name: MCP_API_TOKEN_NAME, scope, expiresInDays: null }, user?.username)
+    const localUrl = this.aiService.localApiUrl()
+    // On this UI's own HTTPS (often self-signed), the MCP server pins its certificate
+    const fingerprint = localUrl.startsWith('https:')
+      ? await uiCertificateFingerprint(this.configService.ui.ssl as Record<string, unknown> | undefined, this.configService.storagePath)
+      : null
     try {
       await this.updateHttp((http) => {
         http.homebridgeToken = created.token
         http.homebridgeTokenId = created.id
         if (typeof http.homebridgeUrl !== 'string' || !http.homebridgeUrl) {
-          http.homebridgeUrl = this.aiService.localApiUrl()
+          http.homebridgeUrl = localUrl
+        }
+        if (http.homebridgeUrl === localUrl) {
+          if (fingerprint) {
+            http.homebridgeCertFingerprint = fingerprint
+          } else {
+            delete http.homebridgeCertFingerprint
+          }
         }
       })
     } catch (error) {

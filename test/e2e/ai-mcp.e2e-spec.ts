@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
+import { X509Certificate } from 'node:crypto'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -8,11 +9,13 @@ import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readJson, remove, writeJson } from 'fs-extra'
+import { copy, outputFile, readJson, remove, writeJson } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ApiTokenService } from '../../src/core/auth/api-token.service.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
+import { SslCertGeneratorService } from '../../src/core/ssl/ssl-cert-generator.service.js'
 import { MCP_API_TOKEN_NAME } from '../../src/modules/ai/ai-mcp.service.js'
 import { AiModule } from '../../src/modules/ai/ai.module.js'
 import { testStoragePath } from '../storage-path.js'
@@ -218,6 +221,33 @@ describe('Assistant MCP server settings (e2e)', () => {
     const after = await storedHttp()
     expect(after?.homebridgeToken).toBeUndefined()
     expect(after?.homebridgeTokenId).toBeUndefined()
+  })
+
+  it('pins this UI\'s own certificate when the MCP server reaches it over HTTPS', async () => {
+    const generator = new SslCertGeneratorService(resolve(testStoragePath, 'unused'))
+    const cert = await generator.generateCertificate(['localhost', '127.0.0.1'])
+    await outputFile(resolve(testStoragePath, 'ssl-certs', 'certificate.pem'), cert.certificate)
+    const config = app.get(ConfigService)
+    const ssl = config.ui.ssl
+    config.ui.ssl = { selfSigned: true }
+    process.env.UIX_AI_LOCAL_URL = 'https://127.0.0.1:8080'
+    try {
+      expect((await inject('POST', '/ai/mcp/homebridge-token', adminAuth, { scope: 'read' })).statusCode).toBe(201)
+      expect(await storedHttp()).toMatchObject({
+        homebridgeUrl: 'https://127.0.0.1:8080',
+        homebridgeCertFingerprint: new X509Certificate(cert.certificate).fingerprint256,
+      })
+
+      // Back on HTTP: the pin goes
+      delete process.env.UIX_AI_LOCAL_URL
+      config.ui.ssl = ssl
+      await inject('PUT', '/ai/mcp', adminAuth, { homebridgeUrl: '' })
+      await inject('POST', '/ai/mcp/homebridge-token', adminAuth, { scope: 'read' })
+      expect((await storedHttp())?.homebridgeCertFingerprint).toBeUndefined()
+    } finally {
+      delete process.env.UIX_AI_LOCAL_URL
+      config.ui.ssl = ssl
+    }
   })
 
   it('reports an MCP API token revoked elsewhere, and replaces it', async () => {
