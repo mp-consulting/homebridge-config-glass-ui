@@ -10,6 +10,8 @@ import { AccessoriesModule } from '../accessories/accessories.module.js'
 import { ConfigEditorModule } from '../config-editor/config-editor.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
 import { createProvider, HomebridgeClient, runAgent } from './ai-kit.js'
+import { AiMcpController } from './ai-mcp.controller.js'
+import { AiMcpService } from './ai-mcp.service.js'
 import { AI_AGENT_RUNNER, AI_HOMEBRIDGE_CLIENT_FACTORY, AI_PROVIDER_FACTORY } from './ai.constants.js'
 import { AiController } from './ai.controller.js'
 import { AiGateway } from './ai.gateway.js'
@@ -17,7 +19,8 @@ import { AiService } from './ai.service.js'
 
 /**
  * The Assistant: Log Doctor, Config Copilot, chat, update risk, organiser and
- * daily digest, on top of `@mp-consulting/homebridge-ai-kit`. Settings live in
+ * daily digest, on top of `@mp-consulting/homebridge-ai-kit`, and the
+ * settings of the kit's HTTP MCP server. Settings live in
  * the kit's `HomebridgeAiKit` platform block of config.json.
  */
 @Module({
@@ -35,10 +38,12 @@ import { AiService } from './ai.service.js'
     { provide: AI_AGENT_RUNNER, useValue: runAgent },
     { provide: AI_HOMEBRIDGE_CLIENT_FACTORY, useValue: ((options: AiHomebridgeClientOptions) => new HomebridgeClient(options)) satisfies AiHomebridgeClientFactory },
     AiService,
+    AiMcpService,
     AiGateway,
   ],
   controllers: [
     AiController,
+    AiMcpController,
   ],
 })
 export class AiModule {}

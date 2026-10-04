@@ -151,3 +151,46 @@ export class AiOrganizeDto {
   @MaxLength(200, { each: true })
   onlyRooms?: string[]
 }
+
+/** A host name, IPv4 or IPv6 address (no scheme, port or path). */
+const RE_HOST = /^(?:[\w-]+(?:\.[\w-]+)*|[\d.]+|[\da-f:.]+)$/i
+
+export class AiMcpSettingsDto {
+  @ApiPropertyOptional({ description: 'Serve MCP over HTTP (the Homebridge AI Kit plugin runs the server).' })
+  @IsOptional()
+  @IsBoolean()
+  enabled?: boolean
+
+  @ApiPropertyOptional({ description: 'Bind address. 127.0.0.1 keeps it on this machine; 0.0.0.0 opens it to the network.' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(253)
+  @Matches(RE_HOST, { message: 'host must be a host name or an IP address' })
+  host?: string
+
+  @ApiPropertyOptional({ minimum: 1, maximum: 65535 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(65535)
+  port?: number
+
+  @ApiPropertyOptional({ description: 'The Glass UI address the MCP server calls. Empty for this UI\'s local address.' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  @Matches(/^$|^https?:\/\/[^\s/?#@]+(?:\/\S*)?$/, { message: 'homebridgeUrl must be an http(s) URL' })
+  homebridgeUrl?: string
+
+  @ApiPropertyOptional({ description: 'Write-only: a client token of your own (at least 16 characters). Use POST /ai/mcp/token to generate one instead.' })
+  @IsOptional()
+  @IsString()
+  @Matches(/^[\x21-\x7E]{16,512}$/, { message: 'token must be 16 to 512 printable characters without spaces' })
+  token?: string
+}
+
+export class AiMcpHomebridgeTokenDto {
+  @ApiProperty({ enum: ['read', 'admin'], description: '`read` lets MCP clients look but not change anything.' })
+  @IsIn(['read', 'admin'])
+  scope!: 'read' | 'admin'
+}

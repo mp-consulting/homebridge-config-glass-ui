@@ -134,3 +134,45 @@ body.dark-mode {
   }
 }
 
+// Settings > Assistant > MCP server
+.hb-mcp-port {
+  width: 6.5rem;
+  flex: 0 0 auto;
+}
+
+.hb-mcp-scope {
+  width: auto;
+  min-width: 9.5rem;
+  flex: 0 0 auto;
+}
+
+.hb-mcp-clients {
+  .nav-tabs {
+    --bs-nav-tabs-border-width: 0;
+    gap: 0.25rem;
+  }
+
+  .nav-link {
+    padding: 0.35rem 0.8rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    color: var(--mp-ai-fg-muted);
+    font-size: 0.875rem;
+
+    &.active {
+      background: var(--mp-ai-bg);
+      color: var(--mp-ai-fg);
+    }
+  }
+
+  .hb-mcp-snippet {
+    max-height: 18rem;
+    overflow: auto;
+    padding-right: 3rem !important;
+    border: 1px solid var(--mp-ai-border-color);
+    border-radius: 0 0.5rem 0.5rem 0.5rem;
+    background: var(--mp-ai-bg);
+    color: var(--mp-ai-fg);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+}

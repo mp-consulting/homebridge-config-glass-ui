@@ -46,6 +46,50 @@ export interface AiSettingsUpdate {
   maxOutputTokens?: number
 }
 
+/** `mcpClientSnippets` of the kit: one per client. */
+export interface McpClientSnippets {
+  claudeDesktop: string
+  claudeCode: string
+  cursor: string
+}
+
+/** `GET /ai/mcp`: the HTTP MCP server's settings, never its secrets. */
+export interface McpStatus {
+  /** Whether the Homebridge AI Kit plugin is installed; null when not known yet. */
+  pluginInstalled: boolean | null
+  http: {
+    enabled: boolean
+    host: string
+    port: number
+    url: string
+    hasToken: boolean
+    homebridgeUrl: string
+    defaultHomebridgeUrl: string
+    homebridgeToken: {
+      set: boolean
+      id: string | null
+      scope: 'read' | 'admin' | null
+      exists: boolean | null
+    }
+  }
+  snippets: { http: McpClientSnippets, stdio: McpClientSnippets }
+}
+
+export interface McpSettingsUpdate {
+  enabled?: boolean
+  host?: string
+  port?: number
+  homebridgeUrl?: string
+  token?: string
+}
+
+/** `POST /ai/mcp/token`: the new client token, this once. */
+export interface McpGeneratedToken {
+  token: string
+  snippets: McpClientSnippets
+  status: McpStatus
+}
+
 export interface AiTestResult {
   ok: boolean
   provider?: string

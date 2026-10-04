@@ -8,6 +8,7 @@ import { aiActions, useAiStore } from '@/core/ai/ai.store'
 import { AiButton } from '@/core/ai/AiButton'
 import { api } from '@/core/api'
 import { toastApiError } from '@/core/utilities/http-error'
+import { McpServerSettings } from '@/modules/settings/sections/McpServerSettings'
 import { CONTROL_WRAP, INNER_BLOCK, INNER_FLEX, SaveIndicator, SectionShell, SettingRow } from '@/modules/settings/sections/rows'
 
 const INPUT = 'form-control custom-input resp-input order-1 order-md-2'
@@ -22,7 +23,8 @@ const PROVIDER_LABELS: Record<AiProviderName, string> = {
 /**
  * ASSISTANT: the `HomebridgeAiKit` block of config.json - provider, model,
  * API key (write-only: the server only says whether one is stored), base URL
- * for a local server, the output cap, a connection test and the usage so far.
+ * for a local server, the output cap, a connection test and the usage so far,
+ * then the kit's HTTP MCP server.
  * Each control saves when it settles, like the rest of the page.
  */
 export function AssistantSection() {
@@ -296,6 +298,7 @@ export function AssistantSection() {
           </span>
         </div>
       </SettingRow>
+      <McpServerSettings />
     </SectionShell>
   )
 }

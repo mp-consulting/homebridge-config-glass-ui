@@ -7,6 +7,8 @@ export {
   assessPluginUpdate,
   createProvider,
   dailyDigest,
+  DEFAULT_MCP_HTTP_HOST,
+  DEFAULT_MCP_HTTP_PORT,
   DEFAULT_MODELS,
   diagnoseLogs,
   findAiBlock,
@@ -35,3 +37,5 @@ export type {
   UsageSummary,
 } from '@mp-consulting/homebridge-ai-kit'
 export { HomebridgeClient } from '@mp-consulting/homebridge-ai-kit/mcp'
+export { mcpClientSnippets } from '@mp-consulting/homebridge-ai-kit/plugin'
+export type { McpClientSnippets } from '@mp-consulting/homebridge-ai-kit/plugin'
