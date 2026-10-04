@@ -87,6 +87,19 @@ describe('the node version modal', () => {
     expect(screen.getByText('status.widget.update_node_unknown')).toBeInTheDocument()
   })
 
+  it('warns up front how many plugins would not accept the new Node.js', async () => {
+    await open()
+
+    // Zulu only (Alpha does not say, and is not counted)
+    expect(screen.getByRole('alert')).toHaveTextContent('status.widget.info.node_incompatible_summary')
+  })
+
+  it('has no warning when every plugin accepts the new Node.js', async () => {
+    await open({ latestVersion: '22.5.0' })
+
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
   it('says whether this machine can run Node.js 24 at all', async () => {
     await open({ supportsNodeJs24: false })
 

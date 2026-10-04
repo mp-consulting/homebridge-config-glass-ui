@@ -13,8 +13,10 @@ import { CacheSection } from '@/modules/settings/sections/CacheSection'
 import { DisplaySection } from '@/modules/settings/sections/DisplaySection'
 import { GeneralSection } from '@/modules/settings/sections/GeneralSection'
 import { HapSection } from '@/modules/settings/sections/HapSection'
+import { InstancesSection } from '@/modules/settings/sections/InstancesSection'
 import { MatterSection } from '@/modules/settings/sections/MatterSection'
 import { NetworkSection } from '@/modules/settings/sections/NetworkSection'
+import { NotificationsSection } from '@/modules/settings/sections/NotificationsSection'
 import { ResetSection } from '@/modules/settings/sections/ResetSection'
 import { SecuritySection } from '@/modules/settings/sections/SecuritySection'
 import { StartupSection } from '@/modules/settings/sections/StartupSection'
@@ -187,6 +189,8 @@ export function Settings({ deps }: SettingsProps) {
                   {isSectionVisible('terminal') && <TerminalSection />}
                   {isSectionVisible('security') && <SecuritySection />}
                   {isSectionVisible('assistant') && <AssistantSection />}
+                  {isSectionVisible('notifications') && <NotificationsSection />}
+                  {isSectionVisible('instances') && <InstancesSection />}
                   {isSectionVisible('cache') && <CacheSection />}
                   {isSectionVisible('reset') && <ResetSection />}
                   <div className="pb-3"></div>

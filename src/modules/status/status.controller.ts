@@ -2,6 +2,7 @@ import { Controller, Get, Inject, Request, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { serverInfoForUser, StatusService, withoutInstallPath } from './status.service.js'
 
@@ -57,6 +58,16 @@ export class StatusController {
   async getChildBridges(@Request() req: any) {
     // Pairing codes (HomeKit / Matter PIN and setup URI) only for administrators
     return this.childBridgesService.getChildBridgesForUser(req.user?.admin === true)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Return the health of each child bridge: status, uptime, restart and crash counts, and crash-loop detection.',
+    description: 'A crash loop is 3 unrequested crashes within 10 minutes. Counts start when the UI starts. `memoryRss` (bytes) is only reported on Linux.',
+  })
+  @Get('/homebridge/child-bridges/health')
+  async getChildBridgesHealth() {
+    return this.childBridgesService.getChildBridgesHealth()
   }
 
   @ApiOperation({ summary: 'Return the current Homebridge version and package information.' })

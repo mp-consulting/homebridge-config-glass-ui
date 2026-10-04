@@ -46,7 +46,11 @@ const UNGUARDED_ALLOW_LIST = new Set([
   'GET /accessories',
   'GET /accessories/:uniqueId',
   'GET /accessories/layout',
+  'GET /accessories/:uniqueId/history',
   'PUT /accessories/:uniqueId',
+  // scenes: every user can list and run them, as every user can control accessories
+  'GET /scenes',
+  'POST /scenes/:id/run',
   // plugins: the handler rejects `include=config` for non-admins itself
   'GET /plugins',
   // plugin custom UI: gated by a single-use ticket (issued to admins) and the

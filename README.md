@@ -10,16 +10,20 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 ## Features
 
 - **Liquid glass design** in light and dark mode, tinted by the theme colour you pick
-- Install, configure, update and remove Homebridge plugins
+- Install, configure, update and remove Homebridge plugins, with a check of which plugins would not support a Node.js or Homebridge upgrade
 - Visual settings forms for plugins that ship a config schema
-- Edit `config.json` with syntax checking, validation and automatic backups
-- A customisable widget dashboard for monitoring your server
+- Edit `config.json` with syntax checking, validation and automatic backups you can compare with the current config
+- A customisable widget dashboard for monitoring your server (network traffic in bits or bytes, sent and received charted separately)
 - Live Homebridge logs and a web terminal
-- View and control your accessories from any browser
-- Run plugins as child bridges
+- View and control your accessories from any browser, with history charts of their sensor readings
+- Scenes that set several accessories at once, on demand or on a schedule
+- Run plugins as child bridges, with a health page that shows uptime and restarts and detects crash loops
 - Back up and restore your whole Homebridge instance
 - An optional **Assistant** (bring your own AI provider): Log Doctor, Config Copilot, a chat that can look things up and act for you, update risk briefings, room suggestions and a daily digest
 - A REST API (documented at `/swagger`) with API tokens for scripts and the Assistant's MCP server
+- Notifications by webhook, ntfy, Pushover or Telegram when Homebridge goes down, a child bridge crash loops, updates are available or a backup fails
+- Switch between several Homebridge instances from the menu
+- Installs to your phone's home screen as an app, with a Quick Controls page for your favourite accessories
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
 
 ## Installation

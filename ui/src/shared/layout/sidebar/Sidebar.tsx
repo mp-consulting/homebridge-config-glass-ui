@@ -9,6 +9,7 @@ import { openAssistant } from '@/core/ai/ai-entry'
 import { useAiEnabled } from '@/core/ai/ai.store'
 import { authActions, useAuthStore } from '@/core/auth'
 import { Information } from '@/core/components/information/Information'
+import { InstanceSwitcher } from '@/core/components/instance-switcher/InstanceSwitcher'
 import { notifications, useNotification } from '@/core/notifications'
 import { useSettingsStore } from '@/core/settings'
 import { openModal } from '@/core/ui/modal'
@@ -370,6 +371,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
             <div className="hb-logo-text">Homebridge</div>
           </a>
         </div>
+        <InstanceSwitcher />
         <div className="link-wrapper">
           {navButton('/', t('menu.label_status'), 'fas fa-house', true)}
 
@@ -389,8 +391,11 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
 
           {navButton('/plugins', t('menu.label_plugins'), 'fas fa-plug')}
           {navButton('/accessories', t('menu.label_accessories'), 'fas fa-lightbulb')}
+          {navButton('/scenes', t('scenes.title'), 'fas fa-wand-magic-sparkles')}
+          {isMobile && navButton('/quick', t('quick.title'), 'fas fa-star')}
           {canViewLogs && navButton('/logs', t('menu.linux.label_logs'), 'fas fa-wave-square')}
           {enableTerminalAccess && isAdmin && navButton('/platform-tools/terminal', t('menu.linux.label_terminal'), 'fas fa-terminal')}
+          {isAdmin && navButton('/child-bridges', t('child_bridge.health.title'), 'fas fa-heart-pulse')}
           {isAdmin && navButton('/config', t('menu.config_json_editor'), 'fas fa-code')}
           {isAdmin && navButton('/settings', t('menu.label_settings'), 'fas fa-cog')}
           {aiEnabled && (

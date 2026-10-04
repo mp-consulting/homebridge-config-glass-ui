@@ -7,7 +7,7 @@ import { t } from '@/core/ui/i18n'
  * place to be registered.
  */
 
-export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'assistant' | 'cache' | 'reset'
+export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'assistant' | 'notifications' | 'instances' | 'cache' | 'reset'
 
 export interface SectionNavEntry {
   key: SettingsSection
@@ -27,6 +27,8 @@ export const allSections: SectionNavEntry[] = [
   { key: 'terminal', icon: 'fas fa-terminal', title: 'settings.network.title_terminal' },
   { key: 'security', icon: 'fas fa-shield-halved', title: 'settings.network.title_security' },
   { key: 'assistant', icon: 'fas fa-wand-magic-sparkles', title: 'ai.settings.title' },
+  { key: 'notifications', icon: 'fas fa-bell', title: 'settings.notifications.title' },
+  { key: 'instances', icon: 'fas fa-server', title: 'instances.title' },
   { key: 'cache', icon: 'fas fa-lightbulb', title: 'menu.label_accessories' },
   { key: 'reset', icon: 'fas fa-rotate-left', title: 'reset.bridges.title' },
 ]
@@ -110,8 +112,19 @@ export const sectionItems: Record<string, string[]> = {
     'setting-ai-test',
     'setting-ai-usage',
   ],
+  notifications: [
+    'setting-notifications-webhook',
+    'setting-notifications-ntfy',
+    'setting-notifications-pushover',
+    'setting-notifications-telegram',
+    'setting-notifications-events',
+  ],
+  instances: [
+    'setting-instances',
+  ],
   cache: [
     'setting-accessory-debug',
+    'setting-accessory-history',
     'setting-reset-accessory-ind',
     'setting-reset-bridge-accessories',
     'setting-reset-accessory-all',
@@ -134,6 +147,8 @@ export function getSectionContent(): Record<string, string> {
     terminal: t('settings.network.title_terminal'),
     security: t('settings.network.title_security'),
     assistant: `${t('ai.settings.title')} ${t('ai.settings.desc')}`,
+    notifications: `${t('settings.notifications.title')} ${t('settings.notifications.desc')}`,
+    instances: `${t('instances.title')} ${t('instances.desc')}`,
     cache: `${t('menu.label_accessories')} ${t('settings.cache.desc')}`,
     reset: `${t('reset.bridges.title')} ${t('reset.bridges.desc')}`,
   }
@@ -218,9 +233,19 @@ export function getItemsContent(): Record<string, string> {
     'setting-ai-max-tokens': t('ai.settings.max_tokens'),
     'setting-ai-test': t('ai.settings.test'),
     'setting-ai-usage': t('ai.settings.usage'),
+    // Notifications section
+    'setting-notifications-webhook': `${t('settings.notifications.webhook')} webhook`,
+    'setting-notifications-ntfy': 'ntfy',
+    'setting-notifications-pushover': 'Pushover',
+    'setting-notifications-telegram': 'Telegram',
+    'setting-notifications-events': t('settings.notifications.events'),
+
+    // Instances section
+    'setting-instances': t('instances.title'),
 
     // Cache section
     'setting-accessory-debug': t('settings.accessory.debug'),
+    'setting-accessory-history': `${t('settings.accessory.history')} ${t('settings.accessory.history_desc')}`,
     'setting-reset-accessory-ind': t('reset.accessory_ind.title'),
     'setting-reset-bridge-accessories': t('reset.bridge_accessories.title'),
     'setting-reset-accessory-all': t('reset.accessory_all.title'),

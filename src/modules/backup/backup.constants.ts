@@ -8,6 +8,7 @@ export const BACKUP_EXCLUDED_NAMES: readonly string[] = [
   '.uix-secrets', // JWT signing secret - stays with the instance (a new one is made on start if missing)
   '.uix-hb-service-homebridge-startup.json', // hb-service startup flags and env (NODE_OPTIONS)
   'instance-backups', // scheduled backups
+  'accessory-history', // accessory sensor history (can be large, and is rebuilt as it records)
   'nssm.exe', // windows hb-service
   'homebridge.log', // hb-service
   'logs', // docker

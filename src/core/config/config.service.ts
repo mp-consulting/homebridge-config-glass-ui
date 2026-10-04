@@ -222,6 +222,8 @@ export class ConfigService {
         // /swagger is only mounted in development (see main.ts)
         swaggerEnabled: process.env.UIX_DEVELOPMENT === '1',
         disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
+        // Only well-formed http(s) entries: the list can also be edited by hand
+        instances: sanitiseInstances(this.ui.instances),
         enableAccessories: this.homebridgeInsecureMode,
         enableTerminalAccess: this.enableTerminalAccess,
         restrictLogsToAdmins: this.restrictLogsToAdmins,
@@ -567,4 +569,27 @@ export class ConfigService {
   public getNodeUpdatePolicy(): 'all' | 'none' | 'major' {
     return this.ui?.nodeUpdatePolicy || 'all'
   }
+}
+
+/**
+ * The instance switcher list as the UI may use it: entries with a name and an
+ * http(s) URL only (a hand-edited `javascript:` URL is dropped), at most 20.
+ * @param value - the `instances` of the UI config
+ */
+export function sanitiseInstances(value: unknown): Array<{ name: string, url: string }> {
+  if (!Array.isArray(value)) {
+    return []
+  }
+  return value
+    .filter(entry => entry && typeof entry.name === 'string' && typeof entry.url === 'string')
+    .map(entry => ({ name: entry.name.trim().slice(0, 64), url: entry.url.trim() }))
+    .filter((entry) => {
+      try {
+        const url = new URL(entry.url)
+        return entry.name && (url.protocol === 'http:' || url.protocol === 'https:') && !url.username && !url.password
+      } catch {
+        return false
+      }
+    })
+    .slice(0, 20)
 }

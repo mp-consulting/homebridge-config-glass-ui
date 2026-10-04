@@ -12,6 +12,7 @@ import { ChangelogPane, ReleaseNotesPane } from '@/core/plugins/manage-plugin/Re
 import { determineSupportMessage, SELF_PACKAGES } from '@/core/plugins/manage-plugin/support-message'
 import { useManagePluginTerminal } from '@/core/plugins/manage-plugin/use-manage-plugin-terminal'
 import { ManageVersion } from '@/core/plugins/manage-version/ManageVersion'
+import { UpgradeCompatibility } from '@/core/plugins/upgrade-compatibility/UpgradeCompatibility'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { openModal } from '@/core/ui/modal'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -139,6 +140,11 @@ export function ManagePlugin(props: ManagePluginProps) {
   }
 
   const showBack = backToVersionModal && !actionComplete
+  // Before Homebridge itself changes version, list the plugins that do not accept the new one
+  const homebridgeTarget = targetVersion === 'latest' ? latestVersion : targetVersion
+  const homebridgeCompatibility = pluginName === 'homebridge' && action !== 'Uninstall' && /^\d/.test(homebridgeTarget)
+    ? <UpgradeCompatibility target={{ homebridge: homebridgeTarget }} />
+    : null
   const closeOrBackLabel = t(showBack ? 'form.button_back' : 'form.button_close')
 
   const tabs = [
@@ -224,6 +230,7 @@ export function ManagePlugin(props: ManagePluginProps) {
             >
             </i>
           </div>
+          {homebridgeCompatibility}
           <ul className="mb-3">
             <li>{t('plugins.manage.online_updates')}</li>
             <li>{t('plugins.manage.manual_update_command')}</li>
@@ -267,6 +274,7 @@ hb-service start`}
           {action === 'Update' && installedVersion && !SELF_PACKAGES.includes(pluginName) && (
             <UpdateRiskBriefing pluginName={pluginName} currentVersion={installedVersion} targetVersion={targetVersion || undefined} />
           )}
+          {homebridgeCompatibility}
           <ul className="nav-tabs px-0 nav" role="tablist">
             {tabs.map(tab => (
               <li key={tab.id} className="w-50 m-0 nav-item" role="presentation">

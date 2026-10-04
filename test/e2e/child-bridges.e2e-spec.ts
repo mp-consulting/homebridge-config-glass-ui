@@ -343,43 +343,49 @@ describe('ChildBridges (e2e)', () => {
     })
 
     it('should clean up listeners on client disconnect', async () => {
+      // The health tracker's own listener is always there
+      const base = homebridgeIpcService.listenerCount('childBridgeStatusUpdate')
       await childBridgesService.watchChildBridgeStatus(client)
 
       const initialIpcListenerCount = homebridgeIpcService.listenerCount('childBridgeStatusUpdate')
-      expect(initialIpcListenerCount).toBe(1)
+      expect(initialIpcListenerCount).toBe(base + 1)
 
       // Simulate disconnect
       client.emit('disconnect')
 
-      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(0)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(base)
     })
 
     it('does not stack a second listener on a repeat watch from the same socket', async () => {
+      // The health tracker's own listener is always there
+      const base = homebridgeIpcService.listenerCount('childBridgeStatusUpdate')
       await childBridgesService.watchChildBridgeStatus(client)
       await childBridgesService.watchChildBridgeStatus(client)
 
-      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(1)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(base + 1)
       const statusData = { status: 'ok', username: '0E:AA:BB:CC:DD:EE' }
       homebridgeIpcService.emit('childBridgeStatusUpdate', statusData)
       expect(vi.mocked(client.emit).mock.calls.filter(call => call[0] === 'child-bridge-status-update')).toHaveLength(1)
 
       // after a disconnect the socket may watch afresh
       client.emit('disconnect')
-      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(0)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(base)
       await childBridgesService.watchChildBridgeStatus(client)
-      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(1)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(base + 1)
       client.emit('disconnect')
     })
 
     it('should clean up listeners on client end', async () => {
+      // The health tracker's own listener is always there
+      const base = homebridgeIpcService.listenerCount('childBridgeStatusUpdate')
       await childBridgesService.watchChildBridgeStatus(client)
 
-      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(1)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(base + 1)
 
       // Simulate end
       client.emit('end')
 
-      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(0)
+      expect(homebridgeIpcService.listenerCount('childBridgeStatusUpdate')).toBe(base)
     })
   })
 

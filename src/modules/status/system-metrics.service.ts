@@ -28,7 +28,17 @@ const MAX_NETWORK_SAMPLERS = 8
 // How long the interface list and the default interface are trusted
 const INTERFACE_CACHE_SECONDS = 60
 
-export interface NetworkUsage { net: Systeminformation.NetworkStatsData, point: number }
+/**
+ * One network reading. `point` is the combined throughput in MB/s (kept for
+ * older clients); `received` / `sent` are bytes per second so the client can
+ * show them in the unit the user picked (bits or bytes, auto-scaled).
+ */
+export interface NetworkUsage {
+  net: Systeminformation.NetworkStatsData
+  point: number
+  received: number
+  sent: number
+}
 
 /**
  * A widget's refresh interval (seconds, from the request payload) as a sampler
@@ -286,12 +296,12 @@ export class SystemMetricsService {
   private async sampleNetworkUsage(iface: string): Promise<NetworkUsage> {
     const net = await networkStats(iface || await this.getDefaultInterfaceName())
 
-    // TODO: be able to specify in the ui the unit size (i.e. bytes, megabytes, gigabytes)
-    const txRxSec = (net[0].tx_sec + net[0].rx_sec) / 1024 / 1024
+    // systeminformation reports null until it has two readings to compare
+    const received = Math.max(0, net[0].rx_sec ?? 0)
+    const sent = Math.max(0, net[0].tx_sec ?? 0)
+    const txRxSec = (received + sent) / 1024 / 1024
 
-    // TODO: break out the sent and received figures to two separate stacked graphs
-    // (these should ideally be positive/negative mirrored line charts)
-    return { net: net[0], point: txRxSec }
+    return { net: net[0], point: txRxSec, received, sent }
   }
 
   /**

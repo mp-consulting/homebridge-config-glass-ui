@@ -1,10 +1,11 @@
-import { Body, Controller, ForbiddenException, Get, HttpCode, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
+import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { PluginJobsService } from './plugin-jobs.service.js'
 import { PluginJobRequestDto } from './plugins.dto.js'
+import { checkPluginCompatibility, parseTargetVersion } from './plugin-compatibility.js'
 import { PluginsService } from './plugins.service.js'
 
 const PLUGIN_JOB_STARTED_SCHEMA = {
@@ -53,6 +54,25 @@ export class PluginsController {
   clearPluginsCache() {
     this.pluginsService.clearInstalledPluginsCache()
     return { success: true }
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'List installed plugins whose `engines` would not accept a Node.js and/or Homebridge upgrade.',
+    description: 'Checks each installed plugin\'s `engines.node` / `engines.homebridge` range against the target versions with semver. `incompatible` lists the plugins whose range excludes a target; `unknown` the ones that state no range for it.',
+  })
+  @ApiQuery({ name: 'node', type: 'string', required: false, example: '24.1.0' })
+  @ApiQuery({ name: 'homebridge', type: 'string', required: false, example: '2.0.0' })
+  @Get('compatibility')
+  async pluginCompatibility(@Query('node') node?: string, @Query('homebridge') homebridge?: string) {
+    const target = {
+      node: parseTargetVersion(node, 'Node.js'),
+      homebridge: parseTargetVersion(homebridge, 'Homebridge'),
+    }
+    if (!target.node && !target.homebridge) {
+      throw new BadRequestException('Give a node and/or homebridge version to check against.')
+    }
+    return checkPluginCompatibility(await this.pluginsService.getInstalledPlugins(), target)
   }
 
   @UseGuards(AdminGuard)

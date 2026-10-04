@@ -90,6 +90,8 @@ function createPageStore(deps: SettingsPageDeps, isFeatureEnabled: (key: string)
       security: true,
       terminal: true,
       assistant: true,
+      notifications: true,
+      instances: true,
       reset: true,
       cache: true,
     },

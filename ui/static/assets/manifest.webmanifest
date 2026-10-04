@@ -1,24 +1,51 @@
 {
+  "id": "./",
   "name": "Homebridge",
   "short_name": "Homebridge",
-  "description": "Homebridge is a lightweight NodeJS server that emulates the iOS HomeKit API.",
-  "start_url": "/",
+  "description": "Manage, configure and control Homebridge.",
+  "start_url": "../",
+  "scope": "../",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#57277c",
+  "background_color": "#140a33",
   "theme_color": "#140a33",
   "icons": [
     {
       "src": "android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Controls",
+      "short_name": "Controls",
+      "url": "../quick",
+      "icons": [{ "src": "android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Logs",
+      "url": "../logs",
+      "icons": [{ "src": "android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

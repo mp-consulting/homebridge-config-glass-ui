@@ -188,4 +188,11 @@ export interface HomebridgeUiConfig {
     fontWeight?: string | number
     lightingMode?: 'light' | 'dark'
   }
+  // Other Homebridge UI instances offered by the header switcher (name + URL)
+  instances?: Array<{ name: string, url: string }>
+  // Accessory sensor history recorder (see AccessoryHistoryService)
+  accessoryHistory?: {
+    enabled?: boolean
+    retentionDays?: number
+  }
 }

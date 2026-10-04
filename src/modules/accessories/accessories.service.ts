@@ -221,6 +221,11 @@ export class AccessoriesService {
     return this.hapMonitorPromise
   }
 
+  /** The shared HAP characteristic monitor (created on first use), for the history recorder. */
+  public getHapMonitor(): Promise<HapMonitor> {
+    return this.ensureHapMonitor()
+  }
+
   /**
    * Load all the accessories from Homebridge
    */

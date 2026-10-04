@@ -750,6 +750,36 @@ describe('managePlugin', () => {
     })
   })
 
+  describe('the plugin compatibility check before updating homebridge', () => {
+    const report = {
+      target: { homebridge: '2.0.0' },
+      incompatible: [{ name: 'homebridge-old', displayName: 'Old', installedVersion: '1.0.0', engines: { homebridge: '^1.6.0' }, engineIssues: ['homebridge'] }],
+      unknown: [],
+      checked: 3,
+    }
+
+    it('lists the plugins that do not accept the new homebridge version', async () => {
+      api.respond('get', /\/plugins\/compatibility/, report)
+      await open({ action: 'Update', pluginName: 'homebridge', targetVersion: '2.0.0', installedVersion: '1.8.5' })
+
+      expect(api.callsTo('get', '/plugins/compatibility?homebridge=2.0.0')).toHaveLength(1)
+      expect(screen.getByRole('alert')).toHaveTextContent('Old')
+    })
+
+    it('checks against the latest version when the target is the dist-tag', async () => {
+      api.respond('get', /\/plugins\/compatibility/, report)
+      await open({ action: 'Update', pluginName: 'homebridge', targetVersion: 'latest', latestVersion: '2.1.0', installedVersion: '1.8.5' })
+
+      expect(api.callsTo('get', '/plugins/compatibility?homebridge=2.1.0')).toHaveLength(1)
+    })
+
+    it('is not run for an ordinary plugin', async () => {
+      await open({ action: 'Update', targetVersion: '2.0.0' })
+
+      expect(api.callsTo('get', /\/plugins\/compatibility/)).toHaveLength(0)
+    })
+  })
+
   describe('going back to the version picker', () => {
     async function openWithBack(data: Partial<ManagePluginProps> = {}) {
       await open({ action: 'Update', targetVersion: '2.0.0', backToVersionModal: makePlugin(), ...data })

@@ -6,15 +6,19 @@ import type {
 import type { ModalComponentProps } from '@/core/ui/modal'
 import type { CharacteristicType } from '@homebridge/hap-client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { buildAccessoryInfo, fallbackCopyToClipboard, getEnumLabel, keyValue } from '@/core/accessories/accessory-info/accessory-info.helpers'
+import { isRecordedCharacteristic } from '@/core/accessories/history/accessory-history'
 import { convertMired, convertTemp, prettify, serviceToTranslationString } from '@/core/pipes'
 import { openModal } from '@/core/ui/modal'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { RemoveIndividualAccessories } from '@/modules/settings/remove-individual-accessories/RemoveIndividualAccessories'
+
+// chart.js stays out of the accessories page until a modal shows history
+const AccessoryHistoryPanel = lazy(() => import('@/core/accessories/history/AccessoryHistoryPanel'))
 
 /** What the modal closes with when saved. */
 export interface AccessoryInfoResult {
@@ -338,6 +342,11 @@ export function AccessoryInfo({ activeModal, service, accessoryCache, pairingCac
             </li>
           )}
         </ul>
+        {!isMatterAccessory && service.uniqueId && service.serviceCharacteristics?.some(isRecordedCharacteristic) && (
+          <Suspense fallback={null}>
+            <AccessoryHistoryPanel uniqueId={service.uniqueId} />
+          </Suspense>
+        )}
         <ul className="list-group list-group-box mb-3">
           <li className="list-group-item">
             <h6 className="mb-0 text-center">{t('accessories.service_info')}</h6>

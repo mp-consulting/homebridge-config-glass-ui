@@ -27,7 +27,9 @@ vi.mock('@/core/ws/ws', async importOriginal => ({
 
 const netResponse = {
   net: { iface: 'eth0', rx_sec: 1024 * 1024, tx_sec: 2 * 1024 * 1024 },
-  point: 8,
+  point: 3,
+  received: 1024 * 1024,
+  sent: 2 * 1024 * 1024,
 }
 
 describe('the network widget', () => {
@@ -55,6 +57,7 @@ describe('the network widget', () => {
 
   const values = (container: HTMLElement) => [...container.querySelectorAll('.widget-value')].map(el => el.textContent)
   const series = () => chart.props.data.datasets[0].data
+  const sentSeries = () => chart.props.data.datasets[1].data
 
   beforeEach(() => {
     chart.props = undefined
@@ -107,36 +110,56 @@ describe('the network widget', () => {
     expect(updateWidget).not.toHaveBeenCalled()
   })
 
-  it('clears the chart when the interface changes', async () => {
+  it('shows the rates in bytes when the widget is set to bytes', async () => {
+    const { container } = await open({ networkUnit: 'bytes' })
+
+    expect(values(container)).toEqual(['1 MB/s', '2 MB/s'])
+  })
+
+  it('scales the rate to the unit that fits', async () => {
+    const { container } = await open({}, { response: { net: { iface: 'eth0', rx_sec: 0, tx_sec: 0 }, point: 0, received: 128, sent: 3 * 1024 ** 3 } })
+
+    expect(values(container)).toEqual(['1 Kb/s', '24 Gb/s'])
+  })
+
+  it('falls back to rx_sec / tx_sec from an older server', async () => {
+    const { container } = await open({}, { response: { net: { iface: 'eth0', rx_sec: 1024 * 1024, tx_sec: 0 }, point: 1 } })
+
+    expect(values(container)).toEqual(['8 Mb/s', '0 b/s'])
+  })
+
+  it('charts received above the axis and sent mirrored below it', async () => {
+    await open()
+
+    expect(series()).toEqual([1024 * 1024])
+    expect(sentSeries()).toEqual([-2 * 1024 * 1024])
+    expect(chart.props.data.datasets.map((d: any) => d.label)).toEqual(['status.network.received_per_second', 'status.network.sent_per_second'])
+  })
+
+  it('clears both series when the interface changes', async () => {
     vi.useFakeTimers()
     await open()
-    expect(series()).toEqual([8])
 
-    io.socket.respondTo('get-server-network-info', { net: { iface: 'wlan0', rx_sec: 0, tx_sec: 0 }, point: 2 })
+    io.socket.respondTo('get-server-network-info', { net: { iface: 'wlan0', rx_sec: 0, tx_sec: 0 }, point: 0, received: 5, sent: 7 })
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000)
     })
 
     // Throughput on a different adapter is a different series entirely
     expect(updateWidget).toHaveBeenLastCalledWith({ networkInterface: 'wlan0' })
-    expect(series()).toEqual([2])
+    expect(series()).toEqual([5])
+    expect(sentSeries()).toEqual([-7])
   })
 
   it('appends readings on the same interface', async () => {
     vi.useFakeTimers()
     await open()
-    io.socket.respondTo('get-server-network-info', { ...netResponse, point: 3 })
+    io.socket.respondTo('get-server-network-info', { ...netResponse, received: 3, sent: 4 })
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000)
     })
 
-    expect(series()).toEqual([8, 3])
-  })
-
-  it('flattens a rate below one to zero', async () => {
-    await open({}, { response: { net: { iface: 'eth0', rx_sec: 100, tx_sec: 100 }, point: 0.02 } })
-
-    // Fractional values make the chart look like noise on an idle connection
-    expect(series()).toEqual([0])
+    expect(series()).toEqual([1024 * 1024, 3])
+    expect(sentSeries()).toEqual([-2 * 1024 * 1024, -4])
   })
 })

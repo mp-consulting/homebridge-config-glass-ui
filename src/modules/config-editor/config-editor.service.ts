@@ -11,7 +11,7 @@ import {
   HomebridgeUiBridgeConfig,
   PlatformConfig,
 } from '../../core/config/config.interfaces.js'
-import { ConfigService } from '../../core/config/config.service.js'
+import { ConfigService, sanitiseInstances } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
@@ -509,6 +509,26 @@ export class ConfigEditorService {
       config.platforms.push(pluginConfig)
     }
     return pluginConfig
+  }
+
+  /**
+   * Replace the instance switcher list. Each entry needs a name (1-64
+   * characters) and an http(s) URL without credentials; at most 20.
+   */
+  public async setUiInstances(value: unknown): Promise<Array<{ name: string, url: string }>> {
+    if (!Array.isArray(value) || value.length > 20) {
+      throw new BadRequestException('Expected a list of at most 20 instances.')
+    }
+    const instances = sanitiseInstances(value)
+    if (instances.length !== value.length) {
+      throw new BadRequestException('Each instance needs a name and an http(s) URL (without a username or password).')
+    }
+    await this.mutateConfigFile((config) => {
+      const pluginConfig = this.findOrCreateUiConfigBlock(config)
+      pluginConfig.instances = instances
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = cleanUpUiConfig(pluginConfig)
+    })
+    return instances
   }
 
   /**

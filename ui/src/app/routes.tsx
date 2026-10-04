@@ -113,6 +113,14 @@ export const routes: RouteObject[] = [
             ...page(() => import('@/modules/accessories/route'), requireAuth),
           },
           {
+            path: 'quick',
+            ...page(() => import('@/modules/quick-controls/route'), requireAuth),
+          },
+          {
+            path: 'scenes',
+            ...page(() => import('@/modules/scenes/route'), requireAuth),
+          },
+          {
             path: 'logs',
             ...page(() => import('@/modules/logs/route'), logsGuard),
           },
@@ -127,6 +135,10 @@ export const routes: RouteObject[] = [
           {
             path: 'support',
             ...page(() => import('@/modules/support/route'), requireAuth),
+          },
+          {
+            path: 'child-bridges',
+            ...page(() => import('@/modules/child-bridges/route'), requireAdmin),
           },
           {
             path: 'power-options',

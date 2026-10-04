@@ -84,13 +84,15 @@ describe('the dashboard widget modals', () => {
    * @param options.serverInfoFails - make the server info request error
    * @param options.serverInfo - what the server info request returns
    * @param options.interfaces - the bridge network interfaces to offer
+   * @param options.accessories - what GET /accessories answers
    */
   async function openControl(widget: Record<string, any>, options: {
     serverInfoFails?: boolean
     serverInfo?: Record<string, any>
     interfaces?: string[]
+    accessories?: any[]
   } = {}) {
-    api = fakeApi().respond('get', '/server/network-interfaces/bridge', options.interfaces ?? ['eth0', 'wlan0'])
+    api = fakeApi().respond('get', '/server/network-interfaces/bridge', options.interfaces ?? ['eth0', 'wlan0']).respond('get', '/accessories', options.accessories ?? [])
     useSettingsStore.setState(makeSettingsState())
     activeModal = activeModalStub()
     holder.ws = fakeWs()
@@ -314,6 +316,32 @@ describe('the dashboard widget modals', () => {
       expect(options).toEqual(['eth0', 'wlan0'])
     })
 
+    it('lets the network widget switch between bits and bytes', async () => {
+      await openControl({ component: 'NetworkWidgetComponent' })
+
+      const select = screen.getByLabelText<HTMLSelectElement>('status.widget.network.unit')
+      expect(select.value).toBe('bits')
+      fireEvent.change(select, { target: { value: 'bytes' } })
+
+      expect(saveButton()).toBeEnabled()
+    })
+
+    it('offers the recorded characteristics of every accessory for the history widget', async () => {
+      await openControl({ component: 'AccessoryHistoryWidgetComponent' }, {
+        accessories: [
+          { uniqueId: 'abc', serviceName: 'Kitchen', serviceCharacteristics: [{ type: 'CurrentTemperature', description: 'Current Temperature', format: 'float' }, { type: 'On', description: 'On', format: 'bool' }] },
+        ],
+      })
+
+      const select = screen.getByLabelText<HTMLSelectElement>('status.widget.history.characteristic')
+      expect([...select.options].map(o => o.value)).toEqual(['', 'abc|CurrentTemperature'])
+      fireEvent.change(select, { target: { value: 'abc|CurrentTemperature' } })
+      fireEvent.change(screen.getByLabelText('status.widget.history.period'), { target: { value: '168' } })
+      fireEvent.click(saveButton())
+
+      expect(activeModal.close).toHaveBeenCalledWith(expect.objectContaining({ historyAccessory: 'abc', historyType: 'CurrentTemperature', historyLabel: 'Kitchen - Current Temperature', historyHours: 168 }))
+    })
+
     it('says so when there are no interfaces to offer', async () => {
       await openControl({ component: 'NetworkWidgetComponent' }, { interfaces: [] })
 
@@ -342,6 +370,10 @@ describe('the dashboard widget modals', () => {
         ['refreshInterval', 30],
         ['historyItems', 50],
         ['networkInterface', 'wlan0'],
+        ['networkUnit', 'bytes'],
+        ['historyAccessory', 'abc'],
+        ['historyType', 'CurrentTemperature'],
+        ['historyHours', 72],
         ['showToolbar', true],
       ]
 

@@ -9,6 +9,7 @@ import * as toastModule from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
 import { activeModalStub, fakeApi, renderWithProviders } from '@/testing'
 
+import { ConfigBackupDiff } from './ConfigBackupDiff'
 import { ConfigRestore } from './ConfigRestore'
 
 vi.mock('@/core/ui/toast', async () => ({ toast: (await import('@/testing')).toastStub() }))
@@ -68,6 +69,34 @@ describe('config restore', () => {
     await click(screen.getAllByRole('button', { name: 'config.restore.copy_to_editor' })[1])
 
     expect(activeModal.close).toHaveBeenCalledWith('1002')
+  })
+
+  it('opens a comparison of a backup with the config on screen', async () => {
+    await open()
+
+    await click(screen.getAllByRole('button', { name: 'config.restore.compare' })[1])
+
+    expect(modal.lastOpened()?.component).toBe(ConfigBackupDiff)
+    expect(modal.lastOpened()?.props).toMatchObject({ backupId: '1002', currentConfig: '{ "current": true }' })
+    expect(activeModal.close).not.toHaveBeenCalled()
+  })
+
+  it('loads the compared backup when the comparison asks for it', async () => {
+    await open()
+
+    await click(screen.getAllByRole('button', { name: 'config.restore.compare' })[0])
+    await act(async () => modal.lastOpened()!.ref.close('load'))
+
+    expect(activeModal.close).toHaveBeenCalledWith('1001')
+  })
+
+  it('stays on the list when the comparison is closed', async () => {
+    await open()
+
+    await click(screen.getAllByRole('button', { name: 'config.restore.compare' })[0])
+    await act(async () => modal.lastOpened()!.ref.dismiss('Dismiss'))
+
+    expect(activeModal.close).not.toHaveBeenCalled()
   })
 
   it('gives up, with a toast, when the list cannot be read', async () => {

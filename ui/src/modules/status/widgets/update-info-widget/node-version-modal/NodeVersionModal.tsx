@@ -165,6 +165,7 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
   }
 
   const dismissModal = () => activeModal.dismiss('Dismiss')
+  const incompatibleCount = installedPlugins.filter(plugin => plugin.isSupported === 'no').length
 
   const handleIconError = (plugin: PluginNodeCheck) => {
     setInstalledPlugins(plugins => plugins.map(p => (p === plugin ? { ...p, icon: DEFAULT_PLUGIN_ICON } : p)))
@@ -189,6 +190,12 @@ export function NodeVersionModal(props: NodeVersionModalProps) {
                     {latestVersion !== nodeVersion && <>{` → ${latestVersion}`}</>}
                   </h5>
                 </div>
+                {incompatibleCount > 0 && (
+                  <div role="alert" className="alert alert-warning show fade mb-3">
+                    <i className="fas fa-triangle-exclamation me-2" aria-hidden="true"></i>
+                    {t('status.widget.info.node_incompatible_summary', { count: incompatibleCount, nodeVersion: latestVersion })}
+                  </div>
+                )}
                 <ul className="mb-0">
                   <li>{t('status.widget.info.node_update_message')}</li>
                   {(homebridgeRunningInSynologyPackage || homebridgeRunningInDocker) && (

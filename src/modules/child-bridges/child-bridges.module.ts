@@ -5,6 +5,7 @@ import { ConfigModule } from '../../core/config/config.module.js'
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { AccessoriesModule } from '../accessories/accessories.module.js'
+import { ChildBridgeHealthService } from './child-bridge-health.service.js'
 import { ChildBridgesGateway } from './child-bridges.gateway.js'
 import { ChildBridgesService } from './child-bridges.service.js'
 
@@ -18,10 +19,12 @@ import { ChildBridgesService } from './child-bridges.service.js'
   ],
   providers: [
     ChildBridgesService,
+    ChildBridgeHealthService,
     ChildBridgesGateway,
   ],
   exports: [
     ChildBridgesService,
+    ChildBridgeHealthService,
   ],
 })
 export class ChildBridgesModule {}

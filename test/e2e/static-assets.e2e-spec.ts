@@ -32,6 +32,7 @@ describe('Static assets (e2e)', () => {
     await writeFile(resolve(publicPath, 'assets/index-B2nQZ0s0.js.br'), brotliCompressSync(hashedJs))
     await writeFile(resolve(publicPath, 'assets/index-B2nQZ0s0.js.gz'), gzipSync(hashedJs))
     await writeFile(resolve(publicPath, 'manifest.json'), '{"name":"x"}'.padEnd(2048, ' '))
+    await writeFile(resolve(publicPath, 'sw.js'), 'self.addEventListener("fetch", () => {})\n')
     await writeFile(resolve(publicPath, 'manifest.json.br'), brotliCompressSync('{"name":"x"}'.padEnd(2048, ' ')))
 
     const moduleFixture = await Test.createTestingModule({ imports: [EmptyModule] }).compile()
@@ -82,6 +83,15 @@ describe('Static assets (e2e)', () => {
     expect(res.headers.vary).toMatch(/accept-encoding/i)
     expect(res.headers['cache-control']).toBe('public,max-age=31536000,immutable')
     expect(res.body).toBe(hashedJs)
+  })
+
+  it('serves the service worker as a script that always revalidates', async () => {
+    const res = await app.inject({ method: 'GET', path: '/sw.js' })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers['content-type']).toMatch(/javascript/)
+    // A cached worker would keep an old UI's cache rules alive after an update
+    expect(res.headers['cache-control']).toBe('no-cache')
   })
 
   it('keeps unhashed files revalidating when served precompressed', async () => {
