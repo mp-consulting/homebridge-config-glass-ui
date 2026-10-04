@@ -10,8 +10,8 @@ import { Buffer } from 'node:buffer'
 export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram'
 export const CHANNEL_NAMES: ChannelName[] = ['webhook', 'ntfy', 'pushover', 'telegram']
 
-export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
-export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'updatesAvailable', 'backupFailed', 'dailyDigest']
+export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'rollbackSuggested' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
+export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'rollbackSuggested', 'updatesAvailable', 'backupFailed', 'dailyDigest']
 
 /** A time of day, HH:mm (24 hours). */
 export const RE_TIME_OF_DAY = /^(?:[01]\d|2[0-3]):[0-5]\d$/
@@ -55,6 +55,7 @@ export function defaultNotificationSettings(): NotificationSettings {
       homebridgeDown: true,
       homebridgeUp: true,
       childBridgeCrashLoop: true,
+      rollbackSuggested: true,
       updatesAvailable: true,
       backupFailed: true,
       // Uses the Assistant (an AI provider's quota): opt in
@@ -71,6 +72,8 @@ export interface NotificationMessage {
   message: string
   /** Higher for outages: ntfy / Pushover priority. */
   urgent?: boolean
+  /** The UI page the notification is about (`/plugins`), for channels that can open it. */
+  path?: string
 }
 
 const SEND_TIMEOUT_MS = 10_000

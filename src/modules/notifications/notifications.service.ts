@@ -1,3 +1,4 @@
+import type { PluginRollbackSuggestedEvent } from '../../core/events/app-events.service.js'
 import type { ChildBridgeHealth } from '../child-bridges/child-bridge-health.service.js'
 import type { ChannelName, NotificationChannels, NotificationEvent, NotificationMessage, NotificationSettings } from './notification-channels.js'
 
@@ -13,6 +14,7 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { AI_SYSTEM_USER, AiService } from '../ai/ai.service.js'
 import { ChildBridgeHealthService } from '../child-bridges/child-bridge-health.service.js'
+import { PluginRollbackService } from '../plugins/plugin-rollback.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import {
   CHANNEL_NAMES,
@@ -88,6 +90,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     @Inject(AppEventsService) private readonly events: AppEventsService,
     @Inject(SchedulerService) private readonly scheduler: SchedulerService,
     @Inject(AiService) private readonly ai: AiService,
+    @Inject(PluginRollbackService) private readonly rollback: PluginRollbackService,
   ) {
     this.settingsPath = resolve(this.configService.storagePath, '.uix-notifications.json')
   }
@@ -99,6 +102,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.ipc.on('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.on('crashLoop', this.onCrashLoop)
     this.events.on('backupFailed', this.onBackupFailed)
+    this.events.on('pluginRollbackSuggested', this.onRollbackSuggested)
 
     const first = setTimeout(() => void this.checkForUpdates(), FIRST_UPDATE_CHECK_MS)
     const every = setInterval(() => void this.checkForUpdates(), UPDATE_CHECK_MS)
@@ -113,6 +117,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.ipc.off('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.off('crashLoop', this.onCrashLoop)
     this.events.off('backupFailed', this.onBackupFailed)
+    this.events.off('pluginRollbackSuggested', this.onRollbackSuggested)
     for (const timer of this.updateTimers) {
       clearTimeout(timer)
       clearInterval(timer)
@@ -411,23 +416,37 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
    */
   public async notifyCrashLoop(bridge: ChildBridgeHealth): Promise<ChannelResult[] | null> {
     let message = `${bridge.name} (${bridge.plugin}) crashed ${bridge.recentCrashes} times in a short time. Check the logs.`
+    let assistant = ''
     try {
       const settings = await this.load()
       // Ask only for a notification that will go out
       if (settings.explainCrashLoops && !this.holdBack(settings, 'childBridgeCrashLoop', `childBridgeCrashLoop:${bridge.username}`, Date.now())) {
         const explanation = await this.explainCrashLoop(bridge)
         if (explanation) {
-          message += `\n\nAssistant: ${explanation}`
+          assistant = `\n\nAssistant: ${explanation}`
         }
       }
     } catch (e) {
       this.logger.warn(`Failed to explain the ${bridge.name} crash loop as ${e?.message ?? e}.`)
     }
+    let path: string | undefined
+    try {
+      // Updated recently: say which version it can go back to
+      const rollback = bridge.plugin ? await this.rollback.describeSuggestion(bridge.plugin) : null
+      if (rollback) {
+        message += `\n\n${rollback}`
+        path = '/plugins'
+      }
+    } catch (e) {
+      this.logger.debug(`Failed to look up the rollback of ${bridge.plugin} as ${e?.message ?? e}.`)
+    }
+    message += assistant
     return this.notify({
       event: 'childBridgeCrashLoop',
       title: `Child bridge ${bridge.name} is crash looping`,
       message,
       urgent: true,
+      path: path ?? '/child-bridges',
     }, bridge.username)
   }
 
@@ -459,6 +478,24 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     } finally {
       clearTimeout(timer)
     }
+  }
+
+  /**
+   * Homebridge crash loops soon after plugins on the main bridge were updated.
+   * (A child bridge's crash loop notification already says it.)
+   */
+  private onRollbackSuggested = (suggestion: PluginRollbackSuggestedEvent) => {
+    if (suggestion?.reason !== 'homebridgeCrashLoop' || !suggestion.plugins?.length) {
+      return
+    }
+    const lines = suggestion.plugins.map(p => `${p.name}: updated from ${p.fromVersion} to ${p.toVersion}. Roll back to ${p.fromVersion} from the Plugins page.`)
+    void this.notify({
+      event: 'rollbackSuggested',
+      title: 'Homebridge is crash looping after a plugin update',
+      message: `Homebridge went down several times in a few minutes, soon after these plugins were updated:\n${lines.join('\n')}`,
+      urgent: true,
+      path: '/plugins',
+    }, suggestion.plugins.map(p => `${p.name}@${p.toVersion}`).join(','))
   }
 
   private onBackupFailed = ({ message }: { message: string }) => {

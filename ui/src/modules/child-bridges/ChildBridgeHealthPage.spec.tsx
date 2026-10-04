@@ -3,8 +3,9 @@ import type { FakeApi, FakeToast } from '@/testing'
 import { act, fireEvent, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { useAuthStore } from '@/core/auth'
 import * as toastModule from '@/core/ui/toast'
-import { fakeApi, renderWithProviders } from '@/testing'
+import { fakeApi, makeAuthState, renderWithProviders } from '@/testing'
 
 import { formatUptime } from './child-bridge-health'
 import { ChildBridgeHealthPage } from './ChildBridgeHealthPage'
@@ -133,5 +134,15 @@ describe('the child bridge health page', () => {
     expect(formatUptime(42)).toBe('42s')
     expect(formatUptime(90_061)).toBe('1d 1h')
     expect(formatUptime(3_600)).toBe('1h 0m')
+  })
+
+  it('offers to roll back a crash looping bridge\'s plugin that was just updated', async () => {
+    useAuthStore.setState(makeAuthState())
+    api.respond('get', '/plugins/rollback', [{ name: 'homebridge-kitchen', fromVersion: '1.0.0', toVersion: '1.1.0', updatedAt: '2026-10-04T09:00:00Z', expiresAt: '2026-10-18T09:00:00Z', suspect: null }])
+    await open()
+    await act(async () => {})
+
+    expect(screen.getByText('child_bridge.health.rollback_hint')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /plugins.rollback.button/ })).toBeInTheDocument()
   })
 })

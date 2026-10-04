@@ -14,6 +14,7 @@ import { Donate } from '@/core/plugins/donate/Donate'
 import { managePlugins as realManagePlugins } from '@/core/plugins/manage-plugins'
 import { PluginInfo } from '@/core/plugins/plugin-info/PluginInfo'
 import { PluginLogs } from '@/core/plugins/plugin-logs/PluginLogs'
+import { usePluginRollbackStore } from '@/core/plugins/plugin-rollback'
 import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import * as modalModule from '@/core/ui/modal'
@@ -44,6 +45,7 @@ vi.mock('@/core/plugins/manage-plugins', () => ({
     jsonEditor: vi.fn(),
     externalAccessories: vi.fn(),
     resetChildBridges: vi.fn(),
+    updatePlugin: vi.fn(),
   },
 }))
 
@@ -123,6 +125,57 @@ describe('pluginCard', () => {
     ]
     return icons.find(icon => header.querySelector(`.${icon}:not([hidden])`))
   }
+
+  describe('rolling back the last update', () => {
+    const entry = (suspect: object | null = null) => ({
+      name: 'homebridge-example',
+      fromVersion: '0.9.0',
+      toVersion: '1.0.0',
+      updatedAt: '2026-10-01T00:00:00Z',
+      expiresAt: '2026-10-15T00:00:00Z',
+      suspect,
+    })
+
+    afterEach(() => {
+      usePluginRollbackStore.setState({ entries: {} })
+    })
+
+    it('offers the previous version in the menu', () => {
+      usePluginRollbackStore.setState({ entries: { 'homebridge-example': entry() as any } })
+      render({ name: 'homebridge-example', installedVersion: '1.0.0' })
+
+      expect(menuItem('plugins.rollback.button')).toBeInTheDocument()
+      expect(document.querySelector('.hb-plugin-rollback')).toBeNull()
+    })
+
+    it('puts it beside the name when the bridge crash looped since the update', () => {
+      usePluginRollbackStore.setState({ entries: { 'homebridge-example': entry({ reason: 'childBridgeCrashLoop', at: '2026-10-01T01:00:00Z' }) as any } })
+      render({ name: 'homebridge-example', installedVersion: '1.0.0' })
+
+      expect(document.querySelector('.hb-plugin-rollback')).not.toBeNull()
+    })
+
+    it('offers nothing once another version is installed', () => {
+      usePluginRollbackStore.setState({ entries: { 'homebridge-example': entry() as any } })
+      render({ name: 'homebridge-example', installedVersion: '1.1.0' })
+
+      expect(() => menuItem('plugins.rollback.button')).toThrow()
+    })
+
+    it('asks, then installs the previous version', async () => {
+      usePluginRollbackStore.setState({ entries: { 'homebridge-example': entry() as any } })
+      api.respond('get', '/plugins/rollback', [])
+      render({ name: 'homebridge-example', installedVersion: '1.0.0' })
+
+      fireEvent.click(menuItem('plugins.rollback.button'))
+      await settle()
+      expect(modal.lastOpened()!.component).toBe(Confirm)
+      modal.lastOpened()!.ref.close()
+      await settle()
+
+      expect(managePlugins.updatePlugin).toHaveBeenCalledWith(current, '0.9.0')
+    })
+  })
 
   describe('the call to action icon', () => {
     it('offers the update when one is available', () => {

@@ -15,6 +15,7 @@ const EVENT_LABELS: Record<NotificationEvent, string> = {
   homebridgeDown: 'settings.notifications.event_homebridge_down',
   homebridgeUp: 'settings.notifications.event_homebridge_up',
   childBridgeCrashLoop: 'settings.notifications.event_crash_loop',
+  rollbackSuggested: 'settings.notifications.event_rollback',
   updatesAvailable: 'settings.notifications.event_updates',
   backupFailed: 'settings.notifications.event_backup_failed',
   dailyDigest: 'settings.notifications.event_daily_digest',

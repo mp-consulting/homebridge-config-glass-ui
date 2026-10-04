@@ -10,6 +10,8 @@ import { useStore } from 'zustand'
 
 import { useAuthStore } from '@/core/auth/auth.store'
 import { Spinner } from '@/core/components/spinner/Spinner'
+import { managePlugins } from '@/core/plugins/manage-plugins'
+import { pluginRollback } from '@/core/plugins/plugin-rollback'
 import { settingsActions } from '@/core/settings'
 import { cx } from '@/core/utilities/cx'
 import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
@@ -158,6 +160,16 @@ export function PluginsPage() {
   useEffect(() => {
     void store.getState().loadInstalledPlugins()
   }, [store, location.key])
+
+  // What can be rolled back (the cards read it), again after every install
+  useEffect(() => {
+    if (!isAdmin) {
+      return
+    }
+    void pluginRollback.load()
+    const subscription = managePlugins.onPluginListRefresh.subscribe(() => void pluginRollback.load())
+    return () => subscription()
+  }, [isAdmin, location.key])
 
   useCanDeactivate(nextPath => store.getState().canDeactivate(nextPath))
 
