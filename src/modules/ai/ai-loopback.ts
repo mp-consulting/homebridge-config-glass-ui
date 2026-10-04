@@ -3,9 +3,8 @@ import type { Buffer } from 'node:buffer'
 import { X509Certificate } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { rootCertificates } from 'node:tls'
 
-import { Agent, fetch as undiciFetch } from 'undici'
+import { createTrustedFetch } from './ai-kit.js'
 
 /** What the Assistant's HomebridgeClient is given to reach this server. */
 export type LoopbackFetch = typeof fetch
@@ -51,26 +50,17 @@ export async function uiCertificateFingerprint(ssl: Record<string, unknown> | un
  * fetch is affected: global fetch and every other connection keep Node's
  * normal verification.
  *
- * The chain must validate against the certificate itself (self-signed) or a
- * public root, and the leaf the server presents must be the configured one
- * (pinned by its SHA-256 fingerprint). The hostname is not compared, since the
- * call goes to 127.0.0.1 while the certificate names the host people browse to.
+ * Built with the kit's `createTrustedFetch` (the same pinning the MCP server
+ * uses): the chain must validate against the certificate itself
+ * (self-signed) or a public root, and the leaf the server presents must be
+ * the configured one (pinned by its SHA-256 fingerprint). The hostname is not
+ * compared, since the call goes to 127.0.0.1 while the certificate names the
+ * host people browse to.
  * @param certificatePem - the PEM certificate (the first one, if it is a chain, is the leaf)
  */
 export function createLoopbackFetch(certificatePem: Buffer | string): LoopbackFetch {
   const pem = certificatePem.toString()
-  const expected = new X509Certificate(pem).fingerprint256
-  const agent = new Agent({
-    connect: {
-      ca: [...rootCertificates, pem],
-      checkServerIdentity: (_host, peer) => peer.fingerprint256 === expected
-        ? undefined
-        : new Error('The server at the loopback address did not present Glass UI\'s own certificate.'),
-    },
-  })
-  const loopbackFetch = (input: Parameters<typeof undiciFetch>[0], init?: Parameters<typeof undiciFetch>[1]) =>
-    undiciFetch(input, { ...init, dispatcher: agent })
-  return loopbackFetch as unknown as LoopbackFetch
+  return createTrustedFetch({ certificatePem: pem, fingerprint: new X509Certificate(pem).fingerprint256 })
 }
 
 /**

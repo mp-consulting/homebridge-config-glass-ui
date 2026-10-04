@@ -69,7 +69,7 @@ describe('Assistant loopback fetch (e2e)', () => {
 
     expect((await loopbackFetch(url(ownServer))).status).toBe(200)
     const error = await loopbackFetch(url(otherServer)).catch(e => e)
-    expect(error.cause?.message).toBe('The server at the loopback address did not present Glass UI\'s own certificate.')
+    expect(error.cause?.message).toMatch(/not the pinned [\dA-F:]{95}/)
   })
 
   it('does not care which hostname the certificate names', async () => {

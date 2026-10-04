@@ -36,6 +36,6 @@ export type {
   ToolCall,
   UsageSummary,
 } from '@mp-consulting/homebridge-ai-kit'
-export { HomebridgeClient } from '@mp-consulting/homebridge-ai-kit/mcp'
+export { createTrustedFetch, HomebridgeClient } from '@mp-consulting/homebridge-ai-kit/mcp'
 export { mcpClientSnippets } from '@mp-consulting/homebridge-ai-kit/plugin'
 export type { McpClientSnippets } from '@mp-consulting/homebridge-ai-kit/plugin'

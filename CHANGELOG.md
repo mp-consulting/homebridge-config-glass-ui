@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - **Scenes and notification settings are validated with DTOs.** `POST /api/scenes`, `PUT /api/scenes/:id`, `PUT /api/notifications/settings` and `POST /api/notifications/test` now check their bodies with class-validator DTOs (shown in Swagger with every field) instead of by hand. Unknown fields are dropped; a missing or wrong field answers `400` with the field named. The checks themselves are the same (cron expressions and channel formats are still checked by the services).
 - **The Assistant's caches are bounded.** Update risk briefings are kept for a day and at most 200 of them (least recently used first out), not until the settings change; the per-user rate limit forgets users idle for a minute instead of keeping every username.
+- **The Assistant's loopback certificate pinning uses the kit's `createTrustedFetch`** (`@mp-consulting/homebridge-ai-kit/mcp`), the same code the MCP server pins with, instead of a copy. A certificate mismatch now reads "Refusing to connect: the certificate presented by … is not the pinned …".
 
 ## [2.0.0-beta.7] - 2026-10-04
 
