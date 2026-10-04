@@ -8,6 +8,7 @@ import { useStore } from 'zustand'
 
 import { Spinner } from '@/core/components/spinner/Spinner'
 import { cx } from '@/core/utilities/cx'
+import { AssistantSection } from '@/modules/settings/sections/AssistantSection'
 import { CacheSection } from '@/modules/settings/sections/CacheSection'
 import { DisplaySection } from '@/modules/settings/sections/DisplaySection'
 import { GeneralSection } from '@/modules/settings/sections/GeneralSection'
@@ -185,6 +186,7 @@ export function Settings({ deps }: SettingsProps) {
                   {isMatterSupported && isSectionVisible('matter') && <MatterSection />}
                   {isSectionVisible('terminal') && <TerminalSection />}
                   {isSectionVisible('security') && <SecuritySection />}
+                  {isSectionVisible('assistant') && <AssistantSection />}
                   {isSectionVisible('cache') && <CacheSection />}
                   {isSectionVisible('reset') && <ResetSection />}
                   <div className="pb-3"></div>

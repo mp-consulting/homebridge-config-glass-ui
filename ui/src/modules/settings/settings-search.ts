@@ -7,7 +7,7 @@ import { t } from '@/core/ui/i18n'
  * place to be registered.
  */
 
-export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'cache' | 'reset'
+export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'assistant' | 'cache' | 'reset'
 
 export interface SectionNavEntry {
   key: SettingsSection
@@ -26,6 +26,7 @@ export const allSections: SectionNavEntry[] = [
   { key: 'matter', icon: 'fas fa-circle-nodes', title: 'settings.matter.title' },
   { key: 'terminal', icon: 'fas fa-terminal', title: 'settings.network.title_terminal' },
   { key: 'security', icon: 'fas fa-shield-halved', title: 'settings.network.title_security' },
+  { key: 'assistant', icon: 'fas fa-wand-magic-sparkles', title: 'ai.settings.title' },
   { key: 'cache', icon: 'fas fa-lightbulb', title: 'menu.label_accessories' },
   { key: 'reset', icon: 'fas fa-rotate-left', title: 'reset.bridges.title' },
 ]
@@ -99,6 +100,16 @@ export const sectionItems: Record<string, string[]> = {
     'setting-security-session',
     'setting-security-https',
   ],
+  assistant: [
+    'setting-ai-enabled',
+    'setting-ai-provider',
+    'setting-ai-model',
+    'setting-ai-key',
+    'setting-ai-base-url',
+    'setting-ai-max-tokens',
+    'setting-ai-test',
+    'setting-ai-usage',
+  ],
   cache: [
     'setting-accessory-debug',
     'setting-reset-accessory-ind',
@@ -122,6 +133,7 @@ export function getSectionContent(): Record<string, string> {
     matter: `${t('settings.matter.title')} ${t('settings.matter.desc')}`,
     terminal: t('settings.network.title_terminal'),
     security: t('settings.network.title_security'),
+    assistant: `${t('ai.settings.title')} ${t('ai.settings.desc')}`,
     cache: `${t('menu.label_accessories')} ${t('settings.cache.desc')}`,
     reset: `${t('reset.bridges.title')} ${t('reset.bridges.desc')}`,
   }
@@ -196,6 +208,16 @@ export function getItemsContent(): Record<string, string> {
     'setting-session-inactivity': t('settings.startup.session_inactivity_based'),
     'setting-security-session': t('settings.startup.session'),
     'setting-security-https': t('settings.security.https_enable'),
+
+    // Assistant section
+    'setting-ai-enabled': t('ai.settings.enabled'),
+    'setting-ai-provider': t('ai.settings.provider'),
+    'setting-ai-model': t('ai.settings.model'),
+    'setting-ai-key': t('ai.settings.api_key'),
+    'setting-ai-base-url': t('ai.settings.base_url'),
+    'setting-ai-max-tokens': t('ai.settings.max_tokens'),
+    'setting-ai-test': t('ai.settings.test'),
+    'setting-ai-usage': t('ai.settings.usage'),
 
     // Cache section
     'setting-accessory-debug': t('settings.accessory.debug'),
