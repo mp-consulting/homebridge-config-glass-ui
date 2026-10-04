@@ -5,6 +5,7 @@ import type { CustomPluginsModalData } from '@/core/ui/modal-data'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAssistantPluginContext } from '@/core/ai/ai-context'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { CustomPluginsController } from '@/core/plugins/custom-plugins/custom-plugins.controller'
 import { useSettingsStore } from '@/core/settings'
@@ -26,6 +27,7 @@ export function CustomPlugins({ activeModal, plugin, schema, pluginConfig }: Cus
   const { t } = useTranslation()
   const lang = useSettingsStore(state => state.env.lang)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  useAssistantPluginContext(plugin.name)
   // The config blocks are shared, and edited in place, by every controller
   // this modal gets (StrictMode mounts it twice in development)
   const [blocks] = useState<Record<string, unknown>[]>(() => pluginConfig ?? [])

@@ -76,7 +76,7 @@ export class AiController {
   @HttpCode(200)
   @Post('chat')
   chat(@Body() body: AiChatDto, @Request() req: any) {
-    return this.aiService.chat(req.user, body.messages)
+    return this.aiService.chat(req.user, body.messages, { context: body.context })
   }
 
   @ApiOperation({ summary: 'Update risk briefing for a plugin update, from its release notes and changelog.' })

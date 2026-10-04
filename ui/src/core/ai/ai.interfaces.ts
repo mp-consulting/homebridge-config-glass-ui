@@ -115,6 +115,19 @@ export interface AiChatTurn {
   content: string
 }
 
+/**
+ * Where the user is when they ask (`context` of a chat request), so the
+ * Assistant can tell what "this plugin" or "these errors" refer to.
+ */
+export interface AiChatContext {
+  /** The router path, e.g. `/logs` */
+  route: string
+  /** What the page is: `logs`, `accessories`, `plugins`, `plugin-settings`, … */
+  page: string
+  /** The plugin whose settings are open */
+  plugin?: string
+}
+
 export interface AiToolCallSummary {
   id: string
   name: string

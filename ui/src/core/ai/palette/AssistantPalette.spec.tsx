@@ -42,6 +42,7 @@ describe('assistant palette', () => {
     io.socket.respondTo('chat', (payload: any) => ({ requestId: payload.requestId, accepted: true }))
     useAuthStore.setState(makeAuthState({ user: makeUser({ admin: true }) }))
     aiActions.reset()
+    localStorage.clear()
   })
 
   afterEach(() => {
@@ -53,7 +54,7 @@ describe('assistant palette', () => {
     expect(screen.getByLabelText('ai.palette.input')).toHaveFocus()
 
     const { requestId, body } = send('How many lights are on?')
-    expect(body).toEqual({ messages: [{ role: 'user', content: 'How many lights are on?' }] })
+    expect(body).toEqual({ messages: [{ role: 'user', content: 'How many lights are on?' }], context: { route: '/', page: 'dashboard' } })
     expect(screen.getByText('How many lights are on?')).toBeInTheDocument()
 
     act(() => {
@@ -140,6 +141,98 @@ describe('assistant palette', () => {
     renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
     expect(screen.getByText('ai.palette.read_only')).toBeInTheDocument()
     expect(screen.getByText('ai.palette.hint_read_only')).toBeInTheDocument()
+  })
+
+  it('sends the page the user is on as context', () => {
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />, { route: '/logs' })
+    expect(send('Why the errors?').body.context).toEqual({ route: '/logs', page: 'logs' })
+  })
+
+  const answer = async (requestId: string, text: string) => {
+    await act(async () => {
+      io.socket.fire('ai:done', { requestId, result: { text, toolCalls: [], truncated: false, readOnly: false } })
+    })
+  }
+
+  it('keeps the conversation when the palette is closed and opened again', async () => {
+    const first = renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    await answer(send('How many lights?').requestId, 'Three.')
+    first.unmount()
+
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    expect(screen.getByText('How many lights?')).toBeInTheDocument()
+    expect(screen.getByText('Three.')).toBeInTheDocument()
+    // and it goes on from there
+    expect(send('And off?').body.messages).toHaveLength(3)
+  })
+
+  it('keeps an answer cut off by closing the palette as stopped', () => {
+    const first = renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    send('Long question')
+    first.unmount()
+
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    expect(screen.getByText('Long question')).toBeInTheDocument()
+    expect(screen.getByText('ai.chat.stopped')).toBeInTheDocument()
+  })
+
+  it('starts a new chat, lists the earlier one and reopens it', async () => {
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    await answer(send('First question').requestId, 'First answer.')
+
+    fireEvent.click(screen.getByRole('button', { name: 'ai.palette.new_chat' }))
+    expect(screen.queryByText('First question')).toBeNull()
+    expect(screen.getByText('ai.palette.empty')).toBeInTheDocument()
+    await answer(send('Second question').requestId, 'Second answer.')
+    // A new chat does not send the old conversation
+    expect(io.requests.at(-1)!.payload.body.messages).toEqual([{ role: 'user', content: 'Second question' }])
+
+    fireEvent.click(screen.getByRole('button', { name: 'ai.palette.history' }))
+    fireEvent.click(await screen.findByText('First question'))
+    const log = screen.getByRole('log')
+    expect(log).toHaveTextContent('First answer.')
+    expect(log).not.toHaveTextContent('Second question')
+
+    // The one left is now in the list
+    fireEvent.click(screen.getByRole('button', { name: 'ai.palette.history' }))
+    expect(await screen.findByText('Second question')).toBeInTheDocument()
+  })
+
+  it('clears the history', async () => {
+    const first = renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    await answer(send('Old question').requestId, 'Old answer.')
+    fireEvent.click(screen.getByRole('button', { name: 'ai.palette.new_chat' }))
+    fireEvent.click(screen.getByRole('button', { name: 'ai.palette.history' }))
+    fireEvent.click(await screen.findByText('ai.palette.clear_history'))
+    first.unmount()
+
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    fireEvent.click(screen.getByRole('button', { name: 'ai.palette.history' }))
+    expect(await screen.findByText('ai.palette.history_empty')).toBeInTheDocument()
+    expect(screen.queryByText('Old question')).toBeNull()
+  })
+
+  it('keeps each user\'s conversations apart', async () => {
+    const first = renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    await answer(send('Admin question').requestId, 'Admin answer.')
+    first.unmount()
+
+    useAuthStore.setState(makeAuthState({ user: makeUser({ username: 'someone-else', admin: false }) }))
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    expect(screen.queryByText('Admin question')).toBeNull()
+  })
+
+  it('still works when the browser storage throws', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('SecurityError')
+    })
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError')
+    })
+    const first = renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    await answer(send('hi').requestId, 'Hello.')
+    expect(screen.getByText('Hello.')).toBeInTheDocument()
+    first.unmount()
   })
 
   it('shows an error from the server in the conversation', async () => {

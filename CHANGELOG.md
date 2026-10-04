@@ -6,8 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **The Assistant chat keeps its conversations.** Closing the palette or reloading the page no longer loses the conversation: it is kept in this browser, per user, with the last ten conversations. **New chat** (the + button) files the current one away, the clock button lists them to reopen one, and **Clear history** removes them all. A browser that blocks storage simply keeps nothing.
+- **The Assistant chat knows where you are.** Each question goes with the page context: the route, what the page is (logs, accessories, plugins, config editor…) and, while a plugin's settings are open, that plugin's name, so "why does this plugin fail?" needs no more explaining. `POST /api/ai/chat` and the `ai` socket's `chat` take an optional `context` (`{ route?, page?, plugin? }`, each checked against a strict pattern); the server adds it to the system prompt as a labelled block of context, not instructions.
 - **Untranslated keys report.** `npm run i18n:report` lists, per locale, the keys whose text is still exactly the English one (`lang-sync` copies English into every locale, so the gaps did not show): a count per locale, `--locale <code>` for the keys, `--since <git ref>` for only the keys added since then, `--json`. Brand names and strings meant to stay the same go in `scripts/i18n-allowlist.json`. CI prints it, and on a pull request also the new keys still in English; it never fails the build.
-
 - **Plugin settings pages built on `@mp-consulting/homebridge-ui-kit` follow glass mode.** In glass mode a plugin's custom settings page now also gets a small stylesheet that sets the kit's `--mp-*` tokens (primary colour, accent text, focus ring, status colours, surface, border, radius, shadow, the Assistant colours) from Glass UI's `--glass-*` values, so the page follows the theme colour and light or dark mode, and makes the kit's `.mp-settings-card` a frosted glass surface (`--mp-glass-blur: 0px` turns the blur off). It only sets `--mp-*` properties and styles `.mp-*` classes, so other plugins' pages are unchanged.
 
 ### Fixed
