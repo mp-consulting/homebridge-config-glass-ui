@@ -7,7 +7,7 @@ import { t } from '@/core/ui/i18n'
  * place to be registered.
  */
 
-export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'cache' | 'reset'
+export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'notifications' | 'cache' | 'reset'
 
 export interface SectionNavEntry {
   key: SettingsSection
@@ -26,6 +26,7 @@ export const allSections: SectionNavEntry[] = [
   { key: 'matter', icon: 'fas fa-circle-nodes', title: 'settings.matter.title' },
   { key: 'terminal', icon: 'fas fa-terminal', title: 'settings.network.title_terminal' },
   { key: 'security', icon: 'fas fa-shield-halved', title: 'settings.network.title_security' },
+  { key: 'notifications', icon: 'fas fa-bell', title: 'settings.notifications.title' },
   { key: 'cache', icon: 'fas fa-lightbulb', title: 'menu.label_accessories' },
   { key: 'reset', icon: 'fas fa-rotate-left', title: 'reset.bridges.title' },
 ]
@@ -99,6 +100,13 @@ export const sectionItems: Record<string, string[]> = {
     'setting-security-session',
     'setting-security-https',
   ],
+  notifications: [
+    'setting-notifications-webhook',
+    'setting-notifications-ntfy',
+    'setting-notifications-pushover',
+    'setting-notifications-telegram',
+    'setting-notifications-events',
+  ],
   cache: [
     'setting-accessory-debug',
     'setting-reset-accessory-ind',
@@ -122,6 +130,7 @@ export function getSectionContent(): Record<string, string> {
     matter: `${t('settings.matter.title')} ${t('settings.matter.desc')}`,
     terminal: t('settings.network.title_terminal'),
     security: t('settings.network.title_security'),
+    notifications: `${t('settings.notifications.title')} ${t('settings.notifications.desc')}`,
     cache: `${t('menu.label_accessories')} ${t('settings.cache.desc')}`,
     reset: `${t('reset.bridges.title')} ${t('reset.bridges.desc')}`,
   }
@@ -196,6 +205,13 @@ export function getItemsContent(): Record<string, string> {
     'setting-session-inactivity': t('settings.startup.session_inactivity_based'),
     'setting-security-session': t('settings.startup.session'),
     'setting-security-https': t('settings.security.https_enable'),
+
+    // Notifications section
+    'setting-notifications-webhook': `${t('settings.notifications.webhook')} webhook`,
+    'setting-notifications-ntfy': 'ntfy',
+    'setting-notifications-pushover': 'Pushover',
+    'setting-notifications-telegram': 'Telegram',
+    'setting-notifications-events': t('settings.notifications.events'),
 
     // Cache section
     'setting-accessory-debug': t('settings.accessory.debug'),

@@ -39,7 +39,9 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { AppEventsService } from '../../src/core/events/app-events.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { BackupScheduler } from '../../src/modules/backup/backup-scheduler.js'
 import { BackupGateway } from '../../src/modules/backup/backup.gateway.js'
 import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
@@ -215,6 +217,21 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
   it('should schedule a job to backup instance', async () => {
     expect(schedulerService.scheduledJobs).toHaveProperty('instance-backup')
+  })
+
+  it('reports a failed scheduled backup on the app event bus', async () => {
+    const failed = vi.fn()
+    app.get(AppEventsService).on('backupFailed', failed)
+    const scheduler = app.get(BackupScheduler)
+
+    scheduler.schedule(async () => {
+      throw new Error('disk full')
+    })
+    schedulerService.scheduledJobs['instance-backup'].invoke()
+
+    await vi.waitFor(() => expect(failed).toHaveBeenCalledWith({ message: 'disk full' }))
+    app.get(AppEventsService).off('backupFailed', failed)
+    backupService.scheduleInstanceBackups()
   })
 
   it('should not schedule a job to backup instance if scheduled backups are disabled', async () => {

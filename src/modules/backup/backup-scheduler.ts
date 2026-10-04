@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { copy, ensureDir, pathExists, remove } from 'fs-extra/esm'
 
 import { ConfigService } from '../../core/config/config.service.js'
+import { AppEventsService } from '../../core/events/app-events.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
@@ -34,6 +35,7 @@ export class BackupScheduler {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
     @Inject(Logger) private readonly logger: Logger,
+    @Inject(AppEventsService) private readonly events: AppEventsService,
   ) {}
 
   /**
@@ -61,6 +63,7 @@ export class BackupScheduler {
       this.logger.debug('Running scheduled instance backup...')
       runJob().catch((e) => {
         this.logger.error(`Scheduled instance backup failed as ${e?.message || e}.`)
+        this.events.emit('backupFailed', { message: String(e?.message || e) })
       })
     })
   }

@@ -201,6 +201,7 @@ export const PROTECTED_STORAGE_NAMES: readonly string[] = [
   'ssl-certs', // uploaded / generated private keys
   'backups', // full backups (include all of the above)
   '.uix-hb-service-homebridge-startup.json', // hb-service startup env
+  '.uix-notifications.json', // notification channel tokens
 ]
 
 /**

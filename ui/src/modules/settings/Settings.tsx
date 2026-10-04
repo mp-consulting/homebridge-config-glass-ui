@@ -14,6 +14,7 @@ import { GeneralSection } from '@/modules/settings/sections/GeneralSection'
 import { HapSection } from '@/modules/settings/sections/HapSection'
 import { MatterSection } from '@/modules/settings/sections/MatterSection'
 import { NetworkSection } from '@/modules/settings/sections/NetworkSection'
+import { NotificationsSection } from '@/modules/settings/sections/NotificationsSection'
 import { ResetSection } from '@/modules/settings/sections/ResetSection'
 import { SecuritySection } from '@/modules/settings/sections/SecuritySection'
 import { StartupSection } from '@/modules/settings/sections/StartupSection'
@@ -185,6 +186,7 @@ export function Settings({ deps }: SettingsProps) {
                   {isMatterSupported && isSectionVisible('matter') && <MatterSection />}
                   {isSectionVisible('terminal') && <TerminalSection />}
                   {isSectionVisible('security') && <SecuritySection />}
+                  {isSectionVisible('notifications') && <NotificationsSection />}
                   {isSectionVisible('cache') && <CacheSection />}
                   {isSectionVisible('reset') && <ResetSection />}
                   <div className="pb-3"></div>
