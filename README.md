@@ -10,7 +10,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 ## Features
 
 - **Liquid glass design** in light and dark mode, tinted by the theme colour you pick
-- Install, configure, update and remove Homebridge plugins
+- Install, configure, update and remove Homebridge plugins, with a check of which plugins would not support a Node.js or Homebridge upgrade
 - Visual settings forms for plugins that ship a config schema
 - Edit `config.json` with syntax checking, validation and automatic backups you can compare with the current config
 - A customisable widget dashboard for monitoring your server (network traffic in bits or bytes, sent and received charted separately)
