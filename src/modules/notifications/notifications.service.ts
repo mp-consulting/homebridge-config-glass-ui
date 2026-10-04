@@ -104,6 +104,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.ipc.on('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.on('crashLoop', this.onCrashLoop)
     this.events.on('backupFailed', this.onBackupFailed)
+    this.events.on('backupSucceeded', this.onBackupSucceeded)
     this.events.on('pluginRollbackSuggested', this.onRollbackSuggested)
 
     const first = setTimeout(() => void this.checkForUpdates(), FIRST_UPDATE_CHECK_MS)
@@ -119,6 +120,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.ipc.off('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.off('crashLoop', this.onCrashLoop)
     this.events.off('backupFailed', this.onBackupFailed)
+    this.events.off('backupSucceeded', this.onBackupSucceeded)
     this.events.off('pluginRollbackSuggested', this.onRollbackSuggested)
     for (const timer of this.updateTimers) {
       clearTimeout(timer)
@@ -522,6 +524,11 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       urgent: true,
       path: '/plugins',
     }, suggestion.plugins.map(p => `${p.name}@${p.toVersion}`).join(','))
+  }
+
+  private onBackupSucceeded = ({ fileName, uploads }: { fileName: string, uploads: Array<{ destination: string, ok: boolean }> }) => {
+    const where = uploads.length ? ` and uploaded to ${uploads.map(upload => (upload.destination === 's3' ? 'S3' : 'WebDAV')).join(' and ')}` : ''
+    void this.notify({ event: 'backupSucceeded', title: 'Scheduled backup done', message: `The scheduled instance backup ${fileName} was saved${where}.`, path: '/settings?section=general' }, fileName)
   }
 
   private onBackupFailed = ({ message }: { message: string }) => {

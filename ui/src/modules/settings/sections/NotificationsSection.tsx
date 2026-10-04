@@ -19,6 +19,7 @@ const EVENT_LABELS: Record<NotificationEvent, string> = {
   rollbackSuggested: 'settings.notifications.event_rollback',
   updatesAvailable: 'settings.notifications.event_updates',
   backupFailed: 'settings.notifications.event_backup_failed',
+  backupSucceeded: 'settings.notifications.event_backup_succeeded',
   dailyDigest: 'settings.notifications.event_daily_digest',
 }
 

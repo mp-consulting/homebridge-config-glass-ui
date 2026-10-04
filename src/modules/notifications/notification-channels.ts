@@ -10,8 +10,8 @@ import { Buffer } from 'node:buffer'
 export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram' | 'browser'
 export const CHANNEL_NAMES: ChannelName[] = ['webhook', 'ntfy', 'pushover', 'telegram', 'browser']
 
-export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'rollbackSuggested' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
-export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'rollbackSuggested', 'updatesAvailable', 'backupFailed', 'dailyDigest']
+export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'rollbackSuggested' | 'updatesAvailable' | 'backupFailed' | 'backupSucceeded' | 'dailyDigest'
+export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'rollbackSuggested', 'updatesAvailable', 'backupFailed', 'backupSucceeded', 'dailyDigest']
 
 /** A time of day, HH:mm (24 hours). */
 export const RE_TIME_OF_DAY = /^(?:[01]\d|2[0-3]):[0-5]\d$/
@@ -62,6 +62,8 @@ export function defaultNotificationSettings(): NotificationSettings {
       rollbackSuggested: true,
       updatesAvailable: true,
       backupFailed: true,
+      // Every day: opt in
+      backupSucceeded: false,
       // Uses the Assistant (an AI provider's quota): opt in
       dailyDigest: false,
     },

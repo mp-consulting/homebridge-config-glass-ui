@@ -13,6 +13,8 @@ import { BackupScheduler } from './backup-scheduler.js'
 import { BackupController } from './backup.controller.js'
 import { BackupGateway } from './backup.gateway.js'
 import { BackupService } from './backup.service.js'
+import { BackupDestinationsController } from './offsite/backup-destinations.controller.js'
+import { BackupDestinationsService } from './offsite/backup-destinations.service.js'
 
 @Module({
   imports: [
@@ -30,9 +32,11 @@ import { BackupService } from './backup.service.js'
     BackupScheduler,
     BackupRestoreService,
     BackupGateway,
+    BackupDestinationsService,
   ],
   controllers: [
     BackupController,
+    BackupDestinationsController,
   ],
   exports: [
     BackupService,

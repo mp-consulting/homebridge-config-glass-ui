@@ -13,6 +13,8 @@ export interface PluginRollbackSuggestedEvent {
 export interface AppEventMap {
   /** A scheduled (or requested) instance backup failed. */
   backupFailed: [{ message: string }]
+  /** A scheduled backup was saved (and uploaded: `uploads`, one per enabled off-site destination). */
+  backupSucceeded: [{ fileName: string, uploads: Array<{ destination: string, ok: boolean, error?: string }> }]
   /** A bridge crash loops soon after a plugin update: rolling it back is offered. */
   pluginRollbackSuggested: [PluginRollbackSuggestedEvent]
 }

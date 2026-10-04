@@ -98,7 +98,7 @@ describe('Notifications (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json().channels.webhook).toEqual({ enabled: false, url: '' })
-    expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, rollbackSuggested: true, updatesAvailable: true, backupFailed: true, dailyDigest: false })
+    expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, rollbackSuggested: true, updatesAvailable: true, backupFailed: true, backupSucceeded: false, dailyDigest: false })
     expect(res.json().dailyDigestTime).toBe('08:00')
     expect(res.json().explainCrashLoops).toBe(true)
   })

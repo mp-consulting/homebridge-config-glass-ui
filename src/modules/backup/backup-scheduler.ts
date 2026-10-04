@@ -1,6 +1,6 @@
 import { constants, statSync } from 'node:fs'
 import { access, chmod, readdir } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { basename, resolve } from 'node:path'
 
 import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
@@ -12,6 +12,7 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { BACKUP_DIR_MODE, BACKUP_FILE_MODE } from './backup.constants.js'
+import { BackupDestinationsService } from './offsite/backup-destinations.service.js'
 
 const JOB_NAME = 'instance-backup'
 
@@ -36,6 +37,7 @@ export class BackupScheduler {
     @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
     @Inject(Logger) private readonly logger: Logger,
     @Inject(AppEventsService) private readonly events: AppEventsService,
+    @Inject(BackupDestinationsService) private readonly destinations: BackupDestinationsService,
   ) {}
 
   /**
@@ -69,7 +71,10 @@ export class BackupScheduler {
   }
 
   /**
-   * Runs the job to create a scheduled backup
+   * Runs the job to create a scheduled backup: save it in the instance backup
+   * path, upload it to the off-site destinations, then apply the retention.
+   * Never throws: a failure is logged and reported as `backupFailed`, a
+   * success as `backupSucceeded`.
    * @param createBackup - builds the archive in a temp directory
    */
   async runJob(createBackup: () => Promise<CreatedBackup>) {
@@ -78,24 +83,45 @@ export class BackupScheduler {
       await this.ensureScheduledBackupPath()
     } catch (e) {
       this.logger.warn(`Could not run scheduled backup as ${e.message}.`)
+      this.events.emit('backupFailed', { message: String(e?.message || e) })
       return
     }
 
     // Create the backup
+    let saved: { target: string, instanceId: string } | null = null
     try {
       const { backupDir, backupPath, instanceId } = await createBackup()
-      await this.saveToInstanceBackupPath(backupPath, instanceId)
+      saved = { target: await this.saveToInstanceBackupPath(backupPath, instanceId), instanceId }
       await remove(resolve(backupDir))
     } catch (e) {
       this.logger.warn(`Failed to create scheduled instance backup as ${e.message}.`)
+      this.events.emit('backupFailed', { message: String(e?.message || e) })
     }
 
-    // Remove backups older than RETENTION_DAYS
+    // Copy it off-site
+    if (saved) {
+      const fileName = basename(saved.target)
+      const uploads = await this.destinations.afterBackup(saved.target, fileName, saved.instanceId)
+      const failed = uploads.filter(upload => !upload.ok)
+      if (failed.length) {
+        this.events.emit('backupFailed', { message: `the backup was saved, but the upload failed: ${failed.map(upload => `${upload.destination}: ${upload.error}`).join('; ')}` })
+      } else {
+        this.events.emit('backupSucceeded', { fileName, uploads })
+      }
+    }
+
+    // Retention: the newest `keepLocal`, or the last RETENTION_DAYS days
     try {
+      const keepLocal = await this.destinations.getKeepLocal()
       const backups = await this.listScheduledBackups()
 
+      // Newest first; counted per instance (a shared custom path can hold several)
+      const seen = new Map<string, number>()
       for (const backup of backups) {
-        if (dayjs().diff(dayjs(backup.timestamp), 'day') >= RETENTION_DAYS) {
+        const index = seen.get(backup.instanceId) ?? 0
+        seen.set(backup.instanceId, index + 1)
+        const old = keepLocal ? index >= keepLocal : dayjs().diff(dayjs(backup.timestamp), 'day') >= RETENTION_DAYS
+        if (old) {
           await remove(resolve(this.configService.instanceBackupPath, backup.fileName))
         }
       }
@@ -146,13 +172,14 @@ export class BackupScheduler {
    * Copy a finished archive into the instance backup path, readable by the
    * service user only (a custom path may be a shared directory).
    */
-  async saveToInstanceBackupPath(backupPath: string, instanceId: string): Promise<void> {
+  async saveToInstanceBackupPath(backupPath: string, instanceId: string): Promise<string> {
     const target = resolve(
       this.configService.instanceBackupPath,
       `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
     )
     await copy(backupPath, target)
     await chmod(target, BACKUP_FILE_MODE).catch(() => undefined)
+    return target
   }
 
   /**
