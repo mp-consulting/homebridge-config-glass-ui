@@ -11,6 +11,14 @@ All notable changes to this project will be documented in this file.
 - **Untranslated keys report.** `npm run i18n:report` lists, per locale, the keys whose text is still exactly the English one (`lang-sync` copies English into every locale, so the gaps did not show): a count per locale, `--locale <code>` for the keys, `--since <git ref>` for only the keys added since then, `--json`. Brand names and strings meant to stay the same go in `scripts/i18n-allowlist.json`. CI prints it, and on a pull request also the new keys still in English; it never fails the build.
 - **Plugin settings pages built on `@mp-consulting/homebridge-ui-kit` follow glass mode.** In glass mode a plugin's custom settings page now also gets a small stylesheet that sets the kit's `--mp-*` tokens (primary colour, accent text, focus ring, status colours, surface, border, radius, shadow, the Assistant colours) from Glass UI's `--glass-*` values, so the page follows the theme colour and light or dark mode, and makes the kit's `.mp-settings-card` a frosted glass surface (`--mp-glass-blur: 0px` turns the blur off). It only sets `--mp-*` properties and styles `.mp-*` classes, so other plugins' pages are unchanged.
 
+### Accessibility
+
+- The Display settings' selects (language, theme, lighting, menu, temperature units) have labels, the CPU, memory and network charts on the dashboard have names, the MCP client configuration can be reached with the keyboard, and the config editor's line numbers in light glass mode meet 4.5:1 contrast.
+
+### Tests
+
+- Browser tests for scenes, Quick Controls, Child Bridge Health, notification settings, backup download, API tokens, a plugin uninstall and the Assistant chat (streamed answer, page context, kept conversation, New chat), and an axe-core scan of every main page that fails on serious or critical violations (`@axe-core/playwright`). The visual comparison stays local: why, and what running it on CI would take, is in `e2e/specs/visual.spec.ts`.
+
 ### Documentation
 
 - **Upgrading to 2.0** (`docs/upgrading.md`): from `homebridge-config-ui-x` or Glass UI 1.x, with what carries over (the storage files and backups), what Glass UI adds and where it keeps it, and what behaves differently.
