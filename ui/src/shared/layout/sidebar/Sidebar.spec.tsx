@@ -156,6 +156,15 @@ describe('sidebar', () => {
       expect(modal.openModal).toHaveBeenCalledWith(expect.anything(), {}, expect.objectContaining({ windowClass: 'hb-ai-palette-window' }))
     })
 
+    it('is the only entry with the Assistant icon', () => {
+      aiActions.setStatus({ enabled: true } as any)
+      render({ admin: true, terminal: true })
+
+      const wands = document.querySelectorAll('.fa-wand-magic-sparkles')
+      expect(wands).toHaveLength(1)
+      expect(wands[0].closest('button')).toHaveClass('hb-ai-menu-button')
+    })
+
     it('is hidden while it is off', () => {
       aiActions.setStatus({ enabled: false } as any)
       render()
