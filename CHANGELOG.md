@@ -19,7 +19,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- **Assistant chat tools over HTTPS.** The chat's tools call this server at `https://127.0.0.1:<port>`, which Node refused with the UI's self-signed certificate. That one call now uses its own fetch (an `undici` Agent) that trusts only the UI's configured or self-signed certificate, pinned by fingerprint; global fetch and every other connection verify as before. A PFX or unreadable certificate gives a clear error. **Requires `HomebridgeClient` in `@mp-consulting/homebridge-ai-kit` to accept a `fetch` option** (passed by Glass UI already; ignored until the kit supports it).
+- **Assistant chat tools over HTTPS.** The chat's tools call this server at `https://127.0.0.1:<port>`, which Node refused with the UI's self-signed certificate. That one call now uses its own fetch (an `undici` Agent) that trusts only the UI's configured or self-signed certificate, pinned by fingerprint; global fetch and every other connection verify as before. A PFX or unreadable certificate gives a clear error. Uses the `fetch` option of `HomebridgeClient` in `@mp-consulting/homebridge-ai-kit` 2.0.0.
 
 ### Changed
 
