@@ -1,9 +1,12 @@
 import { api } from '@/core/api'
 
 export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram'
-export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'updatesAvailable' | 'backupFailed'
+export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
 
-export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'updatesAvailable', 'backupFailed']
+export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'updatesAvailable', 'backupFailed', 'dailyDigest']
+
+/** A time of day as the server takes it: HH:mm, 24 hours. */
+export const RE_TIME_OF_DAY = /^(?:[01]\d|2[0-3]):[0-5]\d$/
 
 /** `GET /notifications/settings`: stored secrets read as `********`. */
 export interface NotificationSettings {
@@ -14,6 +17,8 @@ export interface NotificationSettings {
     telegram: { enabled: boolean, botToken: string, chatId: string }
   }
   events: Record<NotificationEvent, boolean>
+  /** When the daily digest is sent, HH:mm in the server's local time. */
+  dailyDigestTime: string
 }
 
 export interface ChannelResult {

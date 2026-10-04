@@ -63,6 +63,14 @@ export interface AiUser {
   [key: string]: unknown
 }
 
+/**
+ * Who background work (the daily digest notification) runs as: no user
+ * signs in for it, so it gets its own rate limit, and it is not an
+ * administrator. It mints no token and calls no tool, so it never acts as
+ * anyone.
+ */
+export const AI_SYSTEM_USER: AiUser = Object.freeze({ username: '(notifications)', admin: false })
+
 /** Why the Assistant is unavailable. */
 export type AiUnavailableReason = 'not-configured' | 'disabled' | 'missing-api-key' | 'invalid-config'
 
@@ -301,6 +309,16 @@ export class AiService {
       throw new ConflictException(AI_DISABLED_MESSAGE)
     }
     return { config, provider: this.provider(config) }
+  }
+
+  /** Whether the Assistant can run now: background work skips quietly when it cannot. */
+  async isReady(): Promise<boolean> {
+    try {
+      await this.requireReady()
+      return true
+    } catch {
+      return false
+    }
   }
 
   /** Count one request against the user's rate limit (429 when over it). */

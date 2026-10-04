@@ -3,10 +3,12 @@ import type { ChannelName, ChannelResult, NotificationEvent, NotificationSetting
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAiEnabled } from '@/core/ai/ai.store'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { toast } from '@/core/ui/toast'
+import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
-import { CHANNEL_FIELDS, loadNotificationSettings, NOTIFICATION_EVENTS, saveNotificationSettings, sendTestNotification } from '@/modules/settings/notifications/notifications'
+import { CHANNEL_FIELDS, loadNotificationSettings, NOTIFICATION_EVENTS, RE_TIME_OF_DAY, saveNotificationSettings, sendTestNotification } from '@/modules/settings/notifications/notifications'
 import { INNER_FLEX, SectionShell, SettingRow } from '@/modules/settings/sections/rows'
 
 const EVENT_LABELS: Record<NotificationEvent, string> = {
@@ -15,6 +17,7 @@ const EVENT_LABELS: Record<NotificationEvent, string> = {
   childBridgeCrashLoop: 'settings.notifications.event_crash_loop',
   updatesAvailable: 'settings.notifications.event_updates',
   backupFailed: 'settings.notifications.event_backup_failed',
+  dailyDigest: 'settings.notifications.event_daily_digest',
 }
 
 // Product names stay as they are; only the webhook is translated
@@ -26,7 +29,7 @@ const CHANNEL_NAMES: Record<Exclude<ChannelName, 'webhook'>, string> = {
 
 /**
  * NOTIFICATIONS: the channels (webhook, ntfy, Pushover, Telegram) and the
- * events sent to them. Unlike the rest of the page it saves on a button,
+ * events sent to them, with the time of the Assistant's daily digest. Unlike the rest of the page it saves on a button,
  * so a half-typed token is never sent; stored secrets come back as
  * `********` and are kept unless replaced.
  */
@@ -36,6 +39,7 @@ export function NotificationsSection() {
   const [settings, setSettings] = useState<NotificationSettings | null>(null)
   const [dirty, setDirty] = useState(false)
   const [busy, setBusy] = useState<string | null>(null)
+  const aiEnabled = useAiEnabled()
 
   useEffect(() => {
     let active = true
@@ -67,6 +71,13 @@ export function NotificationsSection() {
     setSettings(current => current && ({ ...current, events: { ...current.events, [event]: value } }))
     setDirty(true)
   }
+
+  const setDigestTime = (value: string) => {
+    setSettings(current => current && ({ ...current, dailyDigestTime: value }))
+    setDirty(true)
+  }
+
+  const digestTimeInvalid = Boolean(settings?.events.dailyDigest) && !RE_TIME_OF_DAY.test(settings?.dailyDigestTime ?? '')
 
   const save = async () => {
     if (!settings) {
@@ -177,10 +188,26 @@ export function NotificationsSection() {
                       </div>
                     ))}
                   </div>
+                  {settings.events.dailyDigest && (
+                    <div className="d-flex flex-wrap align-items-center mt-2">
+                      <label htmlFor="notifications-digest-time" className="small grey-text mb-0 me-2">{t('settings.notifications.digest_time')}</label>
+                      <input
+                        id="notifications-digest-time"
+                        type="time"
+                        className={cx('form-control custom-input w-auto', digestTimeInvalid && 'is-invalid')}
+                        value={settings.dailyDigestTime}
+                        aria-invalid={digestTimeInvalid}
+                        onChange={event => setDigestTime(event.target.value)}
+                      />
+                    </div>
+                  )}
+                  {settings.events.dailyDigest && !aiEnabled && (
+                    <small className="d-block grey-text mt-2" data-testid="notifications-needs-assistant">{t('settings.notifications.needs_assistant')}</small>
+                  )}
                 </div>
               </SettingRow>
               <li className="list-group-item d-flex justify-content-end">
-                <button type="button" className="btn btn-primary my-0" disabled={!dirty || busy !== null} onClick={() => void save()}>
+                <button type="button" className="btn btn-primary my-0" disabled={!dirty || busy !== null || digestTimeInvalid} onClick={() => void save()}>
                   {busy === 'save' ? <InlineSpinner /> : t('form.button_save')}
                 </button>
               </li>

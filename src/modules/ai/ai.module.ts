@@ -45,5 +45,6 @@ import { AiService } from './ai.service.js'
     AiController,
     AiMcpController,
   ],
+  exports: [AiService],
 })
 export class AiModule {}

@@ -250,7 +250,7 @@ export function getItemsContent(): Record<string, string> {
     'setting-notifications-ntfy': 'ntfy',
     'setting-notifications-pushover': 'Pushover',
     'setting-notifications-telegram': 'Telegram',
-    'setting-notifications-events': t('settings.notifications.events'),
+    'setting-notifications-events': `${t('settings.notifications.events')} ${t('settings.notifications.event_daily_digest')}`,
 
     // Instances section
     'setting-instances': t('instances.title'),

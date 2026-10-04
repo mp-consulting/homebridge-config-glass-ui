@@ -6,6 +6,8 @@ import { AppEventsModule } from '../../core/events/app-events.module.js'
 import { FsModule } from '../../core/fs/fs.module.js'
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
+import { SchedulerModule } from '../../core/scheduler/scheduler.module.js'
+import { AiModule } from '../ai/ai.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
 import { NotificationsController } from './notifications.controller.js'
@@ -21,6 +23,8 @@ import { NotificationsService } from './notifications.service.js'
     AppEventsModule,
     ChildBridgesModule,
     PluginsModule,
+    SchedulerModule,
+    AiModule,
   ],
   providers: [NotificationsService],
   controllers: [NotificationsController],

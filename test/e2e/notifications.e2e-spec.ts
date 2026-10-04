@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
+import { Buffer } from 'node:buffer'
 import { stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -15,9 +16,13 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AppEventsService } from '../../src/core/events/app-events.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../src/core/logger/logger.service.js'
+import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { AiService } from '../../src/modules/ai/ai.service.js'
 import { ChildBridgeHealthService } from '../../src/modules/child-bridges/child-bridge-health.service.js'
+import { truncateText } from '../../src/modules/notifications/notification-channels.js'
 import { NotificationsModule } from '../../src/modules/notifications/notifications.module.js'
-import { DOWN_GRACE_MS, MAX_PER_HOUR, NotificationsService } from '../../src/modules/notifications/notifications.service.js'
+import { DAILY_DIGEST_JOB, DOWN_GRACE_MS, MAX_PER_HOUR, NotificationsService } from '../../src/modules/notifications/notifications.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -59,6 +64,8 @@ describe('Notifications (e2e)', () => {
     ;(service as any).lastSent.clear()
     ;(service as any).sentLog = []
     ;(service as any).testLog = []
+    ;(service as any).lastDigestDay = null
+    app.get(SchedulerService).cancelJob(DAILY_DIGEST_JOB)
     authorization ??= `bearer ${(await app.inject({
       method: 'POST',
       path: '/auth/login',
@@ -85,12 +92,13 @@ describe('Notifications (e2e)', () => {
     },
   })
 
-  it('starts with every channel off and every event on', async () => {
+  it('starts with every channel off and every event on but the daily digest', async () => {
     const res = await app.inject({ method: 'GET', path: '/notifications/settings', headers: { authorization } })
 
     expect(res.statusCode).toBe(200)
     expect(res.json().channels.webhook).toEqual({ enabled: false, url: '' })
-    expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, updatesAvailable: true, backupFailed: true })
+    expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, updatesAvailable: true, backupFailed: true, dailyDigest: false })
+    expect(res.json().dailyDigestTime).toBe('08:00')
   })
 
   it('stores secrets owner-only and never returns them in clear', async () => {
@@ -128,6 +136,8 @@ describe('Notifications (e2e)', () => {
     expect((await put({ channels: { ntfy: { topic: '../etc' } } })).statusCode).toBe(400)
     expect((await put({ channels: { telegram: { botToken: 'nope' } } })).statusCode).toBe(400)
     expect((await put({ events: { homebridgeDown: 'yes' } })).statusCode).toBe(400)
+    expect((await put({ dailyDigestTime: '24:00' })).statusCode).toBe(400)
+    expect((await put({ dailyDigestTime: '8:00' })).statusCode).toBe(400)
   })
 
   it('is for administrators only', async () => {
@@ -266,5 +276,127 @@ describe('Notifications (e2e)', () => {
     await service.checkForUpdates()
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect((await readJson(service.settingsPath)).lastUpdatesSignature).toBe('A 2.0.0')
+  })
+
+  describe('the daily digest', () => {
+    const job = () => app.get(SchedulerService).scheduledJobs[DAILY_DIGEST_JOB]
+
+    it('is scheduled at the chosen time of day only while it is switched on', async () => {
+      await enableTelegramAndNtfy()
+      expect(job()).toBeUndefined()
+
+      await put({ events: { dailyDigest: true }, dailyDigestTime: '07:30' })
+      const next = job()!.nextInvocation()
+      expect([next.getHours(), next.getMinutes(), next.getSeconds()]).toEqual([7, 30, 0])
+      expect((await readJson(service.settingsPath)).dailyDigestTime).toBe('07:30')
+
+      await put({ dailyDigestTime: '21:05' })
+      expect([job()!.nextInvocation().getHours(), job()!.nextInvocation().getMinutes()]).toEqual([21, 5])
+
+      await put({ events: { dailyDigest: false } })
+      expect(job()).toBeUndefined()
+    })
+
+    it('is scheduled from the stored settings on start', async () => {
+      await enableTelegramAndNtfy()
+      await put({ events: { dailyDigest: true }, dailyDigestTime: '06:45' })
+      app.get(SchedulerService).cancelJob(DAILY_DIGEST_JOB)
+      ;(service as any).cached = null
+
+      await service.scheduleDailyDigest()
+
+      expect(job()!.nextInvocation().getHours()).toBe(6)
+    })
+
+    it('skips quietly while the Assistant is off or not set up', async () => {
+      await enableTelegramAndNtfy()
+      await put({ events: { dailyDigest: true } })
+      const ai = app.get(AiService)
+      const digest = vi.spyOn(ai, 'digest')
+
+      // The test config has no HomebridgeAiKit block
+      expect(await ai.isReady()).toBe(false)
+      expect(await service.sendDailyDigest()).toBeNull()
+      expect(digest).not.toHaveBeenCalled()
+      expect(fetchMock).not.toHaveBeenCalled()
+    })
+
+    it('skips while the event or every channel is off, without asking the Assistant', async () => {
+      const ready = vi.spyOn(app.get(AiService), 'isReady').mockResolvedValue(true)
+      await put({ events: { dailyDigest: true } })
+      expect(await service.sendDailyDigest()).toBeNull()
+
+      await enableTelegramAndNtfy()
+      await put({ events: { dailyDigest: false } })
+      expect(await service.sendDailyDigest()).toBeNull()
+      expect(ready).not.toHaveBeenCalled()
+      expect(fetchMock).not.toHaveBeenCalled()
+    })
+
+    it('sends the digest as the system user once a day, cut to each channel\'s limit', async () => {
+      await put({
+        events: { dailyDigest: true },
+        channels: {
+          telegram: { enabled: true, botToken: BOT_TOKEN, chatId: '-100123' },
+          pushover: { enabled: true, userKey: 'uQiRzpo4DXghDmr9QzzfQu27cmVRsG', appToken: 'azGDORePK8gMaC0QOYAMyEEuzJnyUi' },
+        },
+      })
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      const long = `All good. ${'x'.repeat(5000)}`
+      const digest = vi.spyOn(ai, 'digest').mockResolvedValue({ text: long, generatedAt: new Date().toISOString(), cached: false })
+
+      const results = await service.sendDailyDigest()
+
+      expect(results).toEqual(expect.arrayContaining([{ channel: 'telegram', ok: true }, { channel: 'pushover', ok: true }]))
+      expect(digest).toHaveBeenCalledWith(expect.objectContaining({ username: '(notifications)', admin: false }))
+      const telegram = JSON.parse(fetchMock.mock.calls.find(([url]) => String(url).includes('telegram'))![1].body)
+      expect(telegram.text).toContain('Daily digest\nAll good.')
+      expect([...telegram.text]).toHaveLength(4096)
+      expect(telegram.text.endsWith('…')).toBe(true)
+      const pushover = new URLSearchParams(fetchMock.mock.calls.find(([url]) => String(url).includes('pushover'))![1].body)
+      expect([...pushover.get('message')!]).toHaveLength(1024)
+
+      // Not again the same day, even when the job runs again (a time change)
+      expect(await service.sendDailyDigest()).toBeNull()
+      expect(digest).toHaveBeenCalledTimes(1)
+    })
+
+    it('logs a digest that fails to generate, and sends nothing', async () => {
+      await enableTelegramAndNtfy()
+      await put({ events: { dailyDigest: true } })
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      vi.spyOn(ai, 'digest').mockRejectedValue(new Error('quota exceeded'))
+      const warn = vi.spyOn(app.get(Logger), 'warn')
+
+      expect(await service.sendDailyDigest()).toBeNull()
+
+      expect(fetchMock).not.toHaveBeenCalled()
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('quota exceeded'))
+    })
+
+    it('counts against the hourly cap', async () => {
+      await enableTelegramAndNtfy()
+      await put({ events: { dailyDigest: true } })
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      vi.spyOn(ai, 'digest').mockResolvedValue({ text: 'Fine.', generatedAt: '', cached: true })
+      ;(service as any).sentLog = Array.from({ length: MAX_PER_HOUR }, () => Date.now())
+
+      expect(await service.sendDailyDigest()).toBeNull()
+      expect(fetchMock).not.toHaveBeenCalled()
+      // Dropped, not sent: a later run the same day may still send it
+      expect((service as any).lastDigestDay).toBeNull()
+    })
+  })
+
+  it('cuts text by characters or UTF-8 bytes without splitting a character', () => {
+    expect(truncateText('short', 10)).toBe('short')
+    expect(truncateText('abcdefghij', 5)).toBe('abcd…')
+    expect(truncateText('😀😀😀😀', 3)).toBe('😀😀…')
+    const bytes = truncateText('é'.repeat(100), 11, 'bytes')
+    expect(Buffer.byteLength(bytes)).toBeLessThanOrEqual(11)
+    expect(bytes).toBe('éééé…')
   })
 })

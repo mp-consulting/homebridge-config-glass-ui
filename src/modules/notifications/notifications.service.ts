@@ -10,6 +10,8 @@ import { AppEventsService } from '../../core/events/app-events.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { AI_SYSTEM_USER, AiService } from '../ai/ai.service.js'
 import { ChildBridgeHealthService } from '../child-bridges/child-bridge-health.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import {
@@ -17,6 +19,7 @@ import {
   defaultNotificationSettings,
   isChannelConfigured,
   NOTIFICATION_EVENTS,
+  RE_TIME_OF_DAY,
   SECRET_FIELDS,
   SECRET_PLACEHOLDER,
   sendToChannel,
@@ -33,6 +36,8 @@ export const DOWN_GRACE_MS = 60_000
 /** How often installed packages are checked for updates. */
 export const UPDATE_CHECK_MS = 6 * 60 * 60_000
 const FIRST_UPDATE_CHECK_MS = 5 * 60_000
+/** The scheduler job that sends the daily digest. */
+export const DAILY_DIGEST_JOB = 'notifications-daily-digest'
 
 export interface ChannelResult {
   channel: ChannelName
@@ -53,8 +58,9 @@ const HTTP_URL = /^https?:\/\/[^\s/?#]\S*$/i
  * dispatcher that sends an event to every enabled channel, rate limited.
  *
  * Events: Homebridge down (after DOWN_GRACE_MS) and back up, a child bridge
- * crash loop, updates available (checked every UPDATE_CHECK_MS) and a failed
- * scheduled backup.
+ * crash loop, updates available (checked every UPDATE_CHECK_MS), a failed
+ * scheduled backup, and the Assistant's daily digest (at `dailyDigestTime`,
+ * server local time, while the Assistant is on).
  */
 @Injectable()
 export class NotificationsService implements OnModuleInit, OnModuleDestroy {
@@ -66,6 +72,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   private downTimer: ReturnType<typeof setTimeout> | null = null
   private downNotified = false
   private updateTimers: Array<ReturnType<typeof setTimeout>> = []
+  /** The day (YYYY-MM-DD, local) the digest was last sent, so a reschedule never sends it twice. */
+  private lastDigestDay: string | null = null
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -75,6 +83,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     @Inject(ChildBridgeHealthService) private readonly childBridgeHealth: ChildBridgeHealthService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(AppEventsService) private readonly events: AppEventsService,
+    @Inject(SchedulerService) private readonly scheduler: SchedulerService,
+    @Inject(AiService) private readonly ai: AiService,
   ) {
     this.settingsPath = resolve(this.configService.storagePath, '.uix-notifications.json')
   }
@@ -92,6 +102,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     first.unref?.()
     every.unref?.()
     this.updateTimers = [first, every]
+
+    void this.scheduleDailyDigest()
   }
 
   onModuleDestroy() {
@@ -105,6 +117,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     if (this.downTimer) {
       clearTimeout(this.downTimer)
     }
+    this.scheduler.cancelJob(DAILY_DIGEST_JOB)
   }
 
   // Settings
@@ -129,6 +142,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.cached = {
       channels,
       events: { ...defaults.events, ...(stored?.events ?? {}) },
+      dailyDigestTime: typeof stored?.dailyDigestTime === 'string' && RE_TIME_OF_DAY.test(stored.dailyDigestTime) ? stored.dailyDigestTime : defaults.dailyDigestTime,
       lastUpdatesSignature: stored?.lastUpdatesSignature,
     }
     return this.cached
@@ -141,7 +155,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   /** The settings as the browser may see them: each stored secret as SECRET_PLACEHOLDER. */
   public async getSettings(): Promise<NotificationSettings> {
-    const { channels, events } = await this.load()
+    const { channels, events, dailyDigestTime } = await this.load()
     const redacted = structuredClone(channels)
     for (const name of CHANNEL_NAMES) {
       for (const field of SECRET_FIELDS[name] as string[]) {
@@ -149,7 +163,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         channel[field] = channel[field] ? SECRET_PLACEHOLDER : ''
       }
     }
-    return { channels: redacted, events: { ...events } }
+    return { channels: redacted, events: { ...events }, dailyDigestTime }
   }
 
   /**
@@ -161,7 +175,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       throw new BadRequestException('Expected an object.')
     }
     const current = await this.load()
-    const input = body as { channels?: Record<string, Record<string, unknown>>, events?: Record<string, unknown> }
+    const input = body as { channels?: Record<string, Record<string, unknown>>, events?: Record<string, unknown>, dailyDigestTime?: unknown }
     const channels = structuredClone(current.channels)
 
     for (const name of CHANNEL_NAMES) {
@@ -208,7 +222,16 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       events[event] = value
     }
 
-    await this.save({ ...current, channels, events })
+    let { dailyDigestTime } = current
+    if (input.dailyDigestTime !== undefined) {
+      if (typeof input.dailyDigestTime !== 'string' || !RE_TIME_OF_DAY.test(input.dailyDigestTime)) {
+        throw new BadRequestException('dailyDigestTime must be a time of day as HH:mm.')
+      }
+      dailyDigestTime = input.dailyDigestTime
+    }
+
+    await this.save({ ...current, channels, events, dailyDigestTime })
+    await this.scheduleDailyDigest()
     return this.getSettings()
   }
 
@@ -365,6 +388,75 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   private onBackupFailed = ({ message }: { message: string }) => {
     void this.notify({ event: 'backupFailed', title: 'Scheduled backup failed', message: `The scheduled instance backup failed: ${message}`, urgent: true })
+  }
+
+  /**
+   * (Re)schedule the daily digest at `dailyDigestTime`, server local time,
+   * or cancel it while the event is off. Whether the Assistant is on is
+   * checked when the job runs, so turning it on later needs no reschedule.
+   */
+  public async scheduleDailyDigest(): Promise<void> {
+    this.scheduler.cancelJob(DAILY_DIGEST_JOB)
+    try {
+      const settings = await this.load()
+      if (!settings.events.dailyDigest) {
+        return
+      }
+      const [hour, minute] = settings.dailyDigestTime.split(':').map(Number)
+      const rule = new this.scheduler.RecurrenceRule()
+      rule.hour = hour
+      rule.minute = minute
+      rule.second = 0
+      this.scheduler.scheduleJob(DAILY_DIGEST_JOB, rule, () => void this.sendDailyDigest())
+      this.logger.debug(`Daily digest notification scheduled at ${settings.dailyDigestTime}.`)
+    } catch (e) {
+      this.logger.warn(`Failed to schedule the daily digest notification as ${e.message}.`)
+    }
+  }
+
+  /**
+   * Generate the Assistant's digest and send it, once a day. Skipped quietly
+   * when the event or every channel is off, or the Assistant is off or not
+   * set up; a digest that fails to generate is logged and not sent.
+   * @returns the per-channel results, or null when nothing was sent
+   */
+  public async sendDailyDigest(): Promise<ChannelResult[] | null> {
+    try {
+      const settings = await this.load()
+      if (!settings.events.dailyDigest || !CHANNEL_NAMES.some(name => settings.channels[name].enabled)) {
+        return null
+      }
+      const now = new Date()
+      const day = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+      if (this.lastDigestDay === day) {
+        return null
+      }
+      if (!await this.ai.isReady()) {
+        this.logger.debug('Daily digest notification skipped: the Assistant is off or not set up.')
+        return null
+      }
+      let text: string
+      try {
+        // The widget's digest of the day, when it already made one
+        text = (await this.ai.digest(AI_SYSTEM_USER)).text.trim()
+      } catch (e) {
+        this.logger.warn(`Failed to generate the daily digest notification as ${e?.message ?? e}.`)
+        return null
+      }
+      if (!text) {
+        this.logger.warn('Daily digest notification skipped: the Assistant returned an empty digest.')
+        return null
+      }
+      // Through the usual rate limits: a digest in an hour of outages is dropped
+      const sent = await this.notify({ event: 'dailyDigest', title: 'Daily digest', message: text }, day)
+      if (sent) {
+        this.lastDigestDay = day
+      }
+      return sent
+    } catch (e) {
+      this.logger.warn(`Failed to send the daily digest notification as ${e?.message ?? e}.`)
+      return null
+    }
   }
 
   /** Look for updates; notify once per new set of available updates. */
