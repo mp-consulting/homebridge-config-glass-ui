@@ -28,6 +28,11 @@ import { testStoragePath } from '../storage-path.js'
 // needs a reason.
 const UNGUARDED_ALLOW_LIST = new Set([
   'GET /',
+  // ai: any user sees whether the Assistant is on (admins also get its
+  // settings, never the key); the chat's tools run with the user's own
+  // short-lived token, read-only tools only for a non-admin
+  'GET /ai/status',
+  'POST /ai/chat',
   // auth: public or session endpoints
   'GET /auth/check',
   'GET /auth/settings',

@@ -21,6 +21,7 @@ import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { red } from '../../src/core/logger/colors.js'
 import { AccessoriesGateway } from '../../src/modules/accessories/accessories.gateway.js'
+import { AiGateway } from '../../src/modules/ai/ai.gateway.js'
 import { BackupGateway } from '../../src/modules/backup/backup.gateway.js'
 import { ChildBridgesGateway } from '../../src/modules/child-bridges/child-bridges.gateway.js'
 import { PluginsSettingsUiGateway } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.gateway.js'
@@ -68,6 +69,20 @@ const GATEWAYS: GatewayExpectation[] = [
       'get-accessories': ['connect', []],
       'get-layout': ['getAccessoryLayout', []],
       'save-layout': ['saveAccessoryLayout', []],
+    },
+  },
+  {
+    // Any user may chat (its tools follow the user's rights); diagnose-logs
+    // and plugin-config check for an administrator in the handler
+    file: 'src/modules/ai/ai.gateway.ts',
+    gateway: AiGateway,
+    classGuards: [WsGuard],
+    messages: {
+      'chat': ['chat', []],
+      'diagnose-logs': ['diagnoseLogs', []],
+      'plugin-config': ['pluginConfig', []],
+      'cancel': ['cancel', []],
+      'confirm': ['confirm', []],
     },
   },
   {
