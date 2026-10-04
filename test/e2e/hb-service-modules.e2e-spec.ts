@@ -116,6 +116,29 @@ describe('hb-service config-bootstrap', () => {
     }
   })
 
+  it('removes an unsafe child bridge NODE_OPTIONS before Homebridge starts, keeping the rest', async () => {
+    const config: any = {
+      bridge: { port: 51826 },
+      platforms: [
+        { platform: 'config', port: 8581 },
+        { platform: 'Safe', _bridge: { username: '0E:00:00:00:00:02', env: { NODE_OPTIONS: '--max-old-space-size=256' } } },
+      ],
+      accessories: [
+        { accessory: 'Bad', _bridge: { username: '0E:00:00:00:00:03', env: { NODE_OPTIONS: '--require /tmp/x.js', DEBUG: '*' } } },
+        { accessory: 'OnlyBad', _bridge: { username: '0E:00:00:00:00:04', env: { NODE_OPTIONS: '--import=data:text/javascript,1' } } },
+      ],
+    }
+    const ctx = context()
+
+    expect(await repairServiceConfig(config, ctx)).toEqual({ saveRequired: true, restartRequired: false })
+
+    expect(config.platforms[1]._bridge.env).toEqual({ NODE_OPTIONS: '--max-old-space-size=256' })
+    expect(config.accessories[0]._bridge.env).toEqual({ DEBUG: '*' })
+    expect(config.accessories[1]._bridge.env).toBeUndefined()
+    expect(ctx.logger.warn).toHaveBeenCalledWith(expect.stringContaining('accessories[0]._bridge.env.NODE_OPTIONS'))
+    expect(ctx.logger.warn).toHaveBeenCalledWith(expect.stringContaining('accessories[1]._bridge.env.NODE_OPTIONS'))
+  })
+
   it('fills a missing UI port from the last known port', async () => {
     const config: any = { bridge: { port: 51826 }, platforms: [{ platform: 'config' }] }
     const ctx = context({ lastKnownUiPort: vi.fn(async () => 8282) })

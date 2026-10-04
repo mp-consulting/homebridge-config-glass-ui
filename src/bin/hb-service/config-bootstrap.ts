@@ -16,6 +16,7 @@ import { mkdirp, pathExists, readJson, writeJson } from 'fs-extra/esm'
 import { generatePin, generateUsername } from '../../core/hap-identity.js'
 import { findFreePort } from '../../core/net/port.js'
 import { RE_COLON } from '../../core/regex.constants.js'
+import { findUnsafeBridgeEnvValues, removeUnsafeBridgeEnvValues } from '../../modules/config-editor/config-safety.js'
 
 /** The range a new bridge port is picked from */
 export const BRIDGE_PORT_RANGE = { min: 51000, max: 52000 } as const
@@ -170,6 +171,19 @@ export async function repairServiceConfig(currentConfig: any, ctx: RepairContext
       logger.log('Added Homebridge Glass UI to the plugins array in the config.json.')
       saveRequired = true
     }
+  }
+
+  // A child bridge NODE_OPTIONS that a save would refuse (it can load code into
+  // the child bridge process). One written before saves were checked, or by
+  // hand, would otherwise reach Homebridge and block every later save, so it is
+  // removed before Homebridge starts
+  const unsafeBridgeEnv = findUnsafeBridgeEnvValues(currentConfig)
+  if (unsafeBridgeEnv.length) {
+    removeUnsafeBridgeEnvValues(currentConfig, unsafeBridgeEnv)
+    for (const { path, reason } of unsafeBridgeEnv) {
+      logger.warn(`Removed the unsafe "${path}" value from ${configPath}. ${reason}`)
+    }
+    saveRequired = true
   }
 
   return { saveRequired, restartRequired }
