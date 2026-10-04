@@ -74,7 +74,10 @@ export class ChildBridgeHealthService extends EventEmitter {
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
     super()
-    this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() + 2)
+    // Room for these two permanent listeners on top of the per-socket ones
+    if (typeof this.homebridgeIpcService.getMaxListeners === 'function') {
+      this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() + 2)
+    }
     this.homebridgeIpcService.on('childBridgeStatusUpdate', data => this.onStatusUpdate(data))
     this.homebridgeIpcService.on('serverStatusUpdate', (data) => {
       if (data?.status === 'down') {

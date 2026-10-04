@@ -80,7 +80,9 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleInit() {
-    this.ipc.setMaxListeners(this.ipc.getMaxListeners() + 1)
+    if (typeof this.ipc.getMaxListeners === 'function') {
+      this.ipc.setMaxListeners(this.ipc.getMaxListeners() + 1)
+    }
     this.ipc.on('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.on('crashLoop', this.onCrashLoop)
     this.events.on('backupFailed', this.onBackupFailed)

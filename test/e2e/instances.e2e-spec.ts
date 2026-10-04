@@ -94,6 +94,6 @@ describe('Instance switcher list (e2e)', () => {
     ])).toEqual([{ name: 'ok', url: 'https://a.local' }])
     expect(sanitiseInstances(undefined)).toEqual([])
     configService.ui.instances = [{ name: 'bad', url: 'data:text/html,x' }]
-    expect(configService.uiSettings(true).env.instances).toEqual([])
+    expect((configService.uiSettings(true).env as { instances?: unknown }).instances).toEqual([])
   })
 })
