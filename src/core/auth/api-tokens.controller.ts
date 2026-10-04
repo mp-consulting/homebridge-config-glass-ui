@@ -16,6 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 import { ApiTokenService } from './api-token.service.js'
 import { CreateApiTokenDto } from './auth.dto.js'
 import { AdminGuard } from './guards/admin.guard.js'
+import { UserSessionGuard } from './guards/user-session.guard.js'
 
 const API_TOKEN_VIEW_SCHEMA = {
   type: 'object',
@@ -32,7 +33,9 @@ const API_TOKEN_VIEW_SCHEMA = {
 
 @ApiTags('Authentication')
 @ApiBearerAuth()
-@UseGuards(AuthGuard(), AdminGuard)
+@ApiResponse({ status: 403, description: 'Not an administrator, or authenticated with an API token rather than a signed-in session.' })
+// API tokens and service tokens cannot manage API tokens, even with the admin scope
+@UseGuards(AuthGuard(), UserSessionGuard, AdminGuard)
 @Controller('auth/tokens')
 export class ApiTokensController {
   constructor(

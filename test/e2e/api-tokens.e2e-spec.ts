@@ -156,6 +156,34 @@ describe('API tokens (e2e)', () => {
       const res = await app.inject({ method: 'GET', path: '/auth/tokens', headers: { authorization: `Bearer ${token}` } })
       expect(res.statusCode).toBe(403)
     })
+
+    it('cannot be managed with an API token, even an admin one', async () => {
+      const { id, token } = (await createToken({ name: 'Admin', scope: 'admin' })).json()
+      const headers = { authorization: `Bearer ${token}` }
+      const ids = async () => (await apiTokens.list()).map(x => x.id).sort()
+      const before = await ids()
+
+      const attempts = [
+        { method: 'GET', path: '/auth/tokens' },
+        { method: 'POST', path: '/auth/tokens', payload: { name: 'Escalated', scope: 'admin' } },
+        { method: 'DELETE', path: `/auth/tokens/${id}` },
+      ] as const
+      for (const attempt of attempts) {
+        const res = await app.inject({ ...attempt, headers })
+        expect(res.statusCode, `${attempt.method} ${attempt.path}`).toBe(403)
+        expect(res.json().message).toBe('API tokens cannot manage API tokens. Sign in to Glass UI to list, create or revoke them.')
+      }
+
+      // Nothing was created or revoked
+      expect(await ids()).toEqual(before)
+      expect(before).toContain(id)
+    })
+
+    it('cannot be managed with a service token', async () => {
+      const serviceToken = app.get(JwtService).sign({ username: 'plugin', service: 'plugin', admin: true, instanceId: configService.instanceId }, { expiresIn: 60 })
+      const res = await app.inject({ method: 'GET', path: '/auth/tokens', headers: { authorization: `Bearer ${serviceToken}` } })
+      expect(res.statusCode).toBe(403)
+    })
   })
 
   describe('authentication', () => {

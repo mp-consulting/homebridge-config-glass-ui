@@ -102,13 +102,14 @@ The REST API lives under `/api` and is documented at `/swagger` on your Glass UI
 
 - **Read-only** tokens act as a non-admin user and may only make `GET`/`HEAD` requests (anything else answers `403`).
 - **Admin** tokens act as an administrator.
+- No token can list, create or revoke API tokens, whatever its scope: `/api/auth/tokens` needs a signed-in session and answers `403` to a token, so a leaked token cannot mint itself a replacement.
 - Tokens can expire (30 days, 90 days, a year) or never; revoking one takes effect immediately. Only a hash is stored, in `.uix-api-tokens.json` in the Homebridge storage folder.
 
 Endpoints the Assistant relies on:
 
 | Method and path                                                            | What it does                                                                                                     |
 | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `GET/POST /api/auth/tokens`, `DELETE /api/auth/tokens/:id`                 | List, create and revoke API tokens (admin)                                                                       |
+| `GET/POST /api/auth/tokens`, `DELETE /api/auth/tokens/:id`                 | List, create and revoke API tokens (admin, signed-in session only)                                               |
 | `POST /api/plugins/install`, `/update`, `/uninstall`                       | Start a plugin job with `{ name, version? }`; answers `202 { jobId }` (admin)                                    |
 | `GET /api/plugins/jobs/:jobId`                                             | A job's `status` (`running`, `succeeded`, `failed`) and npm `output`; kept for an hour after it finishes (admin) |
 | `GET /api/status/homebridge/child-bridges`                                 | Child bridges and their status                                                                                   |
