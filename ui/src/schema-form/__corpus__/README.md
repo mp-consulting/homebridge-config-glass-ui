@@ -1,7 +1,7 @@
 # Schema-form golden corpus
 
 Regression tests for the schema form (`ui/src/schema-form`) against what the Angular
-`@ng-formworks` form of 1.x did with the same plugin schemas. See docs/react-migration-plan.md §4.
+`@ng-formworks` form of 1.x did with the same plugin schemas. See docs/archive/react-migration-plan.md §4.
 
 The goldens are frozen: they were recorded from the Angular UI before it was removed (one
 plugin per process, since ng-formworks leaked state between forms) and can no longer be

@@ -11,6 +11,12 @@ All notable changes to this project will be documented in this file.
 - **Untranslated keys report.** `npm run i18n:report` lists, per locale, the keys whose text is still exactly the English one (`lang-sync` copies English into every locale, so the gaps did not show): a count per locale, `--locale <code>` for the keys, `--since <git ref>` for only the keys added since then, `--json`. Brand names and strings meant to stay the same go in `scripts/i18n-allowlist.json`. CI prints it, and on a pull request also the new keys still in English; it never fails the build.
 - **Plugin settings pages built on `@mp-consulting/homebridge-ui-kit` follow glass mode.** In glass mode a plugin's custom settings page now also gets a small stylesheet that sets the kit's `--mp-*` tokens (primary colour, accent text, focus ring, status colours, surface, border, radius, shadow, the Assistant colours) from Glass UI's `--glass-*` values, so the page follows the theme colour and light or dark mode, and makes the kit's `.mp-settings-card` a frosted glass surface (`--mp-glass-blur: 0px` turns the blur off). It only sets `--mp-*` properties and styles `.mp-*` classes, so other plugins' pages are unchanged.
 
+### Documentation
+
+- **Upgrading to 2.0** (`docs/upgrading.md`): from `homebridge-config-ui-x` or Glass UI 1.x, with what carries over (the storage files and backups), what Glass UI adds and where it keeps it, and what behaves differently.
+- **Architecture** (`docs/architecture.md`): the server modules, the UI's structure, plugin custom UIs, and how the Assistant and the MCP server sit on `@mp-consulting/homebridge-ai-kit` and `@mp-consulting/homebridge-ui-kit`. The README links both from a new Documentation section.
+- The Angular to React migration plan moved to `docs/archive/`.
+
 ### Fixed
 
 - **Plugin settings forms check `contains` and schema `dependencies`.** The form's own validators (vendored from ng-formworks) left `contains` unfinished (always valid) and broke schema dependencies (each rule was given a raw value instead of a field, with keyword and value swapped, so a rule such as `"dependencies": { "port": { "properties": { "host": { "minLength": 3 } } } }` never applied). Both now follow JSON Schema: `contains` passes when at least one item matches its schema, and a schema dependency checks `properties`, `required`, `allOf`/`anyOf`/`oneOf`/`not` and the usual keywords once its field has a value. `const` also compares objects and arrays.
