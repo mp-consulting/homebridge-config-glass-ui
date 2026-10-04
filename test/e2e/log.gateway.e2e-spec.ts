@@ -8,7 +8,7 @@ import process from 'node:process'
 
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { appendFile, copy, writeFile } from 'fs-extra'
+import { appendFile, copy, remove, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
@@ -254,6 +254,31 @@ describe('LogGateway (e2e)', () => {
     expect((logService as any).nativeTail?.listenerCount('line') ?? 0).toBe(linesBefore)
     expect(client.listenerCount('disconnect')).toBe(0)
     expect(client.listenerCount('end')).toBe(0)
+    expect((logService as any).activeClients.has(client)).toBe(false)
+  })
+
+  it('ON /log/tail-log (native - no log file under hb-service --stdout)', async () => {
+    // `npm run watch` runs `hb-service run --stdout`, which never writes the
+    // file: say where the logs are rather than reporting an ENOENT
+    configService.ui.log = { method: 'native', path: logFilePath }
+    logService.setLogMethod()
+    await remove(logFilePath)
+    process.env.UIX_LOG_STDOUT = '1'
+
+    try {
+      const tailing = vi.spyOn(logService as any, 'tailLogFromFileNative')
+      logGateway.connect(client, size)
+      await tailing.mock.results[0].value
+      tailing.mockRestore()
+    } finally {
+      delete process.env.UIX_LOG_STDOUT
+    }
+
+    const output = vi.mocked(client.emit).mock.calls.filter(([event]) => event === 'stdout').map(([, data]) => data).join('')
+    expect(output).toContain('hb-service is running with --stdout')
+    expect(output).not.toContain('No log file exists')
+    expect(output).not.toContain('Failed to read log file')
+    expect(client.listenerCount('disconnect')).toBe(0)
     expect((logService as any).activeClients.has(client)).toBe(false)
   })
 
