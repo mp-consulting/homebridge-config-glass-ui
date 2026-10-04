@@ -412,6 +412,20 @@ describe('restore', () => {
       expect(term.dispose).toHaveBeenCalled()
       expect(io.socket.handlers('stdout')).toHaveLength(0)
     })
+
+    it('cancels the pending unpack when closed during the upload handoff', async () => {
+      vi.useFakeTimers()
+      const { unmount } = await open()
+      pick(['homebridge-backup.tar.gz'])
+      await clickRestore()
+
+      unmount()
+      await act(() => vi.advanceTimersByTimeAsync(500))
+
+      // The unpack replaces the whole install, so a modal that is already gone
+      // must not start it half a second later
+      expect(io.requests).toHaveLength(0)
+    })
   })
 
   describe('the terminal theme', () => {

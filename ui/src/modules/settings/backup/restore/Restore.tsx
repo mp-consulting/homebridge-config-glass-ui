@@ -52,6 +52,8 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
   const termRef = useRef<Terminal | null>(null)
   // The wizard's restore starts on open; StrictMode's second mount must not send it again
   const autoStartedRef = useRef(false)
+  // The unpack is sent 500ms after the upload; closing the modal first must cancel it
+  const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const postBackupRestart = async (): Promise<void> => {
     try {
@@ -119,6 +121,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
 
     return () => {
       clearTimeout(fitTimer)
+      clearTimeout(restoreTimerRef.current)
       // The backup namespace is cached and shared, and `end()` keeps its
       // listeners, so detach ours before ending the session
       io.socket.off('stdout', stdoutHandler)
@@ -143,7 +146,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       await api.post('/backup/restore', formData)
       setRestoreStarted(true)
       setRestoreInProgress(true)
-      setTimeout(startRestore, 500)
+      restoreTimerRef.current = setTimeout(startRestore, 500)
     } catch (error) {
       reportUploadError(error)
     } finally {
@@ -158,7 +161,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       await api.post(`/backup/scheduled-backups/${selectedBackup!.id}/restore`, {})
       setRestoreStarted(true)
       setRestoreInProgress(true)
-      setTimeout(startRestore, 500)
+      restoreTimerRef.current = setTimeout(startRestore, 500)
     } catch (error) {
       reportUploadError(error)
     } finally {
@@ -179,7 +182,7 @@ export function Restore({ activeModal, setupWizardRestore: setupWizardRestorePro
       })
       setRestoreStarted(true)
       setRestoreInProgress(true)
-      setTimeout(startHbfxRestore, 500)
+      restoreTimerRef.current = setTimeout(startHbfxRestore, 500)
     } catch (error) {
       reportUploadError(error)
     } finally {
