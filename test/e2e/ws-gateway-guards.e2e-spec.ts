@@ -72,8 +72,8 @@ const GATEWAYS: GatewayExpectation[] = [
     },
   },
   {
-    // Any user may chat (its tools follow the user's rights); diagnose-logs
-    // and plugin-config check for an administrator in the handler
+    // Any user may chat (its tools follow the user's rights); diagnose-logs,
+    // plugin-config and organize check for an administrator in the handler
     file: 'src/modules/ai/ai.gateway.ts',
     gateway: AiGateway,
     classGuards: [WsGuard],
@@ -81,6 +81,7 @@ const GATEWAYS: GatewayExpectation[] = [
       'chat': ['chat', []],
       'diagnose-logs': ['diagnoseLogs', []],
       'plugin-config': ['pluginConfig', []],
+      'organize': ['organize', []],
       'cancel': ['cancel', []],
       'confirm': ['confirm', []],
     },
