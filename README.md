@@ -122,14 +122,14 @@ Endpoints the Assistant relies on:
 
 The Assistant is off until an administrator turns it on under **Settings**, **Assistant**. It uses [`@mp-consulting/homebridge-ai-kit`](https://github.com/mp-consulting/homebridge-ai-kit) and the AI provider you choose: Anthropic (Claude), OpenAI, Google Gemini, or any OpenAI-compatible server such as Ollama or LM Studio on your own network. Settings live in the kit's `HomebridgeAiKit` platform block of `config.json`; installing the kit as a Homebridge plugin as well is recommended, so Homebridge knows the platform.
 
-| Setting                | What it does                                                                                       |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| Enable                 | Turns every Assistant feature on or off. While it is off, no Assistant button is shown.            |
+| Setting                | What it does                                                                                                                                   |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Enable                 | Turns every Assistant feature on or off. While it is off, no Assistant button is shown.                                                        |
 | Provider, Model        | Leave the model empty for the provider's default, which comes from `@mp-consulting/homebridge-ai-kit` and is shown in the field's placeholder. |
-| API key                | Write-only: it is saved to `config.json` and never sent back to the browser.                       |
-| Server URL             | For an OpenAI-compatible server, e.g. `http://127.0.0.1:11434/v1` (no key needed).                 |
-| Maximum answer length  | Output tokens per answer (default 2048).                                                           |
-| Test connection, Usage | A one-word test with the saved settings, and the tokens used since Glass UI started.               |
+| API key                | Write-only: it is saved to `config.json` and never sent back to the browser.                                                                   |
+| Server URL             | For an OpenAI-compatible server, e.g. `http://127.0.0.1:11434/v1` (no key needed).                                                             |
+| Maximum answer length  | Output tokens per answer (default 2048).                                                                                                       |
+| Test connection, Usage | A one-word test with the saved settings, and the tokens used since Glass UI started.                                                           |
 
 What it adds:
 
