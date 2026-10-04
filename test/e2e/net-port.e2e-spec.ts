@@ -1,8 +1,8 @@
 import type { AddressInfo, Server } from 'node:net'
 
-import { createServer } from 'node:net'
+import { createServer, Socket } from 'node:net'
 
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { generatePin, generateUsername } from '../../src/core/hap-identity.js'
 import { findFreePort, isPortInUse } from '../../src/core/net/port.js'
@@ -55,10 +55,7 @@ describe('core/net/port', () => {
     const { server, port } = await listen()
     servers.push(server)
 
-    // A two-port range with one taken: the free one is always picked. The
-    // neighbour is below the listener: macOS hands out ephemeral ports in
-    // ascending order, and a probe whose own local port is the one it
-    // connects to fails with EINVAL (as tcp-port-used's did).
+    // A two-port range with one taken: the free one is always picked
     const neighbour = port - 1
     if (await isPortInUse(neighbour)) {
       return // the neighbour is busy on this host; nothing to prove
@@ -67,6 +64,42 @@ describe('core/net/port', () => {
     for (let i = 0; i < 10; i++) {
       expect(await findFreePort(min, min + 1)).toBe(neighbour)
     }
+  })
+})
+
+describe('core/net/port isPortInUse when the probe meets its own port', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('reports a port the probe connected to itself on (Linux) as free', async () => {
+    vi.spyOn(Socket.prototype, 'connect').mockImplementation(function (this: Socket) {
+      for (const [key, value] of Object.entries({ localPort: 51111, remotePort: 51111, localAddress: '127.0.0.1', remoteAddress: '127.0.0.1' })) {
+        Object.defineProperty(this, key, { value, configurable: true })
+      }
+      queueMicrotask(() => this.emit('connect'))
+      return this
+    } as any)
+
+    expect(await isPortInUse(51111)).toBe(false)
+  })
+
+  it('reports EINVAL from a probe on its own port (macOS) as free', async () => {
+    vi.spyOn(Socket.prototype, 'connect').mockImplementation(function (this: Socket) {
+      queueMicrotask(() => this.emit('error', Object.assign(new Error('connect EINVAL'), { code: 'EINVAL' })))
+      return this
+    } as any)
+
+    expect(await isPortInUse(51111)).toBe(false)
+  })
+
+  it('still rejects on other connection errors', async () => {
+    vi.spyOn(Socket.prototype, 'connect').mockImplementation(function (this: Socket) {
+      queueMicrotask(() => this.emit('error', Object.assign(new Error('connect EHOSTUNREACH'), { code: 'EHOSTUNREACH' })))
+      return this
+    } as any)
+
+    await expect(isPortInUse(51111, '10.255.255.1')).rejects.toThrow('EHOSTUNREACH')
   })
 })
 
