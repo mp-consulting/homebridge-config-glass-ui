@@ -395,9 +395,11 @@ html body.glass-mode {
     }
   }
 
-  // Icon-only buttons in page headers become round
+  // Icon-only buttons in page headers become round (the Assistant's halo
+  // button too: it is not a .btn, and its ring follows its border-radius)
   .row:has(> div > h3.primary-text) .btn,
   .row:has(> div > h3.primary-text) .btn-group > .btn,
+  .row:has(> div > h3.primary-text) .mp-ai-button:has(> i:only-child),
   .card .btn-elegant:has(> i:only-child) {
     width: 46px;
     height: 46px;
