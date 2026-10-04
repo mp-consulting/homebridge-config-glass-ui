@@ -7,6 +7,7 @@ import { useLocation, useNavigate, useNavigation } from 'react-router'
 
 import { authActions, useAuthStore } from '@/core/auth'
 import { Information } from '@/core/components/information/Information'
+import { InstanceSwitcher } from '@/core/components/instance-switcher/InstanceSwitcher'
 import { notifications, useNotification } from '@/core/notifications'
 import { useSettingsStore } from '@/core/settings'
 import { openModal } from '@/core/ui/modal'
@@ -367,6 +368,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
             <div className="hb-logo-text">Homebridge</div>
           </a>
         </div>
+        <InstanceSwitcher />
         <div className="link-wrapper">
           {navButton('/', t('menu.label_status'), 'fas fa-house', true)}
 

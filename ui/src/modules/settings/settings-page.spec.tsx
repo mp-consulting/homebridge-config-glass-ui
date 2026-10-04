@@ -96,6 +96,7 @@ describe('the settings page, rendered', () => {
       'settings-section-terminal',
       'settings-section-security',
       'settings-section-notifications',
+      'settings-section-instances',
       'settings-section-cache',
       'settings-section-reset',
     ])
@@ -115,7 +116,7 @@ describe('the settings page, rendered', () => {
     const { container } = await render()
 
     const items = [...container.querySelectorAll('.settings-nav .settings-nav-item')]
-    expect(items).toHaveLength(9)
+    expect(items).toHaveLength(10)
     expect(items[0]).toHaveClass('active')
     expect(items[0]).toHaveAttribute('aria-current', 'true')
     expect(items[1]).not.toHaveAttribute('aria-current')
@@ -180,7 +181,7 @@ describe('the settings page, rendered', () => {
 
       fireEvent.click(container.querySelector('.search-bar-clear')!)
 
-      expect(container.querySelectorAll('.settings-section')).toHaveLength(9)
+      expect(container.querySelectorAll('.settings-section')).toHaveLength(10)
       expect(container.querySelector('.search-bar-clear')).toBeNull()
     })
   })

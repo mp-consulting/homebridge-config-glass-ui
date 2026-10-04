@@ -7,7 +7,7 @@ import { t } from '@/core/ui/i18n'
  * place to be registered.
  */
 
-export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'notifications' | 'cache' | 'reset'
+export type SettingsSection = 'general' | 'display' | 'startup' | 'network' | 'hap' | 'matter' | 'terminal' | 'security' | 'notifications' | 'instances' | 'cache' | 'reset'
 
 export interface SectionNavEntry {
   key: SettingsSection
@@ -27,6 +27,7 @@ export const allSections: SectionNavEntry[] = [
   { key: 'terminal', icon: 'fas fa-terminal', title: 'settings.network.title_terminal' },
   { key: 'security', icon: 'fas fa-shield-halved', title: 'settings.network.title_security' },
   { key: 'notifications', icon: 'fas fa-bell', title: 'settings.notifications.title' },
+  { key: 'instances', icon: 'fas fa-server', title: 'instances.title' },
   { key: 'cache', icon: 'fas fa-lightbulb', title: 'menu.label_accessories' },
   { key: 'reset', icon: 'fas fa-rotate-left', title: 'reset.bridges.title' },
 ]
@@ -107,6 +108,9 @@ export const sectionItems: Record<string, string[]> = {
     'setting-notifications-telegram',
     'setting-notifications-events',
   ],
+  instances: [
+    'setting-instances',
+  ],
   cache: [
     'setting-accessory-debug',
     'setting-accessory-history',
@@ -132,6 +136,7 @@ export function getSectionContent(): Record<string, string> {
     terminal: t('settings.network.title_terminal'),
     security: t('settings.network.title_security'),
     notifications: `${t('settings.notifications.title')} ${t('settings.notifications.desc')}`,
+    instances: `${t('instances.title')} ${t('instances.desc')}`,
     cache: `${t('menu.label_accessories')} ${t('settings.cache.desc')}`,
     reset: `${t('reset.bridges.title')} ${t('reset.bridges.desc')}`,
   }
@@ -213,6 +218,9 @@ export function getItemsContent(): Record<string, string> {
     'setting-notifications-pushover': 'Pushover',
     'setting-notifications-telegram': 'Telegram',
     'setting-notifications-events': t('settings.notifications.events'),
+
+    // Instances section
+    'setting-instances': t('instances.title'),
 
     // Cache section
     'setting-accessory-debug': t('settings.accessory.debug'),

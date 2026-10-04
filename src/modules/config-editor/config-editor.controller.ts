@@ -181,6 +181,14 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @Put('/ui/instances')
+  @ApiOperation({ summary: 'Replace the list of other Homebridge UI instances the header switcher offers.' })
+  @ApiBody({ description: 'Array of `{ name, url }` (http or https URLs, at most 20).', schema: { type: 'array', items: { type: 'object', properties: { name: { type: 'string' }, url: { type: 'string' } } } } })
+  setUiInstances(@Body() body: unknown) {
+    return this.configEditorService.setUiInstances(body)
+  }
+
+  @UseGuards(AdminGuard)
   @Put('/ui/accessory-control/instance-blacklist')
   @ApiOperation({ summary: 'Update the accessory control instance blacklist.' })
   @ApiBody({ description: 'Array of bridge instances for which control by the UI should be blocked.', type: 'json', isArray: true })

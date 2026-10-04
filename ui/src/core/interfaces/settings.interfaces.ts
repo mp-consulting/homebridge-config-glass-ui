@@ -89,6 +89,8 @@ export interface EnvInterface {
   }
   homebridgePackagePath?: string
   disableServerMetricsMonitoring?: boolean
+  /** Other UI instances the header switcher offers (http(s) URLs only). */
+  instances?: Array<{ name: string, url: string }>
   hasInstalledPlugins?: boolean
 }
 

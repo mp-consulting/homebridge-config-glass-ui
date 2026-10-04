@@ -12,6 +12,7 @@ import { CacheSection } from '@/modules/settings/sections/CacheSection'
 import { DisplaySection } from '@/modules/settings/sections/DisplaySection'
 import { GeneralSection } from '@/modules/settings/sections/GeneralSection'
 import { HapSection } from '@/modules/settings/sections/HapSection'
+import { InstancesSection } from '@/modules/settings/sections/InstancesSection'
 import { MatterSection } from '@/modules/settings/sections/MatterSection'
 import { NetworkSection } from '@/modules/settings/sections/NetworkSection'
 import { NotificationsSection } from '@/modules/settings/sections/NotificationsSection'
@@ -187,6 +188,7 @@ export function Settings({ deps }: SettingsProps) {
                   {isSectionVisible('terminal') && <TerminalSection />}
                   {isSectionVisible('security') && <SecuritySection />}
                   {isSectionVisible('notifications') && <NotificationsSection />}
+                  {isSectionVisible('instances') && <InstancesSection />}
                   {isSectionVisible('cache') && <CacheSection />}
                   {isSectionVisible('reset') && <ResetSection />}
                   <div className="pb-3"></div>
