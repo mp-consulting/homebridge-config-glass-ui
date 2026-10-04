@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.7] - 2026-10-04
+
 ### Added
 
 - **The Assistant's daily digest as a notification.** Settings, Notifications has a new event, **The Assistant's daily digest is ready** (`dailyDigest`, off by default), and a time to send it at (`dailyDigestTime`, HH:mm in the server's local time, 08:00 by default). Once a day the digest the Daily Digest widget shows (the same one, when the widget already made it that day) goes to every enabled channel. It runs on the shared scheduler, as a system user that is not an administrator and has its own Assistant rate limit (the digest calls no tool and mints no token). It is skipped quietly while the Assistant is off or not set up, a digest that fails to generate is logged and not sent, it goes through the usual cooldown and hourly cap, and it is sent at most once a day.
