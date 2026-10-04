@@ -23,6 +23,7 @@ import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { isProtectedStoragePath } from '../config-editor/config-safety.js'
 import { PluginsService } from '../plugins/plugins.service.js'
+import { SlidingWindowLimiter, TtlCache } from './ai-cache.js'
 import {
   assessPluginUpdate,
   dailyDigest,
@@ -141,16 +142,20 @@ function countingProvider(provider: AiProvider, onReply: () => void): AiProvider
 
 const DIGEST_TTL_MS = 6 * 60 * 60 * 1000
 const RISK_TTL_MS = 24 * 60 * 60 * 1000
+/** Update risk briefings kept at most (one per plugin and version pair). */
+export const RISK_CACHE_MAX = 200
 
 @Injectable()
 export class AiService {
   private readonly usage = new UsageTracker()
-  private readonly requests = new Map<string, number[]>()
+  /** Per-user rate limit; users idle for a window are forgotten. */
+  private readonly requests = new SlidingWindowLimiter({ limit: AI_RATE_LIMIT, windowMs: AI_RATE_WINDOW_MS })
   private providerCache: { key: string, provider: AiProvider } | undefined
   private digestCache: { key: string, at: number, value: { text: string, generatedAt: string } } | undefined
   /** The chat client's fetch for this server's own HTTPS (see loopbackFetch). */
   private loopback: Promise<typeof fetch> | undefined
-  private readonly riskCache = new Map<string, { at: number, value: Record<string, unknown> }>()
+  /** Update risk briefings by plugin and versions: kept a day, at most RISK_CACHE_MAX. */
+  private readonly riskCache = new TtlCache<Record<string, unknown>>({ ttlMs: RISK_TTL_MS, maxSize: RISK_CACHE_MAX })
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -330,15 +335,9 @@ export class AiService {
 
   /** Count one request against the user's rate limit (429 when over it). */
   consume(user: AiUser | undefined): void {
-    const key = user?.username ?? '(anonymous)'
-    const now = Date.now()
-    const recent = (this.requests.get(key) ?? []).filter(at => now - at < AI_RATE_WINDOW_MS)
-    if (recent.length >= AI_RATE_LIMIT) {
-      this.requests.set(key, recent)
+    if (!this.requests.consume(user?.username ?? '(anonymous)')) {
       throw new HttpException('Too many Assistant requests. Wait a minute and try again.', HttpStatus.TOO_MANY_REQUESTS)
     }
-    recent.push(now)
-    this.requests.set(key, recent)
   }
 
   /** Run a feature: rate limit, ready check, usage accounting and provider errors as 502. */
@@ -550,8 +549,8 @@ export class AiService {
     const targetVersion = dto.targetVersion ?? installed?.latestVersion ?? 'latest'
     const key = `${dto.pluginName}@${currentVersion}->${targetVersion}`
     const cached = this.riskCache.get(key)
-    if (cached && Date.now() - cached.at < RISK_TTL_MS) {
-      return { ...cached.value, cached: true }
+    if (cached) {
+      return { ...cached, cached: true }
     }
 
     const parts: string[] = []
@@ -590,7 +589,7 @@ export class AiService {
         usage: result.usage,
       }
     })
-    this.riskCache.set(key, { at: Date.now(), value })
+    this.riskCache.set(key, value)
     return { ...value, cached: false }
   }
 

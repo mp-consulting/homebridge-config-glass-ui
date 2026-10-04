@@ -387,7 +387,7 @@ describe('Assistant (e2e)', () => {
         expect(sent).not.toContain('[Ring]')
         expect(sent).not.toContain('hunter2-secret')
         // Its own rate limit bucket, not a signed-in user's
-        expect((aiService as any).requests.get('(notifications)')).toHaveLength(1)
+        expect((aiService as any).requests.count('(notifications)')).toBe(1)
       })
 
       it('have nothing to say without a line from the bridge', async () => {
@@ -973,7 +973,9 @@ describe('Assistant (e2e)', () => {
           await enable()
           vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue(lights(1))
           await seedLayout('admin', [])
-          ;(aiService as any).requests.set('admin', Array.from({ length: AI_RATE_LIMIT }, () => Date.now()))
+          for (let i = 0; i < AI_RATE_LIMIT; i++) {
+            aiService.consume({ username: 'admin' })
+          }
           const { client } = socketFor(admin)
 
           const failed = waitFor(client, 'ai:error')
