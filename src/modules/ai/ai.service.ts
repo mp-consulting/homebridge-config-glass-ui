@@ -311,6 +311,10 @@ export class AiService {
     try {
       return await readLogTail(log.path, AI_LOG_TAIL_BYTES, AI_LOG_TAIL_LINES)
     } catch (error) {
+      // Typical when hb-service runs with --stdout: the log goes to the terminal and the file is never created
+      if ((error as { code?: string }).code === 'ENOENT') {
+        throw new BadRequestException(`There is no log file at ${log.path} yet. Homebridge writes it when it runs under hb-service without --stdout.`)
+      }
       throw new BadRequestException(`Cannot read the log file: ${(error as { code?: string }).code ?? (error as Error).message}`)
     }
   }

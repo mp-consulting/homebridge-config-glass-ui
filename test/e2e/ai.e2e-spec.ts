@@ -338,6 +338,17 @@ describe('Assistant (e2e)', () => {
       expect(res.statusCode).toBe(400)
     })
 
+    it('explains a missing log file instead of answering with ENOENT', async () => {
+      await enable()
+      const missing = resolve(testStoragePath, 'no-such-homebridge.log')
+      configService.ui.log = { method: 'file', path: missing }
+      const res = await inject('POST', '/ai/diagnose-logs', adminAuth, {})
+      expect(res.statusCode).toBe(400)
+      expect(res.json().message).toContain(`no log file at ${missing}`)
+      expect(res.json().message).toContain('--stdout')
+      expect(fake.requests).toHaveLength(0)
+    })
+
     it('turns a provider failure into a 502 without the key', async () => {
       await enable()
       configService.ui.log = { method: 'file', path: logPath }
