@@ -40,6 +40,24 @@ body.dark-mode {
   }
 }
 
+// A dialog body scrolls, so it clips: the Assistant buttons' glow blurs out
+// about twice its blur radius past the button, more than the usual 1rem of
+// padding, and was cut to a box at the body's edge. Pad these bodies enough.
+.hb-ai-diagnose > .modal-body,
+.hb-ai-copilot > .modal-body {
+  padding: calc(var(--mp-ai-glow-blur, 12px) * 2);
+}
+
+// The plugin settings' "Describe in words" sits in the body's top-right corner
+.hb-ai-describe-config {
+  padding: calc(var(--mp-ai-glow-blur, 12px) * 2 - 1rem) calc(var(--mp-ai-glow-blur, 12px) * 2 - 1rem) 0 0;
+}
+
+// The update risk button sits at the left edge of the plugin update dialog's body
+.hb-manage-plugin .hb-ai-update-risk.d-block {
+  padding-left: calc(var(--mp-ai-glow-blur, 12px) * 2 - 1rem);
+}
+
 // Log Doctor: a drawer on the right edge rather than a centred dialog
 .hb-ai-drawer .hb-ai-drawer-dialog {
   width: 100%;
@@ -71,6 +89,15 @@ body.dark-mode {
 .hb-ai-palette {
   .mp-ai-chat {
     --mp-ai-chat-height: min(60vh, 34rem);
+
+    // The kit clips the chat to round its corners, which it has none of here;
+    // the clip only cut the Send button's glow to a box (the log scrolls by itself)
+    overflow: visible;
+  }
+
+  // Room for that glow before the dialog's own edge
+  .mp-ai-chat-form {
+    padding-right: calc(var(--mp-ai-glow-blur, 12px) * 2);
   }
 
   .hb-ai-user-text {

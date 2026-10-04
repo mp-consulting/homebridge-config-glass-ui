@@ -114,6 +114,17 @@
     min-height: 0;
   }
 
+  // The clip above (for the collapse) cut the Assistant button's glow, which
+  // blurs out past the button, to a dark box around it. Give such a row room
+  // for the glow inside the clip, cancelled by a negative margin so the row
+  // keeps its size and its contents stay where they were.
+  .setting-row-inner:has(.mp-ai-button, .mp-ai-halo) {
+    --hb-ai-glow-room: calc(var(--mp-ai-glow-blur, 12px) * 2);
+
+    padding: var(--hb-ai-glow-room);
+    margin: calc(var(--hb-ai-glow-room) * -1);
+  }
+
   // ── fadeInOut replacement: save indicator icons ──
   // Element enters DOM via @if, CSS keyframe handles the fade-in.
   // No leave animation — instant removal on save complete is fine UX.
