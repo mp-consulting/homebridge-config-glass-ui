@@ -10,18 +10,18 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 ## Features
 
 - **Liquid glass design** in light and dark mode, tinted by the theme colour you pick
-- Install, configure, update and remove Homebridge plugins, with a check of which plugins would not support a Node.js or Homebridge upgrade
+- Install, configure, update and remove Homebridge plugins, with a check of which plugins would not support a Node.js or Homebridge upgrade, and a one-click rollback of a plugin update for 14 days (offered when its bridge starts crash looping)
 - Visual settings forms for plugins that ship a config schema
 - Edit `config.json` with syntax checking, validation and automatic backups you can compare with the current config
 - A customisable widget dashboard for monitoring your server (network traffic in bits or bytes, sent and received charted separately)
 - Live Homebridge logs and a web terminal
-- View and control your accessories from any browser, with history charts of their sensor readings
-- Scenes that set several accessories at once, on demand or on a schedule
+- View and control your accessories from any browser, with history charts of their sensor readings (recorded in insecure mode, which Glass UI tells you when it is missing)
+- Scenes that set several accessories at once: on demand, on a schedule, at sunrise or sunset with an offset, or when an accessory value changes, with time window and value conditions
 - Run plugins as child bridges, with a health page that shows uptime and restarts and detects crash loops
-- Back up and restore your whole Homebridge instance
+- Back up and restore your whole Homebridge instance, with nightly copies uploaded to WebDAV or S3-compatible storage and the number of copies to keep
 - An optional **Assistant** (bring your own AI provider): Log Doctor, Config Copilot, a chat that can look things up and act for you, update risk briefings, room suggestions and a daily digest
 - A REST API (documented at `/swagger`) with API tokens for scripts and the Assistant's MCP server
-- Notifications by webhook, ntfy, Pushover or Telegram when Homebridge goes down, a child bridge crash loops (explained by the Assistant when it is on), updates are available or a backup fails, and the Assistant's daily digest at a time you pick
+- Notifications by webhook, ntfy, Pushover, Telegram or browser push (Web Push to the installed app) when Homebridge goes down, a child bridge crash loops (explained by the Assistant when it is on), updates are available or a backup fails, and the Assistant's daily digest at a time you pick
 - Switch between several Homebridge instances from the menu
 - Installs to your phone's home screen as an app, with a Quick Controls page for your favourite accessories
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
