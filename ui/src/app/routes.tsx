@@ -113,6 +113,10 @@ export const routes: RouteObject[] = [
             ...page(() => import('@/modules/accessories/route'), requireAuth),
           },
           {
+            path: 'scenes',
+            ...page(() => import('@/modules/scenes/route'), requireAuth),
+          },
+          {
             path: 'logs',
             ...page(() => import('@/modules/logs/route'), logsGuard),
           },

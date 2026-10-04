@@ -16,6 +16,7 @@ import { LogModule } from './modules/log/log.module.js'
 import { NotificationsModule } from './modules/notifications/notifications.module.js'
 import { PlatformToolsModule } from './modules/platform-tools/platform-tools.module.js'
 import { PluginsModule } from './modules/plugins/plugins.module.js'
+import { ScenesModule } from './modules/scenes/scenes.module.js'
 import { ServerModule } from './modules/server/server.module.js'
 import { SetupWizardModule } from './modules/setup-wizard/setup-wizard.module.js'
 import { StatusModule } from './modules/status/status.module.js'
@@ -42,6 +43,7 @@ import { UsersModule } from './modules/users/users.module.js'
     SetupWizardModule,
     UpdateAllModule,
     NotificationsModule,
+    ScenesModule,
   ],
   controllers: [
     AppController,

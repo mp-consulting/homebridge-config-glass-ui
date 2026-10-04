@@ -16,6 +16,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - A customisable widget dashboard for monitoring your server (network traffic in bits or bytes, sent and received charted separately)
 - Live Homebridge logs and a web terminal
 - View and control your accessories from any browser, with history charts of their sensor readings
+- Scenes that set several accessories at once, on demand or on a schedule
 - Run plugins as child bridges, with a health page that shows uptime and restarts and detects crash loops
 - Back up and restore your whole Homebridge instance
 - Notifications by webhook, ntfy, Pushover or Telegram when Homebridge goes down, a child bridge crash loops, updates are available or a backup fails
