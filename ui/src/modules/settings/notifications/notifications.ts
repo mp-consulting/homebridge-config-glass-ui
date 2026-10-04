@@ -19,6 +19,8 @@ export interface NotificationSettings {
   events: Record<NotificationEvent, boolean>
   /** When the daily digest is sent, HH:mm in the server's local time. */
   dailyDigestTime: string
+  /** Add the Assistant's reading of the bridge's log to a crash loop notification (when the Assistant is on). */
+  explainCrashLoops: boolean
 }
 
 export interface ChannelResult {

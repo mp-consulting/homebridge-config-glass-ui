@@ -359,6 +359,53 @@ describe('Assistant (e2e)', () => {
       expect(sent).not.toContain('\x1B[32m')
     })
 
+    describe('crash loop explanations', () => {
+      const kitchen = { name: 'Kitchen', plugin: 'homebridge-kitchen', identifier: 'KitchenPlatform' }
+
+      it('read only the bridge\'s lines (and their stack traces), redacted, as the system user', async () => {
+        await enable()
+        configService.ui.log = { method: 'file', path: logPath }
+        await writeFile(logPath, [
+          '[10/4/2026, 10:00:00 AM] [Hue] Connected',
+          '[10/4/2026, 10:00:01 AM] [Kitchen] Logging in with {"password": "hunter2-secret"}',
+          '[10/4/2026, 10:00:02 AM] [homebridge-kitchen] TypeError: Cannot read properties of undefined',
+          '    at KitchenPlatform.poll (index.js:42:7)',
+          '[10/4/2026, 10:00:03 AM] [Ring] Error: timeout',
+          '[10/4/2026, 10:00:04 AM] [Kitchen] Child bridge process ended',
+        ].join('\n'))
+        fake.reply('  It crashes polling the device.  ')
+
+        const text = await aiService.explainCrashLoop(kitchen)
+
+        expect(text).toBe('It crashes polling the device.')
+        const sent = JSON.stringify(fake.requests)
+        expect(sent).toContain('Cannot read properties of undefined')
+        expect(sent).toContain('index.js:42:7')
+        expect(sent).toContain('Child bridge process ended')
+        expect(sent).toContain('2 or 3 plain sentences')
+        expect(sent).not.toContain('[Hue]')
+        expect(sent).not.toContain('[Ring]')
+        expect(sent).not.toContain('hunter2-secret')
+        // Its own rate limit bucket, not a signed-in user's
+        expect((aiService as any).requests.get('(notifications)')).toHaveLength(1)
+      })
+
+      it('have nothing to say without a line from the bridge', async () => {
+        await enable()
+        configService.ui.log = { method: 'file', path: logPath }
+        await writeFile(logPath, '[10/4/2026, 10:00:00 AM] [Hue] Connected\n')
+
+        expect(await aiService.explainCrashLoop(kitchen)).toBeNull()
+        expect(fake.requests).toHaveLength(0)
+      })
+
+      it('are refused while the Assistant is off', async () => {
+        expect(await aiService.isReady()).toBe(false)
+        await expect(aiService.explainCrashLoop(kitchen)).rejects.toThrow()
+        expect(fake.requests).toHaveLength(0)
+      })
+    })
+
     it('explains when the log does not come from a file', async () => {
       await enable()
       configService.ui.log = { method: 'systemd' }

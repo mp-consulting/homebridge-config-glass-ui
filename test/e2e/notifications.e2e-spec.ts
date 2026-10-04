@@ -22,7 +22,7 @@ import { AiService } from '../../src/modules/ai/ai.service.js'
 import { ChildBridgeHealthService } from '../../src/modules/child-bridges/child-bridge-health.service.js'
 import { truncateText } from '../../src/modules/notifications/notification-channels.js'
 import { NotificationsModule } from '../../src/modules/notifications/notifications.module.js'
-import { DAILY_DIGEST_JOB, DOWN_GRACE_MS, MAX_PER_HOUR, NotificationsService } from '../../src/modules/notifications/notifications.service.js'
+import { CRASH_LOOP_EXPLAIN_TIMEOUT_MS, DAILY_DIGEST_JOB, DOWN_GRACE_MS, MAX_PER_HOUR, NotificationsService } from '../../src/modules/notifications/notifications.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -99,6 +99,7 @@ describe('Notifications (e2e)', () => {
     expect(res.json().channels.webhook).toEqual({ enabled: false, url: '' })
     expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, updatesAvailable: true, backupFailed: true, dailyDigest: false })
     expect(res.json().dailyDigestTime).toBe('08:00')
+    expect(res.json().explainCrashLoops).toBe(true)
   })
 
   it('stores secrets owner-only and never returns them in clear', async () => {
@@ -138,6 +139,7 @@ describe('Notifications (e2e)', () => {
     expect((await put({ events: { homebridgeDown: 'yes' } })).statusCode).toBe(400)
     expect((await put({ dailyDigestTime: '24:00' })).statusCode).toBe(400)
     expect((await put({ dailyDigestTime: '8:00' })).statusCode).toBe(400)
+    expect((await put({ explainCrashLoops: 'yes' })).statusCode).toBe(400)
   })
 
   it('is for administrators only', async () => {
@@ -252,6 +254,87 @@ describe('Notifications (e2e)', () => {
 
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
     expect(String(fetchMock.mock.calls[0][1].body)).toContain('Kitchen')
+  })
+
+  describe('crash loop explanations', () => {
+    const kitchen = { name: 'Kitchen', plugin: 'homebridge-kitchen', identifier: 'KitchenPlatform', username: 'AA', recentCrashes: 3 } as any
+    const sentText = () => String(fetchMock.mock.calls[0][1].body)
+
+    it('add the Assistant\'s explanation when it is on', async () => {
+      await enableTelegramAndNtfy()
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      const explain = vi.spyOn(ai, 'explainCrashLoop').mockResolvedValue('Its cloud login keeps failing.')
+
+      await service.notifyCrashLoop(kitchen)
+
+      expect(explain).toHaveBeenCalledWith({ name: 'Kitchen', plugin: 'homebridge-kitchen', identifier: 'KitchenPlatform' }, expect.any(AbortSignal))
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(sentText()).toContain('crashed 3 times')
+      expect(sentText()).toContain('Assistant: Its cloud login keeps failing.')
+    })
+
+    it('are left out while the Assistant is off or not set up', async () => {
+      await enableTelegramAndNtfy()
+      const explain = vi.spyOn(app.get(AiService), 'explainCrashLoop')
+
+      await service.notifyCrashLoop(kitchen)
+
+      expect(explain).not.toHaveBeenCalled()
+      expect(sentText()).not.toContain('Assistant:')
+    })
+
+    it('are not asked for when switched off, or for a notification that would not go out', async () => {
+      await enableTelegramAndNtfy()
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      const explain = vi.spyOn(ai, 'explainCrashLoop').mockResolvedValue('x')
+
+      await put({ explainCrashLoops: false })
+      await service.notifyCrashLoop(kitchen)
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+
+      // On again, but within the cooldown of the one just sent
+      await put({ explainCrashLoops: true })
+      expect(await service.notifyCrashLoop(kitchen)).toBeNull()
+      expect(explain).not.toHaveBeenCalled()
+    })
+
+    it('do not hold the notification back when the Assistant fails', async () => {
+      await enableTelegramAndNtfy()
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      vi.spyOn(ai, 'explainCrashLoop').mockRejectedValue(new Error('provider down'))
+      const warn = vi.spyOn(app.get(Logger), 'warn')
+
+      await service.notifyCrashLoop(kitchen)
+
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(sentText()).not.toContain('Assistant:')
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('provider down'))
+    })
+
+    it('are given up on after the timeout, and the request cancelled', async () => {
+      await enableTelegramAndNtfy()
+      const ai = app.get(AiService)
+      vi.spyOn(ai, 'isReady').mockResolvedValue(true)
+      let signal: AbortSignal | undefined
+      vi.spyOn(ai, 'explainCrashLoop').mockImplementation((_bridge, given) => {
+        signal = given
+        return new Promise(() => {})
+      })
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+      const done = service.notifyCrashLoop(kitchen)
+      await vi.advanceTimersByTimeAsync(CRASH_LOOP_EXPLAIN_TIMEOUT_MS - 100)
+      expect(fetchMock).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(100)
+      expect(await done).not.toBeNull()
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(sentText()).not.toContain('Assistant:')
+      expect(signal?.aborted).toBe(true)
+    })
   })
 
   it('reports a failed scheduled backup', async () => {

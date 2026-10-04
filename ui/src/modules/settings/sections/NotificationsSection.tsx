@@ -29,7 +29,8 @@ const CHANNEL_NAMES: Record<Exclude<ChannelName, 'webhook'>, string> = {
 
 /**
  * NOTIFICATIONS: the channels (webhook, ntfy, Pushover, Telegram) and the
- * events sent to them, with the time of the Assistant's daily digest. Unlike the rest of the page it saves on a button,
+ * events sent to them, with the Assistant's part: crash loop explanations and
+ * the time of its daily digest. Unlike the rest of the page it saves on a button,
  * so a half-typed token is never sent; stored secrets come back as
  * `********` and are kept unless replaced.
  */
@@ -72,11 +73,12 @@ export function NotificationsSection() {
     setDirty(true)
   }
 
-  const setDigestTime = (value: string) => {
-    setSettings(current => current && ({ ...current, dailyDigestTime: value }))
+  const setOption = (patch: Partial<Pick<NotificationSettings, 'dailyDigestTime' | 'explainCrashLoops'>>) => {
+    setSettings(current => current && ({ ...current, ...patch }))
     setDirty(true)
   }
 
+  const usesAssistant = Boolean(settings && (settings.events.dailyDigest || (settings.events.childBridgeCrashLoop && settings.explainCrashLoops)))
   const digestTimeInvalid = Boolean(settings?.events.dailyDigest) && !RE_TIME_OF_DAY.test(settings?.dailyDigestTime ?? '')
 
   const save = async () => {
@@ -188,6 +190,21 @@ export function NotificationsSection() {
                       </div>
                     ))}
                   </div>
+                  {settings.events.childBridgeCrashLoop && (
+                    <div className="form-check mt-2">
+                      <input
+                        id="notifications-explain-crash-loops"
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={settings.explainCrashLoops}
+                        onChange={change => setOption({ explainCrashLoops: change.target.checked })}
+                      />
+                      <label htmlFor="notifications-explain-crash-loops" className="form-check-label">
+                        {t('settings.notifications.explain_crash_loops')}
+                        <span className="d-block small grey-text">{t('settings.notifications.explain_crash_loops_desc')}</span>
+                      </label>
+                    </div>
+                  )}
                   {settings.events.dailyDigest && (
                     <div className="d-flex flex-wrap align-items-center mt-2">
                       <label htmlFor="notifications-digest-time" className="small grey-text mb-0 me-2">{t('settings.notifications.digest_time')}</label>
@@ -197,11 +214,11 @@ export function NotificationsSection() {
                         className={cx('form-control custom-input w-auto', digestTimeInvalid && 'is-invalid')}
                         value={settings.dailyDigestTime}
                         aria-invalid={digestTimeInvalid}
-                        onChange={event => setDigestTime(event.target.value)}
+                        onChange={event => setOption({ dailyDigestTime: event.target.value })}
                       />
                     </div>
                   )}
-                  {settings.events.dailyDigest && !aiEnabled && (
+                  {usesAssistant && !aiEnabled && (
                     <small className="d-block grey-text mt-2" data-testid="notifications-needs-assistant">{t('settings.notifications.needs_assistant')}</small>
                   )}
                 </div>

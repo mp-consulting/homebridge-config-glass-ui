@@ -36,6 +36,8 @@ export const DOWN_GRACE_MS = 60_000
 /** How often installed packages are checked for updates. */
 export const UPDATE_CHECK_MS = 6 * 60 * 60_000
 const FIRST_UPDATE_CHECK_MS = 5 * 60_000
+/** How long a crash loop notification waits for the Assistant's explanation before going without it. */
+export const CRASH_LOOP_EXPLAIN_TIMEOUT_MS = 20_000
 /** The scheduler job that sends the daily digest. */
 export const DAILY_DIGEST_JOB = 'notifications-daily-digest'
 
@@ -58,7 +60,8 @@ const HTTP_URL = /^https?:\/\/[^\s/?#]\S*$/i
  * dispatcher that sends an event to every enabled channel, rate limited.
  *
  * Events: Homebridge down (after DOWN_GRACE_MS) and back up, a child bridge
- * crash loop, updates available (checked every UPDATE_CHECK_MS), a failed
+ * crash loop (with the Assistant's reading of its log, when it is on),
+ * updates available (checked every UPDATE_CHECK_MS), a failed
  * scheduled backup, and the Assistant's daily digest (at `dailyDigestTime`,
  * server local time, while the Assistant is on).
  */
@@ -143,6 +146,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       channels,
       events: { ...defaults.events, ...(stored?.events ?? {}) },
       dailyDigestTime: typeof stored?.dailyDigestTime === 'string' && RE_TIME_OF_DAY.test(stored.dailyDigestTime) ? stored.dailyDigestTime : defaults.dailyDigestTime,
+      explainCrashLoops: typeof stored?.explainCrashLoops === 'boolean' ? stored.explainCrashLoops : defaults.explainCrashLoops,
       lastUpdatesSignature: stored?.lastUpdatesSignature,
     }
     return this.cached
@@ -155,7 +159,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   /** The settings as the browser may see them: each stored secret as SECRET_PLACEHOLDER. */
   public async getSettings(): Promise<NotificationSettings> {
-    const { channels, events, dailyDigestTime } = await this.load()
+    const { channels, events, dailyDigestTime, explainCrashLoops } = await this.load()
     const redacted = structuredClone(channels)
     for (const name of CHANNEL_NAMES) {
       for (const field of SECRET_FIELDS[name] as string[]) {
@@ -163,7 +167,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         channel[field] = channel[field] ? SECRET_PLACEHOLDER : ''
       }
     }
-    return { channels: redacted, events: { ...events }, dailyDigestTime }
+    return { channels: redacted, events: { ...events }, dailyDigestTime, explainCrashLoops }
   }
 
   /**
@@ -175,7 +179,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       throw new BadRequestException('Expected an object.')
     }
     const current = await this.load()
-    const input = body as { channels?: Record<string, Record<string, unknown>>, events?: Record<string, unknown>, dailyDigestTime?: unknown }
+    const input = body as { channels?: Record<string, Record<string, unknown>>, events?: Record<string, unknown>, dailyDigestTime?: unknown, explainCrashLoops?: unknown }
     const channels = structuredClone(current.channels)
 
     for (const name of CHANNEL_NAMES) {
@@ -222,15 +226,21 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       events[event] = value
     }
 
-    let { dailyDigestTime } = current
+    let { dailyDigestTime, explainCrashLoops } = current
     if (input.dailyDigestTime !== undefined) {
       if (typeof input.dailyDigestTime !== 'string' || !RE_TIME_OF_DAY.test(input.dailyDigestTime)) {
         throw new BadRequestException('dailyDigestTime must be a time of day as HH:mm.')
       }
       dailyDigestTime = input.dailyDigestTime
     }
+    if (input.explainCrashLoops !== undefined) {
+      if (typeof input.explainCrashLoops !== 'boolean') {
+        throw new BadRequestException('explainCrashLoops must be a boolean.')
+      }
+      explainCrashLoops = input.explainCrashLoops
+    }
 
-    await this.save({ ...current, channels, events, dailyDigestTime })
+    await this.save({ ...current, channels, events, dailyDigestTime, explainCrashLoops })
     await this.scheduleDailyDigest()
     return this.getSettings()
   }
@@ -314,23 +324,35 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
    */
   public async notify(msg: NotificationMessage & { event: NotificationEvent }, subject = ''): Promise<ChannelResult[] | null> {
     const settings = await this.load()
-    if (!settings.events[msg.event] || !CHANNEL_NAMES.some(name => settings.channels[name].enabled)) {
-      return null
-    }
     const now = Date.now()
     const key = `${msg.event}:${subject}`
-    if (now - (this.lastSent.get(key) ?? -Infinity) < EVENT_COOLDOWN_MS) {
-      this.logger.debug(`Notification ${key} skipped: sent less than ${EVENT_COOLDOWN_MS / 60_000} minutes ago.`)
-      return null
-    }
-    this.sentLog = this.sentLog.filter(at => now - at < 60 * 60_000)
-    if (this.sentLog.length >= MAX_PER_HOUR) {
-      this.logger.warn(`Notification ${key} dropped: more than ${MAX_PER_HOUR} notifications in the last hour.`)
+    const held = this.holdBack(settings, msg.event, key, now)
+    if (held) {
+      if (held === 'cooldown') {
+        this.logger.debug(`Notification ${key} skipped: sent less than ${EVENT_COOLDOWN_MS / 60_000} minutes ago.`)
+      } else if (held === 'cap') {
+        this.logger.warn(`Notification ${key} dropped: more than ${MAX_PER_HOUR} notifications in the last hour.`)
+      }
       return null
     }
     this.lastSent.set(key, now)
     this.sentLog.push(now)
     return this.sendAll(msg)
+  }
+
+  /**
+   * Why an event would not be sent now (switched off or no channel on, its
+   * cooldown, the hourly cap), or null when it would. Records nothing.
+   */
+  private holdBack(settings: StoredFile, event: NotificationEvent, key: string, now: number): 'off' | 'cooldown' | 'cap' | null {
+    if (!settings.events[event] || !CHANNEL_NAMES.some(name => settings.channels[name].enabled)) {
+      return 'off'
+    }
+    if (now - (this.lastSent.get(key) ?? -Infinity) < EVENT_COOLDOWN_MS) {
+      return 'cooldown'
+    }
+    this.sentLog = this.sentLog.filter(at => now - at < 60 * 60_000)
+    return this.sentLog.length >= MAX_PER_HOUR ? 'cap' : null
   }
 
   /** "Send test": to the given channel, or every enabled one, whether or not any event is on. */
@@ -378,12 +400,65 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   }
 
   private onCrashLoop = (bridge: ChildBridgeHealth) => {
-    void this.notify({
+    void this.notifyCrashLoop(bridge)
+  }
+
+  /**
+   * The crash loop notification. When it would be sent, `explainCrashLoops`
+   * is on and so is the Assistant, it carries a few sentences from the
+   * Assistant on the bridge's log lines; that wait is capped at
+   * CRASH_LOOP_EXPLAIN_TIMEOUT_MS, and a failure or a timeout sends it without.
+   */
+  public async notifyCrashLoop(bridge: ChildBridgeHealth): Promise<ChannelResult[] | null> {
+    let message = `${bridge.name} (${bridge.plugin}) crashed ${bridge.recentCrashes} times in a short time. Check the logs.`
+    try {
+      const settings = await this.load()
+      // Ask only for a notification that will go out
+      if (settings.explainCrashLoops && !this.holdBack(settings, 'childBridgeCrashLoop', `childBridgeCrashLoop:${bridge.username}`, Date.now())) {
+        const explanation = await this.explainCrashLoop(bridge)
+        if (explanation) {
+          message += `\n\nAssistant: ${explanation}`
+        }
+      }
+    } catch (e) {
+      this.logger.warn(`Failed to explain the ${bridge.name} crash loop as ${e?.message ?? e}.`)
+    }
+    return this.notify({
       event: 'childBridgeCrashLoop',
       title: `Child bridge ${bridge.name} is crash looping`,
-      message: `${bridge.name} (${bridge.plugin}) crashed ${bridge.recentCrashes} times in a short time. Check the logs.`,
+      message,
       urgent: true,
     }, bridge.username)
+  }
+
+  /** The Assistant's explanation, or null when it is off, has nothing to say, fails or takes too long. */
+  private async explainCrashLoop(bridge: ChildBridgeHealth): Promise<string | null> {
+    const controller = new AbortController()
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const timeout = new Promise<null>((resolve) => {
+      timer = setTimeout(() => {
+        controller.abort()
+        this.logger.warn(`The Assistant did not explain the ${bridge.name} crash loop within ${CRASH_LOOP_EXPLAIN_TIMEOUT_MS / 1000} seconds: notifying without it.`)
+        resolve(null)
+      }, CRASH_LOOP_EXPLAIN_TIMEOUT_MS)
+      timer.unref?.()
+    })
+    const work = (async () => {
+      if (!await this.ai.isReady()) {
+        return null
+      }
+      return this.ai.explainCrashLoop({ name: bridge.name, plugin: bridge.plugin, identifier: bridge.identifier }, controller.signal)
+    })().catch((e) => {
+      if (!controller.signal.aborted) {
+        this.logger.warn(`The Assistant could not explain the ${bridge.name} crash loop as ${e?.message ?? e}: notifying without it.`)
+      }
+      return null
+    })
+    try {
+      return await Promise.race([work, timeout])
+    } finally {
+      clearTimeout(timer)
+    }
   }
 
   private onBackupFailed = ({ message }: { message: string }) => {

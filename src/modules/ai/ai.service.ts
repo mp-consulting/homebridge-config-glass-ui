@@ -39,7 +39,7 @@ import {
   suggestOrganization,
   UsageTracker,
 } from './ai-kit.js'
-import { problemLines, readLogTail } from './ai-logs.js'
+import { linesMentioning, problemLines, readLogTail } from './ai-logs.js'
 import { loadLoopbackFetch } from './ai-loopback.js'
 import { organizerInput } from './ai-organize.js'
 import {
@@ -64,12 +64,19 @@ export interface AiUser {
 }
 
 /**
- * Who background work (the daily digest notification) runs as: no user
- * signs in for it, so it gets its own rate limit, and it is not an
- * administrator. It mints no token and calls no tool, so it never acts as
- * anyone.
+ * Who background work (the daily digest notification, crash loop
+ * explanations) runs as: no user signs in for it, so it gets its own rate
+ * limit, and it is not an administrator. Neither mints a token or calls a
+ * tool, so it never acts as anyone.
  */
 export const AI_SYSTEM_USER: AiUser = Object.freeze({ username: '(notifications)', admin: false })
+
+/** The child bridge a crash loop explanation is about. */
+export interface AiCrashLoopBridge {
+  name: string
+  plugin: string
+  identifier?: string
+}
 
 /** Why the Assistant is unavailable. */
 export type AiUnavailableReason = 'not-configured' | 'disabled' | 'missing-api-key' | 'invalid-config'
@@ -397,6 +404,25 @@ export class AiService {
       const result = await diagnoseLogs({ provider, logs, focus, maxOutputTokens: config.maxOutputTokens, ...stream })
       return { text: result.text, lines: logs.length, usage: result.usage }
     })
+  }
+
+  /**
+   * A few sentences on why a child bridge keeps crashing, from its lines in
+   * the end of the log (redacted like every Log Doctor request). Null when
+   * the log has nothing from it. Throws when the Assistant is off, the log
+   * cannot be read or the provider fails.
+   */
+  async explainCrashLoop(bridge: AiCrashLoopBridge, signal?: AbortSignal): Promise<string | null> {
+    await this.requireReady()
+    const logs = linesMentioning(await this.recentLogLines(), [bridge.name, bridge.plugin, bridge.identifier ?? '']).slice(-150)
+    if (!logs.length) {
+      return null
+    }
+    const focus = `The child bridge "${bridge.name}" (plugin ${bridge.plugin}) keeps crashing and restarting. `
+      + 'In 2 or 3 plain sentences, with no Markdown and no headings, say what most likely makes it crash and what to try first.'
+    const result = await this.run(AI_SYSTEM_USER, async ({ config, provider }) =>
+      diagnoseLogs({ provider, logs, focus, maxOutputTokens: Math.min(config.maxOutputTokens, 400), signal }))
+    return result.text.trim() || null
   }
 
   // ── Config Copilot ───────────────────────────────────────────────

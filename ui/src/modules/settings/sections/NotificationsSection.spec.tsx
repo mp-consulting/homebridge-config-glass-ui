@@ -22,6 +22,7 @@ function stored() {
     },
     events: { homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, updatesAvailable: true, backupFailed: true, dailyDigest: false },
     dailyDigestTime: '08:00',
+    explainCrashLoops: true,
   }
 }
 
@@ -126,10 +127,31 @@ describe('the notifications settings', () => {
     expect(screen.getByRole('button', { name: 'form.button_save' })).toBeDisabled()
   })
 
-  it('says the digest needs the Assistant while it is off', async () => {
+  it('offers the crash loop explanation with the crash loop event, and saves it', async () => {
+    api.respond('put', '/notifications/settings', (call: any) => call.body)
     await render()
-    fireEvent.click(screen.getByLabelText('settings.notifications.event_daily_digest'))
+    const explain = screen.getByLabelText<HTMLInputElement>(/settings.notifications.explain_crash_loops/)
+    expect(explain.checked).toBe(true)
+
+    fireEvent.click(explain)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'form.button_save' }))
+    })
+    expect(api.callsTo('put', '/notifications/settings')[0].body.explainCrashLoops).toBe(false)
+
+    fireEvent.click(screen.getByLabelText('settings.notifications.event_crash_loop'))
+    expect(screen.queryByLabelText(/settings.notifications.explain_crash_loops/)).toBeNull()
+  })
+
+  it('says what needs the Assistant while it is off', async () => {
+    await render()
+    // The crash loop explanation is on by default
     expect(screen.getByTestId('notifications-needs-assistant')).toHaveTextContent('settings.notifications.needs_assistant')
+    fireEvent.click(screen.getByLabelText(/settings.notifications.explain_crash_loops/))
+    expect(screen.queryByTestId('notifications-needs-assistant')).toBeNull()
+
+    fireEvent.click(screen.getByLabelText('settings.notifications.event_daily_digest'))
+    expect(screen.getByTestId('notifications-needs-assistant')).toBeInTheDocument()
 
     act(() => aiActions.setStatus({ enabled: true } as any))
     expect(screen.queryByTestId('notifications-needs-assistant')).toBeNull()
