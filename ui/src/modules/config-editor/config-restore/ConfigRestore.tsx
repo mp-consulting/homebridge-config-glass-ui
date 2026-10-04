@@ -18,6 +18,8 @@ import { toast } from '@/core/ui/toast'
 import { fileSaver } from '@/core/utilities/file-saver'
 import { toastApiError } from '@/core/utilities/http-error'
 
+import { ConfigBackupDiff } from './ConfigBackupDiff'
+
 /** Closes with the id of the backup to load into the editor. */
 export type ConfigRestoreProps = ConfigRestoreModalData & ModalComponentProps<string>
 
@@ -57,6 +59,24 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
   }, [])
 
   const restore = (backupId: string) => activeModal.close(backupId)
+
+  const compare = async (backup: ConfigRestoreBackup): Promise<void> => {
+    const ref = openModal(ConfigBackupDiff, {
+      backupId: backup.id,
+      timestamp: backup.timestamp,
+      currentConfig,
+    }, {
+      size: 'xl',
+      backdrop: 'static',
+    })
+    try {
+      await ref.result
+    } catch {
+      // Closed without loading it
+      return
+    }
+    restore(backup.id)
+  }
 
   const download = async (backupId: string): Promise<void> => {
     setClicked(true)
@@ -183,6 +203,17 @@ export function ConfigRestore({ activeModal, currentConfig, fromSettings: fromSe
                         onClick={() => restore(backup.id)}
                       >
                         <i aria-hidden="true" className="fas fa-history"></i>
+                      </button>
+                    </HoverTooltip>
+                    <HoverTooltip text={translate('config.restore.compare')} placement="bottom">
+                      <button
+                        type="button"
+                        className="btn btn-primary m-0 ms-2"
+                        disabled={busy}
+                        aria-label={translate('config.restore.compare')}
+                        onClick={() => void compare(backup)}
+                      >
+                        <i aria-hidden="true" className="fas fa-code-compare"></i>
                       </button>
                     </HoverTooltip>
                     <HoverTooltip text={translate('form.button_download')} placement="bottom">
