@@ -2,6 +2,8 @@ import type { TFunction } from 'i18next'
 
 import type { Widget } from '../widgets/widget.types'
 
+import { useAiStore } from '@/core/ai/ai.store'
+import { useAuthStore } from '@/core/auth/auth.store'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 
 export interface WidgetVisibilityEntry {
@@ -42,6 +44,8 @@ export function visibilityEntries(dashboard: Array<Partial<Widget>>, t: TFunctio
     { name: t('status.widget.homebridge_logs'), component: 'HomebridgeLogsWidgetComponent', hidden: false, cols: 7, rows: 6, mobileOrder: 1000 },
     { name: `Homebridge ${t('menu.docker.terminal')}`, component: 'TerminalWidgetComponent', hidden: !env.enableTerminalAccess, cols: 7, rows: 6, mobileOrder: 1000 },
     { name: t('status.widget.clock'), component: 'ClockWidgetComponent', cols: 5, rows: 3, mobileOrder: 23 },
+    // Offered only while the Assistant is on, to an administrator (the digest route is admin-only)
+    { name: t('ai.digest.title'), component: 'AssistantDigestWidgetComponent', hidden: !(useAiStore.getState().status?.enabled && useAuthStore.getState().user?.admin), cols: 5, rows: 6, mobileOrder: 15 },
   ]
 
   return allWidgets

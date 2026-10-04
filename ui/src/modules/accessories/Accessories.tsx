@@ -23,6 +23,8 @@ import { Link } from 'react-router'
 
 import { accessories, useAccessoriesStore } from '@/core/accessories/accessories'
 import { AccessoryTile } from '@/core/accessories/accessory-tile/AccessoryTile'
+import { openSmartOrganizer } from '@/core/ai/ai-entry'
+import { useAiEnabled } from '@/core/ai/ai.store'
 import { useAuthStore } from '@/core/auth/auth.store'
 import { escapeHtml } from '@/core/helpers/html.helper'
 import { settingsActions, useSettingsStore } from '@/core/settings'
@@ -181,6 +183,7 @@ SortableRoom.displayName = 'SortableRoom'
 export function Accessories() {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => state.user.admin)
+  const aiEnabled = useAiEnabled()
   const env = useSettingsStore(state => state.env)
   const enableAccessories = env.enableAccessories
   const [hasPlugins] = useState(() => env.hasInstalledPlugins ?? true)
@@ -289,6 +292,25 @@ export function Accessories() {
     bridgeNames: accessories.bridgeUsernameToNameMap,
   // eslint-disable-next-line react/exhaustive-deps
   }), [manageLayoutMode, hideHidden, selectedBridges, bridgeNamesVersion])
+
+  /** Smart organiser: suggested rooms and names, reviewed, then applied to the layout. */
+  const organize = async () => {
+    const current = accessories.rooms()
+    const services = current.flatMap(room => room.services.map(service => ({
+      uniqueId: service.uniqueId as string,
+      name: service.customName || service.serviceName,
+      type: service.humanType,
+      manufacturer: service.accessoryInformation?.Manufacturer,
+      model: service.accessoryInformation?.Model,
+      room: room.name,
+    }))).filter(service => service.uniqueId)
+    try {
+      const changes = await openSmartOrganizer({ accessories: services, rooms: current.map(room => room.name) })
+      accessories.applyOrganization(changes)
+    } catch {
+      // Closed without applying
+    }
+  }
 
   const addRoom = async () => {
     const ref = openModal(AddRoom, { existingRooms: accessories.rooms() }, { size: 'lg', backdrop: 'static' })
@@ -523,6 +545,18 @@ export function Accessories() {
           {supportButton}
         </div>
         <div className="col-6 text-end d-none d-sm-inline-block">
+          {hasPlugins && isAdmin && aiEnabled && rooms.length > 0 && (
+            <HoverTooltip text={t('ai.organizer.open')} placement="bottom">
+              <button
+                type="button"
+                className="mp-ai-button my-0 me-2 align-middle hb-ai-organize-button"
+                aria-label={t('ai.organizer.open')}
+                onClick={() => void organize()}
+              >
+                <i className="fas fa-wand-magic-sparkles mp-ai-icon" aria-hidden="true"></i>
+              </button>
+            </HoverTooltip>
+          )}
           {hasPlugins && (
             <>
               <HoverTooltip text={t('accessories.button_add_room')} placement="bottom">

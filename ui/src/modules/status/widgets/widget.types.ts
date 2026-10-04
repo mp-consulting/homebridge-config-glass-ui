@@ -124,4 +124,5 @@ export const AVAILABLE_WIDGETS: readonly string[] = [
   'ClockWidgetComponent',
   'BridgesWidgetComponent',
   'MatterQrcodeWidgetComponent',
+  'AssistantDigestWidgetComponent',
 ]

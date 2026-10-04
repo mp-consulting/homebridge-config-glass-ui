@@ -32,6 +32,12 @@ import { ws } from '@/core/ws'
 
 export type { AccessoryRoom }
 
+/** Room moves and custom names to apply, by service uniqueId (the smart organiser's output). */
+export interface OrganizationChanges {
+  moves: Array<{ uniqueId: string, room: string }>
+  renames: Array<{ uniqueId: string, name: string }>
+}
+
 export interface AccessoriesState {
   rooms: AccessoryRoom[]
   availableBridges: string[]
@@ -405,6 +411,40 @@ export class AccessoriesService {
       this.io.socket.off(event, handler)
     }
     this.socketHandlers = {}
+  }
+
+  /**
+   * Apply what the smart organiser suggested and the user kept: custom names,
+   * then moves between rooms (a room that does not exist yet is added at the
+   * end), and save the layout.
+   * @param changes - the renames and moves, by service uniqueId
+   */
+  public applyOrganization(changes: OrganizationChanges) {
+    const names = new Map(changes.renames.map(rename => [rename.uniqueId, rename.name]))
+    const rename = (service: ServiceTypeX): ServiceTypeX => {
+      const name = names.get(service.uniqueId as string)
+      return name === undefined ? service : { ...service, customName: name } as ServiceTypeX
+    }
+    for (const [index, service] of this.accessories.services.entries()) {
+      this.accessories.services[index] = rename(service)
+    }
+    const rooms: AccessoryRoom[] = this.rooms().map(room => ({ ...room, services: room.services.map(rename) }))
+    for (const move of changes.moves) {
+      const from = rooms.find(room => room.services.some(service => service.uniqueId === move.uniqueId))
+      if (!from || from.name === move.room) {
+        continue
+      }
+      const service = from.services.find(s => s.uniqueId === move.uniqueId)!
+      from.services = from.services.filter(s => s.uniqueId !== move.uniqueId)
+      let to = rooms.find(room => room.name === move.room)
+      if (!to) {
+        to = { name: move.room, services: [] }
+        rooms.push(to)
+      }
+      to.services = [...to.services, service]
+    }
+    this.rooms.set(rooms)
+    this.saveLayout()
   }
 
   /**

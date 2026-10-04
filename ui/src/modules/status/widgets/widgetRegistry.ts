@@ -29,6 +29,7 @@ export const widgetRegistry: Record<string, LazyExoticComponent<ComponentType<Wi
   AccessoriesWidgetComponent: load(() => import('./accessories-widget/AccessoriesWidget'), 'AccessoriesWidget'),
   ClockWidgetComponent: load(() => import('./clock-widget/ClockWidget'), 'ClockWidget'),
   BridgesWidgetComponent: load(() => import('./bridges-widget/BridgesWidget'), 'BridgesWidget'),
+  AssistantDigestWidgetComponent: load(() => import('./assistant-digest-widget/AssistantDigestWidget'), 'AssistantDigestWidget'),
 }
 
 export { AVAILABLE_WIDGETS, WIDGETS_WITH_SETTINGS } from './widget.types'
