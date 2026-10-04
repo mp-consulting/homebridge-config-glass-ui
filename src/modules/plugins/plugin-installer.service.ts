@@ -36,6 +36,7 @@ import {
 } from '../../core/regex.constants.js'
 import { InstalledPluginsService } from './installed-plugins.service.js'
 import { PluginRegistryService } from './plugin-registry.service.js'
+import { PluginRollbackService } from './plugin-rollback.service.js'
 import { PluginActionDto, RE_NPM_VERSION } from './plugins.dto.js'
 
 /**
@@ -110,6 +111,7 @@ export class PluginInstallerService {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(PluginRegistryService) private readonly registry: PluginRegistryService,
     @Inject(InstalledPluginsService) private readonly installed: InstalledPluginsService,
+    @Inject(PluginRollbackService) private readonly rollback: PluginRollbackService,
   ) {}
 
   /**
@@ -216,7 +218,26 @@ export class PluginInstallerService {
     // Checked before queueing, so a bad request fails straight away rather
     // than after whatever npm run is ahead of it
     this.assertValidPackageRequest(pluginAction.name, pluginAction.version)
-    return this.queuePackageOperation(() => this.doManagePlugin(action, pluginAction, client))
+    return this.queuePackageOperation(async () => {
+      // The version this install replaces, for a rollback (PluginRollbackService)
+      const previous = action === 'install' ? await this.installedVersionOf(pluginAction.name) : undefined
+      const result = await this.doManagePlugin(action, pluginAction, client)
+      if (action === 'install') {
+        await this.rollback.recordInstall(pluginAction.name, previous, pluginAction.version)
+      } else {
+        await this.rollback.forget(pluginAction.name)
+      }
+      return result
+    })
+  }
+
+  private async installedVersionOf(name: string): Promise<string | undefined> {
+    try {
+      await this.installed.getInstalledPlugins()
+      return this.installed.loadedPlugins?.find(x => x.name === name)?.installedVersion
+    } catch {
+      return undefined
+    }
   }
 
   /**

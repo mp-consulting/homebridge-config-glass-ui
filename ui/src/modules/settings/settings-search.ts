@@ -38,6 +38,7 @@ export const sectionItems: Record<string, string[]> = {
   general: [
     'setting-name',
     'setting-backup',
+    'setting-backup-offsite',
     'setting-restore',
     'setting-users',
   ],
@@ -126,6 +127,7 @@ export const sectionItems: Record<string, string[]> = {
     'setting-notifications-ntfy',
     'setting-notifications-pushover',
     'setting-notifications-telegram',
+    'setting-notifications-browser',
     'setting-notifications-events',
   ],
   instances: [
@@ -169,6 +171,7 @@ export function getItemsContent(): Record<string, string> {
     // General section
     'setting-name': t('settings.name'),
     'setting-backup': t('backup.title_backup'),
+    'setting-backup-offsite': `${t('backup.offsite.title')} ${t('backup.offsite.row_desc')} WebDAV S3`,
     'setting-restore': t('config.restore.title'),
     'setting-users': t('menu.tooltip_user_accounts'),
 
@@ -256,6 +259,7 @@ export function getItemsContent(): Record<string, string> {
     'setting-notifications-ntfy': 'ntfy',
     'setting-notifications-pushover': 'Pushover',
     'setting-notifications-telegram': 'Telegram',
+    'setting-notifications-browser': `${t('settings.notifications.browser')} push PWA`,
     'setting-notifications-events': `${t('settings.notifications.events')} ${t('settings.notifications.event_daily_digest')}`,
 
     // Instances section

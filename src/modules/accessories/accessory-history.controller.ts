@@ -14,6 +14,15 @@ export class AccessoryHistoryController {
   ) {}
 
   @ApiOperation({
+    summary: 'Return whether the accessory history recorder runs, and why not.',
+    description: '`reason` is `disabled`, `insecureModeRequired` (Homebridge must run in insecure mode, `-I`), `starting`, `error` or null while recording.',
+  })
+  @Get('/history/status')
+  getStatus() {
+    return this.history.status()
+  }
+
+  @ApiOperation({
     summary: 'Return the recorded history of an accessory\'s sensor values.',
     description: 'Temperature, humidity, light level, battery, air quality, power and energy readings, recorded as they change (at most one point a minute per characteristic) and kept for `accessoryHistory.retentionDays`.',
   })

@@ -17,6 +17,7 @@ import { DisablePlugin } from '@/core/plugins/disable-plugin/DisablePlugin'
 import { Donate } from '@/core/plugins/donate/Donate'
 import { managePlugins } from '@/core/plugins/manage-plugins'
 import { PluginInfo } from '@/core/plugins/plugin-info/PluginInfo'
+import { pluginRollback, usePluginRollback } from '@/core/plugins/plugin-rollback'
 import { RE_HOMEBRIDGE_PREFIX } from '@/core/regex.constants'
 import { useSettingsStore } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
@@ -79,6 +80,8 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
   // object), which React cannot see - this re-renders the card after it
   const [, rerender] = useReducer((x: number) => x + 1, 0)
 
+  const rollback = usePluginRollback(plugin.name)
+  const rollbackOffered = !!rollback && !!plugin.installedVersion && rollback.toVersion === plugin.installedVersion
   const hasChildBridges = childBridges.length > 0
   const allChildBridgesStopped = childBridges.every(x => x.manuallyStopped === true)
   const childBridgeStatus = useMemo(() => worstStatus(childBridges), [childBridges])
@@ -233,6 +236,8 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
   const openJsonEditor = () => void managePlugins.jsonEditor(plugin)
   const uninstallPlugin = () => void managePlugins.uninstallPlugin(plugin, childBridges)
   const resetChildBridges = () => void managePlugins.resetChildBridges(childBridges)
+  const rollBack = () => rollback && void pluginRollback.rollBack(plugin, rollback)
+  const rollbackLabel = rollback ? t('plugins.rollback.button', { version: rollback.fromVersion }) : ''
 
   const notSwitchable = !plugin.newHbScope || plugin.newHbScope?.switch !== plugin.installedVersion
   const verified = plugin.verifiedPlugin || plugin.verifiedPlusPlugin
@@ -284,6 +289,19 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
                   <h5 className="card-title mb-2 text-truncate">{displayName}</h5>
                   {isAdmin && (
                     <div className="ms-auto">
+                      {/* crash looping since its last update: offer the previous version */}
+                      {rollbackOffered && rollback.suspect && !childBridgeRestartInProgress && (
+                        <WithTooltip text={t('plugins.rollback.suspect', { version: rollback.fromVersion })}>
+                          <button
+                            type="button"
+                            className="card-link btn btn-link p-0 text-decoration-none hb-plugin-rollback"
+                            aria-label={rollbackLabel}
+                            onClick={rollBack}
+                          >
+                            <i className="fas fa-clock-rotate-left red-text fa-lg fa-fade ms-3" aria-hidden="true"></i>
+                          </button>
+                        </WithTooltip>
+                      )}
                       {/* update available */}
                       {plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress && (
                         <WithTooltip text={t('plugins.button_update')}>
@@ -552,6 +570,14 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
                                 <i className="fas fa-code-compare" aria-hidden="true"></i>
                                 {' '}
                                 {t('plugins.manage.manage_version')}
+                              </Dropdown.Item>
+                            )}
+                            {/* roll back the last update */}
+                            {rollbackOffered && (
+                              <Dropdown.Item as="button" type="button" onClick={rollBack}>
+                                <i className="fas fa-clock-rotate-left" aria-hidden="true"></i>
+                                {' '}
+                                {rollbackLabel}
                               </Dropdown.Item>
                             )}
                             {/* plugin manage config json */}

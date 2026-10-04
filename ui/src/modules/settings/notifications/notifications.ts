@@ -1,9 +1,9 @@
 import { api } from '@/core/api'
 
-export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram'
-export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'updatesAvailable' | 'backupFailed' | 'dailyDigest'
+export type ChannelName = 'webhook' | 'ntfy' | 'pushover' | 'telegram' | 'browser'
+export type NotificationEvent = 'homebridgeDown' | 'homebridgeUp' | 'childBridgeCrashLoop' | 'rollbackSuggested' | 'updatesAvailable' | 'backupFailed' | 'backupSucceeded' | 'dailyDigest'
 
-export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'updatesAvailable', 'backupFailed', 'dailyDigest']
+export const NOTIFICATION_EVENTS: NotificationEvent[] = ['homebridgeDown', 'homebridgeUp', 'childBridgeCrashLoop', 'rollbackSuggested', 'updatesAvailable', 'backupFailed', 'backupSucceeded', 'dailyDigest']
 
 /** A time of day as the server takes it: HH:mm, 24 hours. */
 export const RE_TIME_OF_DAY = /^(?:[01]\d|2[0-3]):[0-5]\d$/
@@ -15,6 +15,8 @@ export interface NotificationSettings {
     ntfy: { enabled: boolean, server: string, topic: string, token: string }
     pushover: { enabled: boolean, userKey: string, appToken: string }
     telegram: { enabled: boolean, botToken: string, chatId: string }
+    /** Web Push to the subscribed devices (BrowserPushSettings); absent on an older server. */
+    browser?: { enabled: boolean }
   }
   events: Record<NotificationEvent, boolean>
   /** When the daily digest is sent, HH:mm in the server's local time. */
@@ -61,6 +63,8 @@ export const CHANNEL_FIELDS: Array<{ channel: ChannelName, fields: ChannelField[
       { name: 'chatId', label: 'settings.notifications.telegram_chat' },
     ],
   },
+  // Its devices are set up under the switch (BrowserPushSettings)
+  { channel: 'browser', fields: [] },
 ]
 
 export function loadNotificationSettings(): Promise<NotificationSettings> {

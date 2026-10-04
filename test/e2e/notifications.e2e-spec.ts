@@ -23,6 +23,7 @@ import { ChildBridgeHealthService } from '../../src/modules/child-bridges/child-
 import { truncateText } from '../../src/modules/notifications/notification-channels.js'
 import { NotificationsModule } from '../../src/modules/notifications/notifications.module.js'
 import { CRASH_LOOP_EXPLAIN_TIMEOUT_MS, DAILY_DIGEST_JOB, DOWN_GRACE_MS, MAX_PER_HOUR, NotificationsService } from '../../src/modules/notifications/notifications.service.js'
+import { PluginRollbackService } from '../../src/modules/plugins/plugin-rollback.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { testStoragePath } from '../storage-path.js'
 
@@ -97,7 +98,7 @@ describe('Notifications (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json().channels.webhook).toEqual({ enabled: false, url: '' })
-    expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, updatesAvailable: true, backupFailed: true, dailyDigest: false })
+    expect(res.json().events).toEqual({ homebridgeDown: true, homebridgeUp: true, childBridgeCrashLoop: true, rollbackSuggested: true, updatesAvailable: true, backupFailed: true, backupSucceeded: false, dailyDigest: false })
     expect(res.json().dailyDigestTime).toBe('08:00')
     expect(res.json().explainCrashLoops).toBe(true)
   })
@@ -275,6 +276,44 @@ describe('Notifications (e2e)', () => {
 
     await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
     expect(String(fetchMock.mock.calls[0][1].body)).toContain('Kitchen')
+  })
+
+  it('says which version a recently updated plugin can roll back to in a crash loop notification', async () => {
+    await enableTelegramAndNtfy()
+    const rollback = app.get(PluginRollbackService)
+    await remove(rollback.filePath)
+    await rollback.recordInstall('homebridge-kitchen', '1.0.0', '1.1.0')
+
+    await service.notifyCrashLoop({ name: 'Kitchen', plugin: 'homebridge-kitchen', username: 'RB', recentCrashes: 3 } as any)
+
+    expect(String(fetchMock.mock.calls[0][1].body)).toContain('updated from 1.0.0 to 1.1.0')
+    expect(String(fetchMock.mock.calls[0][1].body)).toContain('Roll back to 1.0.0')
+    await remove(rollback.filePath)
+  })
+
+  it('reports Homebridge crash looping after an update of a plugin on the main bridge', async () => {
+    await enableTelegramAndNtfy()
+
+    app.get(AppEventsService).emit('pluginRollbackSuggested', {
+      reason: 'homebridgeCrashLoop',
+      plugins: [{ name: 'homebridge-main', fromVersion: '2.0.0', toVersion: '3.0.0', updatedAt: new Date().toISOString() }],
+    })
+
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+    expect(String(fetchMock.mock.calls[0][1].body)).toContain('homebridge-main: updated from 2.0.0 to 3.0.0')
+  })
+
+  it('leaves child bridge rollback suggestions to the crash loop notification', async () => {
+    await enableTelegramAndNtfy()
+
+    app.get(AppEventsService).emit('pluginRollbackSuggested', {
+      reason: 'childBridgeCrashLoop',
+      bridge: 'Kitchen',
+      plugins: [{ name: 'homebridge-kitchen', fromVersion: '1.0.0', toVersion: '1.1.0', updatedAt: new Date().toISOString() }],
+    })
+
+    await new Promise(r => setTimeout(r, 20))
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   describe('crash loop explanations', () => {

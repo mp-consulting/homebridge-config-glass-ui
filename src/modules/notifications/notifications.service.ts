@@ -1,3 +1,4 @@
+import type { PluginRollbackSuggestedEvent } from '../../core/events/app-events.service.js'
 import type { ChildBridgeHealth } from '../child-bridges/child-bridge-health.service.js'
 import type { ChannelName, NotificationChannels, NotificationEvent, NotificationMessage, NotificationSettings } from './notification-channels.js'
 
@@ -13,6 +14,7 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { AI_SYSTEM_USER, AiService } from '../ai/ai.service.js'
 import { ChildBridgeHealthService } from '../child-bridges/child-bridge-health.service.js'
+import { PluginRollbackService } from '../plugins/plugin-rollback.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import {
   CHANNEL_NAMES,
@@ -25,6 +27,7 @@ import {
   sendToChannel,
 } from './notification-channels.js'
 import { NotificationSettingsDto } from './notifications.dto.js'
+import { WebPushService } from './web-push.service.js'
 
 /** The same event (and subject) is not sent again within this time. */
 export const EVENT_COOLDOWN_MS = 15 * 60_000
@@ -89,6 +92,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     @Inject(AppEventsService) private readonly events: AppEventsService,
     @Inject(SchedulerService) private readonly scheduler: SchedulerService,
     @Inject(AiService) private readonly ai: AiService,
+    @Inject(PluginRollbackService) private readonly rollback: PluginRollbackService,
+    @Inject(WebPushService) private readonly webPush: WebPushService,
   ) {
     this.settingsPath = resolve(this.configService.storagePath, '.uix-notifications.json')
   }
@@ -100,6 +105,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.ipc.on('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.on('crashLoop', this.onCrashLoop)
     this.events.on('backupFailed', this.onBackupFailed)
+    this.events.on('backupSucceeded', this.onBackupSucceeded)
+    this.events.on('pluginRollbackSuggested', this.onRollbackSuggested)
 
     const first = setTimeout(() => void this.checkForUpdates(), FIRST_UPDATE_CHECK_MS)
     const every = setInterval(() => void this.checkForUpdates(), UPDATE_CHECK_MS)
@@ -114,6 +121,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     this.ipc.off('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.off('crashLoop', this.onCrashLoop)
     this.events.off('backupFailed', this.onBackupFailed)
+    this.events.off('backupSucceeded', this.onBackupSucceeded)
+    this.events.off('pluginRollbackSuggested', this.onRollbackSuggested)
     for (const timer of this.updateTimers) {
       clearTimeout(timer)
       clearInterval(timer)
@@ -277,7 +286,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     const targets = CHANNEL_NAMES.filter(name => (only ? only.includes(name) : channels[name].enabled) && isChannelConfigured(name, channels))
     return Promise.all(targets.map(async (channel) => {
       try {
-        await sendToChannel(channel, channels, msg, this.instanceName)
+        await sendToChannel(channel, channels, msg, this.instanceName, { browser: (m, instance) => this.webPush.send(m, instance) })
         return { channel, ok: true }
       } catch (e) {
         const error = this.scrub(e?.message ?? String(e), channels)
@@ -326,13 +335,18 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     return this.sentLog.length >= MAX_PER_HOUR ? 'cap' : null
   }
 
-  /** "Send test": to the given channel, or every enabled one, whether or not any event is on. */
-  public async sendTest(channel?: ChannelName): Promise<ChannelResult[]> {
-    const now = Date.now()
+  /** Count a test message against MAX_TESTS_PER_MINUTE, or refuse it. */
+  private takeTestSlot(now = Date.now()): void {
     this.testLog = this.testLog.filter(at => now - at < 60_000)
     if (this.testLog.length >= MAX_TESTS_PER_MINUTE) {
       throw new BadRequestException('Too many test notifications - try again in a minute.')
     }
+  }
+
+  /** "Send test": to the given channel, or every enabled one, whether or not any event is on. */
+  public async sendTest(channel?: ChannelName): Promise<ChannelResult[]> {
+    const now = Date.now()
+    this.takeTestSlot(now)
     const { channels } = await this.load()
     const only = channel ? [channel] : CHANNEL_NAMES.filter(name => channels[name].enabled)
     if (!only.some(name => isChannelConfigured(name, channels))) {
@@ -340,6 +354,25 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     }
     this.testLog.push(now)
     return this.sendAll({ event: 'test', title: 'Test notification', message: 'Notifications from Homebridge Glass UI are working.' }, only)
+  }
+
+  /**
+   * A test notification to the browser with this endpoint (Settings, "Send
+   * test" on this device), or to every subscribed device, whether or not
+   * the browser channel is on.
+   */
+  public async sendBrowserTest(endpoint?: string): Promise<ChannelResult> {
+    const now = Date.now()
+    this.takeTestSlot(now)
+    this.testLog.push(now)
+    try {
+      await this.webPush.send({ event: 'test', title: 'Test notification', message: 'Browser notifications from Homebridge Glass UI are working.', path: '/settings?section=notifications' }, this.instanceName, endpoint ? { endpoint } : undefined)
+      return { channel: 'browser', ok: true }
+    } catch (e) {
+      const error = String(e?.message ?? e).slice(0, 300)
+      this.logger.warn(`Failed to send the test notification to the browser as ${error}.`)
+      return { channel: 'browser', ok: false, error }
+    }
   }
 
   // Event sources
@@ -379,23 +412,37 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
    */
   public async notifyCrashLoop(bridge: ChildBridgeHealth): Promise<ChannelResult[] | null> {
     let message = `${bridge.name} (${bridge.plugin}) crashed ${bridge.recentCrashes} times in a short time. Check the logs.`
+    let assistant = ''
     try {
       const settings = await this.load()
       // Ask only for a notification that will go out
       if (settings.explainCrashLoops && !this.holdBack(settings, 'childBridgeCrashLoop', `childBridgeCrashLoop:${bridge.username}`, Date.now())) {
         const explanation = await this.explainCrashLoop(bridge)
         if (explanation) {
-          message += `\n\nAssistant: ${explanation}`
+          assistant = `\n\nAssistant: ${explanation}`
         }
       }
     } catch (e) {
       this.logger.warn(`Failed to explain the ${bridge.name} crash loop as ${e?.message ?? e}.`)
     }
+    let path: string | undefined
+    try {
+      // Updated recently: say which version it can go back to
+      const rollback = bridge.plugin ? await this.rollback.describeSuggestion(bridge.plugin) : null
+      if (rollback) {
+        message += `\n\n${rollback}`
+        path = '/plugins'
+      }
+    } catch (e) {
+      this.logger.debug(`Failed to look up the rollback of ${bridge.plugin} as ${e?.message ?? e}.`)
+    }
+    message += assistant
     return this.notify({
       event: 'childBridgeCrashLoop',
       title: `Child bridge ${bridge.name} is crash looping`,
       message,
       urgent: true,
+      path: path ?? '/child-bridges',
     }, bridge.username)
   }
 
@@ -427,6 +474,29 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     } finally {
       clearTimeout(timer)
     }
+  }
+
+  /**
+   * Homebridge crash loops soon after plugins on the main bridge were updated.
+   * (A child bridge's crash loop notification already says it.)
+   */
+  private onRollbackSuggested = (suggestion: PluginRollbackSuggestedEvent) => {
+    if (suggestion?.reason !== 'homebridgeCrashLoop' || !suggestion.plugins?.length) {
+      return
+    }
+    const lines = suggestion.plugins.map(p => `${p.name}: updated from ${p.fromVersion} to ${p.toVersion}. Roll back to ${p.fromVersion} from the Plugins page.`)
+    void this.notify({
+      event: 'rollbackSuggested',
+      title: 'Homebridge is crash looping after a plugin update',
+      message: `Homebridge went down several times in a few minutes, soon after these plugins were updated:\n${lines.join('\n')}`,
+      urgent: true,
+      path: '/plugins',
+    }, suggestion.plugins.map(p => `${p.name}@${p.toVersion}`).join(','))
+  }
+
+  private onBackupSucceeded = ({ fileName, uploads }: { fileName: string, uploads: Array<{ destination: string, ok: boolean }> }) => {
+    const where = uploads.length ? ` and uploaded to ${uploads.map(upload => (upload.destination === 's3' ? 'S3' : 'WebDAV')).join(' and ')}` : ''
+    void this.notify({ event: 'backupSucceeded', title: 'Scheduled backup done', message: `The scheduled instance backup ${fileName} was saved${where}.`, path: '/settings?section=general' }, fileName)
   }
 
   private onBackupFailed = ({ message }: { message: string }) => {

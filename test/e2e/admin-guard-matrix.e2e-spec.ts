@@ -47,6 +47,7 @@ const UNGUARDED_ALLOW_LIST = new Set([
   'GET /accessories/:uniqueId',
   'GET /accessories/layout',
   'GET /accessories/:uniqueId/history',
+  'GET /accessories/history/status',
   'PUT /accessories/:uniqueId',
   // scenes: every user can list and run them, as every user can control accessories
   'GET /scenes',

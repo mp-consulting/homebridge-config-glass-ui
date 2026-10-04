@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 
+import { openModal } from '@/core/ui/modal'
 import { cx } from '@/core/utilities/cx'
+import { OffsiteBackups } from '@/modules/settings/backup/offsite/OffsiteBackups'
 import { CONTROL_WRAP, FieldSaveIndicator, INNER_FLEX, SectionShell, SettingRow, TextInput } from '@/modules/settings/sections/rows'
 import { useInvalid, useSettingsPage } from '@/modules/settings/settings-page.context'
 
@@ -34,6 +36,23 @@ export function GeneralSection() {
             className="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
             aria-label={t('backup.title_backup')}
             onClick={() => page.openBackupModal()}
+          >
+            <i aria-hidden="true" className="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </SettingRow>
+      <SettingRow item="setting-backup-offsite">
+        <div className={INNER_FLEX}>
+          <span className="pe-2">
+            {t('backup.offsite.title')}
+            <br />
+            <small className="grey-text pe-2">{t('backup.offsite.row_desc')}</small>
+          </span>
+          <button
+            type="button"
+            className="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
+            aria-label={t('backup.offsite.title')}
+            onClick={() => openModal(OffsiteBackups, {}, { size: 'lg', backdrop: 'static' })}
           >
             <i aria-hidden="true" className="fas fa-arrow-right"></i>
           </button>

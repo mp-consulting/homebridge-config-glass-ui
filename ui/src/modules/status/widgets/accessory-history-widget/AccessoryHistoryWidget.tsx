@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { fetchAccessoryHistory, summarise } from '@/core/accessories/history/accessory-history'
+import { AccessoryHistoryNotice } from '@/core/accessories/history/AccessoryHistoryNotice'
 import { HistoryChart } from '@/core/accessories/history/HistoryChart'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
 import { formatDecimal } from '@/core/pipes'
@@ -73,7 +74,12 @@ export function AccessoryHistoryWidget({ widget }: WidgetProps) {
         : !loaded
             ? <div className="d-flex flex-grow-1 align-items-center justify-content-center"><InlineSpinner /></div>
             : !stats
-                ? <div className="d-flex flex-grow-1 align-items-center justify-content-center grey-text p-2 text-center">{t('status.widget.history.no_data')}</div>
+                ? (
+                    <div className="d-flex flex-column flex-grow-1 align-items-center justify-content-center grey-text p-2 text-center">
+                      {t('status.widget.history.no_data')}
+                      <AccessoryHistoryNotice className="mt-2 text-start" showDisabled />
+                    </div>
+                  )
                 : (
                     <>
                       <div className="flex-grow-1 px-2" style={{ minHeight: 0 }}>

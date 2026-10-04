@@ -34,10 +34,12 @@ function loadWorker(scope = `${ORIGIN}/`) {
     Object.defineProperty(response, 'type', { value: 'basic' })
     return response
   })
+  const showNotification = vi.fn(async () => undefined)
+  const windows: Array<{ url: string, focus: ReturnType<typeof vi.fn>, navigate: ReturnType<typeof vi.fn> }> = []
   const self = {
-    registration: { scope },
+    registration: { scope, showNotification },
     location: new URL(scope),
-    clients: { claim: vi.fn() },
+    clients: { claim: vi.fn(), matchAll: vi.fn(async () => windows), openWindow: vi.fn(async () => undefined) },
     skipWaiting: vi.fn(),
     addEventListener: (type: string, listener: (event: any) => void) => {
       listeners[type] = listener
@@ -59,7 +61,7 @@ function loadWorker(scope = `${ORIGIN}/`) {
     } })
     return responded
   }
-  return { listeners, caches, fetchMock, fetchEvent }
+  return { listeners, caches, fetchMock, fetchEvent, self, showNotification, windows }
 }
 
 describe('the service worker', () => {
@@ -117,5 +119,50 @@ describe('the service worker', () => {
     await done
 
     expect([...worker.caches.stores.keys()]).toEqual(['someone-else'])
+  })
+})
+
+describe('the service worker\'s push notifications', () => {
+  /** Dispatch an event whose work is waited for, and wait for it. */
+  async function dispatch(worker: ReturnType<typeof loadWorker>, type: string, event: object) {
+    let done: Promise<unknown> | undefined
+    worker.listeners[type]({ ...event, waitUntil: (promise: Promise<unknown>) => {
+      done = promise
+    } })
+    await done
+  }
+
+  it('shows the pushed notification', async () => {
+    const worker = loadWorker()
+    await dispatch(worker, 'push', { data: { json: () => ({ title: 'HB: Backup failed', body: 'disk full', tag: 'backupFailed', path: '/settings', urgent: true }) } })
+
+    expect(worker.showNotification).toHaveBeenCalledWith('HB: Backup failed', expect.objectContaining({
+      body: 'disk full',
+      tag: 'backupFailed',
+      requireInteraction: true,
+      data: { path: '/settings' },
+    }))
+  })
+
+  it('keeps a click inside the UI', async () => {
+    const worker = loadWorker()
+    await dispatch(worker, 'push', { data: { json: () => ({ title: 'x', path: '//evil.example.com' }) } })
+
+    expect((worker.showNotification.mock.calls[0] as any[])[1].data).toEqual({ path: '/' })
+  })
+
+  it('focuses an open window on a click, or opens one, on the notification\'s page', async () => {
+    const worker = loadWorker(`${ORIGIN}/homebridge/`)
+    const notification = { close: vi.fn(), data: { path: '/plugins' } }
+
+    await dispatch(worker, 'notificationclick', { notification })
+    expect(worker.self.clients.openWindow).toHaveBeenCalledWith(`${ORIGIN}/homebridge/plugins`)
+
+    const open = { url: `${ORIGIN}/homebridge/status`, focus: vi.fn(async () => undefined), navigate: vi.fn(async () => undefined) }
+    worker.windows.push(open)
+    await dispatch(worker, 'notificationclick', { notification })
+    expect(open.focus).toHaveBeenCalled()
+    expect(open.navigate).toHaveBeenCalledWith(`${ORIGIN}/homebridge/plugins`)
+    expect(notification.close).toHaveBeenCalledTimes(2)
   })
 })

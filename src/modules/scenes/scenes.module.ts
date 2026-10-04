@@ -6,6 +6,7 @@ import { FsModule } from '../../core/fs/fs.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { SchedulerModule } from '../../core/scheduler/scheduler.module.js'
 import { AccessoriesModule } from '../accessories/accessories.module.js'
+import { SceneAutomationController } from './scene-automation.controller.js'
 import { ScenesController } from './scenes.controller.js'
 import { ScenesService } from './scenes.service.js'
 
@@ -19,7 +20,7 @@ import { ScenesService } from './scenes.service.js'
     AccessoriesModule,
   ],
   providers: [ScenesService],
-  controllers: [ScenesController],
+  controllers: [SceneAutomationController, ScenesController],
   exports: [ScenesService],
 })
 export class ScenesModule {}

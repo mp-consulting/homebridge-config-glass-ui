@@ -1,10 +1,15 @@
+import type { Plugin } from '@/core/plugins/manage-plugins.interfaces'
+import type { PluginRollbackEntry } from '@/core/plugins/plugin-rollback'
+
 import type { ChildBridgeHealth, ChildBridgeHealthReport } from './child-bridge-health'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '@/core/api'
+import { useAuthStore } from '@/core/auth'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
+import { pluginRollback, usePluginRollbackStore } from '@/core/plugins/plugin-rollback'
 import { settingsActions } from '@/core/settings'
 import { i18n } from '@/core/ui/i18n'
 import { toast } from '@/core/ui/toast'
@@ -34,6 +39,20 @@ export function ChildBridgeHealthPage() {
   const { t } = useTranslation()
   const [report, setReport] = useState<ChildBridgeHealthReport | null>(null)
   const [restarting, setRestarting] = useState<string | null>(null)
+  const isAdmin = useAuthStore(state => !!state.user?.admin)
+  const rollbacks = usePluginRollbackStore(state => state.entries)
+
+  useEffect(() => {
+    if (isAdmin) {
+      void pluginRollback.load()
+    }
+  }, [isAdmin])
+
+  const rollBack = (entry: PluginRollbackEntry) => {
+    // The dialog needs only these of the plugin
+    const plugin = { name: entry.name, displayName: entry.name, installedVersion: entry.toVersion } as Plugin
+    void pluginRollback.rollBack(plugin, entry)
+  }
 
   useEffect(() => {
     settingsActions.setPageTitle(i18n.t('child_bridge.health.title'))
@@ -91,6 +110,15 @@ export function ChildBridgeHealthPage() {
         <div role="alert" className="alert alert-danger show fade">
           <i className="fas fa-triangle-exclamation me-2" aria-hidden="true"></i>
           {t('child_bridge.health.crash_loop_alert', { names: looping.map(bridge => bridge.name).join(', ') })}
+          {isAdmin && [...new Set(looping.map(bridge => bridge.plugin))].map(name => rollbacks[name]).filter(Boolean).map(entry => (
+            <div key={entry.name} className="mt-2 d-flex flex-wrap align-items-center hb-crash-loop-rollback">
+              <span className="me-2">{t('child_bridge.health.rollback_hint', { plugin: entry.name, fromVersion: entry.fromVersion, toVersion: entry.toVersion })}</span>
+              <button type="button" className="btn btn-sm btn-danger m-0" onClick={() => rollBack(entry)}>
+                <i className="fas fa-clock-rotate-left me-1" aria-hidden="true"></i>
+                {t('plugins.rollback.button', { version: entry.fromVersion })}
+              </button>
+            </div>
+          ))}
         </div>
       )}
       {report.bridges.length === 0

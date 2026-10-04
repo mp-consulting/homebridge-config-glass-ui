@@ -9,26 +9,29 @@ import { toast } from '@/core/ui/toast'
 import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 import { CHANNEL_FIELDS, loadNotificationSettings, NOTIFICATION_EVENTS, RE_TIME_OF_DAY, saveNotificationSettings, sendTestNotification } from '@/modules/settings/notifications/notifications'
+import { BrowserPushSettings } from '@/modules/settings/sections/BrowserPushSettings'
 import { INNER_FLEX, SectionShell, SettingRow } from '@/modules/settings/sections/rows'
 
 const EVENT_LABELS: Record<NotificationEvent, string> = {
   homebridgeDown: 'settings.notifications.event_homebridge_down',
   homebridgeUp: 'settings.notifications.event_homebridge_up',
   childBridgeCrashLoop: 'settings.notifications.event_crash_loop',
+  rollbackSuggested: 'settings.notifications.event_rollback',
   updatesAvailable: 'settings.notifications.event_updates',
   backupFailed: 'settings.notifications.event_backup_failed',
+  backupSucceeded: 'settings.notifications.event_backup_succeeded',
   dailyDigest: 'settings.notifications.event_daily_digest',
 }
 
 // Product names stay as they are; only the webhook is translated
-const CHANNEL_NAMES: Record<Exclude<ChannelName, 'webhook'>, string> = {
+const CHANNEL_NAMES: Record<Exclude<ChannelName, 'webhook' | 'browser'>, string> = {
   ntfy: 'ntfy',
   pushover: 'Pushover',
   telegram: 'Telegram',
 }
 
 /**
- * NOTIFICATIONS: the channels (webhook, ntfy, Pushover, Telegram) and the
+ * NOTIFICATIONS: the channels (webhook, ntfy, Pushover, Telegram, Browser) and the
  * events sent to them, with the Assistant's part: crash loop explanations and
  * the time of its daily digest. Unlike the rest of the page it saves on a button,
  * so a half-typed token is never sent; stored secrets come back as
@@ -36,7 +39,7 @@ const CHANNEL_NAMES: Record<Exclude<ChannelName, 'webhook'>, string> = {
  */
 export function NotificationsSection() {
   const { t } = useTranslation()
-  const channelTitle = (channel: ChannelName) => (channel === 'webhook' ? t('settings.notifications.webhook') : CHANNEL_NAMES[channel])
+  const channelTitle = (channel: ChannelName) => (channel === 'webhook' ? t('settings.notifications.webhook') : channel === 'browser' ? t('settings.notifications.browser') : CHANNEL_NAMES[channel])
   const [settings, setSettings] = useState<NotificationSettings | null>(null)
   const [dirty, setDirty] = useState(false)
   const [busy, setBusy] = useState<string | null>(null)
@@ -123,7 +126,7 @@ export function NotificationsSection() {
           )
         : (
             <>
-              {CHANNEL_FIELDS.map(({ channel, fields }) => (
+              {CHANNEL_FIELDS.filter(({ channel }) => settings.channels[channel]).map(({ channel, fields }) => (
                 <SettingRow key={channel} item={`setting-notifications-${channel}`}>
                   <div className="setting-row-inner">
                     <div className={INNER_FLEX}>
@@ -134,7 +137,7 @@ export function NotificationsSection() {
                         <button
                           type="button"
                           className="btn btn-sm btn-elegant my-0 me-3"
-                          disabled={busy !== null || dirty || !settings.channels[channel].enabled}
+                          disabled={busy !== null || dirty || !settings.channels[channel]!.enabled}
                           title={dirty ? t('settings.notifications.save_first') : undefined}
                           onClick={() => void test(channel)}
                         >
@@ -144,14 +147,20 @@ export function NotificationsSection() {
                           type="checkbox"
                           className="rendux-input"
                           id={`notifications-${channel}-enabled`}
-                          checked={settings.channels[channel].enabled}
+                          checked={settings.channels[channel]!.enabled}
                           aria-label={`${channelTitle(channel)} ${t('common.labels.enabled')}`}
                           onChange={event => setChannel(channel, 'enabled', event.target.checked)}
                         />
                         <label htmlFor={`notifications-${channel}-enabled`} className="rendux-label ms-3 min-w-50"></label>
                       </div>
                     </div>
-                    {settings.channels[channel].enabled && (
+                    {channel === 'browser' && (
+                      <>
+                        <small className="d-block grey-text">{t('settings.notifications.browser_desc')}</small>
+                        {settings.channels.browser?.enabled && <BrowserPushSettings />}
+                      </>
+                    )}
+                    {settings.channels[channel]!.enabled && fields.length > 0 && (
                       <div className="row g-2 mt-1">
                         {fields.map(field => (
                           <div key={field.name} className="col-12 col-md-6">
