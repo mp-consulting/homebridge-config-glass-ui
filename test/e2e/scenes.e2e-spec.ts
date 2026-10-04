@@ -321,6 +321,35 @@ describe('Scenes (e2e)', () => {
       expect(await scenes.checkConditions([{ type: 'time', after: 'sunrise', before: 'sunset' }], at(3))).not.toBeNull()
     })
 
+    it('keeps triggers and conditions through the request validation, on create and update', async () => {
+      const body = {
+        ...evening,
+        triggers: [{ type: 'sun', event: 'sunrise', offsetMinutes: 10, enabled: false, extra: 'dropped' }],
+        conditions: [{ type: 'time', after: '06:00', before: 'sunset' }],
+      }
+      const created = (await create(body)).json()
+      expect(created.triggers).toEqual([{ type: 'sun', event: 'sunrise', offsetMinutes: 10, enabled: false }])
+      expect(created.conditions).toEqual([{ type: 'time', after: '06:00', before: 'sunset' }])
+
+      const res = await app.inject({
+        method: 'PUT',
+        path: `/scenes/${created.id}`,
+        headers: { authorization },
+        payload: { ...evening, triggers: [{ type: 'characteristic', uniqueId: FAN, characteristicType: 'Active', operator: 'neq', value: 0 }], conditions: [] },
+      })
+      expect(res.statusCode).toBe(200)
+      expect(res.json().triggers).toEqual([{ type: 'characteristic', uniqueId: FAN, characteristicType: 'Active', operator: 'neq', value: 0, enabled: true }])
+      expect(res.json().conditions).toEqual([])
+    })
+
+    it('rejects malformed nested triggers and conditions in the request validation', async () => {
+      const bad = async (payload: unknown) => (await create({ ...evening, ...(payload as object) })).json()
+      expect((await bad({ triggers: [{ type: 'sun', event: 'sunset', offsetMinutes: 'soon' }] })).message).toEqual(expect.arrayContaining([expect.stringContaining('offset')]))
+      expect((await bad({ triggers: [{ type: 'characteristic', uniqueId: '../x', characteristicType: 'On' }] })).message).toEqual(expect.arrayContaining([expect.stringContaining('uniqueId')]))
+      expect((await bad({ conditions: [{ type: 'time', after: 'noon', before: '06:00' }] })).message).toEqual(expect.arrayContaining([expect.stringContaining('HH:mm')]))
+      expect((await bad({ triggers: 'often' })).statusCode).toBe(400)
+    })
+
     it('refuses invalid triggers and conditions', async () => {
       expect((await create({ ...evening, triggers: [{ type: 'sun', event: 'noon' }] })).statusCode).toBe(400)
       expect((await create({ ...evening, triggers: [{ type: 'sun', event: 'sunset', offsetMinutes: 900 }] })).statusCode).toBe(400)

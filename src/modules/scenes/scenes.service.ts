@@ -13,7 +13,6 @@ import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
-import { MAX_SCENE_ACTIONS, MAX_SCENE_SCHEDULES, RE_SCENE_CHARACTERISTIC, RE_SCENE_UNIQUE_ID, SceneDto } from './scenes.dto.js'
 import {
   compareValue,
   inTimeWindow,
@@ -23,6 +22,7 @@ import {
   SceneValidationError,
   triggerFires,
 } from './scene-automation.js'
+import { MAX_SCENE_ACTIONS, MAX_SCENE_SCHEDULES, RE_SCENE_CHARACTERISTIC, RE_SCENE_UNIQUE_ID, SceneDto } from './scenes.dto.js'
 import { isValidCoordinates, nextSunEvent } from './solar.js'
 
 export type { SceneCondition, SceneTrigger, SceneValue } from './scene-automation.js'

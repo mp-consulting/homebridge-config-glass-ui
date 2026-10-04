@@ -17,8 +17,12 @@ import {
   ValidateNested,
 } from 'class-validator'
 
+import { SceneConditionDto, SceneTriggerDto } from './scene-automation.dto.js'
+
 export const MAX_SCENE_ACTIONS = 50
 export const MAX_SCENE_SCHEDULES = 10
+export const MAX_SCENE_TRIGGERS = 10
+export const MAX_SCENE_CONDITIONS = 10
 export const RE_SCENE_UNIQUE_ID = /^[\w:.-]{1,128}$/
 export const RE_SCENE_CHARACTERISTIC = /^\w{1,64}$/
 
@@ -97,4 +101,22 @@ export class SceneDto {
   @ValidateNested({ each: true })
   @Type(() => SceneScheduleDto)
   schedules?: SceneScheduleDto[]
+
+  @ApiPropertyOptional({ type: [SceneTriggerDto], maxItems: MAX_SCENE_TRIGGERS, description: 'Replaces every trigger (and `schedules`). Without it, `schedules` replaces the cron triggers only.' })
+  @IsOptional()
+  @IsArray({ message: `At most ${MAX_SCENE_TRIGGERS} triggers.` })
+  @ArrayMaxSize(MAX_SCENE_TRIGGERS, { message: `At most ${MAX_SCENE_TRIGGERS} triggers.` })
+  @IsObject({ each: true, message: 'each trigger must be an object' })
+  @ValidateNested({ each: true })
+  @Type(() => SceneTriggerDto)
+  triggers?: SceneTriggerDto[]
+
+  @ApiPropertyOptional({ type: [SceneConditionDto], maxItems: MAX_SCENE_CONDITIONS, description: 'Checked before every automatic run.' })
+  @IsOptional()
+  @IsArray({ message: `At most ${MAX_SCENE_CONDITIONS} conditions.` })
+  @ArrayMaxSize(MAX_SCENE_CONDITIONS, { message: `At most ${MAX_SCENE_CONDITIONS} conditions.` })
+  @IsObject({ each: true, message: 'each condition must be an object' })
+  @ValidateNested({ each: true })
+  @Type(() => SceneConditionDto)
+  conditions?: SceneConditionDto[]
 }
