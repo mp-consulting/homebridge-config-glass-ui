@@ -1,6 +1,7 @@
 /**
  * Serves the built UI (see e2e/build.mjs) from the real backend, on fresh
- * storage seeded from test/mocks (user admin / admin).
+ * storage seeded from test/mocks (user admin / admin), as a fixed made-up
+ * host that stays off the network (e2e/fixed-host.ts).
  *
  *   node e2e/serve.mjs --port 18581
  *
@@ -60,7 +61,8 @@ if (process.env.E2E_OTP_USER === '1') {
 
 const realPlugins = resolve(repoRoot, 'e2e/.run/plugins/node_modules')
 
-const child = spawn('npx', ['tsx', 'src/bin/standalone.ts', '-U', storage], {
+// e2e/fixed-host.ts: a made-up host (name, IPs, versions, metrics) and no network
+const child = spawn('npx', ['tsx', '--import', './e2e/fixed-host.ts', 'src/bin/standalone.ts', '-U', storage], {
   cwd: repoRoot,
   stdio: 'inherit',
   env: {

@@ -9,7 +9,7 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { copyFileSync, mkdirSync, rmSync } from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -19,7 +19,10 @@ const publicDir = resolve(baseDir, 'public')
 
 rmSync(baseDir, { recursive: true, force: true })
 mkdirSync(baseDir, { recursive: true })
-copyFileSync(resolve(repoRoot, 'package.json'), resolve(baseDir, 'package.json'))
+// A fixed version: the dashboard and settings print it, and the visual
+// baselines (e2e/specs/visual.spec.ts) should not change on every release
+const pkg = JSON.parse(readFileSync(resolve(repoRoot, 'package.json'), 'utf8'))
+writeFileSync(resolve(baseDir, 'package.json'), `${JSON.stringify({ ...pkg, version: '2.0.0' }, null, 2)}\n`)
 
 console.warn(`[e2e] building the UI → ${publicDir}`)
 execFileSync('npm', ['run', 'build', '--', '--outDir', publicDir], { cwd: resolve(repoRoot, 'ui'), stdio: 'inherit' })
