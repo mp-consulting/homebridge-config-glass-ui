@@ -2,7 +2,10 @@
  * Vendored from @ng-formworks/core 21.7.0 (fesm2022/ng-formworks-core.mjs, lines 2714-3683),
  * as patched by ui/patches/@ng-formworks+core+21.7.0.patch. The logic is kept
  * line-for-line; only Angular decorators / ɵ metadata were removed and
- * @angular/forms was replaced by ./forms-shim. Do not edit by hand beyond that.
+ * @angular/forms was replaced by ./forms-shim. Do not edit by hand beyond that,
+ * except for the validators ng-formworks left unfinished: `dependencies` (schema
+ * dependencies), `contains`, `const` with objects and arrays, and the
+ * `validateSubSchema` helper they share (marked "Glass UI:" below).
  *
  * MIT License
  *
@@ -32,7 +35,7 @@
 import isEqual$1 from 'lodash-es/isEqual'
 import { forkJoin } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { _executeValidators, _executeAsyncValidators, _mergeObjects, _mergeErrors, isDefined, hasValue, isEmpty, isString, isNumber, isBoolean, isArray, getType, isType, toJavaScriptType, toObservable, xor, forEachCopy, uniqueItems } from './utility.functions'
+import { _executeValidators, _executeAsyncValidators, _mergeObjects, _mergeErrors, isDefined, hasValue, isEmpty, isObject, isString, isNumber, isBoolean, isArray, getType, isType, toJavaScriptType, toObservable, xor, forEachCopy, hasOwn, uniqueItems } from './utility.functions'
 
 export const jsonSchemaFormatTests = {
     'date': /^\d\d\d\d-[0-1]\d-[0-3]\d$/,
@@ -128,8 +131,8 @@ export const jsonSchemaFormatTests = {
  *   Not used by JSON Schema:  min (*), max (*), requiredTrue (*), email (*)
  * (Validators originally included with Angular are maked with (*).)
  *
- * NOTE / TODO: The dependencies validator is not complete.
- * NOTE / TODO: The contains validator is not complete.
+ * Glass UI: `dependencies` (property and schema dependencies) and `contains`
+ * are complete; sub-schemas are checked by `validateSubSchema` (below).
  *
  * Validators not used by JSON Schema (but included for compatibility)
  * and their JSON Schema equivalents:
@@ -257,7 +260,7 @@ export class JsonValidators {
      * Converts types as needed to allow string inputs to still correctly
      * match number, boolean, and null values.
      *
-     * TODO: modify to work with objects
+     * Glass UI: objects and arrays are compared deeply.
      *
      * // {any[]} requiredValue - required value
      * // {IValidatorFn}
@@ -275,7 +278,8 @@ export class JsonValidators {
                 isNumber(constValue) && +inputValue === +constValue ||
                 isBoolean(constValue, 'strict') &&
                     toJavaScriptType(inputValue, 'boolean') === constValue ||
-                constValue === null && !hasValue(inputValue);
+                constValue === null && !hasValue(inputValue) ||
+                isEqual$1(constValue, inputValue);
             const isValid = isEqualVal(requiredValue, currentValue);
             return xor(isValid, invert) ?
                 null : { 'const': { requiredValue, currentValue } };
@@ -632,14 +636,12 @@ export class JsonValidators {
                     return null;
                 }
                 let requiringFieldErrors = {};
-                let requiredFields;
-                let properties = {};
+                let requiredFields = [];
                 if (getType(dependencies[requiringField]) === 'array') {
                     requiredFields = dependencies[requiringField];
                 }
                 else if (getType(dependencies[requiringField]) === 'object') {
                     requiredFields = dependencies[requiringField]['required'] || [];
-                    properties = dependencies[requiringField]['properties'] || {};
                 }
                 // Validate property dependencies
                 for (const requiredField of requiredFields) {
@@ -647,23 +649,12 @@ export class JsonValidators {
                         requiringFieldErrors[requiredField] = { 'required': true };
                     }
                 }
-                // Validate schema dependencies
-                requiringFieldErrors = _mergeObjects(requiringFieldErrors, forEachCopy(properties, (requirements, requiredField) => {
-                    const requiredFieldErrors = _mergeObjects(forEachCopy(requirements, (requirement, parameter) => {
-                        let validator = null;
-                        if (requirement === 'maximum' || requirement === 'minimum') {
-                            const exclusive = !!requirements['exclusiveM' + requirement.slice(1)];
-                            validator = JsonValidators[requirement](parameter, exclusive);
-                        }
-                        else if (typeof JsonValidators[requirement] === 'function') {
-                            validator = JsonValidators[requirement](parameter);
-                        }
-                        return !isDefined(validator) ?
-                            null : validator(control.value[requiredField]);
-                    }));
-                    return isEmpty(requiredFieldErrors) ?
-                        null : { [requiredField]: requiredFieldErrors };
-                }));
+                // Validate schema dependencies (Glass UI: the vendored version passed
+                // raw values instead of controls and swapped keyword and parameter)
+                if (getType(dependencies[requiringField]) === 'object') {
+                    const { required: _required, ...dependencySchema } = dependencies[requiringField];
+                    requiringFieldErrors = _mergeObjects(requiringFieldErrors, validateSubSchema(dependencySchema, control.value));
+                }
                 return isEmpty(requiringFieldErrors) ?
                     null : { [requiringField]: requiringFieldErrors };
             }));
@@ -748,15 +739,16 @@ export class JsonValidators {
     /**
      * 'contains' validator
      *
-     * TODO: Complete this validator
+     * Requires at least one item of a form array to be valid against a
+     * schema (Glass UI: completed; ng-formworks always returned valid).
+     * `contains: true` accepts any non-empty array, `contains: false` none.
+     * Like the other validators, an empty array is left to `required`/`minItems`.
      *
-     * Requires values in a form array to be unique.
-     *
-     * // {boolean = true} unique? - true to validate, false to disable
+     * // {any} requiredItem - the schema one item must match
      * // {IValidatorFn}
      */
     static contains(requiredItem = true) {
-        if (!requiredItem) {
+        if (!hasValue(requiredItem)) {
             return JsonValidators.nullValidator;
         }
         return (control, invert = false) => {
@@ -764,10 +756,7 @@ export class JsonValidators {
                 return null;
             }
             const currentItems = control.value;
-            // const isValid = currentItems.some(item =>
-            //
-            // );
-            const isValid = true;
+            const isValid = currentItems.some(item => validateSubSchema(requiredItem, item) === null);
             return xor(isValid, invert) ?
                 null : { 'contains': { requiredItem, currentItems } };
         };
@@ -1010,3 +999,115 @@ export class JsonValidators {
  * //   schemas - one or more input schemas
  * //  - merged schema
  */
+
+/**
+ * Glass UI: checks a value against a (sub-)schema with the validators above,
+ * for `contains` and schema `dependencies`. Returns null when valid, or the
+ * merged errors (property errors keyed by property name).
+ *
+ * Covers boolean schemas, the keywords that have a validator here, `required`,
+ * `properties`, and `allOf` / `anyOf` / `oneOf` / `not`. Other keywords
+ * (`$ref`, `if`, `patternProperties`, ...) are ignored, i.e. treated as valid:
+ * the form-level ajv validation still checks the whole schema.
+ */
+const SUB_SCHEMA_KEYWORDS = [
+    'type', 'enum', 'const', 'minLength', 'maxLength', 'pattern', 'format',
+    'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf',
+    'minItems', 'maxItems', 'uniqueItems', 'contains',
+    'minProperties', 'maxProperties', 'dependencies',
+];
+export function validateSubSchema(schema, value) {
+    if (schema === true || schema === undefined || schema === null) {
+        return null;
+    }
+    if (schema === false) {
+        return { 'false': true };
+    }
+    if (getType(schema) !== 'object') {
+        return null;
+    }
+    const control = { value };
+    const errors = [];
+    for (const keyword of SUB_SCHEMA_KEYWORDS) {
+        if (!(keyword in schema)) {
+            continue;
+        }
+        let parameter = schema[keyword];
+        // Draft 4: `exclusiveMinimum: true` modifies `minimum`
+        if (keyword === 'exclusiveMinimum' || keyword === 'exclusiveMaximum') {
+            if (typeof parameter === 'boolean') {
+                continue;
+            }
+        }
+        let validatorName = keyword;
+        if ((keyword === 'minimum' || keyword === 'maximum') &&
+            schema['exclusiveM' + keyword.slice(1)] === true) {
+            validatorName = 'exclusiveM' + keyword.slice(1);
+        }
+        if (keyword === 'uniqueItems' && parameter !== true) {
+            continue;
+        }
+        if ((keyword === 'uniqueItems' || keyword === 'contains' || keyword === 'minItems' || keyword === 'maxItems') &&
+            !isArray(value)) {
+            continue;
+        }
+        if ((keyword === 'minProperties' || keyword === 'maxProperties' || keyword === 'dependencies') &&
+            getType(value) !== 'object') {
+            continue;
+        }
+        if (keyword === 'type') {
+            // The type validator only knows the primitive types
+            const types = isArray(parameter) ? parameter : [parameter];
+            const matches = types.some(type => type === 'object' ? getType(value) === 'object' :
+                type === 'array' ? isArray(value) :
+                    !isObject(value) && isType(value, type));
+            if (!matches) {
+                errors.push({ 'type': { requiredType: parameter, currentValue: value } });
+            }
+            continue;
+        }
+        const validator = JsonValidators[validatorName](parameter);
+        errors.push(validator(control));
+    }
+    if (getType(value) === 'object') {
+        if (isArray(schema.required)) {
+            for (const field of schema.required) {
+                if (!hasValue(value[field])) {
+                    errors.push({ [field]: { 'required': true } });
+                }
+            }
+        }
+        if (getType(schema.properties) === 'object') {
+            for (const field of Object.keys(schema.properties)) {
+                if (field in value) {
+                    const fieldErrors = validateSubSchema(schema.properties[field], value[field]);
+                    if (fieldErrors) {
+                        errors.push({ [field]: fieldErrors });
+                    }
+                }
+            }
+        }
+    }
+    if (isArray(schema.allOf)) {
+        for (const subSchema of schema.allOf) {
+            errors.push(validateSubSchema(subSchema, value));
+        }
+    }
+    if (isArray(schema.anyOf) && schema.anyOf.length) {
+        const results = schema.anyOf.map(subSchema => validateSubSchema(subSchema, value));
+        if (!results.some(result => result === null)) {
+            errors.push({ 'anyOf': true });
+        }
+    }
+    if (isArray(schema.oneOf) && schema.oneOf.length) {
+        const validCount = schema.oneOf.filter(subSchema => validateSubSchema(subSchema, value) === null).length;
+        if (validCount !== 1) {
+            errors.push({ 'oneOf': true });
+        }
+    }
+    if (hasOwn(schema, 'not') && validateSubSchema(schema.not, value) === null) {
+        errors.push({ 'not': true });
+    }
+    const present = errors.filter(error => isDefined(error) && !isEmpty(error));
+    return present.length ? _mergeObjects(...present) : null;
+}

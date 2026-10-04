@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - **Untranslated keys report.** `npm run i18n:report` lists, per locale, the keys whose text is still exactly the English one (`lang-sync` copies English into every locale, so the gaps did not show): a count per locale, `--locale <code>` for the keys, `--since <git ref>` for only the keys added since then, `--json`. Brand names and strings meant to stay the same go in `scripts/i18n-allowlist.json`. CI prints it, and on a pull request also the new keys still in English; it never fails the build.
 
+### Fixed
+
+- **Plugin settings forms check `contains` and schema `dependencies`.** The form's own validators (vendored from ng-formworks) left `contains` unfinished (always valid) and broke schema dependencies (each rule was given a raw value instead of a field, with keyword and value swapped, so a rule such as `"dependencies": { "port": { "properties": { "host": { "minLength": 3 } } } }` never applied). Both now follow JSON Schema: `contains` passes when at least one item matches its schema, and a schema dependency checks `properties`, `required`, `allOf`/`anyOf`/`oneOf`/`not` and the usual keywords once its field has a value. `const` also compares objects and arrays.
+
 ## [2.0.0-beta.7] - 2026-10-04
 
 ### Added

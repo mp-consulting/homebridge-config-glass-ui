@@ -931,7 +931,8 @@ export function getControlValidators(schema) {
                 });
                 break;
             case 'array':
-                forEach(['minItems', 'maxItems', 'uniqueItems'], (prop) => {
+                // Glass UI: 'contains' added now that its validator is complete
+                forEach(['minItems', 'maxItems', 'uniqueItems', 'contains'], (prop) => {
                     if (hasOwn(schema, prop)) {
                         validators[prop] = [schema[prop]];
                     }
