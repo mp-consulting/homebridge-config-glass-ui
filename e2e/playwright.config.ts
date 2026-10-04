@@ -15,6 +15,10 @@ const PORT = 18581
 
 export default defineConfig({
   testDir: './specs',
+  // Per platform: fonts and anti-aliasing differ, so a baseline only matches
+  // the platform (and, for Linux, the pinned image) that recorded it. The
+  // Linux ones are committed; see the header of specs/visual.spec.ts.
+  snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/{arg}-{platform}{ext}',
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,

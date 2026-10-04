@@ -32,6 +32,37 @@ npm run test:ui   # UI unit tests
 npm run lint
 ```
 
+### Browser tests
+
+The Playwright suite runs the built UI against the real backend on fresh mock storage. The backend reports a fixed, made-up host and stays off the network (`e2e/fixed-host.ts`), so results do not depend on your machine.
+
+```sh
+node e2e/build.mjs                 # build the UI the suite serves
+node e2e/install-plugins.mjs       # once: real plugins with a custom settings UI
+E2E_OTP_USER=1 npx playwright test -c e2e --grep-invert visual   # everything but the screenshots
+```
+
+### Visual tests
+
+`e2e/specs/visual.spec.ts` compares screenshots of the main pages (also dark, flat, Hebrew and mobile) with stored baselines. Baselines are per platform. The Linux ones in `e2e/specs/visual.spec.ts-snapshots/*-linux.png` are committed, and CI compares against them strictly inside the `mcr.microsoft.com/playwright` image whose tag matches `@playwright/test`. Fonts and anti-aliasing differ between machines, so they can only be recorded in that image. After an intended visual change, re-record them with Docker and commit the new PNGs:
+
+```sh
+docker run --rm --platform linux/amd64 --ipc=host \
+  -v "$PWD":/work -v /work/node_modules -v /work/ui/node_modules -v /work/e2e/.run \
+  -w /work mcr.microsoft.com/playwright:v1.63.0-noble bash -c \
+  'npm ci && npm ci --prefix ui && node e2e/build.mjs && node e2e/install-plugins.mjs \
+   && npx playwright test -c e2e visual.spec --update-snapshots'
+```
+
+The extra volumes keep the container's Linux `node_modules` and build apart from yours. `--platform linux/amd64` matches the CI runners (Docker Desktop emulates it on Apple silicon). Drop `--update-snapshots` to check without recording. When you bump `@playwright/test`, change the image tag here, in the spec header and in the `visual` job of `.github/workflows/build.yml`, then re-record.
+
+On macOS or Windows the baselines (`-darwin`, `-win32`) are gitignored and only useful locally. Record them before a change and compare after it:
+
+```sh
+npx playwright test -c e2e visual.spec --update-snapshots   # before
+npx playwright test -c e2e visual.spec                      # after
+```
+
 ## Translations
 
 `ui/src/i18n/en.json` is the source of truth. Add new keys there, then run `npm run lang-sync` to copy them to the other languages.

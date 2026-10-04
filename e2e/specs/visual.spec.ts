@@ -1,35 +1,55 @@
 /**
  * Visual regression: screenshots of the main pages, also under dark, flat,
  * Hebrew and mobile settings, compared with the stored baseline.
- * Moving parts (clock, charts, terminals, timestamps) are masked.
  *
- * Local only. Record a baseline before a change, compare after it:
+ * Deterministic by construction rather than by masking:
+ * - the backend reports a fixed, made-up host and stays off the network
+ *   (e2e/fixed-host.ts, preloaded by e2e/serve.mjs): host name, IPs, OS,
+ *   paths, versions, uptime and the CPU / memory / network figures are
+ *   constants, and the plugin list has no npm or GitHub data;
+ * - the browser has a fixed date, timezone and locale and no outside requests
+ *   (`beforeEach` below), and CSS animations and carets are off;
+ * - only the log terminal and the config editor's cursor are masked.
  *
- *   npx playwright test -c e2e visual --update-snapshots   (before)
- *   npx playwright test -c e2e visual                      (after)
+ * Baselines are per platform (`{platform}` in the config's
+ * snapshotPathTemplate). The Linux ones are committed and CI compares against
+ * them strictly; they must be recorded in the same pinned image CI runs, since
+ * fonts and anti-aliasing differ between distributions:
  *
- * Baselines land in e2e/specs/visual.spec.ts-snapshots/, which is gitignored,
- * and CI skips this file (`--grep-invert visual` in .github/workflows/build.yml)
- * because a baseline only matches the machine that recorded it:
- * - it shows this host: the dashboard's system, network and Homebridge widgets
- *   print the host name, IP addresses, OS, Node version and paths, none of
- *   which `masks()` hides;
- * - Playwright suffixes each file with the platform (`status-darwin.png`),
- *   and fonts and anti-aliasing differ between macOS, Linux and between Linux
- *   distributions, well beyond `maxDiffPixelRatio`.
+ *   docker run --rm --ipc=host -v "$PWD":/work -v /work/node_modules -v /work/ui/node_modules \
+ *     -w /work mcr.microsoft.com/playwright:v1.63.0-noble bash -c \
+ *     'npm ci && npm ci --prefix ui && node e2e/build.mjs && node e2e/install-plugins.mjs \
+ *      && npx playwright test -c e2e visual.spec --update-snapshots'
  *
- * Running it on CI would take: the tests run inside a pinned image
- * (`mcr.microsoft.com/playwright:v1.63.0-noble`, in step with @playwright/test)
- * so fonts never drift; masks for every host-specific widget (or a fixed host
- * name, IPs and versions from the backend); Linux baselines committed under a
- * platform-specific `snapshotPathTemplate` (and un-ignored); and a
- * workflow_dispatch job that runs `--update-snapshots` in that image and
- * uploads the new baselines, since they cannot be recorded on macOS.
+ * The image tag must match the installed @playwright/test version (and the
+ * `container:` of the visual job in .github/workflows/build.yml): bump all
+ * three together and re-record. The macOS (`-darwin`) baselines stay local
+ * and gitignored: record them before a change, compare after it:
+ *
+ *   npx playwright test -c e2e visual.spec --update-snapshots   (before)
+ *   npx playwright test -c e2e visual.spec                      (after)
  */
 
 import type { Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
+
+// One clock, timezone and locale wherever the run happens (the footer year,
+// relative times, number and date formats)
+const NOW = new Date('2026-01-01T12:00:00Z')
+test.use({ timezoneId: 'UTC', locale: 'en-US' })
+
+test.beforeEach(async ({ page }) => {
+  // Time runs from NOW, so animations (Chart.js times them with Date.now) still finish
+  await page.clock.install({ time: NOW })
+  // The server's clock, which the UI compares with its own (a warning toast past 8 hours)
+  await page.route('**/api/auth/settings', async (route) => {
+    const response = await route.fetch()
+    route.fulfill({ response, json: { ...await response.json(), serverTimestamp: NOW.toISOString() } })
+  })
+  // Nothing from the network (plugin icons and the like): the page is the same offline
+  await page.route(url => !['localhost', '127.0.0.1'].includes(url.hostname), route => route.abort())
+})
 
 const PAGES = ['/login', '/', '/plugins', '/config', '/users', '/settings', '/support', '/power-options']
 
@@ -41,12 +61,27 @@ async function login(page: Page) {
   await expect(page).not.toHaveURL(/\/login/)
 }
 
+/**
+ * Wait for the page to be complete: every widget's data in (the dashboard
+ * talks over socket.io, which networkidle does not see, and a slow machine
+ * or an emulated container can take seconds), then entrance animations and
+ * debounced layout.
+ */
+async function settle(page: Page) {
+  await page.waitForLoadState('networkidle')
+  await expect(page.locator('.fa-spin:visible')).toHaveCount(0, { timeout: 30_000 })
+  await page.waitForTimeout(1500)
+}
+
+/**
+ * What is still live with e2e/fixed-host.ts in place: the log terminal
+ * streams the backend's own log, and the config editor draws a blinking
+ * cursor of its own (`caret: 'hide'` only covers native inputs).
+ */
 function masks(page: Page) {
   return [
-    page.locator('canvas'),
     page.locator('.xterm'),
-    page.locator('.monaco-editor'),
-    page.locator('time, .clock, [class*="clock"], [class*="uptime"]'),
+    page.locator('.monaco-editor .cursors-layer'),
   ]
 }
 
@@ -57,9 +92,7 @@ for (const path of PAGES) {
       await login(page)
     }
     await page.goto(path)
-    await page.waitForLoadState('networkidle')
-    // Let entrance animations and debounced layout settle
-    await page.waitForTimeout(1500)
+    await settle(page)
     const name = `${path === '/' ? 'status' : path.slice(1).replace(/\//g, '-')}.png`
     await expect(page).toHaveScreenshot(name, {
       fullPage: true,
@@ -101,8 +134,7 @@ for (const variant of VARIANTS) {
         await page.setViewportSize(variant.viewport ?? { width: 1280, height: 900 })
         await login(page)
         await page.goto(path)
-        await page.waitForLoadState('networkidle')
-        await page.waitForTimeout(1500)
+        await settle(page)
         const name = `${variant.name}-${path === '/' ? 'status' : path.slice(1)}.png`
         await expect(page).toHaveScreenshot(name, {
           fullPage: true,

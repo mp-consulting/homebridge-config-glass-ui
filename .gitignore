@@ -90,4 +90,7 @@ e2e/.run/
 test-results/
 playwright-report/
 e2e/specs/__screenshots__/
-e2e/specs/*-snapshots/
+# Visual baselines: the Linux ones (recorded in the pinned Playwright image) are
+# committed for CI, the ones recorded on a developer's machine stay local
+e2e/specs/*-snapshots/*
+!e2e/specs/visual.spec.ts-snapshots/*-linux.png
