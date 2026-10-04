@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { isAbortError, runAiStream } from '@/core/ai/ai-stream'
+import { useAiStore } from '@/core/ai/ai.store'
 import { AiMarkdown } from '@/core/ai/AiMarkdown'
 import { useAuthStore } from '@/core/auth'
 import { ModalHeader } from '@/core/ui/ModalParts'
@@ -41,6 +42,8 @@ const HISTORY_TURNS = 12
 export function AssistantPalette({ activeModal }: ModalComponentProps) {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => !!state.user?.admin)
+  const model = useAiStore(state => state.status?.model ?? null)
+  const provider = useAiStore(state => state.status?.provider ?? null)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [running, setRunning] = useState(false)
@@ -134,7 +137,11 @@ export function AssistantPalette({ activeModal }: ModalComponentProps) {
   return (
     <div className="modal-content hb-ai-palette">
       <ModalHeader title={t('ai.palette.title')} titleId="ai-palette-title" onClose={() => activeModal.dismiss('Dismiss')}>
-        <span className="mp-ai-badge ms-2 me-auto">{isAdmin ? t('ai.badge') : t('ai.palette.read_only')}</span>
+        {/* The title already says Assistant: the badge names the model answering (and read-only for non-admins) */}
+        <span className="d-flex gap-2 ms-2 me-auto">
+          {model && <span className="mp-ai-badge hb-ai-palette-model" title={provider ?? undefined}>{model}</span>}
+          {!isAdmin && <span className="mp-ai-badge">{t('ai.palette.read_only')}</span>}
+        </span>
       </ModalHeader>
       <div className="modal-body p-0">
         <div className="mp-ai-chat border-0 rounded-0">

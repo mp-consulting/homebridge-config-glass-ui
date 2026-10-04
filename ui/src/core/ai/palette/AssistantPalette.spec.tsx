@@ -121,6 +121,20 @@ describe('assistant palette', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull()
   })
 
+  it('badges the model answering rather than repeating the title', () => {
+    aiActions.setStatus(ENABLED)
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+
+    expect(screen.getByText('claude-sonnet-5-5')).toHaveAttribute('title', 'anthropic')
+    expect(screen.queryByText('ai.badge')).toBeNull()
+    expect(screen.queryByText('ai.palette.read_only')).toBeNull()
+  })
+
+  it('shows no model badge before the status is known', () => {
+    renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
+    expect(document.querySelector('.hb-ai-palette-model')).toBeNull()
+  })
+
   it('tells a non-admin it is read-only', () => {
     useAuthStore.setState(makeAuthState({ user: makeUser({ admin: false }) }))
     renderWithProviders(<AssistantPalette activeModal={activeModalStub() as any} />)
