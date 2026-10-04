@@ -88,7 +88,8 @@ export class PluginRollbackService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
-    this.ipc.off('serverStatusUpdate', this.onServerStatus)
+    // A stand-in IPC (specs) may not have off
+    this.ipc.off?.('serverStatusUpdate', this.onServerStatus)
     this.childBridgeHealth.off('crashLoop', this.onChildBridgeCrashLoop)
   }
 
