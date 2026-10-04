@@ -1,4 +1,7 @@
 import { spawn } from 'node:child_process'
+import { createWriteStream } from 'node:fs'
+import { homedir } from 'node:os'
+import { resolve } from 'node:path'
 import process from 'node:process'
 
 /**
@@ -18,6 +21,11 @@ import process from 'node:process'
  * This does the one thing nodemon will not: start it again. A restart nodemon
  * asked for is passed straight through and NOT respawned - nodemon starts the
  * next one itself, and a respawn here would race it for the port.
+ *
+ * It also copies the output into `<storage>/homebridge.log`. Watch runs
+ * hb-service with --stdout, which keeps the log on the terminal and never
+ * writes that file, so the Logs page and Log Doctor (which read it) had
+ * nothing to show in development. The file starts empty on each start.
  */
 
 const RESPAWN_DELAY_MS = 500
@@ -25,16 +33,35 @@ const RESPAWN_DELAY_MS = 500
 const command = process.argv[2]
 const commandArgs = process.argv.slice(3)
 
+// hb-service's own default: -U <path> if given, else ~/.homebridge
+const storageFlag = commandArgs.findIndex(arg => arg === '-U' || arg === '--user-storage-path')
+const storagePath = storageFlag === -1 ? resolve(homedir(), '.homebridge') : resolve(commandArgs[storageFlag + 1])
+const logPath = resolve(storagePath, 'homebridge.log')
+
 let child = null
 let shuttingDown = false
 
 function start() {
-  child = spawn(command, commandArgs, { stdio: 'inherit', env: process.env })
+  const logFile = createWriteStream(logPath, { flags: 'w' })
+  logFile.on('error', error => console.error(`[watch] cannot write ${logPath}: ${error.message}`))
+
+  // Piped output is not a TTY, so keep the colours the terminal would have had.
+  const env = process.stdout.isTTY ? { FORCE_COLOR: '1', ...process.env } : process.env
+  child = spawn(command, commandArgs, { stdio: ['inherit', 'pipe', 'pipe'], env })
+  for (const [from, to] of [[child.stdout, process.stdout], [child.stderr, process.stderr]]) {
+    from.on('data', (chunk) => {
+      to.write(chunk)
+      logFile.write(chunk)
+    })
+  }
 
   child.on('error', (error) => {
     console.error(`[watch] could not start "${command}": ${error.message}`)
     process.exit(1)
   })
+
+  // 'close' comes after the output has been drained; 'exit' can come before it
+  child.on('close', () => logFile.end())
 
   child.on('exit', (code, signal) => {
     child = null
