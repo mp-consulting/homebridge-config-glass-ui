@@ -136,9 +136,7 @@ jobs:
         if: steps.e2e-plugins.outputs.cache-hit != 'true'
         run: node e2e/install-plugins.mjs
 
-      # Visual tests only run locally: their baselines are machine-specific (host name, IPs and
-      # versions on the dashboard, platform fonts and rendering) and gitignored. What running
-      # them here would take is in the header of e2e/specs/visual.spec.ts.
+      # The visual specs run in the `visual` job below, inside the image their baselines come from
       - name: Run browser tests
         run: npx playwright test -c e2e --grep-invert visual --reporter=list,html
         env:
@@ -150,6 +148,61 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
+          path: |
+            e2e/playwright-report/
+            playwright-report/
+            e2e/test-results/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  visual:
+    name: Visual (Playwright)
+    runs-on: ubuntu-latest
+    # The image the committed Linux baselines were recorded in: fonts and rendering only match
+    # inside it. Keep the tag in step with @playwright/test in package.json (and the command in
+    # the header of e2e/specs/visual.spec.ts); a bump means re-recording the baselines.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Cache npm downloads
+        uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: npm-playwright-image-${{ hashFiles('package-lock.json', 'ui/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci && npm ci --prefix ui
+
+      - name: Build UI for the e2e suite
+        run: node e2e/build.mjs
+
+      # The plugin list the /plugins screenshots show includes these (see the e2e job)
+      - name: Cache e2e plugins
+        id: e2e-plugins
+        uses: actions/cache@v6
+        with:
+          path: e2e/.run/plugins
+          key: e2e-plugins-${{ hashFiles('e2e/install-plugins.mjs', 'test/mocks/plugins/**') }}
+
+      - name: Install e2e plugins
+        if: steps.e2e-plugins.outputs.cache-hit != 'true'
+        run: node e2e/install-plugins.mjs
+
+      # Strict: compares with e2e/specs/visual.spec.ts-snapshots/*-linux.png and never updates
+      # them. To re-record after an intended change, run the docker command in the spec's header.
+      - name: Run visual tests
+        run: npx playwright test -c e2e visual.spec --reporter=list,html
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-visual-report
           path: |
             e2e/playwright-report/
             playwright-report/
