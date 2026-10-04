@@ -1,12 +1,23 @@
 import type { FastifyRequest } from 'fastify'
 
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { ConfigService } from '../config/config.service.js'
+import { isApiToken } from './api-token.constants.js'
 import { AuthService } from './auth.service.js'
 import { isLiveSetupWizardToken, isSetupWizardToken, isSetupWizardTokenRoute } from './setup-wizard-token.js'
+
+const READ_ONLY_METHODS = new Set(['GET', 'HEAD'])
+
+function readBearerToken(authorization: unknown): string | undefined {
+  if (typeof authorization !== 'string') {
+    return undefined
+  }
+  const [scheme, token] = authorization.split(' ')
+  return scheme?.toLowerCase() === 'bearer' && token ? token : undefined
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,6 +29,32 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.secrets.secretKey,
       passReqToCallback: true,
+    })
+  }
+
+  /**
+   * API tokens (`Bearer hbg_…`) are not JWTs, so they are resolved here before
+   * passport-jwt would reject them. A `read` token may only make GET/HEAD
+   * requests. Everything else goes through passport-jwt as before.
+   */
+  override authenticate(req: any, options?: any): void {
+    const token = readBearerToken(req?.headers?.authorization)
+    if (!isApiToken(token)) {
+      super.authenticate(req, options)
+      return
+    }
+    this.authService.validateApiToken(token).then((user) => {
+      if (!user) {
+        this.fail('Invalid API token', 401)
+        return
+      }
+      if (user.apiTokenScope === 'read' && !READ_ONLY_METHODS.has(String(req?.method).toUpperCase())) {
+        this.error(new ForbiddenException('This API token is read-only.'))
+        return
+      }
+      this.success(user)
+    }, (e) => {
+      this.error(e)
     })
   }
 

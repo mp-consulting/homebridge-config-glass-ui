@@ -6,6 +6,7 @@ import { HomebridgeConfig } from '../config/config.interfaces.js'
 import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
+import { ApiTokenService, ApiTokenUser } from './api-token.service.js'
 import { LoginThrottle } from './login-throttle.js'
 import { OtpService } from './otp.service.js'
 import { PasswordHasher } from './password-hasher.js'
@@ -37,6 +38,7 @@ export class AuthService {
     @Inject(TokenService) private readonly tokens: TokenService,
     @Inject(UserRepository) private readonly users: UserRepository,
     @Inject(OtpService) private readonly otp: OtpService,
+    @Inject(ApiTokenService) private readonly apiTokens: ApiTokenService,
   ) {
     this.checkAuthFile()
   }
@@ -161,6 +163,26 @@ export class AuthService {
    */
   async validateUser(payload: any): Promise<any> {
     return this.tokens.validateUser(payload)
+  }
+
+  /**
+   * Resolve an API token (`hbg_…`) to the user it authenticates as, or null
+   * when it is unknown, revoked or expired (see ApiTokenService)
+   */
+  async validateApiToken(token: string): Promise<ApiTokenUser | null> {
+    return this.apiTokens.validate(token)
+  }
+
+  /**
+   * Mint a short-lived access token for a signed-in user, e.g. for the
+   * Assistant to call the api on that user's behalf. It is an ordinary session
+   * JWT (same claims, same validation) that expires after `ttlSeconds` and
+   * cannot be refreshed past the user's own session rules.
+   * @param user - the authenticated user (a validated JWT payload or auth.json record)
+   * @param ttlSeconds - lifetime in seconds, 300 by default
+   */
+  mintShortLivedToken(user: any, ttlSeconds = 300): string {
+    return this.tokens.mintShortLivedToken(user, ttlSeconds)
   }
 
   /**

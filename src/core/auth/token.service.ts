@@ -51,6 +51,31 @@ export class TokenService {
     return this.tokenResponse(this.jwtService.sign({ ...user, sessionStartedAt: Math.floor(Date.now() / 1000) }))
   }
 
+  /**
+   * Sign an ordinary session token for a user that expires after `ttlSeconds`
+   * (see AuthService.mintShortLivedToken). Only for real accounts: service and
+   * API-token users have no auth.json record the token could be validated
+   * against.
+   */
+  mintShortLivedToken(user: any, ttlSeconds = 300): string {
+    if (!user?.username || user.service !== undefined || user.apiTokenId !== undefined) {
+      throw new UnauthorizedException('A short-lived token can only be minted for a user account.')
+    }
+    if (!Number.isInteger(ttlSeconds) || ttlSeconds < 1) {
+      throw new RangeError('ttlSeconds must be a positive whole number of seconds.')
+    }
+    const now = Math.floor(Date.now() / 1000)
+    return this.jwtService.sign({
+      username: user.username,
+      name: user.name,
+      admin: !!user.admin,
+      instanceId: this.configService.instanceId,
+      sessionVersion: user.sessionVersion ?? 0,
+      otpLegacySecret: user.otpLegacySecret || false,
+      sessionStartedAt: typeof user.sessionStartedAt === 'number' ? user.sessionStartedAt : now,
+    }, { expiresIn: ttlSeconds })
+  }
+
   private tokenResponse(token: string): AccessTokenResponse {
     return {
       access_token: token,
@@ -96,6 +121,11 @@ export class TokenService {
     // programs. They must not be exchangeable for a normal user session.
     if (user?.service !== undefined) {
       this.rejectRefresh(user.username ?? 'a service token', 'Service tokens cannot be refreshed')
+    }
+
+    // An API token is its own long-lived credential, not a session
+    if (user?.apiTokenId !== undefined) {
+      this.rejectRefresh(user.username, 'API tokens cannot be refreshed')
     }
 
     // Validate that the user still exists and has the same permissions

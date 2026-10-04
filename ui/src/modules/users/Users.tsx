@@ -14,6 +14,7 @@ import { openModal } from '@/core/ui/modal'
 import { cx } from '@/core/utilities/cx'
 import { toastApiError } from '@/core/utilities/http-error'
 
+import { ApiTokens } from './api-tokens/ApiTokens'
 import { Users2faDisable } from './users-2fa-disable/Users2faDisable'
 import { Users2faEnable } from './users-2fa-enable/Users2faEnable'
 import { UsersAdd } from './users-add/UsersAdd'
@@ -144,6 +145,7 @@ export function Users() {
           </div>
         ))}
       </div>
+      <ApiTokens />
     </>
   )
 }

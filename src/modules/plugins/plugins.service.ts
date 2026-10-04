@@ -7,11 +7,14 @@ import type {
   HomebridgePluginUiMetadata,
   HomebridgePluginVersions,
   PackageUpdateResult,
+  PluginAction,
   PluginAlias,
 } from './plugins.interfaces.js'
 
 import { Inject, Injectable } from '@nestjs/common'
 
+import { ConfigService } from '../../core/config/config.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
 import { InstalledPluginsService } from './installed-plugins.service.js'
 import { PluginInstallerService } from './plugin-installer.service.js'
 import { PluginMetadataService } from './plugin-metadata.service.js'
@@ -34,6 +37,8 @@ export class PluginsService {
     @Inject(PluginInstallerService) private readonly installer: PluginInstallerService,
     @Inject(PluginMetadataService) private readonly metadata: PluginMetadataService,
     @Inject(UiUpdateService) private readonly uiUpdate: UiUpdateService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   // Installed packages
@@ -92,6 +97,34 @@ export class PluginsService {
 
   public managePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
     return this.installer.managePlugin(action, pluginAction, client)
+  }
+
+  /**
+   * Install, update or uninstall a plugin, streaming npm's output to `client`
+   * as `stdout` events. Shared by the `plugins` socket namespace and the
+   * plugin job endpoints (PluginJobsService).
+   *
+   * Installing or updating the UI itself restarts it afterwards. The browser
+   * normally asks for the restart, but it can lose the connection (the update
+   * replaces the running server) or be closed first, which left the old
+   * version running indefinitely; a restart the browser also asks for is
+   * harmless.
+   */
+  public async runPluginAction(action: PluginAction, pluginAction: PluginActionDto, client: EventEmitter) {
+    if (action === 'uninstall') {
+      return this.managePlugin('uninstall', pluginAction, client)
+    }
+    const result = await this.managePlugin('install', pluginAction, client)
+    if (pluginAction.name === this.configService.name) {
+      this.logger.warn(`${this.configService.name} has been updated, the server will restart shortly...`)
+      this.scheduleUiRestart()
+    }
+    return result
+  }
+
+  /** Reject a package name or version npm must never see (see PluginInstallerService) */
+  public assertValidPackageRequest(name: string | null, version?: string): void {
+    this.installer.assertValidPackageRequest(name, version)
   }
 
   public updateHomebridgePackage(homebridgeUpdateAction: HomebridgeUpdateActionDto, client: EventEmitter) {

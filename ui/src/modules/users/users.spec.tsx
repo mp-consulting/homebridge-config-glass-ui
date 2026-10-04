@@ -74,7 +74,8 @@ describe('users', () => {
     return view
   }
 
-  const cards = () => [...document.querySelectorAll('.card')]
+  // The user cards only, not the API tokens section below them
+  const cards = () => [...document.querySelectorAll('.col-md-6 > .card')]
   const editButtons = () => screen.getAllByLabelText('form.button_edit')
 
   beforeEach(() => {
@@ -98,7 +99,7 @@ describe('users', () => {
       await create()
 
       expect(cards().map(card => card.querySelector('h4')?.textContent)).toEqual(['Test Admin', 'Second Person'])
-      expect(api.callsTo('get')).toEqual([])
+      expect(api.callsTo('get', '/users')).toEqual([])
     })
 
     it('copes with a route that resolved nothing', async () => {
@@ -280,7 +281,7 @@ describe('users', () => {
 
       expect(modal.opened).toHaveLength(1)
       expect(modal.lastOpened()?.component).toBe(UsersSupport)
-      expect(api.callsTo('get')).toEqual([])
+      expect(api.callsTo('get', '/users')).toEqual([])
     })
   })
 

@@ -8,6 +8,8 @@ import { ConfigModule } from '../config/config.module.js'
 import { ConfigService } from '../config/config.service.js'
 import { FsModule } from '../fs/fs.module.js'
 import { LoggerModule } from '../logger/logger.module.js'
+import { ApiTokenService } from './api-token.service.js'
+import { ApiTokensController } from './api-tokens.controller.js'
 import { AuthController } from './auth.controller.js'
 import { AuthService } from './auth.service.js'
 import { AdminGuard } from './guards/admin.guard.js'
@@ -42,6 +44,7 @@ import { UserRepository } from './user.repository.js'
   ],
   providers: [
     AuthService,
+    ApiTokenService,
     LoginThrottle,
     PasswordHasher,
     TokenService,
@@ -55,9 +58,11 @@ import { UserRepository } from './user.repository.js'
   ],
   controllers: [
     AuthController,
+    ApiTokensController,
   ],
   exports: [
     AuthService,
+    ApiTokenService,
     AdminGuard,
     JwtModule,
     PluginsSettingsUiTicketModule,

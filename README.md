@@ -18,6 +18,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - View and control your accessories from any browser
 - Run plugins as child bridges
 - Back up and restore your whole Homebridge instance
+- A REST API (documented at `/swagger`) with API tokens for scripts and the Assistant's MCP server
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
 
 ## Installation
@@ -89,6 +90,24 @@ Settings live in the `config` platform block of `config.json`. They can all be c
 | `theme`        | `deep-purple` | Accent colour. It also tints the glass background.      |
 | `lightingMode` | `auto`        | `auto` follows the browser, or force `light` or `dark`. |
 | `glassMode`    | `true`        | Set to `false` to switch back to flat, opaque surfaces. |
+
+## API access
+
+The REST API lives under `/api` and is documented at `/swagger` on your Glass UI. Scripts and tools such as the Assistant's MCP server (`@mp-consulting/homebridge-ai-kit`) authenticate with an **API token** rather than a password: create one under **Users**, **API Tokens** (administrators only). The token (`hbg_…`) is shown once; send it as `Authorization: Bearer hbg_…`, or as the socket.io handshake `auth.token`.
+
+- **Read-only** tokens act as a non-admin user and may only make `GET`/`HEAD` requests (anything else answers `403`).
+- **Admin** tokens act as an administrator.
+- Tokens can expire (30 days, 90 days, a year) or never; revoking one takes effect immediately. Only a hash is stored, in `.uix-api-tokens.json` in the Homebridge storage folder.
+
+Endpoints the Assistant relies on:
+
+| Method and path                                                            | What it does                                                                                                     |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `GET/POST /api/auth/tokens`, `DELETE /api/auth/tokens/:id`                 | List, create and revoke API tokens (admin)                                                                       |
+| `POST /api/plugins/install`, `/update`, `/uninstall`                       | Start a plugin job with `{ name, version? }`; answers `202 { jobId }` (admin)                                    |
+| `GET /api/plugins/jobs/:jobId`                                             | A job's `status` (`running`, `succeeded`, `failed`) and npm `output`; kept for an hour after it finishes (admin) |
+| `GET /api/status/homebridge/child-bridges`                                 | Child bridges and their status                                                                                   |
+| `PUT /api/server/restart/:deviceId`, `/stop/:deviceId`, `/start/:deviceId` | Restart, stop or start a child bridge (admin)                                                                    |
 
 ## Screens
 

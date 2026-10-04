@@ -7,6 +7,7 @@ import type { MatterService } from '../../core/matter/matter.interfaces.js'
 import type { AccessoryControlMessage } from './accessories.interfaces.js'
 import type { MatterAccessoriesService } from './matter-accessories.service.js'
 
+import { isReadOnlyApiTokenUser } from '../../core/auth/api-token.constants.js'
 import { isWsClientAuthorized } from '../../core/auth/guards/ws-auth.js'
 
 /** How long a burst of instance discoveries is coalesced before the client is told to reload. */
@@ -268,6 +269,11 @@ export class AccessoriesClientSession {
     // This listener outlives the guarded 'get-accessories' message, so a
     // deleted user must not keep controlling accessories on an open socket
     if (!await isWsClientAuthorized(client, { admin: false })) {
+      return
+    }
+    // A read-only API token may watch accessories but not change them
+    if (msg.set && isReadOnlyApiTokenUser(client.data?.user)) {
+      client.emit('accessory-control-failure', 'This API token is read-only.')
       return
     }
     if (msg.refresh) {

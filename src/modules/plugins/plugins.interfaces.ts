@@ -252,3 +252,23 @@ export interface InstalledPluginsSource {
   readonly loadedPlugins: HomebridgePlugin[] | undefined
   getInstalledPlugins: () => Promise<HomebridgePlugin[]>
 }
+
+/** What a plugin job (or the `plugins` socket namespace) can do to a plugin */
+export type PluginAction = 'install' | 'update' | 'uninstall'
+
+export type PluginJobStatus = 'running' | 'succeeded' | 'failed'
+
+/** A plugin install / update / uninstall started over REST, as GET /plugins/jobs/:jobId returns it */
+export interface PluginJob {
+  id: string
+  action: PluginAction
+  name: string
+  version?: string
+  status: PluginJobStatus
+  /** npm's output, ANSI colours removed; only the most recent part is kept */
+  output: string
+  startedAt: string
+  finishedAt?: string
+  /** Why a failed job failed */
+  error?: string
+}

@@ -1,9 +1,18 @@
-import { Controller, ForbiddenException, Get, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, ForbiddenException, Get, HttpCode, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { PluginJobsService } from './plugin-jobs.service.js'
+import { PluginJobRequestDto } from './plugins.dto.js'
 import { PluginsService } from './plugins.service.js'
+
+const PLUGIN_JOB_STARTED_SCHEMA = {
+  type: 'object',
+  properties: {
+    jobId: { type: 'string', format: 'uuid' },
+  },
+}
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
@@ -12,6 +21,7 @@ import { PluginsService } from './plugins.service.js'
 export class PluginsController {
   constructor(
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(PluginJobsService) private readonly pluginJobs: PluginJobsService,
   ) {}
 
   @ApiOperation({
@@ -138,6 +148,77 @@ export class PluginsController {
   @Get(':pluginName/editor-context')
   getEditorContext(@Param('pluginName') pluginName: string) {
     return this.pluginsService.getEditorContext(pluginName)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Install a plugin as a background job.',
+    description: 'Answers 202 with a job id straight away; poll `GET /plugins/jobs/:jobId` for its status and output.',
+  })
+  @ApiBody({ type: PluginJobRequestDto })
+  @ApiResponse({ status: 202, schema: PLUGIN_JOB_STARTED_SCHEMA })
+  @ApiResponse({ status: 400, description: 'Invalid plugin name or version.' })
+  @HttpCode(202)
+  @Post('install')
+  installPluginJob(@Body() body: PluginJobRequestDto) {
+    return { jobId: this.pluginJobs.start('install', body).id }
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Update a plugin as a background job.',
+    description: 'Answers 202 with a job id straight away; poll `GET /plugins/jobs/:jobId` for its status and output. Updating this UI restarts it once the job succeeds.',
+  })
+  @ApiBody({ type: PluginJobRequestDto })
+  @ApiResponse({ status: 202, schema: PLUGIN_JOB_STARTED_SCHEMA })
+  @ApiResponse({ status: 400, description: 'Invalid plugin name or version.' })
+  @HttpCode(202)
+  @Post('update')
+  updatePluginJob(@Body() body: PluginJobRequestDto) {
+    return { jobId: this.pluginJobs.start('update', body).id }
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Uninstall a plugin as a background job.',
+    description: 'Answers 202 with a job id straight away; poll `GET /plugins/jobs/:jobId` for its status and output.',
+  })
+  @ApiBody({ type: PluginJobRequestDto })
+  @ApiResponse({ status: 202, schema: PLUGIN_JOB_STARTED_SCHEMA })
+  @ApiResponse({ status: 400, description: 'Invalid plugin name.' })
+  @HttpCode(202)
+  @Post('uninstall')
+  uninstallPluginJob(@Body() body: PluginJobRequestDto) {
+    return { jobId: this.pluginJobs.start('uninstall', { name: body.name }).id }
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Get the status and output of a plugin job.',
+    description: 'Finished jobs are kept for an hour. `output` holds the most recent 64 KiB of npm output, without colour codes.',
+  })
+  @ApiParam({ name: 'jobId', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        action: { type: 'string', enum: ['install', 'update', 'uninstall'] },
+        name: { type: 'string' },
+        version: { type: 'string' },
+        status: { type: 'string', enum: ['running', 'succeeded', 'failed'] },
+        output: { type: 'string' },
+        startedAt: { type: 'string', format: 'date-time' },
+        finishedAt: { type: 'string', format: 'date-time' },
+        error: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Unknown or expired job.' })
+  @Get('jobs/:jobId')
+  getPluginJob(@Param('jobId') jobId: string) {
+    return this.pluginJobs.get(jobId)
   }
 
   @UseGuards(AdminGuard)

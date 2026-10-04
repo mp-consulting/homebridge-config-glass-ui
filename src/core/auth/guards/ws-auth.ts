@@ -7,6 +7,7 @@ import type { AuthService } from '../auth.service.js'
 
 import { JwtService } from '@nestjs/jwt'
 
+import { isApiToken } from '../api-token.constants.js'
 import { isLiveSetupWizardToken, isSetupWizardToken, isSetupWizardTokenNamespace } from '../setup-wizard-token.js'
 import { extractWsToken } from './ws-token.js'
 
@@ -77,7 +78,21 @@ export async function verifyWsClient(
   authService: AuthService,
   options: { ignoreExpiration?: boolean, token?: string } = {},
 ): Promise<WsUser> {
-  const payload = wsJwt.verify<WsUser>(options.token ?? currentWsToken(client), {
+  const token = options.token ?? currentWsToken(client)
+
+  // An API token (`hbg_…`) is looked up rather than verified as a JWT. It is
+  // checked again on every revalidation, so revoking or expiring it closes the
+  // socket. A `read` token is a non-admin user; raw listeners that change
+  // state check isReadOnlyApiTokenUser themselves.
+  if (isApiToken(token)) {
+    const user = await authService.validateApiToken(token)
+    if (!user) {
+      throw new Error('Invalid API token')
+    }
+    return user as unknown as WsUser
+  }
+
+  const payload = wsJwt.verify<WsUser>(token, {
     secret: configService.secrets.secretKey,
     ignoreExpiration: options.ignoreExpiration,
   })

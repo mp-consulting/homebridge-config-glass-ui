@@ -11,6 +11,7 @@ import { NodePtyModule } from '../../core/node-pty/node-pty.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
 import { InstalledPluginsService } from './installed-plugins.service.js'
 import { PluginInstallerService } from './plugin-installer.service.js'
+import { PluginJobsService } from './plugin-jobs.service.js'
 import { PluginMetadataService } from './plugin-metadata.service.js'
 import { PluginRegistryService } from './plugin-registry.service.js'
 import { PluginsController } from './plugins.controller.js'
@@ -41,6 +42,7 @@ import { UiUpdateService } from './ui-update.service.js'
     PluginMetadataService,
     UiUpdateService,
     PluginsService,
+    PluginJobsService,
     PluginsGateway,
   ],
   exports: [

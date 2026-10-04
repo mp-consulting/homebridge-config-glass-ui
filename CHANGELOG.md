@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **API tokens.** Administrators can create long-lived tokens (`hbg_…`) under **Users**, **API Tokens**, for scripts and the Assistant's MCP server: `GET/POST /api/auth/tokens` and `DELETE /api/auth/tokens/:id`. A token is shown once and stored only as a hash (`.uix-api-tokens.json`). `Authorization: Bearer hbg_…` works on the REST API and in the socket.io handshake; a `read` token is a non-admin user limited to `GET`/`HEAD` (and cannot control accessories over the socket), an `admin` token is an administrator. Expired and revoked tokens are refused, and open sockets using a revoked token are closed.
+- **Plugin jobs over REST.** `POST /api/plugins/install`, `/update` and `/uninstall` (`{ name, version? }`) start the same install/update/uninstall the Plugins page runs and answer `202 { jobId }`; `GET /api/plugins/jobs/:jobId` reports the job's status and npm output (the latest 64 KiB, without colour codes). Jobs are kept in memory for an hour after they finish. Administrators only.
+- `AuthService.mintShortLivedToken(user, ttlSeconds = 300)` signs a short-lived session token for a user, for the Assistant to call the API on that user's behalf.
+
 ## [2.0.0-beta.4] - 2026-10-03
 
 ### Fixed

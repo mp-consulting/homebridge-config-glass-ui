@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger'
 import {
   IsDefined,
   IsNotEmpty,
@@ -55,4 +56,20 @@ export class PluginActionDto {
   @IsOptional()
   @IsNotEmpty()
   termRows?: number
+}
+
+/** The body of POST /plugins/install|update|uninstall */
+export class PluginJobRequestDto {
+  @IsDefined()
+  @IsNotEmpty()
+  @IsString()
+  @Matches(/^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/)
+  @ApiProperty({ type: String, example: 'homebridge-example-plugin' })
+  name: string
+
+  @IsOptional()
+  @IsString()
+  @Matches(RE_NPM_VERSION)
+  @ApiProperty({ type: String, required: false, description: 'Version or dist-tag to install. Defaults to `latest`; ignored for uninstall.', example: '1.2.3' })
+  version?: string
 }

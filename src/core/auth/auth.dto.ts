@@ -1,5 +1,9 @@
+import type { ApiTokenScope } from './api-token.constants.js'
+
 import { ApiProperty } from '@nestjs/swagger'
-import { IsDefined, IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import { IsDefined, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator'
+
+import { API_TOKEN_MAX_EXPIRY_DAYS, API_TOKEN_SCOPES } from './api-token.constants.js'
 
 export class AuthDto {
   @IsDefined()
@@ -58,4 +62,25 @@ export class RefreshTokenDto {
     description: 'Why the client is refreshing; affects log wording only.',
   })
   readonly reason?: RefreshTokenReason
+}
+
+export class CreateApiTokenDto {
+  @IsDefined()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  @ApiProperty({ type: String, description: 'A label to recognise the token by.', example: 'Assistant MCP server' })
+  readonly name: string
+
+  @IsDefined()
+  @IsIn(API_TOKEN_SCOPES)
+  @ApiProperty({ enum: API_TOKEN_SCOPES, description: '`read`: a non-admin user limited to GET/HEAD requests. `admin`: an administrator.' })
+  readonly scope: ApiTokenScope
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(API_TOKEN_MAX_EXPIRY_DAYS)
+  @ApiProperty({ required: false, nullable: true, type: Number, description: 'Days until the token expires. Omit or pass null for a token that never expires.', example: 90 })
+  readonly expiresInDays?: number | null
 }
