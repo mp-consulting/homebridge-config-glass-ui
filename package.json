@@ -67,6 +67,7 @@
     "@fastify/static": "10.1.5",
     "@homebridge/hap-client": "5.3.0",
     "@homebridge/node-pty-prebuilt-multiarch": "0.14.1",
+    "@mp-consulting/homebridge-ai-kit": "file:../homebridge-mcp-server",
     "@nestjs/axios": "12.0.1",
     "@nestjs/common": "12.1.2",
     "@nestjs/core": "12.1.2",

@@ -8,6 +8,7 @@ import { ConfigModule } from './core/config/config.module.js'
 import { LoggerModule } from './core/logger/logger.module.js'
 import { SchedulerModule } from './core/scheduler/scheduler.module.js'
 import { AccessoriesModule } from './modules/accessories/accessories.module.js'
+import { AiModule } from './modules/ai/ai.module.js'
 import { BackupModule } from './modules/backup/backup.module.js'
 import { ChildBridgesModule } from './modules/child-bridges/child-bridges.module.js'
 import { ConfigEditorModule } from './modules/config-editor/config-editor.module.js'
@@ -40,6 +41,7 @@ import { UsersModule } from './modules/users/users.module.js'
     LogModule,
     SetupWizardModule,
     UpdateAllModule,
+    AiModule,
   ],
   controllers: [
     AppController,

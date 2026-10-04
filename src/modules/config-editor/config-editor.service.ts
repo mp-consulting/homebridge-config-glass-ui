@@ -214,6 +214,37 @@ export class ConfigEditorService {
   }
 
   /**
+   * Read-modify-write one `platforms` entry, found by its `platform` key, under
+   * the config lock and with the usual timestamped backup. `update` receives a
+   * copy of the block (undefined when there is none) and returns the block to
+   * store, or undefined to remove it. A new block is appended.
+   * @param platform - the `platform` value identifying the block
+   * @param update - builds the new block from the current one
+   */
+  public async updatePlatformBlock(
+    platform: string,
+    update: (block: Record<string, any> | undefined) => Record<string, any> | undefined,
+  ): Promise<Record<string, any> | undefined> {
+    return this.mutateConfigFile((config) => {
+      const platforms = Array.isArray(config.platforms) ? config.platforms : []
+      const index = platforms.findIndex(p => p?.platform === platform)
+      const current = index === -1 ? undefined : structuredClone(platforms[index])
+      const next = update(current)
+      if (next === undefined) {
+        if (index !== -1) {
+          platforms.splice(index, 1)
+        }
+      } else if (index === -1) {
+        platforms.push({ platform, ...next } as PlatformConfig)
+      } else {
+        platforms[index] = { platform, ...next } as PlatformConfig
+      }
+      config.platforms = platforms
+      return next
+    })
+  }
+
+  /**
    * Return the config for a specific plugin
    */
   public async getConfigForPlugin(pluginName: string) {
