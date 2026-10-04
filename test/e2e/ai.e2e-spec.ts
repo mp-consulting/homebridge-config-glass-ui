@@ -273,12 +273,14 @@ describe('Assistant (e2e)', () => {
 
     it.each([
       ['POST', '/ai/diagnose-logs', {}],
+      ['POST', '/ai/plugin-config', { pluginName: 'homebridge-not-installed', request: 'x' }],
+      ['POST', '/ai/update-risk', { pluginName: 'homebridge-not-installed' }],
       ['POST', '/ai/chat', { messages: [{ role: 'user', content: 'hi' }] }],
       ['POST', '/ai/organize', { accessories: [{ uniqueId: 'a' }] }],
       ['GET', '/ai/digest', undefined],
     ] as const)('%s %s answers 409 while the Assistant is off', async (method, path, payload) => {
-      configService.ui.log = { method: 'file', path: logPath }
-      await writeFile(logPath, 'a line\n')
+      // Not even a log file to read: off is reported first
+      configService.ui.log = { method: 'file', path: resolve(testStoragePath, 'missing.log') }
       const res = await inject(method, path, adminAuth, payload)
       expect(res.statusCode).toBe(409)
       expect(res.json().message).toMatch(/not enabled/)

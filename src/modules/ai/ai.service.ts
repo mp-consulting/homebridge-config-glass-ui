@@ -316,6 +316,8 @@ export class AiService {
   }
 
   async diagnoseLogs(user: AiUser, focus: string | undefined, stream: AiStreamOptions = {}) {
+    // Off is reported before anything is read
+    await this.requireReady()
     const logs = await this.recentLogLines()
     if (!logs.length) {
       throw new BadRequestException('The log is empty.')
@@ -329,6 +331,7 @@ export class AiService {
   // ── Config Copilot ───────────────────────────────────────────────
 
   async pluginConfig(user: AiUser, dto: AiPluginConfigDto, stream: AiStreamOptions = {}) {
+    await this.requireReady()
     const schema = await this.pluginsService.getPluginConfigSchema(dto.pluginName) as Record<string, any>
     const index = dto.index ?? 0
     let current = dto.current
@@ -421,6 +424,7 @@ export class AiService {
   // ── Update risk ──────────────────────────────────────────────────
 
   async updateRisk(user: AiUser, dto: AiUpdateRiskDto) {
+    await this.requireReady()
     const installed = (await this.pluginsService.getInstalledPlugins()).find(p => p.name === dto.pluginName)
     const currentVersion = dto.currentVersion ?? installed?.installedVersion
     if (!currentVersion) {
