@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { IsDefined, IsNotEmpty, IsString, Matches } from 'class-validator'
 
+import { Audited, auditPluginTarget } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { PluginJobsService } from './plugin-jobs.service.js'
 import { PluginRollbackService, ROLLBACK_DAYS } from './plugin-rollback.service.js'
@@ -64,6 +65,7 @@ export class PluginRollbackController {
   @ApiResponse({ status: 202, schema: { type: 'object', properties: { jobId: { type: 'string' }, version: { type: 'string' } } } })
   @ApiResponse({ status: 404, description: 'Nothing to roll back for that plugin.' })
   @HttpCode(202)
+  @Audited('plugin.rollback', { target: auditPluginTarget, details: ({ result }) => ({ version: (result as { version?: string } | undefined)?.version }) })
   @Post()
   async start(@Body() body: PluginRollbackRequestDto) {
     const entry = await this.rollback.require(body.name)

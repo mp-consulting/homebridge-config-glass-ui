@@ -14,6 +14,7 @@ import { Test } from '@nestjs/testing'
 import { copy, readJson, remove } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuditService } from '../../src/core/audit/audit.service.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { NotificationsModule } from '../../src/modules/notifications/notifications.module.js'
 import { NotificationsService } from '../../src/modules/notifications/notifications.service.js'
@@ -141,6 +142,12 @@ describe('Web Push', () => {
       const off = await app.inject({ method: 'POST', path: '/notifications/web-push/unsubscribe', headers: { authorization }, payload: { endpoint: ENDPOINT } })
       expect(off.json()).toEqual({ removed: true })
       expect(await webPush.count()).toBe(0)
+
+      await vi.waitFor(async () => {
+        const { entries } = await app.get(AuditService).list({ action: 'web-push' })
+        expect(entries.map((e: { action: string }) => e.action)).toEqual(expect.arrayContaining(['web-push.subscribe', 'web-push.unsubscribe']))
+        expect(JSON.stringify(entries)).not.toContain(keys.auth)
+      })
     })
 
     it('removes a device by id, and 404s an unknown one', async () => {
@@ -154,6 +161,8 @@ describe('Web Push', () => {
       expect((await subscribe({ endpoint: 'http://push.example.com/x', keys: browserKeys() })).statusCode).toBe(400)
       expect((await subscribe({ endpoint: ENDPOINT, keys: { p256dh: 'abc', auth: 'def' } })).statusCode).toBe(400)
       expect((await subscribe({ endpoint: 'nope', keys: browserKeys() })).statusCode).toBe(400)
+      expect((await subscribe({ endpoint: ENDPOINT })).statusCode).toBe(400)
+      expect((await app.inject({ method: 'POST', path: '/notifications/web-push/unsubscribe', headers: { authorization }, payload: {} })).statusCode).toBe(400)
     })
 
     it('needs an administrator', async () => {

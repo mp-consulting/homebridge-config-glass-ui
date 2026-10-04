@@ -151,7 +151,8 @@ export class BackupDestinationsService {
       }
       const target = next[name] as unknown as Record<string, unknown>
       for (const [field, value] of Object.entries(given as Record<string, unknown>)) {
-        if (!(field in target)) {
+        // A DTO instance carries the fields it was not given as undefined
+        if (!(field in target) || value === undefined) {
           continue
         }
         const expected = typeof target[field]

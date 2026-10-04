@@ -11,6 +11,7 @@ import { Test } from '@nestjs/testing'
 import { copy, readJson, remove, writeJson } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuditService } from '../../src/core/audit/audit.service.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AppEventsService } from '../../src/core/events/app-events.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
@@ -128,6 +129,10 @@ describe('Plugin rollback (e2e)', () => {
     expect(res.statusCode).toBe(202)
     expect(res.json()).toEqual({ jobId: 'job-1', version: '1.0.0' })
     expect(start).toHaveBeenCalledWith('install', { name: 'homebridge-mock-plugin', version: '1.0.0' })
+    await vi.waitFor(async () => {
+      const { entries } = await app.get(AuditService).list({ action: 'plugin.rollback' })
+      expect(entries[0]).toMatchObject({ action: 'plugin.rollback', ok: true, target: 'homebridge-mock-plugin', details: { version: '1.0.0' } })
+    })
   })
 
   it('answers 404 with nothing to roll back, and 400 for a bad name', async () => {

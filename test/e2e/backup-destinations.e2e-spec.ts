@@ -12,6 +12,7 @@ import { Test } from '@nestjs/testing'
 import { copy, ensureDir, readdir, remove } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuditService } from '../../src/core/audit/audit.service.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { AppEventsService } from '../../src/core/events/app-events.service.js'
@@ -141,6 +142,12 @@ describe('Off-site backups', () => {
       expect(res.json().webdav.password).toBe('********')
       expect(res.json().s3.secretAccessKey).toBe('********')
       expect(JSON.stringify(res.json())).not.toContain('pa55word')
+      await vi.waitFor(async () => {
+        const { entries } = await app.get(AuditService).list({ action: 'backup.destinations.update' })
+        expect(entries[0]).toMatchObject({ ok: true, details: { webdav: { enabled: true, url: webdav.url, keep: 2 } } })
+        expect(JSON.stringify(entries)).not.toContain('pa55word')
+        expect(JSON.stringify(entries)).not.toContain('s3cret')
+      })
       const mode = (await stat(destinations.filePath)).mode & 0o777
       expect(process.platform === 'win32' || mode === 0o600).toBe(true)
 

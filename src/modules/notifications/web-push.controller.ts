@@ -1,20 +1,13 @@
-import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, Post, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Inject, Param, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
+import { Audited } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { AuthUser, User } from '../../core/auth/user.decorator.js'
+import { PushEndpointDto, PushSubscriptionDto, PushTestDto } from './notifications.dto.js'
 import { NotificationsService } from './notifications.service.js'
 import { WebPushService } from './web-push.service.js'
-
-const SUBSCRIPTION_SCHEMA = {
-  type: 'object',
-  required: ['endpoint', 'keys'],
-  properties: {
-    endpoint: { type: 'string', example: 'https://fcm.googleapis.com/fcm/send/…' },
-    keys: { type: 'object', properties: { p256dh: { type: 'string' }, auth: { type: 'string' } } },
-    label: { type: 'string', example: 'Safari on iPhone' },
-  },
-}
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
@@ -36,33 +29,30 @@ export class WebPushController {
   }
 
   @ApiOperation({ summary: 'Subscribe this browser to the Browser notification channel (its `PushSubscription.toJSON()`).' })
-  @ApiBody({ schema: SUBSCRIPTION_SCHEMA })
+  @Audited('web-push.subscribe', { target: ({ result }) => (result as { id?: string } | undefined)?.id, details: ({ body }) => ({ label: (body as PushSubscriptionDto)?.label }) })
   @Post('subscriptions')
-  subscribe(@Body() body: unknown, @Request() req: { user?: { username?: string } }) {
-    return this.webPush.subscribe(body, req.user?.username)
+  subscribe(@Body() body: PushSubscriptionDto, @User() user: AuthUser) {
+    return this.webPush.subscribe(body, user?.username)
   }
 
   @ApiOperation({ summary: 'Unsubscribe the browser with this endpoint.' })
-  @ApiBody({ schema: { type: 'object', required: ['endpoint'], properties: { endpoint: { type: 'string' } } } })
+  @Audited('web-push.unsubscribe')
   @Post('unsubscribe')
-  unsubscribe(@Body() body: { endpoint?: unknown } | undefined) {
-    if (typeof body?.endpoint !== 'string') {
-      throw new BadRequestException('endpoint is required.')
-    }
+  unsubscribe(@Body() body: PushEndpointDto) {
     return this.webPush.unsubscribe({ endpoint: body.endpoint })
   }
 
   @ApiOperation({ summary: 'Remove a subscribed device by its id.' })
   @ApiParam({ name: 'id' })
+  @Audited('web-push.remove')
   @Delete('subscriptions/:id')
   remove(@Param('id') id: string) {
     return this.webPush.unsubscribe({ id })
   }
 
   @ApiOperation({ summary: 'Send a test notification to the browser with this endpoint, or to every subscribed device.' })
-  @ApiBody({ schema: { type: 'object', properties: { endpoint: { type: 'string' } } } })
   @Post('test')
-  test(@Body() body: { endpoint?: unknown } | undefined) {
-    return this.notifications.sendBrowserTest(typeof body?.endpoint === 'string' ? body.endpoint : undefined)
+  test(@Body() body: PushTestDto) {
+    return this.notifications.sendBrowserTest(body?.endpoint)
   }
 }
