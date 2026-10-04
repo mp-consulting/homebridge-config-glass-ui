@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { absolutizeCssUrls, buildCustomUiStyleMessages, IFRAME_LAYOUT_STYLE, postCustomUiStyles, resolveStylesheetHref } from './custom-ui-styles'
+import { absolutizeCssUrls, buildCustomUiStyleMessages, IFRAME_LAYOUT_STYLE, postCustomUiStyles, resolveStylesheetHref, UI_KIT_GLASS_STYLE } from './custom-ui-styles'
 
 function makeDocument(html: string, base: string): Document {
   const doc = new DOMParser().parseFromString(html, 'text/html')
@@ -72,8 +72,27 @@ describe('buildCustomUiStyleMessages (Vite prod document)', () => {
       { action: 'link-element', href: 'http://hb.local:8581/assets/PluginsPage-Bb2.css', rel: 'stylesheet' },
       { action: 'link-element', href: 'http://hb.local:8581/assets/monaco/min/vs/editor/editor.main.css', rel: 'stylesheet' },
       { action: 'inline-style', style: '.mtk1 { color: #000000; }' },
+      // Glass UI addition: the ui-kit token mapping, in glass mode only
+      { action: 'inline-style', style: UI_KIT_GLASS_STYLE },
       { action: 'inline-style', style: IFRAME_LAYOUT_STYLE },
     ])
+  })
+
+  it('maps the ui-kit tokens to the glass palette, scoped to --mp-* and .mp-*', () => {
+    expect(UI_KIT_GLASS_STYLE).toContain('--mp-primary: var(--glass-primary-btn, var(--glass-primary));')
+    expect(UI_KIT_GLASS_STYLE).toContain('--mp-surface: var(--glass-surface);')
+    expect(UI_KIT_GLASS_STYLE).toContain('backdrop-filter: blur(var(--mp-glass-blur, var(--glass-blur-backdrop)))')
+    // Every rule is under body.glass-mode, and only kit classes get styles
+    const selectors = UI_KIT_GLASS_STYLE.match(/[^{}]+(?=\{)/g)!.map(s => s.trim())
+    for (const selector of selectors) {
+      for (const part of selector.replace(/:is\([^)]*\)/g, ':is()').split(',')) {
+        expect(part.trim()).toMatch(/^html body\.glass-mode( |$)/)
+      }
+    }
+    const declarations = UI_KIT_GLASS_STYLE.split('}').filter(rule => !rule.includes(':is(') && !/^\s*html body\.glass-mode\s*,/.test(rule))
+    for (const rule of declarations.filter(r => r.includes('{'))) {
+      expect(rule.split('{')[0]).toContain('.mp-')
+    }
   })
 
   it('ignores icon/manifest/modulepreload links', () => {

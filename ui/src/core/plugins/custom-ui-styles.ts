@@ -11,6 +11,11 @@
  * 3. one `inline-style` per `<style>` element, with its text;
  * 4. one last `inline-style` with the iframe layout override.
  *
+ * Glass UI adds one message Angular did not send: in glass mode, an
+ * `inline-style` with {@link UI_KIT_GLASS_STYLE} just before the layout
+ * override, so plugins built on `@mp-consulting/homebridge-ui-kit` take the
+ * glass palette.
+ *
  * It then posted `{ action: 'ready' }`. `@homebridge/plugin-ui-utils`' `ui.js`
  * adds the classes to its body, appends a `<style>`/`<link>` per message, waits
  * for every link to load (or fail, or 5 s) on `ready`, and only then shows the
@@ -44,6 +49,57 @@ export type CustomUiStyleMessage
 export const IFRAME_LAYOUT_STYLE = `
       body {
         height: unset !important;
+      }
+    `
+
+/**
+ * Glass mode for plugin UIs built on `@mp-consulting/homebridge-ui-kit`: its
+ * `--mp-*` design tokens take Glass UI's `--glass-*` values (which follow the
+ * theme colour and light/dark mode), and the kit's settings card becomes a
+ * frosted glass surface.
+ *
+ * Only `--mp-*` custom properties and `.mp-*` classes are touched, so a plugin
+ * that does not use the kit is unaffected (`.card` and the Bootstrap surfaces
+ * already come from the copied glass stylesheet). The tokens are also set on
+ * `.mp-theme-dark` / `[data-bs-theme]` elements inside the body, where the
+ * kit's own dark values would otherwise win. A plugin opts out of the frosted
+ * card with `--mp-glass-blur: 0px` (or overrides any token in its own CSS
+ * with higher specificity).
+ */
+export const UI_KIT_GLASS_STYLE = `
+      html body.glass-mode,
+      html body.glass-mode :is(.mp-theme-dark, [data-bs-theme]) {
+        --mp-primary: var(--glass-primary-btn, var(--glass-primary));
+        --mp-primary-rgb: var(--glass-primary-rgb);
+        --mp-primary-hover: var(--glass-primary-btn-dark, var(--glass-primary-dark));
+        --mp-primary-text: var(--glass-text-accent);
+        --mp-focus-ring: var(--glass-text-accent);
+        --mp-text-subtle: var(--glass-muted);
+        --mp-status-online: var(--glass-success);
+        --mp-status-online-glow: rgba(var(--glass-success-rgb), 0.35);
+        --mp-status-offline: var(--glass-danger);
+        --mp-surface: var(--glass-surface);
+        --mp-border: var(--glass-border);
+        --mp-radius: var(--glass-radius-md);
+        --mp-shadow-hover: var(--glass-shadow-lift);
+        --mp-ai-fg: var(--glass-text);
+        --mp-ai-fg-muted: var(--glass-muted);
+        --mp-ai-bg: var(--glass-input);
+        --mp-ai-border-color: var(--glass-divider);
+      }
+      html body.glass-mode .mp-settings-card {
+        background: linear-gradient(135deg, rgba(var(--glass-primary-rgb), 0.1) 0%, var(--glass-surface) 55%);
+        box-shadow: var(--glass-shadow);
+        color: var(--glass-text);
+        -webkit-backdrop-filter: blur(var(--mp-glass-blur, var(--glass-blur-backdrop))) saturate(160%);
+        backdrop-filter: blur(var(--mp-glass-blur, var(--glass-blur-backdrop))) saturate(160%);
+      }
+      html body.glass-mode .mp-device-card:hover {
+        background: var(--glass-surface-hover);
+      }
+      html body.glass-mode .mp-header-subtitle,
+      html body.glass-mode .mp-empty-state-hint {
+        color: var(--glass-muted);
       }
     `
 
@@ -145,6 +201,9 @@ export function buildCustomUiStyleMessages(doc: Document = document, options: Cu
     messages.push({ action: 'inline-style', style: absolutizeInlineUrls ? absolutizeCssUrls(css, baseURI) : css })
   }
 
+  if (bodyClasses.contains('glass-mode')) {
+    messages.push({ action: 'inline-style', style: UI_KIT_GLASS_STYLE })
+  }
   messages.push({ action: 'inline-style', style: IFRAME_LAYOUT_STYLE })
   return messages
 }
