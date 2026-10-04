@@ -33,6 +33,7 @@ import { ConfigBackupService } from '../../src/modules/config-editor/config-back
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
 import { InstalledPluginsService } from '../../src/modules/plugins/installed-plugins.service.js'
+import { PluginRegistryService } from '../../src/modules/plugins/plugin-registry.service.js'
 import { testStoragePath } from '../storage-path.js'
 
 describe('ConfigEditorController (e2e)', () => {
@@ -99,6 +100,18 @@ describe('ConfigEditorController (e2e)', () => {
     // Isolate plugin discovery to the test plugin path only - resolving the
     // global paths would spawn `npm -g prefix`
     ;(app.get(InstalledPluginsService, { strict: false }) as any)._paths = [pluginsPath]
+
+    // The scan also finds the running UI package, which is public, so the
+    // first plugin lookup would ask registry.npmjs.org for its latest version
+    // (seconds on a slow runner) - answer as if it were not published
+    vi.spyOn(app.get(PluginRegistryService, { strict: false }), 'getPluginFromNpm').mockImplementation(async plugin => ({
+      ...plugin,
+      publicPackage: false,
+      latestVersion: null,
+      updateAvailable: false,
+      updateTag: null,
+      links: {},
+    }))
 
     // app.init() already ran onApplicationBootstrap (the backup migration);
     // this resolves once that start-up work is done
