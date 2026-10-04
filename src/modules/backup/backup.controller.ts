@@ -24,6 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
+import { Audited } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { BackupService } from './backup.service.js'
@@ -94,12 +95,14 @@ export class BackupController {
     description: 'NOTE: This endpoint does not trigger the restore process.',
   })
   @ApiParam({ name: 'backupId', type: 'string' })
+  @Audited('backup.restore')
   @Post('/scheduled-backups/:backupId/restore')
   async restoreScheduledBackup(@Param('backupId') backupId): Promise<void> {
     return this.backupService.restoreScheduledBackup(backupId)
   }
 
   @UseGuards(AdminGuard)
+  @Audited('backup.upload')
   @Post('/restore')
   @ApiOperation({
     summary: 'Upload a `.tar.gz` of the Homebridge instance.',
@@ -132,6 +135,7 @@ export class BackupController {
   }
 
   @UseGuards(AdminGuard)
+  @Audited('backup.restore')
   @Put('/restore/trigger')
   @ApiOperation({
     summary: 'Triggers a headless restore process from the last uploaded backup file.',
@@ -158,6 +162,7 @@ export class BackupController {
       },
     },
   })
+  @Audited('backup.upload-hbfx')
   @Post('/restore/hbfx')
   async restoreHbfx(@Req() req: FastifyRequest) {
     try {
@@ -170,6 +175,7 @@ export class BackupController {
   }
 
   @UseGuards(AdminGuard)
+  @Audited('homebridge.restart', { details: () => ({ after: 'backup restore' }) })
   @Put('/restart')
   @ApiOperation({ summary: 'Trigger a hard restart of Homebridge (use after restoring backup).' })
   postBackupRestoreRestart() {

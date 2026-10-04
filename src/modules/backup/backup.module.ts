@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
+import { AuditModule } from '../../core/audit/audit.module.js'
 import { ConfigModule } from '../../core/config/config.module.js'
 import { AppEventsModule } from '../../core/events/app-events.module.js'
 import { FsModule } from '../../core/fs/fs.module.js'
@@ -16,6 +17,7 @@ import { BackupService } from './backup.service.js'
 
 @Module({
   imports: [
+    AuditModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     PluginsModule,

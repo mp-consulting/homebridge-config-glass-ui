@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common'
 import { AppController } from './app.controller.js'
 import { AppGateway } from './app.gateway.js'
 import { AppService } from './app.service.js'
+import { AuditModule } from './core/audit/audit.module.js'
 import { AuthModule } from './core/auth/auth.module.js'
 import { ConfigModule } from './core/config/config.module.js'
 import { LoggerModule } from './core/logger/logger.module.js'
@@ -26,6 +27,7 @@ import { UsersModule } from './modules/users/users.module.js'
 
 @Module({
   imports: [
+    AuditModule,
     ConfigModule,
     LoggerModule,
     SchedulerModule,

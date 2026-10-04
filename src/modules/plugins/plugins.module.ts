@@ -4,6 +4,7 @@ import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
+import { AuditModule } from '../../core/audit/audit.module.js'
 import { ConfigModule } from '../../core/config/config.module.js'
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
@@ -21,6 +22,7 @@ import { UiUpdateService } from './ui-update.service.js'
 
 @Module({
   imports: [
+    AuditModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     HttpModule.register({
       headers: {

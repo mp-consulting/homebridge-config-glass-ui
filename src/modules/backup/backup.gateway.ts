@@ -3,6 +3,7 @@ import type { EventEmitter } from 'node:events'
 import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
+import { Audited } from '../../core/audit/audit.interceptor.js'
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { red } from '../../core/logger/colors.js'
@@ -21,6 +22,7 @@ export class BackupGateway {
     @Inject(Logger) private readonly logger: Logger,
   ) {}
 
+  @Audited('backup.restore')
   @SubscribeMessage('do-restore')
   async doRestore(client: EventEmitter) {
     try {
@@ -32,6 +34,7 @@ export class BackupGateway {
     }
   }
 
+  @Audited('backup.restore-hbfx')
   @SubscribeMessage('do-restore-hbfx')
   async doRestoreHbfx(client: EventEmitter) {
     try {

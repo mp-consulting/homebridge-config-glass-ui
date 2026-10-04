@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-### Changed
+### Added
+
+- **Audit log.** Security-relevant actions are appended to `.uix-audit/audit.jsonl` in the Homebridge storage directory (owner-only, rotated at 2 MB, four older files kept): every Assistant tool call (who, the tool, its arguments and result, redacted), API token creation and revocation (never the token), every write request made with an API token (`api-token.request`, or the action's own entry naming the token), config saves (`config.save`, `config.plugin.save`, `config.ui.save`), plugin installs, updates and removals (HTTP jobs and the socket), plugin enable/disable, Homebridge and child bridge restarts, backup restores, Update All runs, user changes and the Assistant / MCP settings. Each entry has the time, the user and how they signed in (session, API token, service), the action, its target, whether it worked and the client address. Administrators read it at `GET /api/audit` (`page`, `limit` up to 500, `action` prefix, `username`), and in Settings, Security, **Audit log**. Log Doctor cannot read the audit directory.
 
 - **Scenes and notification settings are validated with DTOs.** `POST /api/scenes`, `PUT /api/scenes/:id`, `PUT /api/notifications/settings` and `POST /api/notifications/test` now check their bodies with class-validator DTOs (shown in Swagger with every field) instead of by hand. Unknown fields are dropped; a missing or wrong field answers `400` with the field named. The checks themselves are the same (cron expressions and channel formats are still checked by the services).
 - **The Assistant's caches are bounded.** Update risk briefings are kept for a day and at most 200 of them (least recently used first out), not until the settings change; the per-user rate limit forgets users idle for a minute instead of keeping every username.

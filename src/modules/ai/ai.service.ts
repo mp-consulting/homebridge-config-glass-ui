@@ -16,6 +16,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 
+import { auditActor, AuditService } from '../../core/audit/audit.service.js'
 import { AuthService } from '../../core/auth/auth.service.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
@@ -167,6 +168,7 @@ export class AiService {
     @Inject(AI_PROVIDER_FACTORY) private readonly providerFactory: AiProviderFactory,
     @Inject(AI_AGENT_RUNNER) private readonly runAgent: AiAgentRunner,
     @Inject(AI_HOMEBRIDGE_CLIENT_FACTORY) private readonly clientFactory: AiHomebridgeClientFactory,
+    @Inject(AuditService) private readonly audit: AuditService,
   ) {}
 
   // ── Settings ─────────────────────────────────────────────────────
@@ -483,6 +485,31 @@ export class AiService {
       ? 'is not an administrator: only read-only tools are available, so explain what an administrator would need to do for any change.'
       : 'is an administrator. Changes that restart, remove or reconfigure something are confirmed by the user before they run.'} Answer in Markdown, briefly.`
 
+    // Every tool call goes to the audit log as it completes (streamed), or
+    // from the result when nothing streams (HTTP)
+    const audited = new Set<string>()
+    const auditTool = (call: ToolCall, result: string, isError: boolean) => {
+      if (audited.has(call.id)) {
+        return
+      }
+      audited.add(call.id)
+      void this.audit.record({
+        action: 'assistant.tool',
+        actor: auditActor(user),
+        ok: !isError,
+        target: call.name,
+        details: { arguments: call.arguments, result: redactText(String(result ?? '')).slice(0, 500), readOnly },
+      })
+    }
+    const onEvent = options.onEvent
+      ? (event: AgentEvent) => {
+          if (event.type === 'tool_result') {
+            auditTool(event.call, event.result, event.isError)
+          }
+          options.onEvent!(event)
+        }
+      : undefined
+
     return this.run(user, async ({ config, provider }) => {
       const result = await this.runAgent({
         provider,
@@ -493,9 +520,12 @@ export class AiService {
         maxSteps: AI_MAX_AGENT_STEPS,
         maxOutputTokens: config.maxOutputTokens,
         signal: options.signal,
-        onEvent: options.onEvent,
+        onEvent,
         confirm: options.confirm,
       })
+      for (const call of result.toolCalls) {
+        auditTool(call, call.result, call.isError)
+      }
       return {
         text: result.text,
         toolCalls: result.toolCalls.map(call => ({ id: call.id, name: call.name, arguments: call.arguments, isError: call.isError })),

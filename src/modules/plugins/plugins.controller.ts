@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCod
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { Audited, auditPluginDetails, auditPluginTarget } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { checkPluginCompatibility, parseTargetVersion } from './plugin-compatibility.js'
@@ -180,6 +181,7 @@ export class PluginsController {
   @ApiResponse({ status: 202, schema: PLUGIN_JOB_STARTED_SCHEMA })
   @ApiResponse({ status: 400, description: 'Invalid plugin name or version.' })
   @HttpCode(202)
+  @Audited('plugin.install', { target: auditPluginTarget, details: auditPluginDetails })
   @Post('install')
   installPluginJob(@Body() body: PluginJobRequestDto) {
     return { jobId: this.pluginJobs.start('install', body).id }
@@ -194,6 +196,7 @@ export class PluginsController {
   @ApiResponse({ status: 202, schema: PLUGIN_JOB_STARTED_SCHEMA })
   @ApiResponse({ status: 400, description: 'Invalid plugin name or version.' })
   @HttpCode(202)
+  @Audited('plugin.update', { target: auditPluginTarget, details: auditPluginDetails })
   @Post('update')
   updatePluginJob(@Body() body: PluginJobRequestDto) {
     return { jobId: this.pluginJobs.start('update', body).id }
@@ -208,6 +211,7 @@ export class PluginsController {
   @ApiResponse({ status: 202, schema: PLUGIN_JOB_STARTED_SCHEMA })
   @ApiResponse({ status: 400, description: 'Invalid plugin name.' })
   @HttpCode(202)
+  @Audited('plugin.uninstall', { target: auditPluginTarget })
   @Post('uninstall')
   uninstallPluginJob(@Body() body: PluginJobRequestDto) {
     return { jobId: this.pluginJobs.start('uninstall', { name: body.name }).id }
@@ -280,6 +284,7 @@ export class PluginsController {
     status: 404,
     description: 'Package not installed.',
   })
+  @Audited('plugin.update', { details: ({ query }) => ({ version: query.version }) })
   @Post('update/:pluginName')
   triggerUpdate(@Param('pluginName') pluginName: string, @Query('version') version?: string) {
     return this.pluginsService.triggerUpdate(pluginName, version)

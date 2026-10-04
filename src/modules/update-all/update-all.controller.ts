@@ -2,6 +2,7 @@ import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { Audited } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { UpdateAllJournalService } from './update-all-journal.service.js'
 import { UpdateAllStartDto } from './update-all.dto.js'
@@ -24,6 +25,7 @@ export class UpdateAllController {
   }
 
   @ApiOperation({ summary: 'Start an Update All run for the confirmed items. Returns the run id; progress is written to the journal as the serial update loop runs.' })
+  @Audited('update-all.start', { details: ({ body }) => ({ items: (body as { items?: unknown[] } | undefined)?.items?.length }) })
   @Post('start')
   async startRun(@Body() body: UpdateAllStartDto) {
     return await this.updateAllService.start(body.items)

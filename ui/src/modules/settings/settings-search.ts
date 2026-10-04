@@ -100,6 +100,7 @@ export const sectionItems: Record<string, string[]> = {
     'setting-security-auth',
     'setting-session-inactivity',
     'setting-security-session',
+    'setting-security-audit',
     'setting-security-https',
   ],
   assistant: [
@@ -228,6 +229,7 @@ export function getItemsContent(): Record<string, string> {
     'setting-security-auth': t('settings.security.auth'),
     'setting-session-inactivity': t('settings.startup.session_inactivity_based'),
     'setting-security-session': t('settings.startup.session'),
+    'setting-security-audit': t('settings.security.audit'),
     'setting-security-https': t('settings.security.https_enable'),
 
     // Assistant section

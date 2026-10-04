@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, Inject, Post, Put, Query, UseGuards } 
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { Audited, pick } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { AuthUser, User } from '../../core/auth/user.decorator.js'
 import { AiChatDto, AiDiagnoseLogsDto, AiOrganizeDto, AiPluginConfigDto, AiSettingsDto, AiUpdateRiskDto } from './ai.dto.js'
@@ -31,6 +32,7 @@ export class AiController {
 
   @ApiOperation({ summary: 'Update the `HomebridgeAiKit` block of config.json (created when missing). An empty `apiKey` keeps the stored one.' })
   @UseGuards(AdminGuard)
+  @Audited('assistant.settings', { details: ({ body }) => pick(body, ['enabled', 'provider', 'model', 'baseUrl', 'maxOutputTokens', 'clearApiKey']) })
   @Put('settings')
   updateSettings(@Body() body: AiSettingsDto, @User() user: AuthUser) {
     return this.aiService.updateSettings(body, user)

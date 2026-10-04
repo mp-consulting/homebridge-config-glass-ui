@@ -20,6 +20,7 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 
+import { Audited } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_DEVICE_ID } from '../../core/regex.constants.js'
@@ -48,6 +49,7 @@ export class ServerController {
   ) {}
 
   @UseGuards(AdminGuard)
+  @Audited('homebridge.restart')
   @Put('/restart')
   @ApiOperation({ summary: 'Restart the Homebridge instance.' })
   restartServer() {
@@ -55,6 +57,7 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @Audited('child-bridge.restart')
   @Put('/restart/:deviceId')
   @ApiOperation({
     summary: 'Restart a child bridge instance.',
@@ -64,6 +67,7 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @Audited('child-bridge.stop')
   @Put('/stop/:deviceId')
   @ApiOperation({
     summary: 'Stop a child bridge instance.',
@@ -73,6 +77,7 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @Audited('child-bridge.start')
   @Put('/start/:deviceId')
   @ApiOperation({
     summary: 'Start a child bridge instance.',

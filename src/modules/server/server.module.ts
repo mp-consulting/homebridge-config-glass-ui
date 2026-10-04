@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
+import { AuditModule } from '../../core/audit/audit.module.js'
 import { ConfigModule } from '../../core/config/config.module.js'
 import { FsModule } from '../../core/fs/fs.module.js'
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module.js'
@@ -17,6 +18,7 @@ import { ServerService } from './server.service.js'
 
 @Module({
   imports: [
+    AuditModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule,
     LoggerModule,

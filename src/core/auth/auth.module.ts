@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport'
 
 import { PluginsSettingsUiTicketModule } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.module.js'
 import { PluginsModule } from '../../modules/plugins/plugins.module.js'
+import { AuditModule } from '../audit/audit.module.js'
 import { ConfigModule } from '../config/config.module.js'
 import { ConfigService } from '../config/config.service.js'
 import { FsModule } from '../fs/fs.module.js'
@@ -25,6 +26,7 @@ import { UserRepository } from './user.repository.js'
 
 @Module({
   imports: [
+    AuditModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

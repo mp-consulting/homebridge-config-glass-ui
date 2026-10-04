@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
 import { linkRaspbianSsl } from '@/core/constants/links'
+import { openModal } from '@/core/ui/modal'
 import { SafeHtml } from '@/core/ui/SafeHtml'
 import { cx } from '@/core/utilities/cx'
+import { AuditLogModal } from '@/modules/settings/audit/AuditLogModal'
 import { INNER_BLOCK, INNER_FLEX, NumberInput, SaveIndicator, SectionShell, SettingRow, SwitchControl } from '@/modules/settings/sections/rows'
 import { useField, useInvalid, useSaving, useSettingsPage, useSettingsPageState } from '@/modules/settings/settings-page.context'
 
@@ -92,6 +94,23 @@ export function SecuritySection() {
           </SettingRow>
         </>
       )}
+      <SettingRow item="setting-security-audit">
+        <div className={INNER_FLEX}>
+          <span className="pe-2">
+            {t('settings.security.audit')}
+            <br />
+            <small className="grey-text pe-2">{t('settings.security.audit_desc')}</small>
+          </span>
+          <button
+            type="button"
+            className="btn btn-primary m-0"
+            data-testid="audit-log-open"
+            onClick={() => void openModal(AuditLogModal, {}, { size: 'xl' }).result.catch(() => {})}
+          >
+            {t('settings.security.audit_view')}
+          </button>
+        </div>
+      </SettingRow>
       <SettingRow item="setting-security-https">
         <div className={INNER_FLEX}>
           <span className="pe-2">

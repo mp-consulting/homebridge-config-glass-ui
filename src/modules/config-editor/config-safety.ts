@@ -202,6 +202,7 @@ export const PROTECTED_STORAGE_NAMES: readonly string[] = [
   'backups', // full backups (include all of the above)
   '.uix-hb-service-homebridge-startup.json', // hb-service startup env
   '.uix-notifications.json', // notification channel tokens
+  '.uix-audit', // audit log: who did what, from where
 ]
 
 /**

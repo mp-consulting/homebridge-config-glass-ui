@@ -20,6 +20,7 @@ import { copy, outputJson, readJson, writeJson } from 'fs-extra'
 import { decode } from 'jsonwebtoken'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuditService } from '../../src/core/audit/audit.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { Logger } from '../../src/core/logger/logger.service.js'
 import { SslCertGeneratorService } from '../../src/core/ssl/ssl-cert-generator.service.js'
@@ -614,6 +615,10 @@ describe('Assistant (e2e)', () => {
 
       expect(res.json()).toMatchObject({ text: 'I could not restart it.', toolCalls: [{ name: 'restart_homebridge', isError: true }] })
       expect(JSON.stringify(fake.requests[1].messages)).toContain('did not allow restart_homebridge')
+
+      const audit = app.get(AuditService)
+      const { entries } = await audit.list({ action: 'assistant.tool' })
+      expect(entries[0]).toMatchObject({ actor: { username: 'admin', via: 'session' }, target: 'restart_homebridge', ok: false, details: { readOnly: false } })
     })
 
     it('validates the conversation', async () => {
@@ -685,6 +690,7 @@ describe('Assistant (e2e)', () => {
     })
 
     it('runs a destructive tool the user allowed', async () => {
+      const startedAt = new Date().toISOString()
       await enable()
       fake.reply({ toolCalls: [{ id: 't1', name: 'restart_homebridge', arguments: {} }] }, 'Restarting.')
       const { client } = socketFor(admin)
@@ -697,6 +703,9 @@ describe('Assistant (e2e)', () => {
       await done
       // It was attempted (and failed against the closed test port), not refused
       expect(JSON.stringify(fake.requests[1].messages)).not.toContain('did not allow')
+      // Recorded once, as it completed
+      const { entries } = await app.get(AuditService).list({ action: 'assistant.tool' })
+      expect(entries.filter(entry => entry.target === 'restart_homebridge' && entry.at >= startedAt)).toHaveLength(1)
     })
 
     it('denies pending confirmations when the socket disconnects', async () => {

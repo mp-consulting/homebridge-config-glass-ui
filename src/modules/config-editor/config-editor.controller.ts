@@ -25,6 +25,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
+import { Audited } from '../../core/audit/audit.interceptor.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { ConfigBackupService } from './config-backup.service.js'
 import { PortRangeDto, SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
@@ -66,6 +67,7 @@ export class ConfigEditorController {
     description: 'Comma-separated extras. Supported: `restart-info`.',
     example: 'restart-info',
   })
+  @Audited('config.save')
   @Post()
   updateConfig(@Body() body, @Query('include') include?: string) {
     if (includesRestartInfo(include)) {
@@ -89,6 +91,7 @@ export class ConfigEditorController {
     summary: 'Replace the config for a specific plugin.',
     description: 'An array of all config blocks for the plugin must be provided, missing blocks will be removed. Sending an empty array will remove all plugin config. Pass `?include=restart-info` to receive `{ config, affectedBridges }` with only this plugin\'s bridges in `affectedBridges` — the plugin settings modals use this to skip the follow-up `/status/homebridge/child-bridges` fetch.',
   })
+  @Audited('config.plugin.save')
   @Post('/plugin/:pluginName')
   @ApiBody({ description: 'Array of plugin config blocks', type: 'json', isArray: true })
   @ApiQuery({
@@ -118,6 +121,7 @@ export class ConfigEditorController {
     description: 'Comma-separated extras. Supported: `restart-info`.',
     example: 'restart-info',
   })
+  @Audited('plugin.disable')
   @Put('plugin/:pluginName/disable')
   disablePlugin(@Param('pluginName') pluginName, @Query('include') include?: string) {
     if (includesRestartInfo(include)) {
@@ -139,6 +143,7 @@ export class ConfigEditorController {
     description: 'Comma-separated extras. Supported: `restart-info`.',
     example: 'restart-info',
   })
+  @Audited('plugin.enable')
   @Put('plugin/:pluginName/enable')
   enablePlugin(@Param('pluginName') pluginName, @Query('include') include?: string) {
     if (includesRestartInfo(include)) {
@@ -157,6 +162,7 @@ export class ConfigEditorController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Update a config property for the Homebridge Glass UI.' })
+  @Audited('config.ui.save', { target: ({ body }) => (body as { key?: string } | undefined)?.key })
   @Put('/ui')
   setPropertyForUi(@Body() { key, value }) {
     return this.configEditorService.setPropertyForUi(key, value)
@@ -175,6 +181,7 @@ export class ConfigEditorController {
       example: { 'theme': 'red', 'lang': 'auto', 'terminal.fontSize': 14 },
     },
   })
+  @Audited('config.ui.save', { details: ({ body }) => ({ keys: Object.keys(body ?? {}) }) })
   @Patch('/ui')
   patchPropertiesForUi(@Body() body: Record<string, any>) {
     return this.configEditorService.setPropertiesForUi(body)

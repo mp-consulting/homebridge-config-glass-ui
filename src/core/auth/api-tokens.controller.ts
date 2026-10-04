@@ -12,6 +12,7 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 
+import { Audited, pick } from '../audit/audit.interceptor.js'
 import { ApiTokenService } from './api-token.service.js'
 import { CreateApiTokenDto } from './auth.dto.js'
 import { AdminGuard } from './guards/admin.guard.js'
@@ -67,6 +68,7 @@ export class ApiTokensController {
       },
     },
   })
+  @Audited('api-token.create', { target: ({ result }) => (result as { id?: string } | undefined)?.id, details: ({ body }) => pick(body, ['name', 'scope', 'expiresInDays']) })
   @Post()
   createToken(@Body() body: CreateApiTokenDto, @User() user: AuthUser) {
     return this.apiTokens.create(body, user.username)
@@ -77,6 +79,7 @@ export class ApiTokensController {
   @ApiResponse({ status: 204, description: 'Revoked.' })
   @ApiResponse({ status: 404, description: 'No such token.' })
   @HttpCode(204)
+  @Audited('api-token.revoke')
   @Delete(':id')
   async revokeToken(@Param('id') id: string) {
     await this.apiTokens.revoke(id)
