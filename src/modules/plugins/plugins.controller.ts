@@ -3,9 +3,9 @@ import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { checkPluginCompatibility, parseTargetVersion } from './plugin-compatibility.js'
 import { PluginJobsService } from './plugin-jobs.service.js'
 import { PluginJobRequestDto } from './plugins.dto.js'
-import { checkPluginCompatibility, parseTargetVersion } from './plugin-compatibility.js'
 import { PluginsService } from './plugins.service.js'
 
 const PLUGIN_JOB_STARTED_SCHEMA = {

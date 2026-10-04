@@ -7,6 +7,12 @@ body {
   --mp-primary: var(--glass-primary-btn, #4f46e5);
   --mp-primary-hover: var(--glass-primary-btn-dark, #4338ca);
   --mp-ai-surface: #ffffff;
+  // The kit defaults its text, border and status colours to Bootstrap's, which
+  // this app does not switch for dark mode, so they follow the glass palette.
+  --mp-ai-fg: var(--glass-text, #212529);
+  --mp-ai-fg-muted: var(--glass-muted, #6c757d);
+  --mp-ai-bg: var(--glass-input, transparent);
+  --mp-ai-border-color: var(--glass-divider, #dee2e6);
 }
 
 body.dark-mode {
@@ -16,6 +22,12 @@ body.dark-mode {
   --mp-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
   --mp-ai-text: #d8b4fe;
   --mp-ai-surface: #1b1b1b;
+  --mp-ai-fg: var(--glass-text, #f1effa);
+  --mp-ai-fg-muted: var(--glass-muted, #9d9aac);
+  --mp-ai-bg: var(--glass-input, rgba(0, 0, 0, 0.28));
+  --mp-ai-border-color: var(--glass-divider, rgba(255, 255, 255, 0.08));
+  --mp-ai-success-text: #bbf7d0;
+  --mp-ai-danger-text: #fecaca;
   --mp-ai-glow-opacity: 0.7;
   --mp-ai-edge-glow-opacity: 0.8;
   --mp-ai-diff-add-bg: rgba(34, 197, 94, 0.16);
