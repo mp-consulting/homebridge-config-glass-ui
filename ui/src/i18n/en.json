@@ -614,6 +614,8 @@
   "plugins.uninstall_remove_config_required": "If you are permanently removing this plugin, make sure you remove any config for this plugin in the config.json before restarting Homebridge.",
   "plugins.uninstall_remove_confirmation": "Are you sure you want to uninstall {{ pluginName }}?",
   "plugins.uninstall_remove_plugin_config": "Remove plugin config?",
+  "quick.none": "No favourite accessories yet. Open an accessory's info on the Accessories page and turn on Show on Dashboard to add it here.",
+  "quick.title": "Quick Controls",
   "reset.accessory_all.desc": "Remove all accessories from the cache.",
   "reset.accessory_all.list_1": "When clicking on the remove button below, Homebridge will restart and all your existing accessories will be removed from Homebridge and HomeKit.",
   "reset.accessory_all.list_2": "All associated HomeKit data will also be removed, this includes room associations, scenes and automations that this accessory uses.",

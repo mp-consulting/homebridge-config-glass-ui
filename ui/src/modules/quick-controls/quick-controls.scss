@@ -1,0 +1,10 @@
+.hb-quick-controls {
+  max-width: 720px;
+  margin: 0 auto;
+
+  .hb-quick-controls-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+}

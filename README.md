@@ -20,6 +20,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - Run plugins as child bridges, with a health page that shows uptime and restarts and detects crash loops
 - Back up and restore your whole Homebridge instance
 - Notifications by webhook, ntfy, Pushover or Telegram when Homebridge goes down, a child bridge crash loops, updates are available or a backup fails
+- Installs to your phone's home screen as an app, with a Quick Controls page for your favourite accessories
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
 
 ## Installation

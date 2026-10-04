@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { App } from './app/App'
+import { registerServiceWorker } from './core/pwa/register-sw'
 
 import '../../src/global-defaults.ts'
 import './scss/styles.scss'
@@ -11,6 +12,8 @@ import './scss/styles.scss'
 window.addEventListener('vite:preloadError', () => {
   window.location.reload()
 })
+
+void registerServiceWorker()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
