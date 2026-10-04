@@ -72,6 +72,18 @@ export interface AiStreamOptions {
   signal?: AbortSignal
 }
 
+/** How far the organiser has got: replies received of the requests it sends. */
+export interface AiOrganizeProgress {
+  done: number
+  total: number
+}
+
+export interface AiOrganizeOptions {
+  /** Called once before the first request, then as each batch's reply arrives. */
+  onProgress?: (progress: AiOrganizeProgress) => void
+  signal?: AbortSignal
+}
+
 export interface AiChatOptions {
   onEvent?: (event: AgentEvent) => void
   /** Asked before each destructive tool call; without it they are refused. */
@@ -82,6 +94,34 @@ export interface AiChatOptions {
 interface Ready {
   config: AiConfig
   provider: AiProvider
+}
+
+/**
+ * Accessories per organiser request: the same rule as `suggestOrganization` in
+ * ai-core (60 output tokens an accessory, three quarters of the output limit,
+ * at least 5), only used to say how many batches there are.
+ */
+function organizerBatches(accessories: number, maxOutputTokens = 2048): number {
+  const size = Math.max(5, Math.floor((maxOutputTokens * 0.75) / 60))
+  return Math.max(1, Math.ceil(accessories / size))
+}
+
+/** The provider, counting each reply it finishes. */
+function countingProvider(provider: AiProvider, onReply: () => void): AiProvider {
+  return {
+    name: provider.name,
+    model: provider.model,
+    capabilities: provider.capabilities,
+    chat: async (request) => {
+      const result = await provider.chat(request)
+      onReply()
+      return result
+    },
+    async* stream(request) {
+      yield* provider.stream(request)
+      onReply()
+    },
+  }
 }
 
 const DIGEST_TTL_MS = 6 * 60 * 60 * 1000
@@ -294,6 +334,9 @@ export class AiService {
       return error
     }
     if (error instanceof ProviderError || error instanceof JsonGenerationError) {
+      // Expected failures (provider down, quota, a reply cut off at the output
+      // limit) still need a trace: a proxy in front of the UI can hide the reply
+      this.logger.warn(`Assistant: ${redactText(error.message)}`)
       return new BadGatewayException(redactText(error.message))
     }
     if ((error as Error)?.name === 'AbortError') {
@@ -514,7 +557,7 @@ export class AiService {
    * Homebridge and the user's saved layout, never taken from the request: the
    * client may only narrow it to some rooms.
    */
-  async organize(user: AiUser, dto: AiOrganizeDto = {}) {
+  async organize(user: AiUser, dto: AiOrganizeDto = {}, options: AiOrganizeOptions = {}) {
     await this.requireReady()
     const [services, layout] = await Promise.all([
       this.accessoriesService.loadAccessories(),
@@ -524,8 +567,18 @@ export class AiService {
     if (!accessories.length) {
       throw new BadRequestException('There are no accessories to organise.')
     }
-    return this.run(user, async ({ config, provider }) =>
-      suggestOrganization({ provider, accessories, rooms, maxOutputTokens: config.maxOutputTokens }))
+    return this.run(user, async ({ config, provider }) => {
+      const { onProgress, signal } = options
+      if (!onProgress) {
+        return suggestOrganization({ provider, accessories, rooms, maxOutputTokens: config.maxOutputTokens, signal })
+      }
+      const total = organizerBatches(accessories.length, config.maxOutputTokens)
+      let done = 0
+      onProgress({ done, total })
+      // A reply that needs a JSON repair counts twice: never report past the end
+      const counted = countingProvider(provider, () => onProgress({ done: Math.min(++done, total), total }))
+      return suggestOrganization({ provider: counted, accessories, rooms, maxOutputTokens: config.maxOutputTokens, signal })
+    })
   }
 
   // ── Daily digest ─────────────────────────────────────────────────

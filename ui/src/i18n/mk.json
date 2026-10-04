@@ -249,6 +249,7 @@
   "ai.organizer.nothing": "Your accessories already look well organised.",
   "ai.organizer.open": "Suggest rooms & names",
   "ai.organizer.orphans": "Worth a look",
+  "ai.organizer.progress": "Looking at your accessories… ({{done}} of {{total}} groups done)",
   "ai.organizer.rename": "Rename {{from}} to {{name}}",
   "ai.organizer.renames": "Names",
   "ai.organizer.rooms": "Rooms",

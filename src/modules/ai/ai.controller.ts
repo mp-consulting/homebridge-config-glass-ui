@@ -92,7 +92,7 @@ export class AiController {
 
   @ApiOperation({
     summary: 'Smart organiser: suggested rooms and names for the accessories.',
-    description: 'The accessories (from Homebridge, which must run in insecure mode) and your saved rooms are read on the server. The body is optional: `onlyRooms` narrows it to the accessories in those rooms.',
+    description: 'The accessories (from Homebridge, which must run in insecure mode) and your saved rooms are read on the server. The body is optional: `onlyRooms` narrows it to the accessories in those rooms. A large installation can take minutes (the accessories go to the model in batches), longer than a reverse proxy may let an HTTP request run (Cloudflare stops at 100 s): use the `organize` message of the socket.io namespace `ai` instead, which reports `ai:progress` per batch and ends with `ai:done` / `ai:error`.',
   })
   @ApiResponse(DISABLED)
   @ApiResponse(RATE_LIMITED)

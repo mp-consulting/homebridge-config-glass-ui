@@ -14,7 +14,7 @@ import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { AI_CONFIRM_TIMEOUT_MS } from './ai.constants.js'
-import { AiChatDto, AiDiagnoseLogsDto, AiPluginConfigDto } from './ai.dto.js'
+import { AiChatDto, AiDiagnoseLogsDto, AiOrganizeDto, AiPluginConfigDto } from './ai.dto.js'
 import { AiService } from './ai.service.js'
 
 /** Requests one socket may have running at once. */
@@ -52,14 +52,16 @@ function errorMessage(error: unknown): { message: string, status?: number } {
 /**
  * The Assistant's streaming channel. A client emits a request with its own
  * `requestId` (acknowledged at once), then receives, tagged with that id:
- * `ai:chunk` { delta } as text streams, `ai:tool` { phase, id, name… } for the
+ * `ai:chunk` { delta } as text streams, `ai:progress` { done, total } as the
+ * organiser's batches are answered, `ai:tool` { phase, id, name… } for the
  * chat's tool calls, `ai:confirm` { confirmId, tool } before a destructive
  * tool runs (answered with `confirm` { requestId, confirmId, allow }; no
  * answer within a minute is a no), then `ai:done` { result } or
  * `ai:error` { message, status }.
  *
- * Every message is guarded (any signed-in user); Log Doctor and Config Copilot
- * also need an administrator, and the chat's tools follow the user's rights.
+ * Every message is guarded (any signed-in user); Log Doctor, Config Copilot
+ * and the organiser also need an administrator, and the chat's tools follow
+ * the user's rights.
  */
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -107,6 +109,21 @@ export class AiGateway implements OnGatewayDisconnect {
       this.aiService.pluginConfig(user, body, {
         signal: run.abort.signal,
         onChunk: delta => client.emit('ai:chunk', { requestId, delta }),
+      }))
+  }
+
+  /**
+   * Suggest rooms & names. Over the socket rather than `POST /api/ai/organize`
+   * because a large installation takes minutes, longer than a proxy such as
+   * Cloudflare (100 s) lets an HTTP request run. Sends `ai:progress`
+   * { done, total } as each batch of accessories is answered.
+   */
+  @SubscribeMessage('organize')
+  organize(client: WsClient, payload: RequestPayload) {
+    return this.start(client, payload, AiOrganizeDto, true, (user, body: AiOrganizeDto, run, requestId) =>
+      this.aiService.organize(user, body, {
+        signal: run.abort.signal,
+        onProgress: ({ done, total }) => client.emit('ai:progress', { requestId, done, total }),
       }))
   }
 

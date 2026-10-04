@@ -6,11 +6,13 @@ import { ws } from '@/core/ws'
 import { aiActions } from './ai.store'
 
 /** What the `ai` socket namespace streams for one request. */
-export type AiStreamKind = 'chat' | 'diagnose-logs' | 'plugin-config'
+export type AiStreamKind = 'chat' | 'diagnose-logs' | 'plugin-config' | 'organize'
 
 export interface AiStreamHandlers {
   /** Text as it streams. */
   onChunk?: (delta: string) => void
+  /** The organiser's batches: `done` of `total` answered. */
+  onProgress?: (progress: AiProgress) => void
   /** The chat's tool calls and their outcomes. */
   onTool?: (event: AiToolEvent) => void
   /**
@@ -21,6 +23,12 @@ export interface AiStreamHandlers {
   /** The server gave up waiting for an answer. */
   onConfirmExpired?: (confirmId: string) => void
   signal?: AbortSignal
+}
+
+/** How far a request sent in batches (the organiser) has got. */
+export interface AiProgress {
+  done: number
+  total: number
 }
 
 /** A request the server refused or that failed. `status` is the HTTP status it maps to. */
@@ -91,6 +99,7 @@ export function runAiStream<T>(kind: AiStreamKind, body: unknown, handlers: AiSt
     socket.on('disconnect', onDisconnect)
 
     on('ai:chunk', payload => handlers.onChunk?.(String(payload.delta ?? '')))
+    on('ai:progress', payload => handlers.onProgress?.({ done: Number(payload.done) || 0, total: Number(payload.total) || 0 }))
     on('ai:tool', payload => handlers.onTool?.(payload as AiToolEvent))
     on('ai:confirm-expired', payload => handlers.onConfirmExpired?.(payload.confirmId))
     on('ai:confirm', (payload: AiConfirmRequest) => {

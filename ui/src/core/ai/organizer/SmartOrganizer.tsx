@@ -1,3 +1,4 @@
+import type { AiProgress } from '@/core/ai/ai-stream'
 import type { AiOrganizationSuggestion } from '@/core/ai/ai.interfaces'
 import type { OrganizerAccessory, OrganizerChanges, OrganizerItem } from '@/core/ai/organizer/organizer'
 import type { ModalComponentProps } from '@/core/ui/modal'
@@ -5,8 +6,8 @@ import type { ModalComponentProps } from '@/core/ui/modal'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { isAbortError, runAiStream } from '@/core/ai/ai-stream'
 import { suggestionItems } from '@/core/ai/organizer/organizer'
-import { api } from '@/core/api'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 
 export interface SmartOrganizerProps extends ModalComponentProps<OrganizerChanges> {
@@ -19,11 +20,16 @@ export interface SmartOrganizerProps extends ModalComponentProps<OrganizerChange
  * accessories; the user ticks the ones to keep, and the caller applies them
  * through the accessories layout (room moves, custom names). The server reads
  * the accessories and rooms itself, so nothing but the request is sent.
+ *
+ * It runs over the `ai` socket, not `POST /api/ai/organize`: a large
+ * installation takes longer than a proxy such as Cloudflare lets an HTTP
+ * request run (100 s). Closing the modal cancels it on the server.
  */
 export function SmartOrganizer({ activeModal, accessories }: SmartOrganizerProps) {
   const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [progress, setProgress] = useState<AiProgress | null>(null)
   const [suggestion, setSuggestion] = useState<AiOrganizationSuggestion | null>(null)
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
 
@@ -31,24 +37,20 @@ export function SmartOrganizer({ activeModal, accessories }: SmartOrganizerProps
   const names = useMemo(() => new Map(accessories.map(a => [a.uniqueId, a.name])), [accessories])
 
   useEffect(() => {
-    let live = true
-    api.post<AiOrganizationSuggestion>('/ai/organize', {}).then((result) => {
-      if (live) {
-        setSuggestion(result)
-        setSelected(new Set(suggestionItems(result, accessories).map(i => i.key)))
-      }
-    }, (err: any) => {
-      if (live) {
-        setError(err?.error?.message ?? err?.message ?? t('ai.organizer.failed'))
+    const abort = new AbortController()
+    runAiStream<AiOrganizationSuggestion>('organize', {}, { signal: abort.signal, onProgress: setProgress }).then((result) => {
+      setSuggestion(result)
+      setSelected(new Set(suggestionItems(result, accessories).map(i => i.key)))
+    }, (err: unknown) => {
+      if (!isAbortError(err)) {
+        setError((err as Error)?.message || t('ai.organizer.failed'))
       }
     }).finally(() => {
-      if (live) {
+      if (!abort.signal.aborted) {
         setLoading(false)
       }
     })
-    return () => {
-      live = false
-    }
+    return () => abort.abort()
     // Asked once, when the modal opens
     // eslint-disable-next-line react/exhaustive-deps
   }, [])
@@ -92,7 +94,13 @@ export function SmartOrganizer({ activeModal, accessories }: SmartOrganizerProps
         <span className="mp-ai-badge ms-2 me-auto">{t('ai.badge')}</span>
       </ModalHeader>
       <div className="modal-body" aria-busy={loading}>
-        {loading && <p className="mp-ai-thinking" role="status">{t('ai.organizer.thinking')}</p>}
+        {loading && (
+          <p className="mp-ai-thinking" role="status">
+            {progress && progress.total > 1
+              ? t('ai.organizer.progress', { done: progress.done, total: progress.total })
+              : t('ai.organizer.thinking')}
+          </p>
+        )}
         {error && <p className="mp-ai-error" role="alert">{error}</p>}
         {!loading && suggestion && !items.length && <p>{t('ai.organizer.nothing')}</p>}
         {moves.length > 0 && (

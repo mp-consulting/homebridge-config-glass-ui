@@ -21,6 +21,7 @@ import { decode } from 'jsonwebtoken'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { Logger } from '../../src/core/logger/logger.service.js'
 import { SslCertGeneratorService } from '../../src/core/ssl/ssl-cert-generator.service.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 import { AI_AGENT_RUNNER, AI_CONFIRM_TIMEOUT_MS, AI_HOMEBRIDGE_CLIENT_FACTORY, AI_PROVIDER_FACTORY, AI_RATE_LIMIT } from '../../src/modules/ai/ai.constants.js'
@@ -122,6 +123,25 @@ describe('Assistant (e2e)', () => {
     config.platforms = config.platforms.filter((p: any) => p.platform !== 'HomebridgeAiKit')
     await writeJson(process.env.UIX_CONFIG_PATH, config, { spaces: 4 })
   }
+
+  /** A fake socket.io client signed in as `user`, recording what the gateway emits. */
+  function socketFor(user: Record<string, unknown>) {
+    const client = authorizeWsClient(new EventEmitter(), user as any)
+    const events: Array<[string, any]> = []
+    const emit = client.emit.bind(client)
+    client.emit = ((event: string, payload: any) => {
+      events.push([event, payload])
+      return emit(event, payload)
+    }) as any
+    return { client: client as any, events }
+  }
+
+  function waitFor(client: EventEmitter, event: string) {
+    return new Promise<any>(resolve => client.once(event, resolve))
+  }
+
+  const admin = { username: 'admin', name: 'Administrator', admin: true }
+  const user = { username: 'user', name: 'User', admin: false }
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
@@ -557,24 +577,6 @@ describe('Assistant (e2e)', () => {
   })
 
   describe('socket namespace', () => {
-    function socketFor(user: Record<string, unknown>) {
-      const client = authorizeWsClient(new EventEmitter(), user as any)
-      const events: Array<[string, any]> = []
-      const emit = client.emit.bind(client)
-      client.emit = ((event: string, payload: any) => {
-        events.push([event, payload])
-        return emit(event, payload)
-      }) as any
-      return { client: client as any, events }
-    }
-
-    function waitFor(client: EventEmitter, event: string) {
-      return new Promise<any>(resolve => client.once(event, resolve))
-    }
-
-    const admin = { username: 'admin', name: 'Administrator', admin: true }
-    const user = { username: 'user', name: 'User', admin: false }
-
     it('streams a diagnosis', async () => {
       await enable()
       configService.ui.log = { method: 'file', path: logPath }
@@ -777,6 +779,20 @@ describe('Assistant (e2e)', () => {
         expect(sent).not.toContain('Light 1')
       })
 
+      it('logs and explains a reply that is not valid JSON', async () => {
+        await enable()
+        vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue([service('a1', 'Light 1')])
+        await seedLayout('admin', [])
+        const warn = vi.spyOn(app.get(Logger, { strict: false }), 'warn').mockImplementation(() => {})
+        fake.reply('not json', 'still not json')
+
+        const res = await inject('POST', '/ai/organize', adminAuth, {})
+
+        expect(res.statusCode).toBe(502)
+        expect(res.json().message).toContain('The model did not return valid JSON')
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('Assistant: The model did not return valid JSON'))
+      })
+
       it('answers 400 when Homebridge has no accessories to organise', async () => {
         await enable()
         vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue([])
@@ -790,6 +806,135 @@ describe('Assistant (e2e)', () => {
         await enable()
         expect((await inject('POST', '/ai/organize', adminAuth, { onlyRooms: 'Hall' })).statusCode).toBe(400)
         expect((await inject('POST', '/ai/organize', adminAuth, { onlyRooms: [1] })).statusCode).toBe(400)
+      })
+
+      describe('over the socket', () => {
+        const empty = JSON.stringify({ rooms: [], renames: [], orphans: [] })
+        const lights = (n: number) => Array.from({ length: n }, (_, i) => service(`a${i + 1}`, `Light ${i + 1}`))
+
+        it('answers with ai:done and reports each batch as ai:progress', async () => {
+          // 2048 output tokens: 25 accessories a request, so 30 accessories are 2 batches
+          await enable()
+          vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue(lights(30))
+          await seedLayout('admin', [])
+          fake.reply(JSON.stringify({ rooms: [{ name: 'Kitchen', accessories: ['a1'] }], renames: [], orphans: [] }), empty)
+          const { client, events } = socketFor(admin)
+
+          const done = waitFor(client, 'ai:done')
+          expect(await gateway.organize(client, { requestId: 'o1', body: {} })).toEqual({ requestId: 'o1', accepted: true })
+
+          expect((await done).result).toMatchObject({ rooms: [{ name: 'Kitchen', accessories: ['a1'] }] })
+          expect(fake.requests).toHaveLength(2)
+          expect(events.filter(([event]) => event === 'ai:progress').map(([, payload]) => payload)).toEqual([
+            { requestId: 'o1', done: 0, total: 2 },
+            { requestId: 'o1', done: 1, total: 2 },
+            { requestId: 'o1', done: 2, total: 2 },
+          ])
+          // The server reads the accessories itself, as over HTTP
+          expect(JSON.stringify(fake.requests)).toContain('Light 30')
+        })
+
+        it('is for administrators only', async () => {
+          await enable()
+          const spy = vi.spyOn(accessoriesService, 'loadAccessories')
+          const { client, events } = socketFor(user)
+
+          expect(await gateway.organize(client, { requestId: 'o2', body: {} })).toEqual({ error: 'Forbidden', status: 403 })
+          expect(spy).not.toHaveBeenCalled()
+          expect(events).toEqual([])
+        })
+
+        it('validates the request', async () => {
+          await enable()
+          const { client } = socketFor(admin)
+          expect(await gateway.organize(client, { body: {} })).toMatchObject({ error: 'A requestId is required.' })
+          expect(await gateway.organize(client, { requestId: 'o3', body: { onlyRooms: 'Hall' } })).toMatchObject({ status: 400 })
+        })
+
+        it('sends the provider\'s error as ai:error and logs it', async () => {
+          await enable()
+          vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue(lights(1))
+          await seedLayout('admin', [])
+          const warn = vi.spyOn(app.get(Logger, { strict: false }), 'warn').mockImplementation(() => {})
+          fake.reply('not json', 'still not json')
+          const { client } = socketFor(admin)
+
+          const failed = waitFor(client, 'ai:error')
+          await gateway.organize(client, { requestId: 'o4', body: {} })
+
+          expect(await failed).toEqual({ requestId: 'o4', status: 502, message: expect.stringContaining('The model did not return valid JSON') })
+          expect(warn).toHaveBeenCalledWith(expect.stringContaining('Assistant: The model did not return valid JSON'))
+        })
+
+        it('reports a cut-off reply as ai:error', async () => {
+          await enable({ maxOutputTokens: 1024 })
+          vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue(lights(1))
+          await seedLayout('admin', [])
+          const chat = fake.provider.chat
+          vi.spyOn(fake.provider, 'chat').mockImplementation(async request => ({ ...(await chat(request)), stopReason: 'max_tokens' }))
+          fake.reply('{"rooms": [')
+          const { client } = socketFor(admin)
+
+          const failed = waitFor(client, 'ai:error')
+          await gateway.organize(client, { requestId: 'o5', body: {} })
+
+          expect((await failed).message).toContain('cut off at the 1024-token output limit')
+        })
+
+        it('reports no accessories as ai:error with status 400', async () => {
+          await enable()
+          vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue([])
+          const { client } = socketFor(admin)
+
+          const failed = waitFor(client, 'ai:error')
+          await gateway.organize(client, { requestId: 'o6', body: {} })
+
+          expect(await failed).toEqual({ requestId: 'o6', status: 400, message: 'There are no accessories to organise.' })
+        })
+
+        it('stops the provider request on cancel', async () => {
+          await enable()
+          vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue(lights(1))
+          await seedLayout('admin', [])
+          let aborted = false
+          let started!: () => void
+          const asked = new Promise<void>((resolve) => {
+            started = resolve
+          })
+          vi.spyOn(fake.provider, 'chat').mockImplementation(request => new Promise((_, reject) => {
+            started()
+            request.signal?.addEventListener('abort', () => {
+              aborted = true
+              reject(Object.assign(new Error('aborted'), { name: 'AbortError' }))
+            })
+          }))
+          const { client, events } = socketFor(admin)
+
+          const failed = waitFor(client, 'ai:error')
+          await gateway.organize(client, { requestId: 'o7', body: {} })
+          await asked
+          expect(gateway.cancel(client, { requestId: 'o7' })).toEqual({ ok: true })
+
+          expect(await failed).toEqual({ requestId: 'o7', status: 499, message: 'The request was cancelled.' })
+          expect(aborted).toBe(true)
+          expect(events.some(([event]) => event === 'ai:done')).toBe(false)
+          // Finished: nothing is left running under that id
+          await vi.waitFor(() => expect(gateway.cancel(client, { requestId: 'o7' })).toEqual({ ok: false }))
+        })
+
+        it('counts against the same rate limit as the other Assistant requests', async () => {
+          await enable()
+          vi.spyOn(accessoriesService, 'loadAccessories').mockResolvedValue(lights(1))
+          await seedLayout('admin', [])
+          ;(aiService as any).requests.set('admin', Array.from({ length: AI_RATE_LIMIT }, () => Date.now()))
+          const { client } = socketFor(admin)
+
+          const failed = waitFor(client, 'ai:error')
+          await gateway.organize(client, { requestId: 'o8', body: {} })
+
+          expect(await failed).toMatchObject({ requestId: 'o8', status: 429 })
+          expect(fake.requests).toHaveLength(0)
+        })
       })
     })
 
