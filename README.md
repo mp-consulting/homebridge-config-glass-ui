@@ -36,7 +36,13 @@ Run the same command again to update, or after an update of the Homebridge packa
 npx @mp-consulting/homebridge-config-glass-ui revert
 ```
 
-Add `@next` to the package name for the current beta.
+Add `@next` to the package name for the current beta (`npx @mp-consulting/homebridge-config-glass-ui@next`).
+
+### Updating
+
+Once Glass UI is installed, update it like a plugin: **Plugins**, then **Update** on the Homebridge Glass UI card (or Update All). When the update finishes the interface restarts on its own and the page reloads on the new version.
+
+Updating from 2.0.0-beta.3 or earlier still runs that version's update code, which does not restart the interface afterwards. If the version on the home page has not changed once the update is done, use **Restart** from the power menu once.
 
 ### New installs
 
