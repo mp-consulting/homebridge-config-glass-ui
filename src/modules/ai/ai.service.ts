@@ -40,6 +40,7 @@ import {
   UsageTracker,
 } from './ai-kit.js'
 import { problemLines, readLogTail } from './ai-logs.js'
+import { loadLoopbackFetch } from './ai-loopback.js'
 import { organizerInput } from './ai-organize.js'
 import {
   AI_AGENT_RUNNER,
@@ -92,6 +93,8 @@ export class AiService {
   private readonly requests = new Map<string, number[]>()
   private providerCache: { key: string, provider: AiProvider } | undefined
   private digestCache: { key: string, at: number, value: { text: string, generatedAt: string } } | undefined
+  /** The chat client's fetch for this server's own HTTPS (see loopbackFetch). */
+  private loopback: Promise<typeof fetch> | undefined
   private readonly riskCache = new Map<string, { at: number, value: Record<string, unknown> }>()
 
   constructor(
@@ -387,7 +390,8 @@ export class AiService {
     // Fail now rather than on the first tool call
     mint()
     const readOnly = !user?.admin
-    const client = this.clientFactory({ url: this.localApiUrl(), getToken: async () => mint() })
+    const url = this.localApiUrl()
+    const client = this.clientFactory({ url, getToken: async () => mint(), ...(await this.loopbackFetch(url)) })
     const history: ChatMessage[] = messages.map(m => ({ role: m.role, content: redactText(m.content) }))
     const system = `${PROMPTS.ask.system}\n\nYou run inside Homebridge Glass UI for ${user?.username ?? 'the user'}, who ${readOnly
       ? 'is not an administrator: only read-only tools are available, so explain what an administrator would need to do for any change.'
@@ -414,6 +418,25 @@ export class AiService {
         usage: result.usage,
       }
     })
+  }
+
+  /**
+   * For this server's own HTTPS (a self-signed certificate is the norm), a
+   * fetch that trusts only its certificate; nothing for plain HTTP or a
+   * `UIX_AI_LOCAL_URL`, which use global fetch and Node's usual trust. Built
+   * once: the certificate is only read at startup.
+   */
+  private async loopbackFetch(url: string): Promise<{ fetch?: typeof fetch }> {
+    if (process.env.UIX_AI_LOCAL_URL || !url.startsWith('https:')) {
+      return {}
+    }
+    this.loopback ??= loadLoopbackFetch(this.configService.ui.ssl as Record<string, unknown> | undefined, this.configService.storagePath).then((loaded) => {
+      if (loaded.error) {
+        this.logger.warn(`Assistant: ${loaded.error}`)
+      }
+      return loaded.fetch
+    })
+    return { fetch: await this.loopback }
   }
 
   /** Where the agent's tools reach this server. */

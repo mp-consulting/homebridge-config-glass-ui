@@ -15,7 +15,13 @@ export type AiAgentRunner = typeof runAgent
 
 /** Builds the HTTP client the agent's tools call this server with (ai-kit's `HomebridgeClient`). */
 export const AI_HOMEBRIDGE_CLIENT_FACTORY = Symbol('AI_HOMEBRIDGE_CLIENT_FACTORY')
-export type AiHomebridgeClientFactory = (options: { url: string, getToken: () => Promise<string> }) => HomebridgeClient
+export interface AiHomebridgeClientOptions {
+  url: string
+  getToken: () => Promise<string>
+  /** Used instead of global fetch: set for this server's own HTTPS, trusting only its certificate. */
+  fetch?: typeof fetch
+}
+export type AiHomebridgeClientFactory = (options: AiHomebridgeClientOptions) => HomebridgeClient
 
 /** Requests one user may start in a window, across every AI route and socket message. */
 export const AI_RATE_LIMIT = 20

@@ -1,9 +1,13 @@
 import type { AiProvider, ChatChunk, ChatRequest, ChatResult, RunAgentOptions, ToolCall } from '@mp-consulting/homebridge-ai-kit'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
+import type { AddressInfo } from 'node:net'
+
+import type { AiHomebridgeClientOptions } from '../../src/modules/ai/ai.constants.js'
 
 import { EventEmitter } from 'node:events'
 import { readFile, writeFile } from 'node:fs/promises'
+import { createServer as createHttpsServer } from 'node:https'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -17,6 +21,7 @@ import { decode } from 'jsonwebtoken'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { SslCertGeneratorService } from '../../src/core/ssl/ssl-cert-generator.service.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 import { AI_AGENT_RUNNER, AI_CONFIRM_TIMEOUT_MS, AI_HOMEBRIDGE_CLIENT_FACTORY, AI_PROVIDER_FACTORY, AI_RATE_LIMIT } from '../../src/modules/ai/ai.constants.js'
 import { AiGateway } from '../../src/modules/ai/ai.gateway.js'
@@ -94,7 +99,7 @@ describe('Assistant (e2e)', () => {
   const fake = createFakeProvider()
   const factory = vi.fn(() => fake.provider)
   const runner = vi.fn((options: RunAgentOptions) => runAgent(options))
-  const clients: Array<{ url: string, getToken: () => Promise<string> }> = []
+  const clients: AiHomebridgeClientOptions[] = []
   const logPath = resolve(testStoragePath, 'homebridge.log')
 
   async function login(username: string) {
@@ -142,7 +147,7 @@ describe('Assistant (e2e)', () => {
       .overrideProvider(AI_AGENT_RUNNER)
       .useValue(runner)
       .overrideProvider(AI_HOMEBRIDGE_CLIENT_FACTORY)
-      .useValue((options: { url: string, getToken: () => Promise<string> }) => {
+      .useValue((options: AiHomebridgeClientOptions) => {
         clients.push(options)
         return { getToken: options.getToken } as any
       })
@@ -444,6 +449,78 @@ describe('Assistant (e2e)', () => {
       expect(tools).toContain('list_accessories')
       expect(tools).not.toContain('restart_homebridge')
       expect(tools).not.toContain('set_accessory')
+    })
+
+    describe('over this server\'s own HTTPS', () => {
+      let savedSsl: unknown
+      let savedLocalUrl: string | undefined
+
+      beforeEach(() => {
+        savedSsl = configService.ui.ssl
+        savedLocalUrl = process.env.UIX_AI_LOCAL_URL
+        delete process.env.UIX_AI_LOCAL_URL
+        ;(aiService as any).loopback = undefined
+      })
+
+      afterEach(() => {
+        configService.ui.ssl = savedSsl as any
+        process.env.UIX_AI_LOCAL_URL = savedLocalUrl
+        ;(aiService as any).loopback = undefined
+      })
+
+      it('gives the tools a fetch that trusts the self-signed certificate', async () => {
+        const { privateKey, certificate } = await new SslCertGeneratorService(testStoragePath).generateOrLoadCertificate(['localhost', '127.0.0.1'])
+        await enable()
+        configService.ui.ssl = { selfSigned: true } as any
+        fake.reply('Done.')
+
+        await inject('POST', '/ai/chat', adminAuth, { messages: [{ role: 'user', content: 'hi' }] })
+
+        expect(clients[0].url).toBe(`https://127.0.0.1:${configService.ui.port}`)
+        expect(clients[0].fetch).toBeTypeOf('function')
+        expect(clients[0].fetch).not.toBe(globalThis.fetch)
+
+        // It reaches a server presenting that certificate, which global fetch refuses
+        const server = createHttpsServer({ key: privateKey, cert: certificate }, (_req, res) => res.end('ok'))
+        await new Promise<void>(done => server.listen(0, '127.0.0.1', done))
+        try {
+          const target = `https://127.0.0.1:${(server.address() as AddressInfo).port}/`
+          expect(await (await clients[0].fetch!(target)).text()).toBe('ok')
+          await expect(fetch(target)).rejects.toThrow()
+        } finally {
+          await new Promise(done => server.close(done))
+        }
+      })
+
+      it('gives the tools a fetch that explains why when the certificate cannot be read', async () => {
+        await enable()
+        configService.ui.ssl = { key: '/nope/key.pem', cert: '/nope/cert.pem' } as any
+        fake.reply('Done.')
+
+        await inject('POST', '/ai/chat', adminAuth, { messages: [{ role: 'user', content: 'hi' }] })
+
+        const error = await clients[0].fetch!('https://127.0.0.1/').catch(e => e)
+        expect(error.cause.message).toMatch(/cannot verify Glass UI's HTTPS certificate/)
+      })
+
+      it('leaves UIX_AI_LOCAL_URL to global fetch', async () => {
+        process.env.UIX_AI_LOCAL_URL = 'https://homebridge.example:8581'
+        await enable()
+        configService.ui.ssl = { selfSigned: true } as any
+        fake.reply('Done.')
+
+        await inject('POST', '/ai/chat', adminAuth, { messages: [{ role: 'user', content: 'hi' }] })
+
+        expect(clients[0].url).toBe('https://homebridge.example:8581')
+        expect(clients[0].fetch).toBeUndefined()
+      })
+    })
+
+    it('uses global fetch over plain HTTP', async () => {
+      await enable()
+      fake.reply('Done.')
+      await inject('POST', '/ai/chat', adminAuth, { messages: [{ role: 'user', content: 'hi' }] })
+      expect(clients[0].fetch).toBeUndefined()
     })
 
     it('runs an admin with every tool', async () => {

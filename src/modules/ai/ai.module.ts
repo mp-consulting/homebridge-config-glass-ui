@@ -1,3 +1,5 @@
+import type { AiHomebridgeClientFactory, AiHomebridgeClientOptions } from './ai.constants.js'
+
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
@@ -31,7 +33,7 @@ import { AiService } from './ai.service.js'
   providers: [
     { provide: AI_PROVIDER_FACTORY, useValue: createProvider },
     { provide: AI_AGENT_RUNNER, useValue: runAgent },
-    { provide: AI_HOMEBRIDGE_CLIENT_FACTORY, useValue: (options: { url: string, getToken: () => Promise<string> }) => new HomebridgeClient(options) },
+    { provide: AI_HOMEBRIDGE_CLIENT_FACTORY, useValue: ((options: AiHomebridgeClientOptions) => new HomebridgeClient(options)) satisfies AiHomebridgeClientFactory },
     AiService,
     AiGateway,
   ],

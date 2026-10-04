@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
   - Settings edit the `HomebridgeAiKit` block of `config.json`; the API key is write-only. Secrets are redacted before anything reaches the provider. Every Assistant entry point is hidden while it is off.
   - API: `GET /api/ai/status`, `PUT /api/ai/settings`, `POST /api/ai/test`, `/diagnose-logs`, `/plugin-config`, `/chat`, `/update-risk`, `/organize`, `GET /api/ai/digest`, and the socket.io namespace `ai` for streaming and confirmations. `409` while the Assistant is off, `429` past 20 requests a minute per user.
 
+### Fixed
+
+- **Assistant chat tools over HTTPS.** The chat's tools call this server at `https://127.0.0.1:<port>`, which Node refused with the UI's self-signed certificate. That one call now uses its own fetch (an `undici` Agent) that trusts only the UI's configured or self-signed certificate, pinned by fingerprint; global fetch and every other connection verify as before. A PFX or unreadable certificate gives a clear error. **Requires `HomebridgeClient` in `@mp-consulting/homebridge-ai-kit` to accept a `fetch` option** (passed by Glass UI already; ignored until the kit supports it).
+
 ### Changed
 
 - `@mp-consulting/homebridge-ai-kit` (server) and `@mp-consulting/homebridge-ui-kit` (UI, its `ai.css`) are `file:` dependencies on local checkouts while they are unpublished. **Before release they must become semver ranges: `^2.0.0` for ai-kit and `^1.2.0` for ui-kit.**
