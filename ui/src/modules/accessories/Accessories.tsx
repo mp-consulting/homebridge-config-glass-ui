@@ -305,7 +305,7 @@ export function Accessories() {
       room: room.name,
     }))).filter(service => service.uniqueId)
     try {
-      const changes = await openSmartOrganizer({ accessories: services, rooms: current.map(room => room.name) })
+      const changes = await openSmartOrganizer({ accessories: services })
       accessories.applyOrganization(changes)
     } catch {
       // Closed without applying

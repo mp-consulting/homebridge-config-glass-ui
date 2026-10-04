@@ -19,6 +19,7 @@ import {
 import { AuthService } from '../../core/auth/auth.service.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { isProtectedStoragePath } from '../config-editor/config-safety.js'
 import { PluginsService } from '../plugins/plugins.service.js'
@@ -39,6 +40,7 @@ import {
   UsageTracker,
 } from './ai-kit.js'
 import { problemLines, readLogTail } from './ai-logs.js'
+import { organizerInput } from './ai-organize.js'
 import {
   AI_AGENT_RUNNER,
   AI_DISABLED_MESSAGE,
@@ -97,6 +99,7 @@ export class AiService {
     @Inject(Logger) private readonly logger: Logger,
     @Inject(ConfigEditorService) private readonly configEditorService: ConfigEditorService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
     @Inject(AuthService) private readonly authService: AuthService,
     @Inject(AI_PROVIDER_FACTORY) private readonly providerFactory: AiProviderFactory,
     @Inject(AI_AGENT_RUNNER) private readonly runAgent: AiAgentRunner,
@@ -483,14 +486,23 @@ export class AiService {
 
   // ── Organiser ────────────────────────────────────────────────────
 
-  async organize(user: AiUser, dto: AiOrganizeDto) {
-    if (!dto.accessories.length) {
+  /**
+   * Suggested rooms and names. The accessories and rooms are read here, from
+   * Homebridge and the user's saved layout, never taken from the request: the
+   * client may only narrow it to some rooms.
+   */
+  async organize(user: AiUser, dto: AiOrganizeDto = {}) {
+    await this.requireReady()
+    const [services, layout] = await Promise.all([
+      this.accessoriesService.loadAccessories(),
+      this.accessoriesService.getAccessoryLayout(user?.username ?? ''),
+    ])
+    const { accessories, rooms } = organizerInput(services, layout, dto.onlyRooms)
+    if (!accessories.length) {
       throw new BadRequestException('There are no accessories to organise.')
     }
-    return this.run(user, async ({ config, provider }) => {
-      const result = await suggestOrganization({ provider, accessories: dto.accessories, rooms: dto.rooms, maxOutputTokens: config.maxOutputTokens })
-      return result
-    })
+    return this.run(user, async ({ config, provider }) =>
+      suggestOrganization({ provider, accessories, rooms, maxOutputTokens: config.maxOutputTokens }))
   }
 
   // ── Daily digest ─────────────────────────────────────────────────

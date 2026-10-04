@@ -90,7 +90,10 @@ export class AiController {
     return this.aiService.updateRisk(req.user, body)
   }
 
-  @ApiOperation({ summary: 'Smart organiser: suggested rooms and names for the accessories.' })
+  @ApiOperation({
+    summary: 'Smart organiser: suggested rooms and names for the accessories.',
+    description: 'The accessories (from Homebridge, which must run in insecure mode) and your saved rooms are read on the server. The body is optional: `onlyRooms` narrows it to the accessories in those rooms.',
+  })
   @ApiResponse(DISABLED)
   @ApiResponse(RATE_LIMITED)
   @ApiResponse(PROVIDER_FAILED)

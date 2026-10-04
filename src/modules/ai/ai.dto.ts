@@ -140,12 +140,14 @@ export class AiUpdateRiskDto {
 }
 
 export class AiOrganizeDto {
-  @ApiProperty({ description: 'Accessories: uniqueId, serviceName, type, manufacturer, room…' })
-  @IsArray()
-  @ArrayMaxSize(2000)
-  accessories: Record<string, unknown>[]
-
-  @ApiPropertyOptional({ description: 'The current room layout.' })
+  @ApiPropertyOptional({
+    description: 'Only suggest for the accessories currently in these rooms. The accessories and rooms themselves are read on the server from Homebridge and your saved layout; lists sent by the client are ignored.',
+    type: [String],
+  })
   @IsOptional()
-  rooms?: unknown
+  @IsArray()
+  @ArrayMaxSize(200)
+  @IsString({ each: true })
+  @MaxLength(200, { each: true })
+  onlyRooms?: string[]
 }

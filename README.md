@@ -134,7 +134,7 @@ What it adds:
 - **Config Copilot**: **Describe what you want** in a plugin's settings, or the wand button in the config editor. The Assistant writes the config block from the plugin's schema; you review it as a diff and **Apply** saves it the usual way (with a backup), or **Reject** it.
 - **Assistant chat**: Cmd+K (Ctrl+K) or **Assistant** in the menu. It uses the Homebridge tools of ai-kit with your own permissions: non-admins get read-only tools, and every change an administrator's Assistant makes (restart, config write, uninstall…) asks for confirmation first. No answer within a minute is a no.
 - **Update risk**: **Assess update risk** in a plugin's update dialog and in Update All summarises the release notes and flags breaking changes.
-- **Suggest rooms & names** on the Accessories page proposes rooms and clearer names; you tick the ones to keep.
+- **Suggest rooms & names** on the Accessories page proposes rooms and clearer names; you tick the ones to keep. The server reads the accessories from Homebridge (insecure mode, like the Accessories page) and your saved rooms itself; `POST /api/ai/organize` takes no list, only an optional `{ onlyRooms: [...] }` filter.
 - **Daily Digest**, a dashboard widget for administrators.
 
 Privacy: logs, configs and accessory names are sent to the provider you picked, with passwords, tokens and keys replaced by `__REDACTED__` first (and restored when a config comes back). Each user may start 20 Assistant requests a minute.

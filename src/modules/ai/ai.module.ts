@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport'
 import { AuthModule } from '../../core/auth/auth.module.js'
 import { ConfigModule } from '../../core/config/config.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
+import { AccessoriesModule } from '../accessories/accessories.module.js'
 import { ConfigEditorModule } from '../config-editor/config-editor.module.js'
 import { PluginsModule } from '../plugins/plugins.module.js'
 import { createProvider, HomebridgeClient, runAgent } from './ai-kit.js'
@@ -25,6 +26,7 @@ import { AiService } from './ai.service.js'
     AuthModule,
     PluginsModule,
     ConfigEditorModule,
+    AccessoriesModule,
   ],
   providers: [
     { provide: AI_PROVIDER_FACTORY, useValue: createProvider },

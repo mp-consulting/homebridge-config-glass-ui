@@ -10,16 +10,17 @@ import { api } from '@/core/api'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
 
 export interface SmartOrganizerProps extends ModalComponentProps<OrganizerChanges> {
+  /** What the page shows now: the suggestions are compared against it to list only real changes. */
   accessories: OrganizerAccessory[]
-  rooms: string[]
 }
 
 /**
  * Smart organiser: the Assistant suggests rooms and clearer names for the
  * accessories; the user ticks the ones to keep, and the caller applies them
- * through the accessories layout (room moves, custom names).
+ * through the accessories layout (room moves, custom names). The server reads
+ * the accessories and rooms itself, so nothing but the request is sent.
  */
-export function SmartOrganizer({ activeModal, accessories, rooms }: SmartOrganizerProps) {
+export function SmartOrganizer({ activeModal, accessories }: SmartOrganizerProps) {
   const { t } = useTranslation()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -31,10 +32,7 @@ export function SmartOrganizer({ activeModal, accessories, rooms }: SmartOrganiz
 
   useEffect(() => {
     let live = true
-    api.post<AiOrganizationSuggestion>('/ai/organize', {
-      accessories: accessories.map(({ uniqueId, name, type, manufacturer, model, room }) => ({ uniqueId, serviceName: name, type, manufacturer, model, room })),
-      rooms,
-    }).then((result) => {
+    api.post<AiOrganizationSuggestion>('/ai/organize', {}).then((result) => {
       if (live) {
         setSuggestion(result)
         setSelected(new Set(suggestionItems(result, accessories).map(i => i.key)))
