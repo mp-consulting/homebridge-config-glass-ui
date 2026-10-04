@@ -171,6 +171,8 @@ export class ProcessSupervisor {
   private async startLog() {
     if (this.hb.stdout === true) {
       this.hb.logFile = process.stdout
+      // No homebridge.log is written, so the logs panel explains where the logs went
+      process.env.UIX_LOG_STDOUT = '1'
       return
     }
 

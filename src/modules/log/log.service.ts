@@ -391,6 +391,14 @@ export class LogService {
    */
   private async tailLogFromFileNative(client: EventEmitter) {
     if (!existsSync(this.configService.ui.log.path)) {
+      // `hb-service run --stdout` (e.g. `npm run watch`) prints the logs in its
+      // terminal and never creates the file, so a missing file is expected
+      if (process.env.UIX_LOG_STDOUT === '1') {
+        client.emit('stdout', yellow('hb-service is running with --stdout, so the Homebridge logs are printed in the terminal it was started from and no log file is written.\n\r'))
+        // No stream is started, so release the guard here (see `connect`)
+        this.activeClients.delete(client)
+        return
+      }
       client.emit('stdout', '\n\r')
       client.emit('stdout', red(`No log file exists at path: ${this.configService.ui.log.path}\n\r`))
     }
