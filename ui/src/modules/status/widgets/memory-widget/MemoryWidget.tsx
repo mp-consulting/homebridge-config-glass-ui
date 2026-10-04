@@ -55,7 +55,7 @@ export function MemoryWidget(props: WidgetProps) {
           )
         : (
             <>
-              <Line className="widget-chart h-100 w-100" data={chartData} options={chartOptions} />
+              <Line className="widget-chart h-100 w-100" aria-label={t('status.memory.title_memory')} data={chartData} options={chartOptions} />
               <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
                 <div className="d-flex justify-content-around flex-wrap w-100">
                   <div className="text-center widget-value-parent-wrap">

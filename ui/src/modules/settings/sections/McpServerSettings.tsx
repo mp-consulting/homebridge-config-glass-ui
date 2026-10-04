@@ -428,7 +428,7 @@ export function McpServerSettings() {
             ))}
           </ul>
           <div className="position-relative">
-            <pre className="hb-mcp-snippet font-monospace small p-3 mb-0" role="tabpanel" data-testid="mcp-snippet">{snippet}</pre>
+            <pre className="hb-mcp-snippet font-monospace small p-3 mb-0" role="tabpanel" tabIndex={0} data-testid="mcp-snippet">{snippet}</pre>
             <button
               type="button"
               className="btn btn-elegant btn-sm position-absolute top-0 end-0 m-2"

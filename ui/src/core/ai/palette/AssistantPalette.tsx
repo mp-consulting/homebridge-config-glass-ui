@@ -2,29 +2,27 @@ import type { AiChatResult, AiChatTurn, AiConfirmRequest, AiToolEvent } from '@/
 import type { ModalComponentProps } from '@/core/ui/modal'
 import type { FormEvent, KeyboardEvent } from 'react'
 
-import { useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import type { Conversation, StoredMessage } from './chat-history'
 
+import { useEffect, useRef, useState } from 'react'
+import { Dropdown } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router'
+
+import { buildAssistantContext } from '@/core/ai/ai-context'
 import { isAbortError, runAiStream } from '@/core/ai/ai-stream'
 import { useAiStore } from '@/core/ai/ai.store'
 import { AiMarkdown } from '@/core/ai/AiMarkdown'
 import { useAuthStore } from '@/core/auth'
+import { useLatest } from '@/core/hooks/use-latest'
 import { ModalHeader } from '@/core/ui/ModalParts'
 import { cx } from '@/core/utilities/cx'
+import { randomUuid } from '@/core/utilities/random-uuid'
 
+import { conversationTitle, fileConversation, loadChatHistory, saveChatHistory } from './chat-history'
 import { ConfirmToolDialog } from './ConfirmToolDialog'
 
-interface ToolChip {
-  id: string
-  name: string
-  state: 'running' | 'done' | 'failed'
-}
-
-interface Message extends AiChatTurn {
-  id: number
-  tools?: ToolChip[]
-  error?: boolean
-}
+type Message = StoredMessage
 
 interface PendingConfirm {
   request: AiConfirmRequest
@@ -34,29 +32,82 @@ interface PendingConfirm {
 /** How many earlier turns are sent with a question. */
 const HISTORY_TURNS = 12
 
+function persistChat({ username, conversationId, messages, recent }: { username?: string, conversationId: string, messages: Message[], recent: Conversation[] }) {
+  saveChatHistory(username, { current: { id: conversationId, updatedAt: Date.now(), messages }, recent })
+}
+
 /**
  * The Assistant command palette (Cmd/Ctrl+K): a chat that can look things up
  * and, for an administrator, change them. Each destructive tool asks first
  * (`ConfirmToolDialog`); the page-edge glow shows while it works.
+ *
+ * The conversation survives closing the palette and reloading the page, and
+ * the last few are kept (`chat-history.ts`, this browser, per user). Each
+ * question goes with the page context (`ai-context.ts`).
  */
 export function AssistantPalette({ activeModal }: ModalComponentProps) {
   const { t } = useTranslation()
   const isAdmin = useAuthStore(state => !!state.user?.admin)
   const model = useAiStore(state => state.status?.model ?? null)
   const provider = useAiStore(state => state.status?.provider ?? null)
-  const [messages, setMessages] = useState<Message[]>([])
+  const username = useAuthStore(state => state.user?.username)
+  const location = useLocation()
+  const [initial] = useState(() => loadChatHistory(username))
+  const [conversationId, setConversationId] = useState(() => initial.current?.id ?? randomUuid())
+  const [recent, setRecent] = useState<Conversation[]>(initial.recent)
+  // An answer cut off by closing the palette mid-stream reads as stopped
+  const [messages, setMessages] = useState<Message[]>(() => (initial.current?.messages ?? []).map(message =>
+    message.role === 'assistant' && !message.content && !message.error ? { ...message, content: t('ai.chat.stopped') } : message))
   const [input, setInput] = useState('')
   const [running, setRunning] = useState(false)
   const [confirm, setConfirm] = useState<PendingConfirm | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
-  const nextIdRef = useRef(0)
+  const nextIdRef = useRef(Math.max(-1, ...messages.map(m => m.id)) + 1)
+  const saved = useLatest({ username, conversationId, messages, recent })
 
   useEffect(() => {
     inputRef.current?.focus()
-    return () => abortRef.current?.abort()
-  }, [])
+    // `saved` always holds the latest state (useLatest), which is what the cleanup wants
+    const latest = saved
+    return () => {
+      abortRef.current?.abort()
+      // Whatever was streamed so far is kept
+      persistChat(latest.current)
+    }
+  }, [saved])
+
+  // Saved between answers, not on every streamed chunk
+  useEffect(() => {
+    if (!running) {
+      persistChat({ username, conversationId, messages, recent })
+    }
+  }, [username, conversationId, messages, recent, running])
+
+  /** File the current conversation under recent ones and start another (or `next`). */
+  const switchConversation = (next?: Conversation) => {
+    if (running) {
+      return
+    }
+    const current: Conversation = { id: conversationId, updatedAt: Date.now(), messages }
+    setRecent(list => fileConversation(list.filter(c => c.id !== next?.id), current))
+    setConversationId(next?.id ?? randomUuid())
+    setMessages(next?.messages ?? [])
+    nextIdRef.current = Math.max(-1, ...(next?.messages ?? []).map(m => m.id)) + 1
+    setInput('')
+    inputRef.current?.focus()
+  }
+
+  const clearHistory = () => {
+    if (running) {
+      return
+    }
+    setRecent([])
+    setConversationId(randomUuid())
+    setMessages([])
+    inputRef.current?.focus()
+  }
 
   useEffect(() => {
     logRef.current?.scrollTo?.({ top: logRef.current.scrollHeight })
@@ -95,7 +146,7 @@ export function AssistantPalette({ activeModal }: ModalComponentProps) {
     abortRef.current = abort
     let streamed = ''
 
-    runAiStream<AiChatResult>('chat', { messages: history }, {
+    runAiStream<AiChatResult>('chat', { messages: history, context: buildAssistantContext(location.pathname) }, {
       signal: abort.signal,
       onChunk: (delta) => {
         streamed += delta
@@ -141,6 +192,45 @@ export function AssistantPalette({ activeModal }: ModalComponentProps) {
         <span className="d-flex gap-2 ms-2 me-auto">
           {model && <span className="mp-ai-badge hb-ai-palette-model" title={provider ?? undefined}>{model}</span>}
           {!isAdmin && <span className="mp-ai-badge">{t('ai.palette.read_only')}</span>}
+        </span>
+        <span className="d-flex gap-1 me-2">
+          <button
+            type="button"
+            className="btn btn-elegant btn-sm m-0 hb-ai-palette-new"
+            disabled={running || !messages.length}
+            onClick={() => switchConversation()}
+            title={t('ai.palette.new_chat')}
+            aria-label={t('ai.palette.new_chat')}
+          >
+            <i className="fas fa-plus" aria-hidden="true"></i>
+          </button>
+          <Dropdown align="end">
+            <Dropdown.Toggle
+              variant="elegant"
+              size="sm"
+              className="btn-elegant m-0 hb-ai-palette-history"
+              disabled={running}
+              title={t('ai.palette.history')}
+              aria-label={t('ai.palette.history')}
+            >
+              <i className="fas fa-clock-rotate-left" aria-hidden="true"></i>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Header>{t('ai.palette.history')}</Dropdown.Header>
+              {!recent.length && <Dropdown.ItemText className="grey-text small">{t('ai.palette.history_empty')}</Dropdown.ItemText>}
+              {recent.map(conversation => (
+                <Dropdown.Item key={conversation.id} as="button" type="button" onClick={() => switchConversation(conversation)}>
+                  <span className="d-block text-truncate hb-ai-palette-history-title">{conversationTitle(conversation)}</span>
+                  <small className="grey-text">{new Date(conversation.updatedAt).toLocaleString()}</small>
+                </Dropdown.Item>
+              ))}
+              <Dropdown.Divider />
+              <Dropdown.Item as="button" type="button" disabled={!recent.length && !messages.length} onClick={clearHistory}>
+                <i className="fas fa-trash-can me-2" aria-hidden="true"></i>
+                {t('ai.palette.clear_history')}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </span>
       </ModalHeader>
       <div className="modal-body p-0">

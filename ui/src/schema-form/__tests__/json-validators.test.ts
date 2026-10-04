@@ -84,6 +84,11 @@ describe('jsonValidators', () => {
       expect(run(V.const('x'), 'y')).toEqual({ const: { requiredValue: 'x', currentValue: 'y' } })
       expect(V.const(undefined)).toBe(V.nullValidator)
     })
+
+    it('matches const objects and arrays deeply', () => {
+      expect(run(V.const({ a: [1, 2] }), { a: [1, 2] })).toBeNull()
+      expect(run(V.const([1, 2]), [1, 3])).not.toBeNull()
+    })
   })
 
   describe('string length and pattern', () => {
@@ -255,9 +260,74 @@ describe('jsonValidators', () => {
       expect(run(V.uniqueItems(), [1, 2, 2])).toEqual({ uniqueItems: { duplicateItems: [2] } })
     })
 
-    it('contains: not implemented, always valid', () => {
-      expect(run(V.contains('x'), ['a'])).toBeNull()
-      expect(V.contains(false)).toBe(V.nullValidator)
+    it('contains: valid when at least one item matches the schema', () => {
+      const validator = V.contains({ type: 'string', pattern: '^x' })
+      expect(run(validator, ['a', 'xy'])).toBeNull()
+      expect(run(validator, ['a', 'b'])).toEqual({ contains: { requiredItem: { type: 'string', pattern: '^x' }, currentItems: ['a', 'b'] } })
+    })
+
+    it('contains: const, enum and numeric limits', () => {
+      expect(run(V.contains({ const: 3 }), [1, 2, 3])).toBeNull()
+      expect(run(V.contains({ const: 3 }), [1, 2])).not.toBeNull()
+      expect(run(V.contains({ enum: ['on', 'off'] }), ['dim', 'off'])).toBeNull()
+      expect(run(V.contains({ minimum: 10 }), [1, 5])).not.toBeNull()
+      expect(run(V.contains({ minimum: 10 }), [1, 15])).toBeNull()
+      expect(run(V.contains({ minimum: 10, exclusiveMinimum: true }), [10])).not.toBeNull()
+      expect(run(V.contains({ exclusiveMaximum: 2 }), [2, 3])).not.toBeNull()
+    })
+
+    it('contains: objects with required properties', () => {
+      const validator = V.contains({ type: 'object', required: ['name'], properties: { name: { minLength: 2 } } })
+      expect(run(validator, [{ id: 1 }, { name: 'ab' }])).toBeNull()
+      expect(run(validator, [{ id: 1 }, { name: 'a' }])).not.toBeNull()
+    })
+
+    it('contains: boolean schemas; empty arrays and non-arrays are left alone', () => {
+      expect(run(V.contains(true), [1])).toBeNull()
+      expect(run(V.contains(false), [1])).not.toBeNull()
+      expect(run(V.contains({ const: 1 }), [])).toBeNull()
+      expect(run(V.contains({ const: 1 }), 'x')).toBeNull()
+      expect(V.contains(undefined)).not.toBe(V.nullValidator)
+      expect(V.contains(null)).toBe(V.nullValidator)
+    })
+
+    it('contains: inverted (for not / oneOf)', () => {
+      expect(run(V.contains({ const: 1 }), [1], true)).not.toBeNull()
+      expect(run(V.contains({ const: 1 }), [2], true)).toBeNull()
+    })
+
+    it('dependencies: schema dependency checks the dependent properties', () => {
+      const validator = V.dependencies({ port: { properties: { host: { type: 'string', minLength: 3 } } } })
+      expect(run(validator, { port: 80, host: 'ab' })).toEqual({ port: { port: { host: { minLength: { minimumLength: 3, currentLength: 2 } } } } })
+      expect(run(validator, { port: 80, host: 'abc' })).toBeNull()
+      expect(run(validator, { host: 'ab' })).toBeNull()
+    })
+
+    it('dependencies: schema dependency with numeric limits (draft 4 exclusive form)', () => {
+      const validator = V.dependencies({ min: { properties: { max: { minimum: 10, exclusiveMinimum: true } } } })
+      expect(run(validator, { min: 1, max: 10 })).not.toBeNull()
+      expect(run(validator, { min: 1, max: 11 })).toBeNull()
+    })
+
+    it('dependencies: schema dependency with oneOf (as homebridge-plugin-klares4 uses)', () => {
+      const validator = V.dependencies({
+        enabled: {
+          oneOf: [
+            { properties: { enabled: { const: false } } },
+            { properties: { enabled: { const: true } }, required: ['broker'] },
+          ],
+        },
+      })
+      expect(run(validator, { enabled: false })).toBeNull()
+      expect(run(validator, { enabled: true, broker: 'mqtt://x' })).toBeNull()
+      expect(run(validator, { enabled: true })).toEqual({ enabled: { enabled: { oneOf: true } } })
+    })
+
+    it('dependencies: schema dependency with required and properties together', () => {
+      const validator = V.dependencies({ ssl: { required: ['cert'], properties: { cert: { pattern: '\\.pem$' } } } })
+      expect(run(validator, { ssl: true })).toEqual({ ssl: { ssl: { cert: { required: true } } } })
+      expect(run(validator, { ssl: true, cert: 'a.crt' })).not.toBeNull()
+      expect(run(validator, { ssl: true, cert: 'a.pem' })).toBeNull()
     })
   })
 
@@ -320,5 +390,24 @@ describe('jsonValidators', () => {
       expect(V.email(control('a@'))).toEqual({ email: true })
       expect(V.email(undefined)).toBe(V.nullValidator)
     })
+  })
+})
+
+describe('validateSubSchema', () => {
+  it('handles boolean schemas, allOf, anyOf and not', async () => {
+    const { validateSubSchema } = await import('../engine/json.validators')
+    expect(validateSubSchema(true, 1)).toBeNull()
+    expect(validateSubSchema(false, 1)).toEqual({ false: true })
+    expect(validateSubSchema({ allOf: [{ minimum: 1 }, { maximum: 5 }] }, 3)).toBeNull()
+    expect(validateSubSchema({ allOf: [{ minimum: 1 }, { maximum: 5 }] }, 6)).toEqual({ maximum: { maximumValue: 5, currentValue: 6 } })
+    expect(validateSubSchema({ anyOf: [{ type: 'string' }, { type: 'number' }] }, { a: 1 })).toEqual({ anyOf: true })
+    expect(validateSubSchema({ anyOf: [{ type: 'string' }, { type: 'number' }] }, 2)).toBeNull()
+    expect(validateSubSchema({ not: { const: 'x' } }, 'x')).toEqual({ not: true })
+    expect(validateSubSchema({ not: { const: 'x' } }, 'y')).toBeNull()
+  })
+
+  it('ignores keywords it has no validator for', async () => {
+    const { validateSubSchema } = await import('../engine/json.validators')
+    expect(validateSubSchema({ $ref: '#/definitions/x', if: { const: 1 } }, 2)).toBeNull()
   })
 })

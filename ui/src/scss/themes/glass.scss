@@ -851,6 +851,12 @@ html body.glass-mode {
     box-shadow: none !important;
   }
 
+  // The light theme's line numbers (#237893) fall just short of 4.5:1 on the
+  // light glass behind the now transparent editor; the same hue, darker
+  .monaco-editor.vs {
+    --vscode-editorLineNumber-foreground: #1e6a82;
+  }
+
   // ── Login and setup ─────────────────────────────────────
 
   // The glass background shows through, unless a custom wallpaper was set: it

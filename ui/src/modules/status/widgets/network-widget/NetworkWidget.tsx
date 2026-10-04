@@ -94,7 +94,7 @@ export function NetworkWidget(props: WidgetProps) {
         {widget.networkInterface}
         )
       </div>
-      <Line className="widget-chart h-100 w-100" data={data} options={options} />
+      <Line className="widget-chart h-100 w-100" aria-label={t('status.network.title_network')} data={data} options={options} />
       <div ref={backgroundRef} className="hb-widget-chart-background"></div>
       <div className="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
         <div className="d-flex justify-content-around flex-wrap w-100">

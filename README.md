@@ -36,6 +36,8 @@ npx @mp-consulting/homebridge-config-glass-ui
 
 It removes the official interface (`homebridge-config-ui-x`), installs Glass UI in its place and, on the Synology, Debian, Raspberry Pi and Docker packages, links the folder those packages start the interface from to Glass UI. If anything fails, it puts the official interface back. Then restart Homebridge (Package Center on a Synology, `sudo hb-service restart` elsewhere, or restart the container). Your login, settings, plugins and accessories carry over: Glass UI uses the same `config` platform block and the same `hb-service` command.
 
+Coming from the official interface or from Glass UI 1.x? [Upgrading to 2.0](docs/upgrading.md) lists what carries over (storage files, backups), what is new and what behaves differently.
+
 Run the same command again to update, or after an update of the Homebridge package or a new container has brought the official interface back. To go back to the official interface:
 
 ```sh
@@ -139,9 +141,11 @@ What it adds:
 - **Daily Digest**, a dashboard widget for administrators. Turn on **The Assistant's daily digest is ready** under **Settings**, **Notifications** to also get it every day, at the time you pick (server time), on your notification channels.
 - **Crash loop explanations**: while the Assistant is on, a child bridge crash loop notification adds a few sentences on what the bridge's log points to (at most 20 seconds' wait; without them if the Assistant fails). **Explain with the Assistant** under **Settings**, **Notifications** turns this off.
 
+The chat keeps its conversation when you close it or reload the page, along with your last ten conversations (in this browser, per user): **New chat** starts another, the clock button reopens an earlier one, and **Clear history** removes them. Each question goes with the page you are on (the route, and the plugin whose settings are open), so "why does this plugin fail?" needs no more context.
+
 Privacy: logs, configs and accessory names are sent to the provider you picked, with passwords, tokens and keys replaced by `__REDACTED__` first (and restored when a config comes back). Each user may start 20 Assistant requests a minute.
 
-API: `GET /api/ai/status` (any user), `PUT /api/ai/settings`, `POST /api/ai/test`, `POST /api/ai/diagnose-logs`, `POST /api/ai/plugin-config`, `POST /api/ai/update-risk`, `POST /api/ai/organize`, `GET /api/ai/digest` (admin), `POST /api/ai/chat` (any user). They answer `409` while the Assistant is off. Streaming, the organiser and tool confirmations use the socket.io namespace `ai` (messages `chat`, `diagnose-logs`, `plugin-config`, `organize`, `cancel`, `confirm`; events `ai:chunk`, `ai:progress`, `ai:tool`, `ai:confirm`, `ai:done`, `ai:error`). The chat's tools call this server on `127.0.0.1` with a five-minute token of the signed-in user; over HTTPS (including a self-signed certificate) that call trusts only the UI's own certificate, pinned by fingerprint, and nothing else in the process changes how certificates are checked. With a PFX certificate, or one that cannot be read, the tools say so instead. Set `UIX_AI_LOCAL_URL` if the UI is only reachable at another address; that address needs a certificate Node trusts.
+API: `GET /api/ai/status` (any user), `PUT /api/ai/settings`, `POST /api/ai/test`, `POST /api/ai/diagnose-logs`, `POST /api/ai/plugin-config`, `POST /api/ai/update-risk`, `POST /api/ai/organize`, `GET /api/ai/digest` (admin), `POST /api/ai/chat` (any user; `{ messages, context? }`, the context being `{ route?, page?, plugin? }`). They answer `409` while the Assistant is off. Streaming, the organiser and tool confirmations use the socket.io namespace `ai` (messages `chat`, `diagnose-logs`, `plugin-config`, `organize`, `cancel`, `confirm`; events `ai:chunk`, `ai:progress`, `ai:tool`, `ai:confirm`, `ai:done`, `ai:error`). The chat's tools call this server on `127.0.0.1` with a five-minute token of the signed-in user; over HTTPS (including a self-signed certificate) that call trusts only the UI's own certificate, pinned by fingerprint, and nothing else in the process changes how certificates are checked. With a PFX certificate, or one that cannot be read, the tools say so instead. Set `UIX_AI_LOCAL_URL` if the UI is only reachable at another address; that address needs a certificate Node trusts.
 
 ### MCP server
 
@@ -204,6 +208,13 @@ npm test
 npm run test:ui
 npm run lint
 ```
+
+## Documentation
+
+- [Upgrading to 2.0](docs/upgrading.md): from `homebridge-config-ui-x` or Glass UI 1.x
+- [Architecture](docs/architecture.md): the server modules, the UI, and how the Assistant and MCP server use `@mp-consulting/homebridge-ai-kit` and `@mp-consulting/homebridge-ui-kit`
+- [CONTRIBUTING.md](CONTRIBUTING.md): setting up, tests and translations
+- [docs/archive](docs/archive/): the Angular to React migration plan (done in 2.0.0-beta.0)
 
 ## License
 

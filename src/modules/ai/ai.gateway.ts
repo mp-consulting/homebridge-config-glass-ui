@@ -88,6 +88,7 @@ export class AiGateway implements OnGatewayDisconnect {
   chat(client: WsClient, payload: RequestPayload) {
     return this.start(client, payload, AiChatDto, false, (user, body: AiChatDto, run, requestId) =>
       this.aiService.chat(user, body.messages, {
+        context: body.context,
         signal: run.abort.signal,
         onEvent: event => this.forward(client, requestId, event),
         confirm: call => this.askConfirmation(client, requestId, run, call),

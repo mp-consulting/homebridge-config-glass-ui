@@ -150,6 +150,29 @@ export class AiChatMessageDto {
   content: string
 }
 
+/** Where the user is in the UI when they ask (shown to the model as context, never as instructions). */
+export class AiChatContextDto {
+  @ApiPropertyOptional({ description: 'The UI route, e.g. `/logs`.' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Matches(/^\/[\w\-./~%@]*$/)
+  route?: string
+
+  @ApiPropertyOptional({ description: 'The kind of page: `dashboard`, `logs`, `accessories`, `plugins`, `plugin-settings`, …' })
+  @IsOptional()
+  @IsString()
+  @Matches(/^[a-z][a-z-]{0,39}$/)
+  page?: string
+
+  @ApiPropertyOptional({ description: 'The plugin whose settings are open.' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(214)
+  @Matches(RE_PLUGIN_PACKAGE)
+  plugin?: string
+}
+
 export class AiChatDto {
   @ApiProperty({ type: [AiChatMessageDto] })
   @IsArray()
@@ -157,6 +180,12 @@ export class AiChatDto {
   @ValidateNested({ each: true })
   @Type(() => AiChatMessageDto)
   messages: AiChatMessageDto[]
+
+  @ApiPropertyOptional({ type: AiChatContextDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AiChatContextDto)
+  context?: AiChatContextDto
 }
 
 export class AiUpdateRiskDto {

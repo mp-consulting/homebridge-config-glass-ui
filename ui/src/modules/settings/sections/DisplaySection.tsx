@@ -94,7 +94,7 @@ export function DisplaySection() {
         <div className={INNER_BLOCK}>
           {t('settings.display.lang')}
           <div className={CONTROL_WRAP}>
-            <StringSelect field="uiLang" className="custom-select resp-select order-1 order-md-2">
+            <StringSelect field="uiLang" className="custom-select resp-select order-1 order-md-2" label={t('settings.display.lang')}>
               <option value="auto">{t('form.select.auto')}</option>
               {LANGUAGES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </StringSelect>
@@ -106,7 +106,7 @@ export function DisplaySection() {
         <div className={INNER_BLOCK}>
           {t('settings.display.theme')}
           <div className={CONTROL_WRAP}>
-            <StringSelect field="uiTheme" className="custom-select resp-select order-1 order-md-2">
+            <StringSelect field="uiTheme" className="custom-select resp-select order-1 order-md-2" label={t('settings.display.theme')}>
               {THEMES.map(([value, label]) => <option key={value} value={value}>{t(label)}</option>)}
             </StringSelect>
             <FieldSaveIndicator saving="uiTheme" />
@@ -117,7 +117,7 @@ export function DisplaySection() {
         <div className={INNER_BLOCK}>
           {t('settings.display.lighting_mode')}
           <div className={CONTROL_WRAP}>
-            <StringSelect field="uiLight" className="custom-select resp-select order-1 order-md-2">
+            <StringSelect field="uiLight" className="custom-select resp-select order-1 order-md-2" label={t('settings.display.lighting_mode')}>
               <option value="auto">{t('form.select.auto')}</option>
               <option value="light">{t('settings.display.light')}</option>
               <option value="dark">{t('settings.display.dark')}</option>
@@ -140,7 +140,7 @@ export function DisplaySection() {
         <div className={INNER_BLOCK}>
           {t('settings.display.menu_mode')}
           <div className={CONTROL_WRAP}>
-            <StringSelect field="uiMenu" className="custom-select resp-select order-1 order-md-2">
+            <StringSelect field="uiMenu" className="custom-select resp-select order-1 order-md-2" label={t('settings.display.menu_mode')}>
               <option value="default">{t('settings.display.menu_default')}</option>
               <option value="freeze">{t('settings.display.menu_freeze')}</option>
             </StringSelect>
@@ -152,7 +152,7 @@ export function DisplaySection() {
         <div className={INNER_BLOCK}>
           {t('settings.display.temp_units')}
           <div className={CONTROL_WRAP}>
-            <StringSelect field="uiTemp" className="custom-select resp-select order-1 order-md-2">
+            <StringSelect field="uiTemp" className="custom-select resp-select order-1 order-md-2" label={t('settings.display.temp_units')}>
               <option value="c">{t('settings.display.temp_units.c')}</option>
               <option value="f">{t('settings.display.temp_units.f')}</option>
             </StringSelect>

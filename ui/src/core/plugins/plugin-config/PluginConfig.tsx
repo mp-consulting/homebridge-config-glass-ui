@@ -5,6 +5,7 @@ import type { PluginModalData } from '@/core/ui/modal-data'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAssistantPluginContext } from '@/core/ai/ai-context'
 import { openConfigCopilot } from '@/core/ai/ai-entry'
 import { useAiEnabled } from '@/core/ai/ai.store'
 import { AiButton } from '@/core/ai/AiButton'
@@ -55,6 +56,7 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
   const { t } = useTranslation()
   const lang = useSettingsStore(state => state.env.lang)
   const aiEnabled = useAiEnabled()
+  useAssistantPluginContext(plugin.name)
 
   const [pluginConfig, setPluginConfig] = useState<PluginConfigBlock[]>([])
   const [show, setShow] = useState('')
