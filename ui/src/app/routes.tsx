@@ -129,6 +129,10 @@ export const routes: RouteObject[] = [
             ...page(() => import('@/modules/support/route'), requireAuth),
           },
           {
+            path: 'child-bridges',
+            ...page(() => import('@/modules/child-bridges/route'), requireAdmin),
+          },
+          {
             path: 'power-options',
             ...page(() => import('@/modules/power-options/route'), requireAdmin),
           },

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Child Bridge Health page.** A new admin page (sidebar: Child Bridge Health) lists every child bridge with its status, uptime, restart count and crash count, and flags a crash loop (3 unrequested crashes within 10 minutes) on the bridge and at the top of the page. Process memory is shown on Linux. Stops and restarts from the UI, and Homebridge itself restarting, are not counted as crashes. Also served at `GET /api/status/homebridge/child-bridges/health` (admin).
 - **Plugin compatibility check before upgrading Node.js or Homebridge.** `GET /api/plugins/compatibility?node=<version>&homebridge=<version>` (admin) lists the installed plugins whose `engines.node` / `engines.homebridge` range would not accept the target version, and those that state no range. The Homebridge update dialog lists those plugins before you confirm, and the Node.js update dialog warns how many plugins do not support the new version.
 - **Compare a config backup with the current config.** The config editor's backup list has a Compare button that opens a read-only Monaco diff of that automatic backup (left) against the current config (right), side by side or inline, with Copy to Editor to restore it from there.
 - **Network widget units and directions.** The network widget's settings now choose bits or bytes per second, and the rates scale to the unit that fits (b/s up to Gb/s, or B/s up to GB/s). Received and sent traffic are charted separately, received above the axis and sent mirrored below it.

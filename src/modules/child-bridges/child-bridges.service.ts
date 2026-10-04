@@ -5,6 +5,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { RE_CHAR_PAIRS } from '../../core/regex.constants.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
+import { ChildBridgeHealthService } from './child-bridge-health.service.js'
 
 type ChildBridgePairingCodes = Partial<Pick<ChildBridgeMetadata, 'pin' | 'setupUri' | 'matterPin' | 'matterSetupUri'>>
 
@@ -40,6 +41,7 @@ export class ChildBridgesService {
   constructor(
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
+    @Inject(ChildBridgeHealthService) private readonly health: ChildBridgeHealthService,
   ) {}
 
   /**
@@ -60,6 +62,11 @@ export class ChildBridgesService {
   public async getChildBridgesForUser(admin: boolean): Promise<ChildBridgeMetadata[]> {
     const bridges = await this.getChildBridges()
     return Array.isArray(bridges) ? bridges.map(bridge => withoutChildBridgePairingCodes(bridge, admin)) : bridges
+  }
+
+  /** Per child bridge uptime, restart / crash counts and crash-loop state. */
+  public async getChildBridgesHealth() {
+    return this.health.getHealth(await this.getChildBridges())
   }
 
   /**
@@ -114,6 +121,8 @@ export class ChildBridgesService {
       deviceId = deviceId.match(RE_CHAR_PAIRS).join(':')
     }
 
+    // Asked for: the bridge going down now is not a crash
+    this.health.expectRestart(deviceId)
     this.homebridgeIpcService.sendMessage(event, deviceId)
 
     setTimeout(() => {

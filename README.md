@@ -16,7 +16,7 @@ A web interface for managing, configuring and controlling [Homebridge](https://h
 - A customisable widget dashboard for monitoring your server (network traffic in bits or bytes, sent and received charted separately)
 - Live Homebridge logs and a web terminal
 - View and control your accessories from any browser
-- Run plugins as child bridges
+- Run plugins as child bridges, with a health page that shows uptime and restarts and detects crash loops
 - Back up and restore your whole Homebridge instance
 - `hb-service`, a command that installs Homebridge as a service on Linux, macOS, FreeBSD and Windows
 

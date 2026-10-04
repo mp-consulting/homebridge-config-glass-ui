@@ -388,6 +388,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
           {navButton('/accessories', t('menu.label_accessories'), 'fas fa-lightbulb')}
           {canViewLogs && navButton('/logs', t('menu.linux.label_logs'), 'fas fa-wave-square')}
           {enableTerminalAccess && isAdmin && navButton('/platform-tools/terminal', t('menu.linux.label_terminal'), 'fas fa-terminal')}
+          {isAdmin && navButton('/child-bridges', t('child_bridge.health.title'), 'fas fa-heart-pulse')}
           {isAdmin && navButton('/config', t('menu.config_json_editor'), 'fas fa-code')}
           {isAdmin && navButton('/settings', t('menu.label_settings'), 'fas fa-cog')}
           {navButton('/support', t('support.title'), 'far fa-circle-question')}

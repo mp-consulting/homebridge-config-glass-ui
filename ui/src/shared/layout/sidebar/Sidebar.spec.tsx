@@ -105,6 +105,7 @@ describe('sidebar', () => {
         'menu.label_accessories',
         'menu.linux.label_logs',
         'menu.linux.label_terminal',
+        'child_bridge.health.title',
         'menu.config_json_editor',
         'menu.label_settings',
         'support.title',
