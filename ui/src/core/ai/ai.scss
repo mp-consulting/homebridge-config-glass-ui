@@ -93,6 +93,9 @@ body.dark-mode {
     // The kit clips the chat to round its corners, which it has none of here;
     // the clip only cut the Send button's glow to a box (the log scrolls by itself)
     overflow: visible;
+    // The dialog is the surface: an opaque chat ending just under Send showed
+    // its edge as a cut through the glow
+    background: transparent;
   }
 
   // Room for that glow before the dialog's own edge
@@ -130,3 +133,4 @@ body.dark-mode {
     overflow-y: auto;
   }
 }
+

@@ -115,10 +115,10 @@
   }
 
   // The clip above (for the collapse) cut the Assistant button's glow, which
-  // blurs out past the button, to a dark box around it. Give such a row room
-  // for the glow inside the clip, cancelled by a negative margin so the row
-  // keeps its size and its contents stay where they were.
-  .setting-row-inner:has(.mp-ai-button, .mp-ai-halo) {
+  // blurs out past the button, to a dark box around it (and a button's shadow
+  // to a light one). Give such a row room for it inside the clip, cancelled by
+  // a negative margin so the row keeps its size and its contents stay put.
+  .setting-row-inner:has(.mp-ai-button, .mp-ai-halo, .btn) {
     --hb-ai-glow-room: calc(var(--mp-ai-glow-blur, 12px) * 2);
 
     padding: var(--hb-ai-glow-room);
