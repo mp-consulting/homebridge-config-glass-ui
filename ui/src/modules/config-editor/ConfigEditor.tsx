@@ -14,7 +14,10 @@ import { Dropdown } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { useLoaderData, useSearchParams } from 'react-router'
 
+import { openConfigCopilot } from '@/core/ai/ai-entry'
+import { useAiEnabled } from '@/core/ai/ai.store'
 import { api } from '@/core/api'
+import { pluginsCache } from '@/core/caching/plugins-cache'
 import { Confirm } from '@/core/components/confirm/Confirm'
 import { RestartChildBridges } from '@/core/components/restart-child-bridges/RestartChildBridges'
 import { RestartHomebridge } from '@/core/components/restart-homebridge/RestartHomebridge'
@@ -29,6 +32,7 @@ import { toastApiError } from '@/core/utilities/http-error'
 import { mobileDetect } from '@/core/utilities/mobile-detect'
 import { useCanDeactivate } from '@/core/utilities/terminal/can-deactivate'
 
+import { withCopilotBlock } from './config-copilot'
 import { DIFF_MODIFIED_URI, DIFF_ORIGINAL_URI, disposeLeftoverModels, PLAIN_TEXT_STORAGE_KEY } from './config-editor.monaco'
 import { ConfigRestore } from './config-restore/ConfigRestore'
 import { CONFIG_MODEL_URI, CONFIG_SCHEMA_URI, createConfigSchema } from './config-schema'
@@ -65,6 +69,7 @@ export function ConfigEditor() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const isMobile = useMemo(() => !!mobileDetect.detect.mobile(), [])
+  const aiEnabled = useAiEnabled()
   const flags = useMemo(() => ({
     isDebugModeEnabled: settingsActions.isFeatureEnabled('childBridgeDebugMode'),
     isMatterSupported: settingsActions.isFeatureEnabled('matterSupport'),
@@ -506,6 +511,49 @@ export function ConfigEditor() {
     void onRestore()
   }
 
+  /**
+   * Config Copilot: describe a plugin's settings, review the whole config.json
+   * before and after in a diff, and Apply - which saves it the usual way.
+   */
+  const onCopilot = async () => {
+    let choices: Array<{ name: string, label: string }> = []
+    try {
+      choices = (await pluginsCache.get())
+        .filter(plugin => plugin.settingsSchema && plugin.installedVersion && plugin.name !== '@mp-consulting/homebridge-config-glass-ui')
+        .map(plugin => ({ name: plugin.name, label: plugin.displayName || plugin.name }))
+    } catch (error) {
+      toastApiError(error)
+      return
+    }
+    if (!choices.length) {
+      toast.info(t('ai.copilot.no_plugins'), t('ai.copilot.title'))
+      return
+    }
+    let before: HomebridgeConfig
+    try {
+      before = json5.parse(isMonacoActive() ? monacoEditorRef.current!.getModel()!.getValue() : configRef.current)
+    } catch {
+      toast.error(t('config.config_invalid_json'), t('toast.title_error'))
+      return
+    }
+    try {
+      const { modified } = await openConfigCopilot({
+        pluginChoices: choices,
+        buildDiff: result => ({
+          original: JSON.stringify(before, null, 4),
+          modified: JSON.stringify(withCopilotBlock(before, result.config), null, 4),
+        }),
+      })
+      writeConfig(modified)
+      if (isMonacoActive()) {
+        monacoEditorRef.current!.getModel()?.setValue(modified)
+      }
+      await onSave()
+    } catch {
+      // Closed without applying
+    }
+  }
+
   const toggleSideBySide = () => setRenderSideBySide(value => !value)
 
   const confirmDiscardChanges = (): Promise<boolean> => {
@@ -609,6 +657,19 @@ export function ConfigEditor() {
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
+          {aiEnabled && !originalConfig && (
+            <HoverTooltip text={translate('ai.copilot.open')} placement="bottom">
+              <button
+                type="button"
+                className="mp-ai-button my-0 me-2 align-middle hb-config-copilot-button"
+                disabled={saveInProgress}
+                aria-label={translate('ai.copilot.open')}
+                onClick={() => void onCopilot()}
+              >
+                <i aria-hidden="true" className="fas fa-wand-magic-sparkles mp-ai-icon"></i>
+              </button>
+            </HoverTooltip>
+          )}
           {originalConfig
             ? (
                 <HoverTooltip text={translate('form.button_cancel')} placement="bottom">

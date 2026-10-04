@@ -5,6 +5,9 @@ import type { PluginModalData } from '@/core/ui/modal-data'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { openConfigCopilot } from '@/core/ai/ai-entry'
+import { useAiEnabled } from '@/core/ai/ai.store'
+import { AiButton } from '@/core/ai/AiButton'
 import { api } from '@/core/api'
 import { Markdown } from '@/core/components/markdown/Markdown'
 import { InlineSpinner } from '@/core/components/spinner/InlineSpinner'
@@ -51,6 +54,7 @@ function homebridgeHueFix(schema: any, platform: Record<string, unknown>): void 
 export function PluginConfig({ activeModal, plugin, schema, editorContext }: PluginConfigProps) {
   const { t } = useTranslation()
   const lang = useSettingsStore(state => state.env.lang)
+  const aiEnabled = useAiEnabled()
 
   const [pluginConfig, setPluginConfig] = useState<PluginConfigBlock[]>([])
   const [show, setShow] = useState('')
@@ -213,6 +217,30 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
     }
   }
 
+  /**
+   * Config Copilot for the block on show (or the only one): the generated
+   * block replaces it and is saved straight away through the usual save,
+   * which keeps a config.json backup.
+   */
+  async function describeConfig(): Promise<void> {
+    const block = pluginConfig.find(x => x.__uuid__ === show) ?? pluginConfig[0]
+    if (!block || !plugin) {
+      return
+    }
+    try {
+      const { config } = await openConfigCopilot({
+        pluginName: plugin.name,
+        pluginLabel: plugin.displayName || plugin.name,
+        current: block.config,
+      })
+      block.config = config as PluginConfigBlock['config']
+      setPluginConfig(current => renameBlocks([...current]))
+      await save()
+    } catch {
+      // Closed without applying
+    }
+  }
+
   const dismissModal = () => activeModal.dismiss('Dismiss')
   const closeModal = () => activeModal.close()
 
@@ -255,6 +283,11 @@ export function PluginConfig({ activeModal, plugin, schema, editorContext }: Plu
     <div className="modal-content hb-plugin-config" aria-labelledby="plugin-config-title">
       <ModalHeader title={plugin.displayName || plugin.name} titleId="plugin-config-title" closeDisabled={saveInProgress} onClose={dismissModal} />
       <div className="modal-body pb-0">
+        {aiEnabled && plugin.name !== '@mp-consulting/homebridge-config-glass-ui' && pluginConfig.length > 0 && (
+          <div className="d-flex justify-content-end mb-3 hb-ai-describe-config">
+            <AiButton size="sm" label={t('ai.copilot.open')} disabled={saveInProgress} onClick={() => void describeConfig()} />
+          </div>
+        )}
         {schema.headerDisplay && <Markdown className="plugin-md" data={interpolateMd(schema.headerDisplay)} />}
 
         {/* MULTIPLE CONFIG BLOCKS */}

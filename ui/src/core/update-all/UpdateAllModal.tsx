@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
+import { UpdateRiskBriefing } from '@/core/ai/update-risk/UpdateRiskBriefing'
 import { api } from '@/core/api'
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { ModalFooter, ModalHeader } from '@/core/ui/ModalParts'
@@ -521,7 +522,14 @@ export function UpdateAllModal({ activeModal, terminals = xtermFactory }: Update
                             const selectable = isSelectable(view, item)
                             return (
                               <li key={item.name} className="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                                <UpdateAllItemRow displayName={name} icon={item.icon} note={t(line.key, line.params)} />
+                                <UpdateAllItemRow
+                                  displayName={name}
+                                  icon={item.icon}
+                                  note={t(line.key, line.params)}
+                                  extra={phase === 'plan' && item.type === 'plugin'
+                                    ? <UpdateRiskBriefing compact pluginName={item.name} currentVersion={item.from} targetVersion={item.to} />
+                                    : null}
+                                />
                                 {selectable || item.excluded || item.needsReview
                                   ? (
                                       // A row that is not part of the run keeps its toggle, disabled -

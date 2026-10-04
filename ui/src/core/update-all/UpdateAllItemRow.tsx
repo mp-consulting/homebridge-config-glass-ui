@@ -1,4 +1,4 @@
-import type { SyntheticEvent } from 'react'
+import type { ReactNode, SyntheticEvent } from 'react'
 
 import { DEFAULT_PLUGIN_ICON } from '@/core/constants/assets'
 
@@ -11,6 +11,8 @@ export interface UpdateAllItemRowProps {
    * the row is two lines rather than three.
    */
   note?: string | null
+  /** Extra content under the note (the update risk briefing). */
+  extra?: ReactNode
 }
 
 function handleIconError(event: SyntheticEvent<HTMLImageElement>): void {
@@ -23,7 +25,7 @@ function handleIconError(event: SyntheticEvent<HTMLImageElement>): void {
  * this, so they cannot drift apart - only the right-hand slot differs (a
  * toggle while choosing, a status while running).
  */
-export function UpdateAllItemRow({ displayName, icon = null, note = null }: UpdateAllItemRowProps) {
+export function UpdateAllItemRow({ displayName, icon = null, note = null, extra = null }: UpdateAllItemRowProps) {
   return (
     <div className="d-flex align-items-center text-start flex-grow-1 me-3">
       <img
@@ -41,6 +43,7 @@ export function UpdateAllItemRow({ displayName, icon = null, note = null }: Upda
             <small className="grey-text">{note}</small>
           </>
         )}
+        {extra && <div className="mt-1">{extra}</div>}
       </div>
     </div>
   )

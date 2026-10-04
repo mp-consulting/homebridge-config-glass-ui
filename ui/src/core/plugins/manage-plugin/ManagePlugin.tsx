@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { useStore } from 'zustand'
 
+import { UpdateRiskBriefing } from '@/core/ai/update-risk/UpdateRiskBriefing'
 import { createManagePluginStore, isOnlineUpdateOk, pastTenseKey } from '@/core/plugins/manage-plugin/manage-plugin.store'
 import { ChangelogPane, ReleaseNotesPane } from '@/core/plugins/manage-plugin/ReleaseNotesPanes'
 import { determineSupportMessage, SELF_PACKAGES } from '@/core/plugins/manage-plugin/support-message'
@@ -262,6 +263,9 @@ hb-service start`}
               )}
               {targetVersionPretty}
             </h5>
+          )}
+          {action === 'Update' && installedVersion && !SELF_PACKAGES.includes(pluginName) && (
+            <UpdateRiskBriefing pluginName={pluginName} currentVersion={installedVersion} targetVersion={targetVersion || undefined} />
           )}
           <ul className="nav-tabs px-0 nav" role="tablist">
             {tabs.map(tab => (
