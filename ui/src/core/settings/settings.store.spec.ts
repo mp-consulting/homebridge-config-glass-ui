@@ -249,6 +249,7 @@ describe('settings store', () => {
 
       expect(document.body.classList.contains('glass-ui-teal')).toBe(true)
       expect(document.body.classList.contains('dark-mode')).toBe(false)
+      expect(document.body.classList.contains('mp-theme-dark')).toBe(false)
     })
 
     it('uses the dark variant and the dark-mode class in dark mode', () => {
@@ -257,6 +258,7 @@ describe('settings store', () => {
 
       expect(document.body.classList.contains('glass-ui-dark-mode-teal')).toBe(true)
       expect(document.body.classList.contains('dark-mode')).toBe(true)
+      expect(document.body.classList.contains('mp-theme-dark')).toBe(true)
       expect(document.body.classList.contains('terminal-dark')).toBe(true)
     })
 

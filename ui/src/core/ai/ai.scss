@@ -1,7 +1,7 @@
-// Glass UI's side of the ui-kit Assistant styles (`ai.css`). The kit keys its
-// dark tokens off Bootstrap's `[data-bs-theme="dark"]`, which this app does
-// not use: its dark themes hang off `body.dark-mode`, so the same tokens are
-// mapped here. The brand colour follows the selected theme.
+// Glass UI's side of the ui-kit Assistant styles (`ai.css`). The kit's dark
+// tokens apply under its `.mp-theme-dark` class, which the settings store
+// toggles on <body> together with `dark-mode`; only Glass's own choices are
+// set here. The brand colour follows the selected theme.
 
 body {
   --mp-primary: var(--glass-primary-btn, #4f46e5);
@@ -15,12 +15,9 @@ body {
   --mp-ai-border-color: var(--glass-divider, #dee2e6);
 }
 
+// Overrides of the kit's `.mp-theme-dark` values (`body.dark-mode` is the more
+// specific selector, so these win): the glass palette and Glass's surfaces.
 body.dark-mode {
-  --mp-primary-text: #818cf8;
-  --mp-surface: rgba(255, 255, 255, 0.03);
-  --mp-border: rgba(255, 255, 255, 0.08);
-  --mp-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
-  --mp-ai-text: #d8b4fe;
   --mp-ai-surface: #1b1b1b;
   --mp-ai-fg: var(--glass-text, #f1effa);
   --mp-ai-fg-muted: var(--glass-muted, #9d9aac);
@@ -28,12 +25,6 @@ body.dark-mode {
   --mp-ai-border-color: var(--glass-divider, rgba(255, 255, 255, 0.08));
   --mp-ai-success-text: #bbf7d0;
   --mp-ai-danger-text: #fecaca;
-  --mp-ai-glow-opacity: 0.7;
-  --mp-ai-edge-glow-opacity: 0.8;
-  --mp-ai-diff-add-bg: rgba(34, 197, 94, 0.16);
-  --mp-ai-diff-add-text: #bbf7d0;
-  --mp-ai-diff-del-bg: rgba(239, 68, 68, 0.18);
-  --mp-ai-diff-del-text: #fecaca;
 
   .modal-content {
     --mp-ai-surface: #242424;

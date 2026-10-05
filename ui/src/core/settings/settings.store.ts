@@ -333,6 +333,9 @@ export const settingsActions = {
       body.classList.add(`glass-ui-${theme}`)
       body.classList.remove('dark-mode')
     }
+    // ui-kit's dark tokens (the Assistant's styles) follow this class, as its
+    // own dark mode is Bootstrap's data-bs-theme, which this app does not use
+    body.classList.toggle('mp-theme-dark', dark)
 
     settingsActions.updateTerminalBodyClass()
 
