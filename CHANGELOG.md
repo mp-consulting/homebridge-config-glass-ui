@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.8] - 2026-10-05
+
 ### Added
 
 - **Audit log.** Security-relevant actions are appended to `.uix-audit/audit.jsonl` in the Homebridge storage directory (owner-only, rotated at 2 MB, four older files kept): every Assistant tool call that writes, and every destructive one the user did not allow (who, the tool, its arguments, redacted, and the error; `details.notConfirmed` for a refusal), API token creation and revocation (never the token), every write request made with an API token (`api-token.request`, or the action's own entry naming the token), config saves (`config.save`, `config.plugin.save`, `config.ui.save`), plugin installs, updates and removals (HTTP jobs and the socket), plugin enable/disable, Homebridge and child bridge restarts, backup restores, Update All runs, user changes and the Assistant / MCP settings. Each entry has the time, the user and how they signed in (session, API token, service), the action, its target, whether it worked and the client address. Administrators read it at `GET /api/audit` (`page`, `limit` up to 500, `action` prefix, `username`), and in Settings, Security, **Audit log**. Log Doctor cannot read the audit directory.
