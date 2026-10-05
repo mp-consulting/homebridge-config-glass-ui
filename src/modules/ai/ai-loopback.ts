@@ -1,10 +1,9 @@
 import type { Buffer } from 'node:buffer'
 
-import { X509Certificate } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { createTrustedFetch } from './ai-kit.js'
+import { createTrustedFetch, pemFingerprints } from './ai-kit.js'
 
 /** What the Assistant's HomebridgeClient is given to reach this server. */
 export type LoopbackFetch = typeof fetch
@@ -38,7 +37,7 @@ export async function uiCertificateFingerprint(ssl: Record<string, unknown> | un
     return null
   }
   try {
-    return new X509Certificate(await readFile(path)).fingerprint256
+    return pemFingerprints(await readFile(path, 'utf8'))[0]
   } catch {
     return null
   }
@@ -60,7 +59,7 @@ export async function uiCertificateFingerprint(ssl: Record<string, unknown> | un
  */
 export function createLoopbackFetch(certificatePem: Buffer | string): LoopbackFetch {
   const pem = certificatePem.toString()
-  return createTrustedFetch({ certificatePem: pem, fingerprint: new X509Certificate(pem).fingerprint256 })
+  return createTrustedFetch({ certificatePem: pem, fingerprint: pemFingerprints(pem)[0] })
 }
 
 /**

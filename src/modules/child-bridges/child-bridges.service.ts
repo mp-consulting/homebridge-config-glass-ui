@@ -5,6 +5,7 @@ import { Inject, Injectable } from '@nestjs/common'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { RE_CHAR_PAIRS } from '../../core/regex.constants.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
+import { redactPairing } from '../ai/ai-kit.js'
 import { ChildBridgeHealthService } from './child-bridge-health.service.js'
 
 type ChildBridgePairingCodes = Partial<Pick<ChildBridgeMetadata, 'pin' | 'setupUri' | 'matterPin' | 'matterSetupUri'>>
@@ -17,15 +18,7 @@ type ChildBridgePairingCodes = Partial<Pick<ChildBridgeMetadata, 'pin' | 'setupU
  * payload other (admin) listeners receive is left intact.
  */
 export function withoutChildBridgePairingCodes<T extends ChildBridgePairingCodes>(bridge: T, admin: boolean): T {
-  if (admin || !bridge || typeof bridge !== 'object') {
-    return bridge
-  }
-  const redacted = { ...bridge }
-  delete redacted.pin
-  delete redacted.setupUri
-  delete redacted.matterPin
-  delete redacted.matterSetupUri
-  return redacted
+  return admin ? bridge : redactPairing(bridge)
 }
 
 /** The verified user on a socket (set by the WS guards) is an administrator */

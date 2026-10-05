@@ -1,4 +1,4 @@
-import type { AgentEvent, AiConfig, AiProvider, ChatMessage, ProviderCapabilities, TokenUsage, ToolCall } from './ai-kit.js'
+import type { AgentAuditSink, AgentEvent, AiConfig, AiProvider, ChatMessage, ProviderCapabilities, TokenUsage, ToolCall } from './ai-kit.js'
 import type { AiHomebridgeClientFactory, AiProviderFactory } from './ai.constants.js'
 import type { AiChatContextDto, AiChatMessageDto, AiOrganizeDto, AiPluginConfigDto, AiSettingsDto, AiUpdateRiskDto } from './ai.dto.js'
 
@@ -26,7 +26,6 @@ import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { isProtectedStoragePath } from '../config-editor/config-safety.js'
 import { PluginsService } from '../plugins/plugins.service.js'
-import { SlidingWindowLimiter, TtlCache } from './ai-cache.js'
 import {
   assessPluginUpdate,
   costOf,
@@ -39,12 +38,15 @@ import {
   PLATFORM_NAME,
   PROMPTS,
   ProviderError,
+  readLogTail,
   redactText,
   resolveAiConfig,
+  SlidingWindowRateLimiter,
   suggestOrganization,
+  TtlCache,
   UsageTracker,
 } from './ai-kit.js'
-import { linesMentioning, problemLines, readLogTail } from './ai-logs.js'
+import { linesMentioning, problemLines } from './ai-logs.js'
 import { loadLoopbackFetch } from './ai-loopback.js'
 import { organizerInput } from './ai-organize.js'
 import { AiUsageLedger } from './ai-usage.js'
@@ -164,13 +166,13 @@ export class AiService {
   private ledgerLoaded: Promise<void> | undefined
   private ledgerSaved: Promise<void> = Promise.resolve()
   /** Per-user rate limit; users idle for a window are forgotten. */
-  private readonly requests = new SlidingWindowLimiter({ limit: AI_RATE_LIMIT, windowMs: AI_RATE_WINDOW_MS })
+  private readonly requests = new SlidingWindowRateLimiter({ limit: AI_RATE_LIMIT, windowMs: AI_RATE_WINDOW_MS })
   private providerCache: { key: string, provider: AiProvider } | undefined
   private digestCache: { key: string, at: number, value: { text: string, generatedAt: string } } | undefined
   /** The chat client's fetch for this server's own HTTPS (see loopbackFetch). */
   private loopback: Promise<typeof fetch> | undefined
   /** Update risk briefings by plugin and versions: kept a day, at most RISK_CACHE_MAX. */
-  private readonly riskCache = new TtlCache<Record<string, unknown>>({ ttlMs: RISK_TTL_MS, maxSize: RISK_CACHE_MAX })
+  private readonly riskCache = new TtlCache<string, Record<string, unknown>>({ ttlMs: RISK_TTL_MS, maxEntries: RISK_CACHE_MAX })
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -421,7 +423,7 @@ export class AiService {
 
   /** Count one request against the user's rate limit (429 when over it). */
   consume(user: AiUser | undefined): void {
-    if (!this.requests.consume(user?.username ?? '(anonymous)')) {
+    if (!this.requests.consume(user?.username ?? '(anonymous)').allowed) {
       throw new HttpException('Too many Assistant requests. Wait a minute and try again.', HttpStatus.TOO_MANY_REQUESTS)
     }
   }
@@ -568,32 +570,21 @@ export class AiService {
     const history: ChatMessage[] = messages.map(m => ({ role: m.role, content: redactText(m.content) }))
     const system = `${PROMPTS.ask.system}\n\nYou run inside Homebridge Glass UI for ${user?.username ?? 'the user'}, who ${readOnly
       ? 'is not an administrator: only read-only tools are available, so explain what an administrator would need to do for any change.'
-      : 'is an administrator. Changes that restart, remove or reconfigure something are confirmed by the user before they run.'} Answer in Markdown, briefly.${chatContextPrompt(options.context)}`
+      : 'is an administrator. Changes that restart, remove or reconfigure something, and any lock, garage door or alarm change (set_security_accessory), are confirmed by the user before they run.'} Answer in Markdown, briefly.${chatContextPrompt(options.context)}`
 
-    // Every tool call goes to the audit log as it completes (streamed), or
-    // from the result when nothing streams (HTTP)
-    const audited = new Set<string>()
-    const auditTool = (call: ToolCall, result: string, isError: boolean) => {
-      if (audited.has(call.id)) {
-        return
-      }
-      audited.add(call.id)
-      void this.audit.record({
+    // Write tool calls, and destructive ones the user did not allow, reach the
+    // audit log through the kit's audit sink: one entry each, however the
+    // chat runs (socket or HTTP). Read-only tools change nothing and are not logged.
+    const audit: AgentAuditSink = {
+      record: entry => this.audit.record({
         action: 'assistant.tool',
         actor: auditActor(user),
-        ok: !isError,
-        target: call.name,
-        details: { arguments: call.arguments, result: redactText(String(result ?? '')).slice(0, 500), readOnly },
-      })
+        ok: entry.ok,
+        target: entry.tool,
+        ...(entry.error ? { error: entry.error } : {}),
+        details: { arguments: entry.args, readOnly, ...(entry.notConfirmed ? { notConfirmed: true } : {}) },
+      }),
     }
-    const onEvent = options.onEvent
-      ? (event: AgentEvent) => {
-          if (event.type === 'tool_result') {
-            auditTool(event.call, event.result, event.isError)
-          }
-          options.onEvent!(event)
-        }
-      : undefined
 
     return this.run(user, async ({ config, provider }) => {
       const result = await this.runAgent({
@@ -605,12 +596,10 @@ export class AiService {
         maxSteps: AI_MAX_AGENT_STEPS,
         maxOutputTokens: config.maxOutputTokens,
         signal: options.signal,
-        onEvent,
+        onEvent: options.onEvent,
         confirm: options.confirm,
+        audit,
       })
-      for (const call of result.toolCalls) {
-        auditTool(call, call.result, call.isError)
-      }
       return {
         text: result.text,
         toolCalls: result.toolCalls.map(call => ({ id: call.id, name: call.name, arguments: call.arguments, isError: call.isError })),

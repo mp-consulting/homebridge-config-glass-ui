@@ -3,8 +3,6 @@ import type { OnGatewayDisconnect } from '@nestjs/websockets'
 import type { WsClient } from '../../core/auth/guards/ws-auth.js'
 import type { AgentEvent, ToolCall } from './ai-kit.js'
 
-import { randomUUID } from 'node:crypto'
-
 import { HttpException, Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'
 import { plainToInstance } from 'class-transformer'
@@ -13,6 +11,7 @@ import { validate } from 'class-validator'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { ConfirmationBroker } from './ai-kit.js'
 import { AI_CONFIRM_TIMEOUT_MS } from './ai.constants.js'
 import { AiChatDto, AiDiagnoseLogsDto, AiOrganizeDto, AiPluginConfigDto } from './ai.dto.js'
 import { AiService } from './ai.service.js'
@@ -24,8 +23,8 @@ const RE_REQUEST_ID = /^[\w-]{1,64}$/
 
 interface Running {
   abort: AbortController
-  /** Destructive tool calls waiting for the user's answer, by confirmId. */
-  confirms: Map<string, (allow: boolean) => void>
+  /** Destructive tool calls waiting for the user's answer (no answer in time is a no). */
+  confirms: ConfirmationBroker
 }
 
 interface RequestPayload {
@@ -140,12 +139,11 @@ export class AiGateway implements OnGatewayDisconnect {
     if (typeof payload?.requestId !== 'string' || typeof payload?.confirmId !== 'string') {
       return { error: 'requestId and confirmId are required.' }
     }
-    const answer = this.running.get(client)?.get(payload.requestId)?.confirms.get(payload.confirmId)
-    if (!answer) {
+    // Only an explicit true allows the tool
+    const answered = this.running.get(client)?.get(payload.requestId)?.confirms.answer(payload.confirmId, payload.allow === true)
+    if (!answered) {
       return { error: 'Nothing is waiting for this confirmation.' }
     }
-    // Only an explicit true allows the tool
-    answer(payload.allow === true)
     return { ok: true }
   }
 
@@ -185,7 +183,7 @@ export class AiGateway implements OnGatewayDisconnect {
     if (runs.size >= MAX_RUNNING_PER_SOCKET) {
       return { error: 'Too many Assistant requests are running.', status: 429 }
     }
-    const run: Running = { abort: new AbortController(), confirms: new Map() }
+    const run: Running = { abort: new AbortController(), confirms: new ConfirmationBroker({ timeoutMs: AI_CONFIRM_TIMEOUT_MS }) }
     runs.set(requestId, run)
 
     void work(user, body, run, requestId)
@@ -198,9 +196,7 @@ export class AiGateway implements OnGatewayDisconnect {
         client.emit('ai:error', { requestId, message, status })
       })
       .finally(() => {
-        for (const answer of run.confirms.values()) {
-          answer(false)
-        }
+        run.confirms.cancelAll()
         runs.delete(requestId)
       })
 
@@ -219,30 +215,10 @@ export class AiGateway implements OnGatewayDisconnect {
 
   /** Ask the client before a destructive tool runs. No answer in time, a cancel or a disconnect is a no. */
   private askConfirmation(client: WsClient, requestId: string, run: Running, call: ToolCall): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      const confirmId = randomUUID()
-      let settled = false
-      let timer: ReturnType<typeof setTimeout> | undefined
-      const cleanup = { onAbort: () => {} }
-      const finish = (allow: boolean) => {
-        if (settled) {
-          return
-        }
-        settled = true
-        clearTimeout(timer)
-        run.confirms.delete(confirmId)
-        run.abort.signal.removeEventListener('abort', cleanup.onAbort)
-        resolve(allow)
-      }
-      const onAbort = () => finish(false)
-      cleanup.onAbort = onAbort
-      timer = setTimeout(() => {
-        client.emit('ai:confirm-expired', { requestId, confirmId })
-        finish(false)
-      }, AI_CONFIRM_TIMEOUT_MS)
-      run.confirms.set(confirmId, finish)
-      run.abort.signal.addEventListener('abort', onAbort)
-      client.emit('ai:confirm', { requestId, confirmId, tool: { name: call.name, arguments: call.arguments }, timeoutMs: AI_CONFIRM_TIMEOUT_MS })
+    return run.confirms.request({
+      signal: run.abort.signal,
+      send: (confirmId, timeoutMs) => client.emit('ai:confirm', { requestId, confirmId, tool: { name: call.name, arguments: call.arguments }, timeoutMs }),
+      onTimeout: confirmId => client.emit('ai:confirm-expired', { requestId, confirmId }),
     })
   }
 }

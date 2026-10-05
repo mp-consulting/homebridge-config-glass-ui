@@ -28,6 +28,7 @@ import { isNodeV24SupportedArchitecture } from '../../core/node-version.constant
 import { fetchNodeReleases, pickNodeUpdate } from '../../core/node-version/node-release.js'
 import { npmVersion as getNpmVersion } from '../../core/npm/npm-runner.js'
 import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
+import { redactPairing } from '../ai/ai-kit.js'
 import { DockerRelease, DockerReleaseInfo } from '../platform-tools/docker/docker.interfaces.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
@@ -56,16 +57,8 @@ export function withoutPairingCodes<T extends { pin?: unknown, setupUri?: unknow
   if (admin) {
     return status
   }
-  // Copies, so the cached status the next caller gets is left intact
-  const redacted = { ...status }
-  delete redacted.pin
-  delete redacted.setupUri
-  if (status.matter) {
-    redacted.matter = { ...status.matter }
-    delete redacted.matter.pin
-    delete redacted.matter.setupUri
-  }
-  return redacted
+  // A copy (the kit's redactPairing), so the cached status the next caller gets is left intact
+  return redactPairing(status)
 }
 
 /**
