@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.9] - 2026-10-18
+
+### Security
+
+- **Development dependencies moved onto patched versions.** `concurrently` 10.0.6 brings `shell-quote` 1.12.0 (GHSA-pqg4-j6r4-53mv, command injection through a line terminator in a token after a `{ comment }` token); the declared range already allowed it, the lockfile was just stale. `tinypool` and `katex` were each held below their patch by a parent already at its latest release, so they are pinned with `overrides` instead of downgrading the parent: `tinypool` ^2.2.0 (GHSA-85c8-ppgw-ccpr, a prototype-pollution gadget to remote code execution in `run()` options, reached through `oxfmt` as required by `eslint-plugin-format` 2.0.1) and `katex` ^0.18.2 (existing prototype pollution can bypass trust restrictions, reached through `micromark-extension-math` as required by `@eslint/markdown` 8.0.3). All three are lint and format tooling only, so nothing that ships to users changes.
+
 ## [2.0.0-beta.8] - 2026-10-05
 
 ### Added
