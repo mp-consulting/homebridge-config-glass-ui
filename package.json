@@ -143,5 +143,9 @@
     "fsevents": true,
     "macos-temperature-sensor": true,
     "osx-temperature-sensor": true
+  },
+  "overrides": {
+    "katex": "^0.18.2",
+    "tinypool": "^2.2.0"
   }
 }
