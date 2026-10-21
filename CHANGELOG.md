@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.10] - 2026-10-21
+
 ### Changed
 
 - **Installed app on iPhone**: the app runs edge to edge under the status bar (`viewport-fit=cover`, translucent status bar) and the header, sidebar, toasts and dialogs keep clear of the notch and home indicator. The `theme-color` follows the light / dark theme.
