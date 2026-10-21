@@ -78,9 +78,7 @@
     height: 100%;
     margin-bottom: 0 !important;
     padding: 18px 18px 14px;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: transform 0.2s ease;
 
     @media (hover: hover) {
       &:hover {

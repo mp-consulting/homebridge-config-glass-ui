@@ -140,16 +140,17 @@ $themes: (
               }
             }
 
+            // On the base rule, so the icon eases back as well as in
             &.active {
               i {
                 color: var(--glass-theme-primary);
+                transition: color 0.3s;
               }
             }
 
             &.active:hover {
               i {
                 color: #ffffff;
-                transition: 0.3s;
               }
             }
 
@@ -196,12 +197,12 @@ $themes: (
     .btn-default {
       background-color: var(--glass-theme-primary) !important;
       border-color: var(--glass-theme-primary) !important;
+      transition: background-color 0.25s;
 
       &:hover,
       &:focus {
         background-color: var(--glass-theme-primary-shade) !important;
         border-color: var(--glass-theme-primary-shade) !important;
-        transition: background-color 0.25s;
       }
     }
 

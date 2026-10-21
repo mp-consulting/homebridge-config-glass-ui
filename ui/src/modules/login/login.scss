@@ -6,16 +6,12 @@
   background-size: 300% 300%;
 
   &.anim {
-    -webkit-animation: gradient 20s ease infinite;
-    -moz-animation: gradient 20s ease infinite;
-    animation: gradient 20s ease infinite;
+    animation: hb-login-gradient 20s ease infinite;
   }
 
   // The drifting gradient stays still for people who asked for less motion
   @media (prefers-reduced-motion: reduce) {
     &.anim {
-      -webkit-animation: none;
-      -moz-animation: none;
       animation: none;
     }
   }
@@ -42,7 +38,9 @@
   }
 }
 
-@keyframes gradient {
+// Named for the page: setup-wizard.scss has its own, and two global
+// `gradient` keyframes overwrote each other
+@keyframes hb-login-gradient {
   0% {
     background-position: 0 50%;
   }

@@ -314,6 +314,43 @@ describe('settings store', () => {
       expect(listener).toHaveBeenCalledWith({ lightingMode: 'dark' })
     })
 
+    describe('the browser chrome colour', () => {
+      let metas: HTMLMetaElement[]
+
+      beforeEach(() => {
+        metas = ['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)'].map((media) => {
+          const meta = document.createElement('meta')
+          meta.name = 'theme-color'
+          meta.media = media
+          document.head.append(meta)
+          return meta
+        })
+      })
+
+      afterEach(() => metas.forEach(meta => meta.remove()))
+
+      it.each([
+        ['light glass', true, 'light', '#eef0f6'],
+        ['dark glass', true, 'dark', '#0c0b12'],
+        ['the dark flat look', false, 'dark', '#111111'],
+      ] as const)('matches %s', (_name, glassMode, lighting, color) => {
+        // Both tags, so a lighting mode picked in the settings beats the system one
+        useSettingsStore.setState({ glassMode, actualLightingMode: lighting })
+
+        settingsActions.setTheme('deep-purple')
+
+        expect(metas.map(meta => meta.content)).toEqual([color, color])
+      })
+
+      it('follows glass mode being switched', () => {
+        useSettingsStore.setState({ actualLightingMode: 'light' })
+        settingsActions.setGlassMode(false)
+        settingsActions.setGlassMode(true)
+
+        expect(metas[0].content).toBe('#eef0f6')
+      })
+    })
+
     /**
      * ⚠️ Custom plugin UIs live in an iframe, and the theme has to reach into
      * them. Without it a plugin's settings page stays light while the rest of

@@ -21,7 +21,9 @@
     0 2px 5px 0 rgba(0, 0, 0, 0.16),
     0 2px 10px 0 rgba(0, 0, 0, 0.12);
   padding: 15px;
-  transition: all 0.15s ease-in-out;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 150ms ease;
 
   @media (max-width: 575px) {
     height: 100px;
@@ -30,9 +32,9 @@
     margin: 7px;
   }
 
+  // Pressed in, like a key, rather than swelling under the finger
   &:active {
-    transform: scale(1.15);
-    -ms-transform: scale(1.15);
+    transform: scale(0.97);
   }
 }
 

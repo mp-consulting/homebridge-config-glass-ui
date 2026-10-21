@@ -38,19 +38,16 @@ export function StartupScript() {
   useEffect(() => {
     let lastHeight = window.innerHeight
 
+    // Take focus off the editor when the on-screen keyboard closes, or the
+    // next touch reopens it. (The page no longer locks touch scrolling while
+    // the keyboard is down: overscroll-behavior keeps a scroll in the editor.)
     const visualViewPortChanged = () => {
       const viewport = window.visualViewport!
       if (lastHeight < viewport.height) {
         (document.activeElement as HTMLElement | null)?.blur()
       }
 
-      if (viewport.height < window.innerHeight) {
-        // Keyboard may have opened
-        mobileDetect.enableTouchMove()
-        lastHeight = viewport.height
-      } else if (viewport.height === window.innerHeight) {
-        // Keyboard is closed
-        mobileDetect.disableTouchMove()
+      if (viewport.height <= window.innerHeight) {
         lastHeight = viewport.height
       }
     }
@@ -59,13 +56,11 @@ export function StartupScript() {
     const viewport = window.visualViewport
     if (viewport && !isMobile) {
       viewport.addEventListener('resize', visualViewPortChanged, true)
-      mobileDetect.disableTouchMove()
     }
 
     return () => {
       if (viewport) {
         viewport.removeEventListener('resize', visualViewPortChanged, true)
-        mobileDetect.enableTouchMove()
       }
       editorRef.current?.dispose()
       editorRef.current = null

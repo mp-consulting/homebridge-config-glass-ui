@@ -1,13 +1,10 @@
 /* Body-level overrides extracted from component styles (::ng-deep removal) */
 
-/* Terminal & Logs pages - smooth background transition */
-body.theme-transition {
-  transition: background-color 0.25s ease-in-out;
-}
-
-/* Plugins page */
+/* Terminal & Logs pages and the plugin stats - the background eases between
+   light and black while the page crossfades */
+body.theme-transition,
 body.light-mode {
-  transition: background-color 0.25s ease-in-out;
+  transition: background-color 150ms ease-in-out;
 }
 
 /* Login page */
@@ -32,7 +29,15 @@ body.dark-mode .setup-card {
 
 /* Settings page */
 body.settings-page {
-  transition: background-color 0.5s ease-in-out;
+  transition: background-color 150ms ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-transition,
+  body.light-mode,
+  body.settings-page {
+    transition: none;
+  }
 }
 
 /* System info widget */

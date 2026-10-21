@@ -179,8 +179,9 @@ const DEFAULT_CONFIG: ToastGlobalConfig = {
   positionClass: 'toast-top-right',
   titleClass: 'toast-title',
   messageClass: 'toast-message',
-  easing: 'ease-in',
-  easeTime: 300,
+  // The --ease-out token (glass.scss): a quick rise that settles
+  easing: 'var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1))',
+  easeTime: 200,
   tapToDismiss: true,
   progressAnimation: 'decreasing',
 }
@@ -389,6 +390,16 @@ export class ToastService {
 /** The app-wide toast service (replaces the injected `ToastrService`). */
 export const toast = new ToastService(APP_TOAST_CONFIG)
 
+/**
+ * One run of a toast's progress bar: a CSS animation over `duration` ms, or an
+ * empty bar at 0. `run` changes with every start or stop, so the bar remounts
+ * and the animation starts over.
+ */
+export interface ToastProgress {
+  run: number
+  duration: number
+}
+
 /** The state and actions a toast component renders from (the ngx-toastr `Toast` base class). */
 export interface ToastController {
   toastId: number
@@ -398,7 +409,8 @@ export interface ToastController {
   title: string | null | undefined
   toastType: string
   duplicatesCount: number
-  width: number
+  /** The progress bar's current countdown. */
+  progress: ToastProgress
   /** Animate out, then remove. */
   remove: () => void
   tapToast: () => void

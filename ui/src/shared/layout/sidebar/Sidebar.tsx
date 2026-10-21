@@ -25,9 +25,14 @@ export interface SidebarProps {
 
 const MOBILE_MAX_WIDTH = 768
 
-/** The page behind the menu. Rendered by the layout as the sidebar's sibling. */
-function contentElement(): HTMLElement | null {
-  return document.querySelector<HTMLElement>('.content')
+/** A mouse or trackpad: hover opens the menu. Touch screens open it with the toggle. */
+const FINE_POINTER_QUERY = '(hover: hover) and (pointer: fine)'
+
+/** How long the pointer rests on the menu before it opens, so crossing it on the way elsewhere does not. */
+const HOVER_INTENT_MS = 100
+
+function hasFinePointer(): boolean {
+  return window.matchMedia?.(FINE_POINTER_QUERY).matches ?? false
 }
 
 /** The app's side menu (SidebarComponent). */
@@ -62,10 +67,10 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
   const legacyOtpDetected = useNotification('legacyOtpDetected')
 
   const [isExpanded, setIsExpanded] = useState(initialIsExpanded)
+  // The width only decides the layout (drawer or rail); the pointer decides
+  // whether hovering opens the menu
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < MOBILE_MAX_WIDTH)
-  // The touch (phone) or click (desktop) listeners are chosen once, when the
-  // menu is created, and not switched on resize
-  const [startedMobile] = useState(() => window.innerWidth < MOBILE_MAX_WIDTH)
+  const [finePointer, setFinePointer] = useState(hasFinePointer)
   const [isPwa] = useState(() => isStandalonePWA())
 
   // The listeners read these synchronously, as the Angular signals were read
@@ -95,26 +100,21 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
       setExpanded(!expandedRef.current)
     }
   }
-  // Stable handles for the DOM listeners below
-  const actionsRef = useRef({ openSidebar, closeSidebar, toggleSidebar })
-  actionsRef.current = { openSidebar, closeSidebar, toggleSidebar }
+  // Hover opens after a short rest; leaving closes at once
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const openSidebarSoon = () => {
+    clearTimeout(hoverTimerRef.current)
+    hoverTimerRef.current = setTimeout(openSidebar, HOVER_INTENT_MS)
+  }
+  const closeSidebarNow = () => {
+    clearTimeout(hoverTimerRef.current)
+    closeSidebar()
+  }
+  useEffect(() => () => clearTimeout(hoverTimerRef.current), [])
 
-  // Dim the page behind the open menu and take its pointer events
-  useEffect(() => {
-    const content = contentElement()
-    if (!content) {
-      return
-    }
-    if (isExpanded) {
-      content.style.setProperty('opacity', '20%')
-      content.style.setProperty('pointer-events', 'none')
-      content.style.setProperty('overflow', 'hidden')
-    } else {
-      content.style.removeProperty('opacity')
-      content.style.removeProperty('pointer-events')
-      content.style.removeProperty('overflow')
-    }
-  }, [isExpanded])
+  // Stable handles for the DOM listeners below
+  const actionsRef = useRef({ openSidebarSoon, closeSidebarNow })
+  actionsRef.current = { openSidebarSoon, closeSidebarNow }
 
   useEffect(() => {
     // Only show the toast once
@@ -149,15 +149,13 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
     }
   }, [legacyOtpDetected, navigate, t])
 
-  // Re-pick the mouse listeners after a resize settles
-  const [resizeTick, setResizeTick] = useState(0)
+  // The layout follows the width once a resize settles
   useEffect(() => {
     let resizeTimeout: ReturnType<typeof setTimeout> | undefined
     const onResize = () => {
       clearTimeout(resizeTimeout)
       resizeTimeout = setTimeout(() => {
         setIsMobile(window.innerWidth < MOBILE_MAX_WIDTH)
-        setResizeTick(tick => tick + 1)
       }, 500)
     }
     window.addEventListener('resize', onResize)
@@ -167,70 +165,71 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
     }
   }, [])
 
-  // Hover opens the menu on a desktop, unless the user froze it open/closed
+  // A mouse plugged into a tablet (or unplugged) switches the hover behaviour
   useEffect(() => {
-    if (startedMobile && resizeTick === 0) {
+    const query = window.matchMedia?.(FINE_POINTER_QUERY)
+    if (!query?.addEventListener) {
       return undefined
     }
+    const onChange = () => setFinePointer(query.matches)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
+  }, [])
+
+  // Hover opens the menu with a mouse, unless the user froze it open/closed.
+  // A touch screen never gets these: a tap fires mouseenter too, and would open
+  // the menu under the finger.
+  useEffect(() => {
     const sidebar = sidebarRef.current
-    if (!sidebar || !(isMobile || menuMode !== 'freeze')) {
+    if (!finePointer || !sidebar || !(isMobile || menuMode !== 'freeze')) {
       return undefined
     }
-    const enter = () => actionsRef.current.openSidebar()
-    const leave = () => actionsRef.current.closeSidebar()
-    sidebar.addEventListener('mouseenter', enter, { passive: false })
-    sidebar.addEventListener('mouseleave', leave, { passive: false })
+    const enter = () => actionsRef.current.openSidebarSoon()
+    const leave = (e: MouseEvent) => {
+      // Onto the toggle bar above a narrow window's menu: still in the menu
+      if (!headerRef.current?.contains(e.relatedTarget as Node | null)) {
+        actionsRef.current.closeSidebarNow()
+      }
+    }
+    sidebar.addEventListener('mouseenter', enter)
+    sidebar.addEventListener('mouseleave', leave)
     return () => {
       sidebar.removeEventListener('mouseenter', enter)
       sidebar.removeEventListener('mouseleave', leave)
     }
-  }, [isMobile, menuMode, resizeTick, startedMobile])
+  }, [finePointer, isMobile, menuMode])
 
-  // The phone closes on a tap outside the menu, the desktop on a click past the
-  // collapsed strip and opens when the pointer reaches the header
+  // With a mouse the menu also opens when the pointer reaches the header, and
+  // closes on a click past the collapsed strip. Touch screens close it from
+  // the scrim behind it instead.
   useEffect(() => {
     const sidebar = sidebarRef.current!
     const mobileHeader = headerRef.current!
-
-    if (startedMobile) {
-      const touchstartListener = (e: TouchEvent) => {
-        const target = e.target as HTMLElement
-        if (contentElement()?.contains(target) && expandedRef.current) {
-          // Swallowed, or the tap that closes the menu also presses whatever
-          // was underneath it
-          e.preventDefault()
-          actionsRef.current.toggleSidebar()
-          return
-        }
-
-        if (!sidebar.contains(target) && !mobileHeader.contains(target) && expandedRef.current) {
-          e.preventDefault()
-          actionsRef.current.closeSidebar()
-        }
-      }
-      document.addEventListener('touchstart', touchstartListener, { passive: false })
-      return () => {
-        document.removeEventListener('touchstart', touchstartListener)
-      }
+    if (!finePointer) {
+      return undefined
     }
 
-    const enter = () => actionsRef.current.openSidebar()
-    const leave = () => actionsRef.current.closeSidebar()
-    mobileHeader.addEventListener('mouseenter', enter, { passive: false })
-    mobileHeader.addEventListener('mouseleave', leave, { passive: false })
+    const enter = () => actionsRef.current.openSidebarSoon()
+    const leave = (e: MouseEvent) => {
+      if (!sidebar.contains(e.relatedTarget as Node | null)) {
+        actionsRef.current.closeSidebarNow()
+      }
+    }
+    mobileHeader.addEventListener('mouseenter', enter)
+    mobileHeader.addEventListener('mouseleave', leave)
 
     const clickListener = (e: MouseEvent) => {
       if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
-        actionsRef.current.closeSidebar()
+        actionsRef.current.closeSidebarNow()
       }
     }
-    document.addEventListener('click', clickListener, { passive: false })
+    document.addEventListener('click', clickListener)
     return () => {
       mobileHeader.removeEventListener('mouseenter', enter)
       mobileHeader.removeEventListener('mouseleave', leave)
       document.removeEventListener('click', clickListener)
     }
-  }, [startedMobile])
+  }, [finePointer])
 
   // Check authentication before navigation: with form auth on, a token that
   // expired while the page sat open would otherwise let the user click into a
@@ -261,7 +260,7 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
       firstLocationRef.current = false
       return undefined
     }
-    actionsRef.current.closeSidebar()
+    actionsRef.current.closeSidebarNow()
     freezeRef.current = true
     const timer = setTimeout(() => {
       freezeRef.current = false
@@ -433,6 +432,14 @@ export function Sidebar({ initialIsExpanded = false }: SidebarProps) {
           )}
         </div>
       </div>
+
+      {/*
+        Dims the page behind the open menu and takes the tap that closes it, so
+        that tap never lands on whatever is underneath. It closes on click (on
+        release), not on press: a layer gone by the time the finger lifts would
+        let the click through to the page.
+      */}
+      <div aria-hidden="true" className={cx('sidebar-scrim', isExpanded && 'show')} onClick={closeSidebarNow} />
     </>
   )
 }

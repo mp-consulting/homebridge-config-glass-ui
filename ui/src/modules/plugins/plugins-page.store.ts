@@ -13,11 +13,15 @@ import { settingsActions, useSettingsStore } from '@/core/settings'
 import { ignoreDismiss } from '@/core/ui/ignore-dismiss'
 import { openModal } from '@/core/ui/modal'
 import { toastApiError } from '@/core/utilities/http-error'
+import { prefersReducedMotion } from '@/core/utilities/motion'
 import { PluginSupport } from '@/modules/plugins/plugin-support/PluginSupport'
 
 const UI_PLUGIN_NAME = '@mp-consulting/homebridge-config-glass-ui'
 
 const body = () => window.document.querySelector('body')!
+
+/** The body background's fade back from black (components/page-overrides.scss). */
+const BACKGROUND_FADE_MS = 150
 
 export type PluginsTab = 'main' | 'stats'
 
@@ -307,6 +311,21 @@ export function createPluginsPageStore() {
   // on a fresh mount, doubling the work and (worse) sometimes leaving the grid
   // briefly rendered with metadata-less plugin objects (#2806-adjacent).
   let inFlightLoad: Promise<Plugin[] | undefined> | undefined
+  let backgroundFadeTimer: ReturnType<typeof setTimeout> | undefined
+
+  /**
+   * Take the black off the page behind the stats. `light-mode` carries the
+   * body's background transition, so it stays on until the fade has run.
+   */
+  const fadeBackgroundBack = () => {
+    body().classList.remove('bg-black')
+    clearTimeout(backgroundFadeTimer)
+    if (prefersReducedMotion()) {
+      body().classList.remove('light-mode')
+      return
+    }
+    backgroundFadeTimer = setTimeout(() => body().classList.remove('light-mode'), BACKGROUND_FADE_MS)
+  }
 
   return createStore<PluginsPageStore>()((set, get) => {
     const runLoadInstalledPlugins = async (): Promise<Plugin[] | undefined> => {
@@ -421,6 +440,7 @@ export function createPluginsPageStore() {
         return () => {
           destroyed = true
           // Clean up light-mode class
+          clearTimeout(backgroundFadeTimer)
           body().classList.remove('light-mode')
           unsubscribeRefresh()
           unsubscribeConnected()
@@ -530,28 +550,9 @@ export function createPluginsPageStore() {
             return
           }
 
-          // Remove light-mode class from body
-          body().classList.remove('light-mode')
-
-          // Fade out stats before switching to main
-          const statsHeader = document.getElementById('stats-header')
-          const statsIframe = document.getElementById('stats-iframe')
-
-          if (statsHeader && statsIframe) {
-            statsHeader.classList.add('fade-out')
-            statsIframe.classList.add('fade-out')
-          }
-
-          // Wait for fade-out animation (250ms)
-          setTimeout(() => {
-            // Remove body bg color to trigger background transition
-            body().classList.remove('bg-black')
-
-            // Wait for background transition before switching tab
-            setTimeout(() => {
-              set({ tab: 'main' })
-            }, 250)
-          }, 250)
+          // Switch at once; the page eases back to light behind the grid
+          fadeBackgroundBack()
+          set({ tab: 'main' })
         } else {
           // Set body bg color
           body().classList.add('bg-black')
@@ -559,6 +560,7 @@ export function createPluginsPageStore() {
 
           // Add light-mode class for animations (only in light mode)
           if (lightingMode === 'light') {
+            clearTimeout(backgroundFadeTimer)
             body().classList.add('light-mode')
             setTimeout(() => {
               const statsHeader = document.getElementById('stats-header')
@@ -580,7 +582,7 @@ export function createPluginsPageStore() {
       },
 
       canDeactivate(nextUrl) {
-        // Only animate if we're on the stats tab
+        // Only the stats tab paints the page
         if (get().tab !== 'stats') {
           return true
         }
@@ -591,43 +593,23 @@ export function createPluginsPageStore() {
           return Promise.resolve(true)
         }
 
-        // Remove light-mode class from body
-        body().classList.remove('light-mode')
-
         // Check if we're navigating to another black-background page
         const stayingBlack = nextUrl && (
           nextUrl.includes('/platform-tools/terminal')
           || nextUrl.includes('/logs')
         )
 
-        return new Promise((resolve) => {
-          // Fade out stats before leaving
-          const statsHeader = document.getElementById('stats-header')
-          const statsIframe = document.getElementById('stats-iframe')
-
-          if (statsHeader && statsIframe) {
-            statsHeader.classList.add('fade-out')
-            statsIframe.classList.add('fade-out')
-          }
-
-          if (stayingBlack) {
-            // Just fade out the stats, keep background black
-            setTimeout(() => {
-              resolve(true)
-            }, 250)
-          } else {
-            // Wait for fade-out animation (250ms) and body background transition (250ms)
-            setTimeout(() => {
-              // Remove body bg color to trigger background transition
-              body().classList.remove('bg-black')
-            }, 250)
-
-            // Wait for both animations to complete before allowing navigation
-            setTimeout(() => {
-              resolve(true)
-            }, 500)
-          }
-        })
+        // The navigation goes through at once (it used to wait half a second
+        // for a fade). Going to another black page keeps the black, or the
+        // page would flash white between them; otherwise the background eases
+        // back while the next page comes in.
+        if (stayingBlack) {
+          clearTimeout(backgroundFadeTimer)
+          body().classList.remove('light-mode')
+        } else {
+          fadeBackgroundBack()
+        }
+        return Promise.resolve(true)
       },
 
       getPluginChildBridges(plugin) {

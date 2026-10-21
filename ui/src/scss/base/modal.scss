@@ -52,3 +52,72 @@
     font-size: 1rem;
   }
 }
+
+// ── Presentation ──────────────────────────────────────────
+// The Log Doctor drawer (ai.scss) and full-screen dialogs keep their own.
+
+// On a phone a dialog is a bottom sheet: it rises from the bottom edge, square
+// where it meets it, and keeps clear of the status bar and the home indicator.
+// The .modal still scrolls a sheet taller than the screen, as before.
+@media (max-width: 575.98px) {
+  .modal:not(.hb-ai-drawer) > .modal-dialog:not([class*='modal-fullscreen']) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    min-height: 100%;
+    margin: 0;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
+
+    &.modal-dialog-scrollable {
+      height: 100%;
+    }
+
+    .modal-content {
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .modal-footer {
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  // In from below on the drawer curve; out the way it came, quicker
+  .modal.fade:not(.hb-ai-drawer) > .modal-dialog:not([class*='modal-fullscreen']) {
+    transform: translateY(100%);
+    transition: transform 200ms var(--ease-out);
+  }
+
+  .modal.fade.show:not(.hb-ai-drawer) > .modal-dialog:not([class*='modal-fullscreen']) {
+    transform: none;
+    transition: transform 350ms var(--ease-drawer);
+  }
+}
+
+// Wider screens: the dialog settles up into place from slightly small, rather
+// than dropping 50px from above
+@media (min-width: 576px) {
+  .modal.fade:not(.hb-ai-drawer) > .modal-dialog {
+    transform: translateY(12px) scale(0.97);
+    transition: transform 250ms var(--ease-out);
+  }
+
+  .modal.fade.show:not(.hb-ai-drawer) > .modal-dialog {
+    transform: none;
+  }
+}
+
+// The bump a static dialog gives when the backdrop is clicked (Bootstrap's
+// .modal-static) still shows over the rules above
+.modal.fade.show.modal-static:not(.hb-ai-drawer) > .modal-dialog:not([class*='modal-fullscreen']) {
+  transform: scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal.fade > .modal-dialog {
+    transition: none !important;
+  }
+}

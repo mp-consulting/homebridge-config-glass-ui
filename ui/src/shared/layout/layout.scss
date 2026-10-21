@@ -3,16 +3,19 @@
 
   > .content {
     margin-left: 60px;
-    transition: 0.3s;
     height: 100%;
 
     @media (max-width: 767px) {
       margin-left: 0;
-      padding-top: 85px !important;
+      padding-top: calc(85px + env(safe-area-inset-top, 0px)) !important;
     }
 
+    // Clear of the status bar (an installed iPad app) and of a landscape
+    // phone's notch; each inset is zero in a browser tab
     @media (min-width: 768px) {
       height: 100%;
+      padding-top: calc(1.5rem + env(safe-area-inset-top, 0px)) !important;
+      padding-right: max(1.5rem, env(safe-area-inset-right, 0px)) !important;
     }
   }
 }
