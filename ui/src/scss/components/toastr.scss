@@ -1,5 +1,30 @@
 @import '../vendor/ngx-toastr';
 
+// Clear of the home indicator and a landscape notch in the installed app
+// (each inset is zero in a browser tab)
+.toast-bottom-right {
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.toast-bottom-left {
+  left: max(12px, env(safe-area-inset-left, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.toast-bottom-center,
+.toast-bottom-full-width {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.toast-top-right {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
+.toast-top-left {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
 @media (max-width: 575px) {
   #toast-container {
     margin-left: 12px;

@@ -1,4 +1,4 @@
-import type { ToastComponentProps, ToastController, ToastOptions, ToastPackage, ToastService, ToastState } from '@/core/ui/toast'
+import type { ToastComponentProps, ToastController, ToastOptions, ToastPackage, ToastProgress, ToastService, ToastState } from '@/core/ui/toast'
 import type { CSSProperties, ReactNode } from 'react'
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
@@ -67,7 +67,12 @@ export function AppToast({ toast }: ToastComponentProps) {
       )}
       {options.progressBar && (
         <div>
-          <div className="toast-progress" style={{ width: `${toast.width}%` }} />
+          {/* Remounted for each countdown, which restarts its animation (toast.scss) */}
+          <div
+            key={toast.progress.run}
+            className={cx('toast-progress', toast.progress.duration > 0 && `toast-progress-${options.progressAnimation}`)}
+            style={{ '--toast-progress-duration': `${toast.progress.duration}ms` } as CSSProperties}
+          />
         </div>
       )}
     </ToastFrame>
@@ -81,7 +86,7 @@ export function AppToast({ toast }: ToastComponentProps) {
  */
 function useToastController(pkg: ToastPackage, service: ToastService): ToastController {
   const [state, setState] = useState<ToastState>('inactive')
-  const [width, setWidth] = useState(-1)
+  const [progress, setProgress] = useState<ToastProgress>({ run: 0, duration: 0 })
   const [duplicatesCount, setDuplicatesCount] = useState(0)
   const [options, setOptions] = useState<ToastOptions>(pkg.config)
 
@@ -89,9 +94,6 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
   const stateRef = useRef<ToastState>('inactive')
   const optionsRef = useRef<ToastOptions>(pkg.config)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
-  const hideTimeRef = useRef(0)
-  const widthRef = useRef(-1)
 
   const originalTimeout = pkg.config.timeOut
 
@@ -103,23 +105,13 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     optionsRef.current = next
     setOptions(next)
   }, [])
-  const updateWidth = useCallback((next: number) => {
-    widthRef.current = next
-    setWidth(next)
+  // The progress bar runs as one CSS animation per countdown
+  const startProgress = useCallback((duration: number) => {
+    setProgress(previous => ({ run: previous.run + 1, duration }))
   }, [])
-
-  const updateProgress = useCallback(() => {
-    const opts = optionsRef.current
-    if (widthRef.current === 0 || widthRef.current === 100 || !opts.timeOut) {
-      return
-    }
-    const remaining = hideTimeRef.current - Date.now()
-    let next = (remaining / opts.timeOut) * 100
-    if (opts.progressAnimation === 'increasing') {
-      next = 100 - next
-    }
-    updateWidth(Math.min(100, Math.max(0, next)))
-  }, [updateWidth])
+  const stopProgress = useCallback(() => {
+    setProgress(previous => ({ run: previous.run + 1, duration: 0 }))
+  }, [])
 
   const remove = useCallback(() => {
     if (stateRef.current === 'removed') {
@@ -135,26 +127,22 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     updateState('active')
     if (!(opts.disableTimeOut === true || opts.disableTimeOut === 'timeOut') && opts.timeOut) {
       timeoutRef.current = setTimeout(remove, opts.timeOut)
-      hideTimeRef.current = Date.now() + opts.timeOut
       if (opts.progressBar) {
-        intervalRef.current = setInterval(updateProgress, 10)
+        startProgress(opts.timeOut)
       }
     }
-  }, [remove, updateProgress, updateState])
+  }, [remove, startProgress, updateState])
 
   const resetTimeout = useCallback(() => {
     const opts = optionsRef.current
     clearTimeout(timeoutRef.current)
-    clearInterval(intervalRef.current)
     updateState('active')
     updateOptions({ ...opts, timeOut: originalTimeout })
     timeoutRef.current = setTimeout(remove, originalTimeout)
-    hideTimeRef.current = Date.now() + (originalTimeout || 0)
-    updateWidth(-1)
     if (opts.progressBar) {
-      intervalRef.current = setInterval(updateProgress, 10)
+      startProgress(originalTimeout || 0)
     }
-  }, [originalTimeout, remove, updateOptions, updateProgress, updateState, updateWidth])
+  }, [originalTimeout, remove, startProgress, updateOptions, updateState])
 
   useEffect(() => {
     const { toastRef } = pkg
@@ -170,7 +158,6 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     return () => {
       unbind()
       clearTimeout(timeoutRef.current)
-      clearInterval(intervalRef.current)
     }
     // Runs once per toast: the callbacks only change with the package
   }, [pkg, remove, resetTimeout, activateToast])
@@ -192,11 +179,9 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     if (optionsRef.current.disableTimeOut !== 'extendedTimeOut') {
       clearTimeout(timeoutRef.current)
       updateOptions({ ...optionsRef.current, timeOut: 0 })
-      hideTimeRef.current = 0
-      clearInterval(intervalRef.current)
-      updateWidth(0)
+      stopProgress()
     }
-  }, [updateOptions, updateWidth])
+  }, [stopProgress, updateOptions])
 
   const delayedHideToast = useCallback(() => {
     const opts = optionsRef.current
@@ -206,12 +191,10 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     const extendedTimeOut = opts.extendedTimeOut
     timeoutRef.current = setTimeout(remove, extendedTimeOut)
     updateOptions({ ...opts, timeOut: extendedTimeOut })
-    hideTimeRef.current = Date.now() + (extendedTimeOut || 0)
-    updateWidth(-1)
     if (opts.progressBar) {
-      intervalRef.current = setInterval(updateProgress, 10)
+      startProgress(extendedTimeOut || 0)
     }
-  }, [remove, updateOptions, updateProgress, updateWidth])
+  }, [remove, startProgress, updateOptions])
 
   const triggerAction = useCallback((action?: unknown) => pkg.config.onAction?.(action), [pkg])
 
@@ -223,7 +206,7 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
     title: pkg.title,
     toastType: pkg.toastType,
     duplicatesCount,
-    width,
+    progress,
     remove,
     tapToast,
     stickAround,

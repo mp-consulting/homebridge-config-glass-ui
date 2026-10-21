@@ -1,5 +1,10 @@
 import type { editor } from 'monaco-editor'
 
+/** A finger rather than a mouse, read once when the editors are first loaded. */
+function coarsePointer(): boolean {
+  return typeof window !== 'undefined' && (window.matchMedia?.('(pointer: coarse)').matches ?? false)
+}
+
 /**
  * The default options every editor got through ngx-monaco-editor-v2's
  * `defaultOptions` (ui/src/app/core/providers/ui-libraries.providers.ts).
@@ -11,6 +16,11 @@ import type { editor } from 'monaco-editor'
  * here. The effect is the same, since Monaco enables it by default.
  */
 export const DEFAULT_EDITOR_OPTIONS = {
+  // iOS zooms the page into a focused field under 16px, and Monaco types into
+  // a hidden textarea at the editor's font size. Only touch screens get the
+  // bigger text; elsewhere Monaco keeps its own default (12px on a Mac, 14px
+  // otherwise).
+  ...(coarsePointer() ? { fontSize: 16 } : {}),
   automaticLayout: true,
   copyWithSyntaxHighlighting: true,
   scrollBeyondLastLine: false,

@@ -170,7 +170,10 @@ function ModalWindow({ view, isTop }: { view: ModalView, isTop: boolean }) {
     if (!el.contains(document.activeElement)) {
       const autoFocusable = el.querySelector<HTMLElement>('[ngbAutofocus], [data-autofocus]')
       const [firstFocusable] = getFocusableBoundaryElements(el)
-      ;(autoFocusable || firstFocusable || el).focus()
+      // Without scrolling: a phone's sheet starts off screen below
+      // (base/modal.scss), and scrolling to where it is mid-slide would leave
+      // the .modal scrolled to the bottom of a tall sheet
+      ;(autoFocusable || firstFocusable || el).focus({ preventScroll: true })
     }
   }, [])
 

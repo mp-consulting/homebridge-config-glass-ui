@@ -213,7 +213,9 @@ describe('pluginsPage', () => {
     expect(ws.namespace('child-bridges').end).toHaveBeenCalled()
   })
 
-  it('holds a navigation away until the stats have faded out in light mode', async () => {
+  it('lets a navigation away from the stats through at once in light mode', async () => {
+    // ⚠️ It used to hold the navigation for half a second of fading; the next
+    // page now comes in while the background eases back to light
     useSettingsStore.setState({ actualLightingMode: 'light' })
     const { router } = render({ installed: [plugin('homebridge-a')] })
     await settle()
@@ -224,13 +226,9 @@ describe('pluginsPage', () => {
       void router.navigate('/accessories')
     })
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(250)
+      await vi.advanceTimersByTimeAsync(0)
     })
-    expect(router.state.location.pathname).toBe('/plugins')
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(300)
-    })
     expect(router.state.location.pathname).toBe('/accessories')
   })
 })

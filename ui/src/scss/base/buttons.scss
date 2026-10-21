@@ -8,8 +8,12 @@
   border-radius: 0.25rem;
   text-transform: uppercase;
 
+  // The flat look's small caps on phones. Glass keeps sentence case at the
+  // body size (glass.scss); :where() keeps the specificity of `.btn` alone.
   @media (max-width: 575px) {
-    font-size: 0.8rem;
+    :where(body:not(.glass-mode)) & {
+      font-size: 0.8rem;
+    }
   }
 }
 
@@ -80,7 +84,9 @@
   cursor: not-allowed;
 
   @media (max-width: 575px) {
-    font-size: 0.8rem;
+    :where(body:not(.glass-mode)) & {
+      font-size: 0.8rem;
+    }
   }
 
   &.no-round-top {

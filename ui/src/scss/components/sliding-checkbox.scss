@@ -16,7 +16,7 @@
   background: #fbfbfb;
   border-radius: 1.5em;
   padding: 2px;
-  transition: all 0.4s ease;
+  transition: background-color 200ms ease;
   border: 1px solid #e8eae9;
   margin-bottom: 0;
 }
@@ -28,8 +28,9 @@
     0 4px 0 rgba(0, 0, 0, 0.08),
     inset 0 0 0 1.5px #9c9c9c;
 }
+// The knob is half the track, so moving it by its own width (100%) lands it
+// exactly where `left: 50%` used to, without animating a layout property
 .rendux-label::after {
-  left: 0;
   position: relative;
   display: block;
   content: '';
@@ -37,16 +38,14 @@
   height: 100%;
   border-radius: 2em;
   background: #fbfbfb;
-  transition:
-    all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    padding 0.3s ease,
-    margin 0.3s ease;
+  transform: translateX(0);
+  transition: transform 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.1),
     0 4px 0 rgba(0, 0, 0, 0.08);
 }
 .rendux-input:checked + label::after {
-  left: 50%;
+  transform: translateX(100%);
 }
 .rendux-input:checked + label {
   background: #86d993;
@@ -54,9 +53,14 @@
 .rendux-input:checked:active + label {
   box-shadow: none;
 }
+// Pressing an on switch leans the knob back towards off
 .rendux-input:checked:active + label::after {
-  margin-left: -0.8em;
+  transform: translateX(calc(100% - 0.8em));
 }
-.rendux-input:active + label::after {
-  padding-right: 0.8em;
+
+@media (prefers-reduced-motion: reduce) {
+  .rendux-label,
+  .rendux-label::after {
+    transition: none;
+  }
 }

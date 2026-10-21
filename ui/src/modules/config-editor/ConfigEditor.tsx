@@ -160,33 +160,27 @@ export function ConfigEditor() {
       content.style.height = '100%'
     }
 
-    // Capture viewport events
+    // Take focus off the editor when the on-screen keyboard closes, or the
+    // next touch reopens it. (The page no longer locks touch scrolling while
+    // the keyboard is down: overscroll-behavior keeps a scroll in the editor.)
     let lastHeight = window.innerHeight
     const visualViewPortChanged = () => {
       if (lastHeight < window.visualViewport!.height) {
         (document.activeElement as HTMLElement | null)?.blur()
       }
 
-      if (window.visualViewport!.height < window.innerHeight) {
-        // Keyboard may have opened
-        mobileDetect.enableTouchMove()
-        lastHeight = window.visualViewport!.height
-      } else if (window.visualViewport!.height === window.innerHeight) {
-        // Keyboard is closed
-        mobileDetect.disableTouchMove()
+      if (window.visualViewport!.height <= window.innerHeight) {
         lastHeight = window.visualViewport!.height
       }
     }
     if (window.visualViewport && !isMobile) {
       window.visualViewport.addEventListener('resize', visualViewPortChanged, true)
-      mobileDetect.disableTouchMove()
     }
 
     return () => {
       content?.style.removeProperty('height')
       if (window.visualViewport) {
         window.visualViewport.removeEventListener('resize', visualViewPortChanged, true)
-        mobileDetect.enableTouchMove()
       }
       window.editor = undefined
       monacoEditorRef.current = null

@@ -1107,18 +1107,22 @@ describe('the plugins page', () => {
       expect(document.body.classList.contains('bg-black')).toBe(false)
     })
 
-    it('fades out before going back in light mode', async () => {
+    it('goes straight back in light mode too, and eases the page back to light', async () => {
+      // ⚠️ It used to hold the tab for half a second of fading; the grid now
+      // comes back at once while the background transition runs behind it
       vi.useFakeTimers()
       create({ installed: [plugin('homebridge-example')] })
       lighting('light')
       page().showStats()
 
       page().showStats()
-      expect(page().tab).toBe('stats')
 
-      await vi.advanceTimersByTimeAsync(500)
       expect(page().tab).toBe('main')
       expect(document.body.classList.contains('bg-black')).toBe(false)
+      // The transition class stays on until the background has faded
+      expect(document.body.classList.contains('light-mode')).toBe(true)
+      await vi.advanceTimersByTimeAsync(150)
+      expect(document.body.classList.contains('light-mode')).toBe(false)
     })
 
     it('cleans the light mode class off the body when the page is left', () => {
@@ -1150,23 +1154,14 @@ describe('the plugins page', () => {
       expect(document.body.classList.contains('bg-black')).toBe(false)
     })
 
-    it('fades out first in light mode', async () => {
-      vi.useFakeTimers()
+    it('leaves at once in light mode too, easing the background back', async () => {
+      // ⚠️ It used to hold the navigation for half a second of fading
       create({ installed: [plugin('homebridge-example')] })
       lighting('light')
       page().showStats()
 
-      const leaving = page().canDeactivate('/accessories')
-      let left = false
-      void Promise.resolve(leaving).then(() => {
-        left = true
-      })
-
-      await vi.advanceTimersByTimeAsync(250)
-      expect(left).toBe(false)
-
-      await vi.advanceTimersByTimeAsync(250)
-      expect(left).toBe(true)
+      await expect(page().canDeactivate('/accessories')).resolves.toBe(true)
+      expect(document.body.classList.contains('bg-black')).toBe(false)
     })
 
     it('keeps the black background when the next page is black too', async () => {
@@ -1177,7 +1172,7 @@ describe('the plugins page', () => {
       lighting('light')
       page().showStats()
 
-      void page().canDeactivate('/platform-tools/terminal')
+      await page().canDeactivate('/platform-tools/terminal')
       await vi.advanceTimersByTimeAsync(250)
 
       expect(document.body.classList.contains('bg-black')).toBe(true)
@@ -1189,7 +1184,7 @@ describe('the plugins page', () => {
       lighting('light')
       page().showStats()
 
-      void page().canDeactivate('/logs')
+      await page().canDeactivate('/logs')
       await vi.advanceTimersByTimeAsync(250)
 
       expect(document.body.classList.contains('bg-black')).toBe(true)

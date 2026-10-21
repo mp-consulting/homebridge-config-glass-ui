@@ -4,6 +4,7 @@ import { api } from '@/core/api'
 import { chooseStartupLanguage, localeIdFor } from '@/core/locales'
 import { RE_HAP_NAME_PATTERN } from '@/core/regex.constants'
 import { settingsActions } from '@/core/settings'
+import { prefersReducedMotion } from '@/core/utilities/motion'
 
 /** General and display: the instance name, language, theme, lighting, glass, menu and temperature units. */
 export function createGeneralSlice(ctx: PageContext) {
@@ -73,19 +74,24 @@ export function createGeneralSlice(ctx: PageContext) {
       try {
         setSaving('uiTheme', true)
 
-        // Start fade-out animation
-        store.setState({ isThemeTransitioning: true })
+        // Start fade-out animation (none for people who asked for less motion)
+        const fade = !prefersReducedMotion()
+        if (fade) {
+          store.setState({ isThemeTransitioning: true })
 
-        // Wait for fade-out to complete
-        await new Promise(resolve => setTimeout(resolve, 250))
+          // Wait for fade-out to complete
+          await new Promise(resolve => setTimeout(resolve, 250))
+        }
 
         // Change the theme (background will transition)
         settingsActions.setTheme(value)
         await queueUiSettingChange('theme', value)
 
         // Wait for background transition to start, then fade content back in
-        await new Promise(resolve => setTimeout(resolve, 100))
-        store.setState({ isThemeTransitioning: false })
+        if (fade) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          store.setState({ isThemeTransitioning: false })
+        }
 
         finishSaving('uiTheme')
       } catch (error) {
@@ -99,19 +105,24 @@ export function createGeneralSlice(ctx: PageContext) {
       try {
         setSaving('uiLight', true)
 
-        // Start fade-out animation
-        store.setState({ isThemeTransitioning: true })
+        // Start fade-out animation (none for people who asked for less motion)
+        const fade = !prefersReducedMotion()
+        if (fade) {
+          store.setState({ isThemeTransitioning: true })
 
-        // Wait for fade-out to complete
-        await new Promise(resolve => setTimeout(resolve, 250))
+          // Wait for fade-out to complete
+          await new Promise(resolve => setTimeout(resolve, 250))
+        }
 
         // Change the lighting mode (background will transition)
         settingsActions.setLightingMode(value, 'user')
         await queueUiSettingChange('lightingMode', value)
 
         // Wait for background transition to start, then fade content back in
-        await new Promise(resolve => setTimeout(resolve, 100))
-        store.setState({ isThemeTransitioning: false })
+        if (fade) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          store.setState({ isThemeTransitioning: false })
+        }
 
         finishSaving('uiLight')
       } catch (error) {

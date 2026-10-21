@@ -1,28 +1,19 @@
 import MobileDetect from 'mobile-detect'
 
-function preventDefault(e: Event) {
-  e.preventDefault()
-}
-
-/** The browser the app runs in, and the touch-scroll lock modals take on a phone. */
+/**
+ * The browser the app runs in.
+ *
+ * It used to lock touch scrolling (a `touchmove` listener cancelling every
+ * move) while an editor page was open. CSS does that job now without blocking
+ * the editors' own scrolling: `overscroll-behavior` keeps a scroll from
+ * chaining out of an editor, a dialog or a menu into the page behind it
+ * (base/layout.scss).
+ */
 export class MobileDetectService {
   public detect: MobileDetect
-  public isTouchMoveLocked = false
 
   constructor() {
     this.detect = new MobileDetect(window.navigator.userAgent)
-  }
-
-  public disableTouchMove() {
-    if (!this.isTouchMoveLocked) {
-      document.body.addEventListener('touchmove', preventDefault, { passive: false })
-      this.isTouchMoveLocked = true
-    }
-  }
-
-  public enableTouchMove() {
-    document.body.removeEventListener('touchmove', preventDefault)
-    this.isTouchMoveLocked = false
   }
 }
 
