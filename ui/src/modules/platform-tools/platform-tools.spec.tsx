@@ -1,6 +1,5 @@
 import type { FakeApi, FakeIoNamespace, FakeWs } from '@/testing'
 import type { ReactElement } from 'react'
-import type { Mock } from 'vitest'
 
 import { act, fireEvent, screen } from '@testing-library/react'
 import { useEffect, useRef } from 'react'
@@ -17,7 +16,6 @@ const holder = vi.hoisted(() => ({
   ws: null as FakeWs | null,
   toast: null as ReturnType<typeof toastStub> | null,
   isMobile: false,
-  md: null as null | { disableTouchMove: Mock<() => void>, enableTouchMove: Mock<() => void> },
   editor: null as any,
 }))
 vi.mock('@/core/ws', () => ({
@@ -33,8 +31,6 @@ vi.mock('@/core/ui/toast', () => ({
 vi.mock('@/core/utilities/mobile-detect', () => ({
   mobileDetect: {
     detect: { mobile: () => (holder.isMobile ? 'iPhone' : null) },
-    disableTouchMove: () => holder.md!.disableTouchMove(),
-    enableTouchMove: () => holder.md!.enableTouchMove(),
   },
 }))
 // The startup script page renders a Monaco editor; a stand-in hands the page a
@@ -91,7 +87,6 @@ describe('the platform tools pages', () => {
     resetSettingsStore()
     useSettingsStore.setState(makeSettingsState() as any)
     holder.isMobile = false
-    holder.md = { disableTouchMove: vi.fn(), enableTouchMove: vi.fn() }
     holder.editor = fakeEditor()
     holder.ws = fakeWs()
     io = holder.ws.namespace('status')
@@ -450,12 +445,12 @@ describe('the platform tools pages', () => {
     })
 
     /**
-     * Making room for the on-screen keyboard.
+     * The on-screen keyboard.
      *
-     * ⚠️ **The editor is full height, so an open keyboard would cover the line the
-     * user is typing on.** The page listens to the visual viewport - the part of
-     * the window not hidden by the keyboard - and lets the page scroll while it is
-     * open, then locks scrolling again when it closes.
+     * The page listens to the visual viewport - the part of the window not
+     * hidden by the keyboard - to notice the keyboard closing. It no longer
+     * locks touch scrolling around it: overscroll-behavior in CSS keeps a
+     * scroll inside the editor instead.
      */
     describe('the on-screen keyboard', () => {
       let viewportListener: (() => void) | undefined
@@ -485,35 +480,14 @@ describe('the platform tools pages', () => {
         viewportListener = undefined
       })
 
-      it('locks touch scrolling while the page is open', async () => {
+      it('stops listening when the page closes', async () => {
         viewportHeight(800)
         const view = await open(<StartupScript />)
+        const viewport = window.visualViewport!
 
-        expect(holder.md!.disableTouchMove).toHaveBeenCalled()
         view.unmount()
-        expect(holder.md!.enableTouchMove).toHaveBeenCalled()
-      })
 
-      it('lets the page scroll while the keyboard is up', async () => {
-        // ⚠️ Locked, the user cannot scroll the line they are typing into view
-        viewportHeight(800)
-        await open(<StartupScript />)
-        viewportHeight(400)
-
-        visualViewPortChanged()
-
-        expect(holder.md!.enableTouchMove).toHaveBeenCalled()
-      })
-
-      it('locks it again once the keyboard closes', async () => {
-        viewportHeight(400)
-        await open(<StartupScript />)
-        holder.md!.disableTouchMove.mockClear()
-        viewportHeight(800)
-
-        visualViewPortChanged()
-
-        expect(holder.md!.disableTouchMove).toHaveBeenCalled()
+        expect(viewport.removeEventListener).toHaveBeenCalledWith('resize', viewportListener, true)
       })
 
       it('takes focus off the field when the keyboard closes', async () => {

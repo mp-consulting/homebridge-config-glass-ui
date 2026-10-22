@@ -38,13 +38,31 @@ describe('sidebar', () => {
     formAuth?: boolean
     pwa?: boolean
     narrow?: boolean
+    /** A touch screen rather than a mouse. Follows `narrow` unless given. */
+    touch?: boolean
     menuMode?: 'default' | 'freeze'
   }
 
+  /**
+   * Report a mouse (hover and a fine pointer) or a touch screen. The width only
+   * picks the layout; the pointer picks whether hovering opens the menu.
+   */
+  function pointer(fine: boolean) {
+    vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+      matches: fine && query.includes('pointer: fine'),
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }) as unknown as MediaQueryList)
+  }
+
   function render(options: Options = {}) {
-    // Read when the menu is created: the mobile and desktop paths attach
-    // different listeners and there is no switching between them afterwards
     Object.defineProperty(window, 'innerWidth', { value: options.narrow ? 400 : 1024, configurable: true, writable: true })
+    pointer(!(options.touch ?? options.narrow))
     Object.defineProperty(window.navigator, 'standalone', { value: options.pwa ?? false, configurable: true })
 
     useAuthStore.setState(makeAuthState({ user: { admin: options.admin ?? true } }))
@@ -80,6 +98,7 @@ describe('sidebar', () => {
   const sidebar = () => document.querySelector('.sidebar') as HTMLElement
   const header = () => document.querySelector('.m-header') as HTMLElement
   const content = () => document.querySelector('.content') as HTMLElement
+  const scrim = () => document.querySelector('.sidebar-scrim') as HTMLElement
   const isExpanded = () => sidebar().classList.contains('expanded')
   const toggle = () => fireEvent.click(header())
 
@@ -565,8 +584,10 @@ describe('sidebar', () => {
 
       toggle()
 
-      expect(content().style.opacity).toBe('20%')
-      expect(content().style.pointerEvents).toBe('none')
+      expect(scrim()).toHaveClass('show')
+      // A layer of its own over the page, not a style left on the page
+      expect(content().contains(scrim())).toBe(false)
+      expect(content().getAttribute('style')).toBeNull()
     })
 
     it('gives the page back when it closes', () => {
@@ -575,8 +596,14 @@ describe('sidebar', () => {
 
       toggle()
 
-      expect(content().style.opacity).toBe('')
-      expect(content().style.pointerEvents).toBe('')
+      expect(scrim()).not.toHaveClass('show')
+    })
+
+    it('keeps the scrim out of the accessibility tree', () => {
+      render()
+      toggle()
+
+      expect(scrim()).toHaveAttribute('aria-hidden', 'true')
     })
   })
 
@@ -648,17 +675,10 @@ describe('sidebar', () => {
    *
    * ⚠️ **On a phone the open menu covers the page.** There is no room for a close
    * button beside it, so tapping the page behind it is the way out — and the tap
-   * has to be swallowed, or it also activates whatever it landed on underneath.
+   * must not also activate whatever it landed on underneath. A scrim over the
+   * page takes that tap: it is what the finger lands on, so nothing below sees it.
    */
   describe('the menu on a narrow screen', () => {
-    function tap(target: Element) {
-      const event = new Event('touchstart', { bubbles: true, cancelable: true })
-      act(() => {
-        target.dispatchEvent(event)
-      })
-      return event
-    }
-
     function openOnPhone() {
       render({ narrow: true })
       toggle()
@@ -676,59 +696,52 @@ describe('sidebar', () => {
     it('closes the menu when the page behind it is tapped', () => {
       openOnPhone()
 
-      tap(content())
+      fireEvent.click(scrim())
 
       expect(isExpanded()).toBe(false)
     })
 
-    it('swallows that tap rather than letting it through', () => {
+    it('takes that tap on the scrim rather than letting it through', () => {
       // ⚠️ Otherwise the tap that closes the menu also presses whatever was under
       // it, and the user lands on a page they never chose
       openOnPhone()
+      const underneath = vi.fn()
+      content().addEventListener('click', underneath)
 
-      const event = tap(content())
+      fireEvent.click(scrim())
 
-      expect(event.defaultPrevented).toBe(true)
-    })
-
-    it('closes the menu when anything else outside it is tapped', () => {
-      openOnPhone()
-      const elsewhere = document.createElement('div')
-      document.body.append(elsewhere)
-
-      tap(elsewhere)
-
-      expect(isExpanded()).toBe(false)
-      elsewhere.remove()
+      expect(underneath).not.toHaveBeenCalled()
     })
 
     it('leaves a tap inside the menu alone', () => {
       // The menu items have to stay usable
       openOnPhone()
 
-      tap(sidebar())
+      fireEvent.click(sidebar(), { clientX: 200 })
 
       expect(isExpanded()).toBe(true)
     })
 
-    it('does nothing while the menu is already closed', () => {
+    it('has no scrim while the menu is closed', () => {
       render({ narrow: true })
 
-      const event = tap(content())
-
-      expect(isExpanded()).toBe(false)
-      expect(event.defaultPrevented).toBe(false)
+      expect(scrim()).not.toHaveClass('show')
     })
 
-    it('does not listen for taps on a desktop window', () => {
-      // The desktop layout closes on click instead, and both at once would close
-      // the menu twice over
-      render()
-      toggle()
+    it('does not open on a tap that the browser reports as a hover', () => {
+      // ⚠️ A touch screen fires mouseenter on tap; with hover listeners attached
+      // the menu would open under the finger
+      vi.useFakeTimers()
+      render({ narrow: true })
 
-      const event = tap(content())
+      act(() => {
+        sidebar().dispatchEvent(new Event('mouseenter'))
+      })
+      act(() => {
+        vi.advanceTimersByTime(200)
+      })
 
-      expect(event.defaultPrevented).toBe(false)
+      expect(isExpanded()).toBe(false)
     })
   })
 
@@ -751,28 +764,63 @@ describe('sidebar', () => {
     const hover = (target: Element, type: 'mouseenter' | 'mouseleave') => act(() => {
       target.dispatchEvent(new Event(type))
     })
+    /** Rest the pointer for as long as the menu waits before opening. */
+    const rest = () => act(() => {
+      vi.advanceTimersByTime(100)
+    })
 
-    it('opens when the pointer enters the header', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    it('opens when the pointer rests on the header', () => {
       render()
 
       hover(header(), 'mouseenter')
+      rest()
 
       expect(isExpanded()).toBe(true)
     })
 
-    it('closes again when the pointer leaves', () => {
+    it('does not open for a pointer just passing over', () => {
+      // Crossing the menu on the way to something else must not fling it open
+      render()
+
+      hover(sidebar(), 'mouseenter')
+      act(() => {
+        vi.advanceTimersByTime(50)
+      })
+      hover(sidebar(), 'mouseleave')
+      rest()
+
+      expect(isExpanded()).toBe(false)
+    })
+
+    it('closes again at once when the pointer leaves', () => {
       render()
       hover(header(), 'mouseenter')
+      rest()
 
       hover(header(), 'mouseleave')
 
       expect(isExpanded()).toBe(false)
     })
 
-    it('opens when the pointer enters the menu itself', () => {
+    it('opens when the pointer rests on the menu itself', () => {
       render()
 
       hover(sidebar(), 'mouseenter')
+      rest()
+
+      expect(isExpanded()).toBe(true)
+    })
+
+    it('opens on hover in a narrow window with a mouse', () => {
+      // The pointer, not the width, decides
+      render({ narrow: true, touch: false })
+
+      hover(sidebar(), 'mouseenter')
+      rest()
 
       expect(isExpanded()).toBe(true)
     })
@@ -781,6 +829,7 @@ describe('sidebar', () => {
       render({ menuMode: 'freeze' })
 
       hover(sidebar(), 'mouseenter')
+      rest()
 
       expect(isExpanded()).toBe(false)
     })
@@ -794,6 +843,7 @@ describe('sidebar', () => {
       })
 
       hover(header(), 'mouseenter')
+      rest()
 
       expect(isExpanded()).toBe(false)
     })
@@ -827,9 +877,9 @@ describe('sidebar', () => {
       expect(isExpanded()).toBe(true)
     })
 
-    it('does not listen for clicks on a narrow window', () => {
-      // The phone layout closes on touch instead, and both at once would fight
-      render({ narrow: true })
+    it('does not listen for clicks on a touch screen', () => {
+      // A touch screen closes from the scrim instead, and both at once would fight
+      render({ touch: true })
       toggle()
 
       clickAt(sidebar(), 200)

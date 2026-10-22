@@ -101,8 +101,7 @@ describe('the terminal pages', () => {
 
   /**
    * Start a navigation away, and let the router and the blocker get as far as
-   * the page's leave handler (it takes a few scheduler ticks), so the fade
-   * timings below count from the moment the fade starts.
+   * the page's leave handler and through (it takes a few scheduler ticks).
    *
    * The navigation is not wrapped in `act`: one held by the blocker would keep
    * an async act scope open, and every later render would queue behind it.
@@ -110,9 +109,8 @@ describe('the terminal pages', () => {
   async function leave(view: Awaited<ReturnType<typeof open>>, to: string) {
     const from = view.router.state.location.pathname
     void view.router.navigate(to)
-    const terminal = () => document.querySelector('#log-output, #docker-terminal')
     for (let tick = 0; tick < 100; tick += 1) {
-      if (terminal()?.classList.contains('fade-out') || view.router.state.location.pathname !== from) {
+      if (view.router.state.location.pathname !== from) {
         break
       }
       await act(() => vi.advanceTimersByTimeAsync(1))
@@ -397,17 +395,17 @@ describe('the terminal pages', () => {
       expect(bodyClasses()).not.toContain('bg-white')
     })
 
-    it.each(PAGES)('%s waits for both animations before navigating away', async (_name, page) => {
+    it.each(PAGES)('%s goes at once from a light app too, easing the background back', async (_name, page) => {
+      // ⚠️ It used to hold the navigation for half a second of fading
       const view = await open(page(), { settings: { actualLightingMode: 'light' } })
       const nav = await leave(view, '/plugins')
+      await act(() => vi.advanceTimersByTimeAsync(0))
 
-      await act(() => vi.advanceTimersByTimeAsync(250))
-      // The terminal has faded but the page is still on its way out
-      expect(nav.path()).toBe('/page')
-      expect(bodyClasses()).not.toContain('bg-black')
-
-      await act(() => vi.advanceTimersByTimeAsync(250))
       expect(nav.path()).toBe('/plugins')
+      expect(bodyClasses()).not.toContain('bg-black')
+      // The background's transition stays on just long enough to run
+      await act(() => vi.advanceTimersByTimeAsync(150))
+      expect(bodyClasses()).not.toContain('theme-transition')
     })
 
     it.each(PAGES)('%s leaves the background alone when the next page is also a terminal', async (_name, page) => {
@@ -441,18 +439,6 @@ describe('the terminal pages', () => {
 
       expect(nav.path()).toBe('/logs')
       expect(classesAtNavigation).toContain('bg-black')
-    })
-
-    it('hides the search bar before fading, to avoid a mismatched strip', async () => {
-      const view = await open(<Logs />, { settings: { actualLightingMode: 'light' } })
-      fireEvent.click(screen.getByLabelText('form.search'))
-
-      await leave(view, '/plugins')
-      await act(() => vi.advanceTimersByTimeAsync(0))
-      expect(document.getElementById('logs-search-region')).toBeNull()
-      expect(document.getElementById('log-output')?.classList).toContain('fade-out')
-
-      await act(() => vi.advanceTimersByTimeAsync(500))
     })
 
     it('stays on the shell when the guard refuses', async () => {

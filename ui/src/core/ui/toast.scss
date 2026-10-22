@@ -1,5 +1,6 @@
-// Was app-toast.component.scss / restart-toast.component.scss: the fade in and
-// out every toast host runs (the durations come from the toast options).
+// Was app-toast.component.scss / restart-toast.component.scss: the rise in
+// and fade out every toast host runs (the durations come from the toast
+// options). The exit plays the entrance backwards, so it eases in on the way out.
 .ngx-toastr.toast-in {
   animation: toast-animation var(--animation-duration) var(--animation-easing);
 }
@@ -11,9 +12,67 @@
 @keyframes toast-animation {
   0% {
     opacity: 0;
+    transform: translateY(8px);
   }
 
   to {
     opacity: 1;
+    transform: none;
+  }
+}
+
+// A fade alone for people who asked for less motion
+@keyframes toast-fade {
+  0% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+// The countdown bar: one transform animation on the compositor, restarted by
+// remounting it, instead of a width set from a 10ms timer
+.ngx-toastr .toast-progress {
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+
+  &.toast-progress-decreasing {
+    animation: toast-progress-decreasing var(--toast-progress-duration) linear forwards;
+  }
+
+  &.toast-progress-increasing {
+    animation: toast-progress-increasing var(--toast-progress-duration) linear forwards;
+  }
+}
+
+@keyframes toast-progress-decreasing {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes toast-progress-increasing {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+// The progress bar keeps running: it tells the time left rather than moving
+// anything across the screen
+@media (prefers-reduced-motion: reduce) {
+  .ngx-toastr.toast-in,
+  .ngx-toastr.toast-out {
+    animation-name: toast-fade;
   }
 }

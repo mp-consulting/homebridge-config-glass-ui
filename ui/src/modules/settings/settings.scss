@@ -89,23 +89,19 @@
   .setting-row {
     display: grid;
     grid-template-rows: 1fr;
+    // Only the row's height animates (with a fade); padding and the divider
+    // snap rather than re-laying out the list on every frame of their own
     transition:
-      grid-template-rows 450ms cubic-bezier(0, 0, 0.2, 1),
-      opacity 450ms cubic-bezier(0, 0, 0.2, 1),
-      transform 450ms cubic-bezier(0, 0, 0.2, 1),
-      padding 450ms cubic-bezier(0, 0, 0.2, 1),
-      border-bottom-width 450ms cubic-bezier(0, 0, 0.2, 1);
+      grid-template-rows 220ms var(--ease-out),
+      opacity 220ms var(--ease-out);
     opacity: 1;
-    transform: scale(1);
 
     &.setting-hidden {
       grid-template-rows: 0fr;
       opacity: 0;
-      transform: scale(0.98);
       padding: 0 !important;
       border-bottom: 0 !important;
-      transition-duration: 150ms;
-      transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+      transition-duration: 160ms;
     }
   }
 
@@ -134,6 +130,7 @@
 
   // ── Respect reduced motion preference ──
   @media (prefers-reduced-motion: reduce) {
+    .settings-content,
     .setting-row {
       transition: none;
     }

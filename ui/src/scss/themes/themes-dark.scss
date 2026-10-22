@@ -198,12 +198,13 @@ $themes: (
     .btn-default {
       background-color: var(--glass-theme-primary) !important;
       border-color: var(--glass-theme-primary) !important;
+      // On the base rule, so the colour eases back as well as in
+      transition: background-color 0.25s;
 
       &:hover,
       &:focus {
         background-color: var(--glass-theme-primary-shade) !important;
         border-color: var(--glass-theme-primary-shade) !important;
-        transition: background-color 0.25s;
       }
     }
 
@@ -211,13 +212,13 @@ $themes: (
       color: #ffffff;
       background-color: #333333;
       border-color: color.adjust(#333333, $lightness: -2%) !important;
+      transition: background-color 0.25s;
 
       &:hover,
       &:focus {
         color: #ffffff;
         background-color: color.adjust(#333333, $lightness: -2%) !important;
         border-color: color.adjust(#333333, $lightness: -2%) !important;
-        transition: background-color 0.25s;
       }
     }
 

@@ -156,10 +156,7 @@ export function Logs() {
     log.scrollToBottom()
   }
 
-  useCanDeactivate(nextPath => leaveTerminalPage(termTargetRef.current, nextPath, () => {
-    // Hide search bar immediately to avoid background color mismatch
-    setShowSearchBar(false)
-  }))
+  useCanDeactivate(nextPath => leaveTerminalPage(nextPath))
 
   return (
     <div className="hb-logs">

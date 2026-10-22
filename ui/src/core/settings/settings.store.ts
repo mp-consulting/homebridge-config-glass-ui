@@ -338,6 +338,7 @@ export const settingsActions = {
     body.classList.toggle('mp-theme-dark', dark)
 
     settingsActions.updateTerminalBodyClass()
+    settingsActions.updateThemeColor()
 
     // Custom plugin UIs live in same-origin iframes and the theme has to reach
     // into them, or a plugin's settings page stays light in a dark UI
@@ -371,6 +372,29 @@ export const settingsActions = {
       }
     })
     settingsActions.emitTerminalSettingsChanged({ lightingMode: settingsActions.getEffectiveTerminalLightingMode() })
+    settingsActions.updateThemeColor()
+  },
+
+  /**
+   * Paint the browser chrome (Android's status bar, Safari's tab bar) the
+   * colour of the page's top edge: the glass base, or the flat look's header.
+   * Both theme-color tags get it, so a lighting mode chosen in the settings
+   * wins over the system one the tags' media queries follow.
+   */
+  updateThemeColor(): void {
+    const { glassMode, actualLightingMode } = get()
+    const dark = actualLightingMode === 'dark'
+    let color: string
+    if (glassMode) {
+      color = dark ? '#0c0b12' : '#eef0f6'
+    } else if (dark) {
+      color = '#111111'
+    } else {
+      color = window.getComputedStyle(window.document.body).getPropertyValue('--glass-theme-primary-dark').trim() || '#140a33'
+    }
+    window.document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
+      meta.content = color
+    })
   },
 
   /**

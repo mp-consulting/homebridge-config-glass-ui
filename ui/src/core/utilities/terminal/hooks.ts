@@ -129,7 +129,7 @@ export function useLog(ref: RefObject<HTMLElement | null>, opts: UseLogOptions =
 
 export interface UseTerminalNavigationGuardOptions {
   /**
-   * Runs after the guard allowed leaving, e.g. the terminal page's fade-out.
+   * Runs after the guard allowed leaving, e.g. the terminal page's theme handling.
    * Return false to stay.
    */
   onLeave?: (nextPath: string) => boolean | Promise<boolean>

@@ -1,18 +1,18 @@
+// In the installed app the page runs under the status bar (viewport-fit=cover),
+// so the bar grows by the top safe area and keeps its content below it
 .m-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 65px;
+  height: calc(65px + env(safe-area-inset-top, 0px));
   z-index: 510;
   display: flex;
   align-items: center;
+  padding-top: env(safe-area-inset-top, 0px);
   padding-left: 3px;
   padding-right: 3px;
-
-  &:hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 
   @media (min-width: 768px) {
     display: none;
@@ -49,7 +49,9 @@
   left: 0;
   top: 0;
   height: 100vh;
-  transition: 0.3s;
+  // Below the status bar of an installed app (zero in a browser)
+  padding-top: env(safe-area-inset-top, 0px);
+  transition: width 200ms var(--ease-out);
   width: 60px;
   z-index: 500;
 
@@ -70,6 +72,8 @@
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
     scrollbar-width: thin;
+    // Scrolling to the end of the menu stops there, not in the page behind
+    overscroll-behavior: contain;
 
     @media (max-width: 767px) {
       padding-bottom: 60px; // prevent menu items being hidden by URL bar on ios safari
@@ -90,7 +94,9 @@
         align-items: center;
         padding: 15px 10px 15px 10px;
         cursor: pointer;
-        transition: 0.2s;
+        transition:
+          background-color 150ms ease,
+          color 150ms ease;
         font-size: 17px;
 
         .icon {
@@ -102,7 +108,9 @@
 
         .title {
           flex: 1;
-          transition: 0.3s;
+          transition:
+            max-width 200ms var(--ease-out),
+            padding-left 200ms var(--ease-out);
           max-width: 0;
           overflow: hidden;
           white-space: nowrap;
@@ -111,11 +119,21 @@
     }
   }
 
+  // A drawer on a phone: always full width, slid off to the left while closed
+  // (moving it is cheap, growing it re-lays out the menu every frame), and
+  // hidden once it is off screen
   @media (max-width: 767px) {
-    width: 0;
+    width: 210px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 300ms var(--ease-drawer),
+      visibility 0s linear 300ms;
 
-    .link-wrapper {
-      display: none;
+    .link-wrapper .link .link-row .title {
+      max-width: 150px;
+      padding-left: 10px;
     }
   }
 
@@ -123,11 +141,11 @@
     width: 210px;
 
     @media (max-width: 767px) {
-      width: 210px;
-
-      .link-wrapper {
-        display: block;
-      }
+      transform: none;
+      visibility: visible;
+      transition:
+        transform 300ms var(--ease-drawer),
+        visibility 0s;
     }
 
     .link-wrapper {
@@ -156,16 +174,20 @@
     padding-left: 3px;
   }
 
+  .sidebar .hb-logo-text {
+    transition:
+      opacity 200ms var(--ease-out),
+      left 200ms var(--ease-out);
+  }
+
   .sidebar.expanded .hb-logo-text {
     opacity: 1;
     left: 55px;
-    transition: 0.3s;
   }
 
   .sidebar:not(.expanded) .hb-logo-text {
     opacity: 0;
     left: 40px;
-    transition: 0.3s;
   }
 
   .hb-logo-text-mobile {
@@ -198,7 +220,7 @@
     top: 28px;
     width: 30px;
     transform: rotate(0deg);
-    transition: 0.5s ease-in-out;
+    transition: transform 250ms var(--ease-out);
     cursor: pointer;
 
     span {
@@ -248,5 +270,44 @@
       width: 0;
       left: 50%;
     }
+  }
+}
+
+// The page behind the open menu: dims it, and a tap on it closes the menu
+// without reaching whatever is underneath
+.sidebar-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 499;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  // Lets a click through at once while it fades out
+  pointer-events: none;
+  touch-action: none;
+  overscroll-behavior: contain;
+  transition:
+    opacity 200ms var(--ease-out),
+    visibility 0s linear 200ms;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 200ms var(--ease-out),
+      visibility 0s;
+  }
+}
+
+// Open and close at once rather than sliding
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .sidebar .link-row .title,
+  .sidebar .hb-logo-text,
+  .sidebar-scrim,
+  .hamburger-icon,
+  .hamburger-icon span {
+    transition: none !important;
   }
 }

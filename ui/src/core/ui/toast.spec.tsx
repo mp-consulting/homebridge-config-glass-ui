@@ -67,7 +67,7 @@ describe('toast', () => {
       expect(pane.classList).toContain('toast-container')
       const [el] = toastEls()
       expect(el.className).toContain('toast-success ngx-toastr')
-      expect(el.style.getPropertyValue('--animation-duration')).toBe('300ms')
+      expect(el.style.getPropertyValue('--animation-duration')).toBe('200ms')
     })
 
     it('uses the type class of each level', async () => {

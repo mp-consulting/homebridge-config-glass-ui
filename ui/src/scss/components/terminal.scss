@@ -66,3 +66,12 @@
     }
   }
 }
+
+// iOS zooms the page into a focused field under 16px. The terminal types into
+// a hidden textarea, so that is the one to size: the terminal's own text keeps
+// the size set in the settings, and no columns are lost on a phone.
+@media (pointer: coarse) {
+  .xterm .xterm-helper-textarea {
+    font-size: 16px !important;
+  }
+}

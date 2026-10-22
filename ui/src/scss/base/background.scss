@@ -6,7 +6,8 @@
   background-color: #ffffff !important;
 }
 
-// Smooth transitions for background color changes
+// Smooth transitions for background color changes (also in
+// components/page-overrides.scss, which has the reduced-motion rule)
 body.theme-transition {
-  transition: background-color 0.25s ease-in-out;
+  transition: background-color 150ms ease-in-out;
 }

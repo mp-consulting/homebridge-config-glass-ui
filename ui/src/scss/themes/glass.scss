@@ -9,7 +9,18 @@
  * Selectors start with `html body.glass-mode` on purpose: the flat themes paint
  * many surfaces with `!important`, and the extra element weight lets these rules
  * win without escalating further.
+ *
+ * The motion tokens below are the one exception: the flat look animates with
+ * the same curves, so they sit on :root.
  */
+
+// Motion curves. Enter and move with --ease-out, morph on screen with
+// --ease-in-out, and slide drawers and sheets with --ease-drawer (iOS's own).
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
 
 $glass-radius-xl: 28px;
 $glass-radius-lg: 24px;
@@ -69,7 +80,9 @@ html body.glass-mode {
   --glass-input: rgba(255, 255, 255, 0.7);
   --glass-tint-base: transparent;
   --glass-blur: 22px;
-  --glass-blur-strong: 30px;
+  // The modal surface. Above about 20px the blur costs more than it shows
+  --glass-blur-strong: 20px;
+  // Plugin settings pages frost their own panels with this (custom-ui-styles.ts)
   --glass-blur-backdrop: 14px;
   --glass-bg-glow-1: 0.34;
   --glass-bg-glow-2: 0.18;
@@ -88,10 +101,12 @@ html body.glass-mode {
   --glass-radius-md: #{$glass-radius-md};
   --glass-radius-sm: #{$glass-radius-sm};
   --glass-radius-xs: #{$glass-radius-xs};
-  // The mobile top bar, which the sidebar and the page content sit below
+  // The mobile top bar, which the sidebar and the page content sit below. In
+  // the installed app the page runs under the status bar (viewport-fit=cover,
+  // black-translucent), so the bar starts below the top safe area.
   --glass-header-top: 10px;
   --glass-header-h: 62px;
-  --glass-header-bottom: calc(var(--glass-header-top) + var(--glass-header-h));
+  --glass-header-bottom: calc(var(--glass-header-top) + env(safe-area-inset-top, 0px) + var(--glass-header-h));
 
   // Only the main page fills the viewport. Plugin settings iframes also get the
   // glass-mode class (with modal-content), and there 100vh is the iframe itself:
@@ -167,14 +182,45 @@ html body.glass-mode {
     color: var(--glass-muted) !important;
   }
 
+  // Hairline 300 weights wash out over translucent surfaces at body sizes;
+  // only the large figures (page titles, widget values) stay light
+  p,
+  h4,
+  h5,
+  h6,
+  table th,
+  table td,
+  small,
+  .small,
+  .list-group-item,
+  .card .card-text,
+  .modal-content,
+  .toast-title,
+  .toast-message,
+  .hb-restart-toast-action {
+    font-weight: 400;
+  }
+
+  // Sentence-case labels at the body size, on phones too
+  .btn,
+  .btn-read {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
   // ── Sidebar: a floating glass pill ──────────────────────
 
   .sidebar {
-    top: $glass-gutter;
-    left: $glass-gutter;
-    height: calc(100vh - #{$glass-gutter * 2});
-    height: calc(100dvh - #{$glass-gutter * 2});
+    // Clear of the status bar, the notch in landscape and the home indicator
+    --glass-rail-top: max(#{$glass-gutter}, env(safe-area-inset-top, 0px));
+    --glass-rail-bottom: max(#{$glass-gutter}, env(safe-area-inset-bottom, 0px));
+    top: var(--glass-rail-top);
+    left: max(#{$glass-gutter}, env(safe-area-inset-left, 0px));
+    height: calc(100vh - var(--glass-rail-top) - var(--glass-rail-bottom));
+    height: calc(100dvh - var(--glass-rail-top) - var(--glass-rail-bottom));
     width: $glass-sidebar-width;
+    // The rail opens by width: a clip-path reveal would cut off the shadow
+    transition: width 200ms var(--ease-out);
     border-radius: var(--glass-radius-lg);
     padding: 10px 0;
     display: flex;
@@ -220,8 +266,8 @@ html body.glass-mode {
         opacity: 0 !important;
         padding: 0 !important;
         transition:
-          max-width 0.3s,
-          opacity 0.2s !important;
+          max-width 200ms var(--ease-out),
+          opacity 150ms ease !important;
       }
     }
 
@@ -230,10 +276,12 @@ html body.glass-mode {
       opacity: 1 !important;
     }
 
-    // Open and close at once rather than sliding
+    // Open and close at once rather than sliding. Only the movement stops: the
+    // rows' hover colours still ease.
     @media (prefers-reduced-motion: reduce) {
       &,
-      * {
+      .header .hb-logo-text,
+      .link-row .title {
         transition: none !important;
       }
     }
@@ -263,11 +311,15 @@ html body.glass-mode {
 
           .title {
             color: var(--glass-text) !important;
+            font-weight: 400;
+            text-overflow: ellipsis;
           }
 
-          &:hover {
-            background: var(--glass-surface-hover) !important;
-            color: var(--glass-text);
+          @media (hover: hover) and (pointer: fine) {
+            &:hover {
+              background: var(--glass-surface-hover) !important;
+              color: var(--glass-text);
+            }
           }
 
           &.active {
@@ -281,8 +333,16 @@ html body.glass-mode {
       }
     }
 
+    // The open labels take the whole row: 220px less the row and wrapper
+    // padding and the 38px icon. At weight 400 "Child Bridge Health" needs it,
+    // and a longer translation ends in an ellipsis instead of being cut.
     &.expanded {
       width: 220px;
+
+      .link-wrapper .link .link-row .title {
+        max-width: 156px;
+        padding-left: 8px;
+      }
     }
 
     // Desktop only: on a phone the component's own rules hide the closed menu
@@ -296,22 +356,35 @@ html body.glass-mode {
       }
     }
 
-    // Below the mobile top bar, with a gap like the one above it
+    // Below the mobile top bar, with a gap like the one above it. A drawer:
+    // always full width, slid off to the left while closed (moving it is cheap,
+    // growing it re-lays out the menu every frame). Hidden once it is off
+    // screen, so its shadow does not show at the edge.
     @media (max-width: 767px) {
       top: calc(var(--glass-header-bottom) + 12px);
-      height: calc(100vh - var(--glass-header-bottom) - #{12px + $glass-gutter});
-      height: calc(100dvh - var(--glass-header-bottom) - #{12px + $glass-gutter});
-      width: 0;
-      padding: 0;
-      border-width: 0 !important;
+      height: calc(100vh - var(--glass-header-bottom) - #{12px + $glass-gutter} - env(safe-area-inset-bottom, 0px));
+      height: calc(100dvh - var(--glass-header-bottom) - #{12px + $glass-gutter} - env(safe-area-inset-bottom, 0px));
+      width: 220px;
+      transform: translateX(calc(-100% - #{$glass-gutter}));
+      visibility: hidden;
+      transition:
+        transform 300ms var(--ease-drawer),
+        visibility 0s linear 300ms;
 
       &.expanded {
-        width: 220px;
-        padding: 10px 0;
-        border-width: 1px !important;
+        transform: none;
+        visibility: visible;
+        transition:
+          transform 300ms var(--ease-drawer),
+          visibility 0s;
+      }
 
-        .link-wrapper {
-          display: flex;
+      .link-wrapper {
+        display: flex;
+
+        .link .link-row .title {
+          max-width: 156px;
+          padding-left: 8px;
         }
       }
 
@@ -321,9 +394,14 @@ html body.glass-mode {
     }
   }
 
+  // The page behind the open menu
+  .sidebar-scrim {
+    background: rgba(10, 8, 20, 0.35);
+  }
+
   // Mobile top bar
   .m-header {
-    top: var(--glass-header-top);
+    top: calc(var(--glass-header-top) + env(safe-area-inset-top, 0px));
     left: var(--glass-header-top);
     width: calc(100% - 2 * var(--glass-header-top));
     height: var(--glass-header-h);
@@ -349,7 +427,8 @@ html body.glass-mode {
   }
 
   .hb-layout > .content {
-    margin-left: $glass-sidebar-width + $glass-gutter;
+    // Past the rail, which moves in from a landscape notch
+    margin-left: calc(max(#{$glass-gutter}, env(safe-area-inset-left, 0px)) + #{$glass-sidebar-width});
 
     @media (max-width: 767px) {
       margin-left: 0;
@@ -386,12 +465,41 @@ html body.glass-mode {
     text-transform: none;
     @include glass-surface(0.06);
 
-    &:hover,
-    &:focus,
+    // Hover only where there is a pointer to hover with: on a phone the tap
+    // left the button lit until the next tap somewhere else
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--glass-text-accent) !important;
+        background: var(--glass-surface-hover) !important;
+        border-color: var(--glass-border) !important;
+      }
+    }
+
+    &:focus-visible,
     &.show {
       color: var(--glass-text-accent) !important;
       background: var(--glass-surface-hover) !important;
       border-color: var(--glass-border) !important;
+    }
+  }
+
+  // A press shrinks the button a touch, for an answer under the finger
+  .btn {
+    transition:
+      color 0.15s ease-in-out,
+      background-color 0.15s ease-in-out,
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out,
+      transform 100ms var(--ease-out);
+
+    &:active:not(:disabled, .disabled) {
+      transform: scale(0.97);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &:active:not(:disabled, .disabled) {
+        transform: none;
+      }
     }
   }
 
@@ -420,7 +528,6 @@ html body.glass-mode {
     border-radius: 999px;
     border: 0 !important;
     font-weight: 500;
-    letter-spacing: 0.06em;
     padding-left: 1.4rem;
     padding-right: 1.4rem;
     color: #ffffff !important;
@@ -435,8 +542,13 @@ html body.glass-mode {
       0 6px 18px rgba(var(--glass-primary-rgb), 0.35),
       inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
 
-    &:hover,
-    &:focus {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        filter: brightness(1.06);
+      }
+    }
+
+    &:focus-visible {
       filter: brightness(1.06);
     }
   }
@@ -721,21 +833,26 @@ html body.glass-mode {
 
   // ── Menus, tooltips, toasts ─────────────────────────────
 
+  // Menus and tooltips are near-opaque (--glass-surface-menu), so a backdrop
+  // blur behind them would cost a filter pass and show nothing
   .dropdown-menu {
     border-radius: var(--glass-radius-md);
     padding: 6px;
     background: var(--glass-surface-menu) !important;
     border: 1px solid var(--glass-border) !important;
     box-shadow: var(--glass-shadow-lift) !important;
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 
     .dropdown-item {
       border-radius: var(--glass-radius-xs);
       color: var(--glass-text) !important;
 
-      &:hover,
-      &:focus {
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          background: rgba(var(--glass-primary-rgb), 0.14) !important;
+        }
+      }
+
+      &:focus-visible {
         background: rgba(var(--glass-primary-rgb), 0.14) !important;
       }
     }
@@ -747,8 +864,6 @@ html body.glass-mode {
     background: var(--glass-surface-menu);
     color: var(--glass-text);
     border: 1px solid var(--glass-border);
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    backdrop-filter: blur(var(--glass-blur));
   }
 
   .toast-container .ngx-toastr {
@@ -759,11 +874,27 @@ html body.glass-mode {
 
   // ── Modals ──────────────────────────────────────────────
 
+  // A plain scrim: a full-screen blur under a frosted dialog re-rendered the
+  // whole page behind it every frame. The colour is the dim, so the opacity
+  // runs from 0 to 1 instead of to Bootstrap's 0.5.
   .modal-backdrop {
     background-color: rgba(10, 8, 20, 0.35);
     opacity: 1 !important;
-    -webkit-backdrop-filter: blur(var(--glass-blur-backdrop));
-    backdrop-filter: blur(var(--glass-blur-backdrop));
+
+    &.fade {
+      opacity: 0 !important;
+      transition: opacity 200ms var(--ease-out);
+    }
+
+    &.fade.show {
+      opacity: 1 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &.fade {
+        transition: none;
+      }
+    }
   }
 
   .modal-content {
@@ -785,8 +916,23 @@ html body.glass-mode {
     border-color: var(--glass-divider) !important;
   }
 
+  // A card inside a dialog is already on glass: a faint tint sets it apart
+  // without stacking a second white glass pane on the first
   .modal-body .card {
     border-radius: var(--glass-radius-md) !important;
+    background: rgba(var(--glass-primary-rgb), 0.05) !important;
+    border-color: var(--glass-divider) !important;
+    box-shadow: none !important;
+  }
+
+  // A phone's bottom sheet (base/modal.scss) is square where it meets the
+  // bottom edge
+  @media (max-width: 575.98px) {
+    .modal:not(.hb-ai-drawer) > .modal-dialog:not([class*='modal-fullscreen']) .modal-content {
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-bottom-width: 0 !important;
+    }
   }
 
   // The plugin settings iframe body carries modal-content + glass-mode itself
@@ -865,6 +1011,12 @@ html body.glass-mode {
     background: transparent !important;
   }
 
+  // The flat look's drifting gradient (login.scss) has nothing to move here:
+  // the background is transparent, and the animation only kept the page busy
+  .login-container.anim {
+    animation: none;
+  }
+
   // Over a photo the card needs more than translucent glass to stay readable: a
   // scrim over the whole wallpaper (an inset shadow paints above the background
   // but under the card) and the stronger surface behind the form
@@ -885,32 +1037,55 @@ html body.glass-mode {
   }
 }
 
+// Opaque surfaces, tints mixed into them rather than laid over the page, no
+// blur. For people who ask for less transparency, and the base of the more
+// contrast look below.
+@mixin glass-opaque-surfaces {
+  --glass-surface: #fbfbfd;
+  --glass-surface-strong: #ffffff;
+  --glass-surface-menu: #ffffff;
+  --glass-surface-hover: #eeeef4;
+  --glass-input: #ffffff;
+  --glass-tint-base: var(--glass-surface);
+  --glass-blur: 0px;
+  --glass-blur-strong: 0px;
+  --glass-blur-backdrop: 0px;
+
+  &.dark-mode {
+    --glass-surface: #1c1b24;
+    --glass-surface-strong: #201e2c;
+    --glass-surface-menu: #201e2c;
+    --glass-surface-hover: #2a2836;
+    --glass-input: #15141c;
+  }
+
+  // These mix their tint into the strong surface
+  .modal-content,
+  .login-container[style*='background'] .login-card {
+    --glass-tint-base: var(--glass-surface-strong);
+  }
+}
+
 // Respect people who ask for less transparency
-// (opaque surfaces, tints mixed into them rather than laid over the page, no blur)
 @media (prefers-reduced-transparency: reduce) {
   html body.glass-mode {
-    --glass-surface: #fbfbfd;
-    --glass-surface-strong: #ffffff;
-    --glass-surface-menu: #ffffff;
-    --glass-surface-hover: #eeeef4;
-    --glass-input: #ffffff;
-    --glass-tint-base: var(--glass-surface);
-    --glass-blur: 0px;
-    --glass-blur-strong: 0px;
-    --glass-blur-backdrop: 0px;
+    @include glass-opaque-surfaces;
+  }
+}
+
+// More contrast: the same opaque surfaces, with edges and dividers drawn
+// firmly instead of as faint white highlights
+@media (prefers-contrast: more) {
+  html body.glass-mode {
+    @include glass-opaque-surfaces;
+    --glass-border: rgba(20, 20, 40, 0.55);
+    --glass-divider: rgba(20, 20, 40, 0.35);
+    --glass-muted: #3f3c48;
 
     &.dark-mode {
-      --glass-surface: #1c1b24;
-      --glass-surface-strong: #201e2c;
-      --glass-surface-menu: #201e2c;
-      --glass-surface-hover: #2a2836;
-      --glass-input: #15141c;
-    }
-
-    // These mix their tint into the strong surface
-    .modal-content,
-    .login-container[style*='background'] .login-card {
-      --glass-tint-base: var(--glass-surface-strong);
+      --glass-border: rgba(255, 255, 255, 0.55);
+      --glass-divider: rgba(255, 255, 255, 0.35);
+      --glass-muted: #c4c1d2;
     }
   }
 }
@@ -1021,8 +1196,15 @@ html body.glass-mode {
     border: 1px solid rgba(var(--glass-primary-rgb), 0.25) !important;
     box-shadow: none !important;
 
-    &:hover,
-    &:focus {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: #ffffff !important;
+        background: var(--glass-primary) !important;
+        filter: none;
+      }
+    }
+
+    &:focus-visible {
       color: #ffffff !important;
       background: var(--glass-primary) !important;
       filter: none;

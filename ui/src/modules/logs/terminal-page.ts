@@ -2,6 +2,7 @@ import type { ResizeSource } from '@/core/utilities/terminal'
 
 import { settingsActions, useSettingsStore } from '@/core/settings'
 import { createEmitter } from '@/core/utilities/emitter'
+import { prefersReducedMotion } from '@/core/utilities/motion'
 
 /**
  * Behaviour shared by the two full-page terminals: the log page (`/logs`) and
@@ -36,6 +37,11 @@ function needsTransition(terminalTheme: 'light' | 'dark'): boolean {
   return useSettingsStore.getState().actualLightingMode === 'light' && terminalTheme === 'dark'
 }
 
+/** The body background's fade back after leaving (base/background.scss). */
+const BACKGROUND_FADE_MS = 150
+
+let backgroundFadeTimer: ReturnType<typeof setTimeout> | undefined
+
 /**
  * Paint the body to match the terminal on the way in, so the page is not
  * briefly white around a black terminal.
@@ -43,6 +49,9 @@ function needsTransition(terminalTheme: 'light' | 'dark'): boolean {
  * @returns the effective terminal theme
  */
 export function enterTerminalPage(terminal: HTMLElement | null): 'light' | 'dark' {
+  // A fade left running by the page just left must not strip this one's class
+  clearTimeout(backgroundFadeTimer)
+
   // Get terminal theme (light or dark) - enforces dark mode override
   const terminalTheme = settingsActions.getEffectiveTerminalLightingMode()
 
@@ -60,58 +69,39 @@ export function enterTerminalPage(terminal: HTMLElement | null): 'light' | 'dark
 }
 
 /**
- * The theme half of the pages' `canDeactivate`: fade the terminal (and, unless
- * the next page is a terminal too, the body background) before letting the
- * navigation through.
- * @param terminal - the terminal host element
+ * The theme half of the pages' `canDeactivate`. The navigation goes through at
+ * once - it used to wait half a second for a fade - and the body background,
+ * unless the next page is a terminal too, eases back while the next page fades in.
  * @param nextPath - where the user is going
- * @param beforeFade - runs once a fade is going to happen (the log page hides its search bar)
  */
-export function leaveTerminalPage(terminal: HTMLElement | null, nextPath: string | undefined, beforeFade?: () => void): Promise<boolean> {
+export function leaveTerminalPage(nextPath: string | undefined): Promise<boolean> {
   // Get terminal theme - enforces dark mode override
   const terminalTheme = settingsActions.getEffectiveTerminalLightingMode()
 
-  // If no transition needed, navigate immediately
-  if (!needsTransition(terminalTheme)) {
-    body().classList.remove('bg-black')
-    body().classList.remove('bg-white')
+  // Check if we're navigating to another page with the same terminal theme
+  const stayingSameTheme = needsTransition(terminalTheme) && nextPath && (
+    nextPath.includes('/platform-tools/terminal')
+    || nextPath.includes('/logs')
+  )
+
+  if (stayingSameTheme) {
+    // Keep the background: fading to white only to blacken it again would flash
+    body().classList.remove('theme-transition')
     return Promise.resolve(true)
   }
 
-  beforeFade?.()
+  body().classList.remove('bg-black')
+  body().classList.remove('bg-white')
 
-  // Remove theme-transition class from body
-  body().classList.remove('theme-transition')
+  // Let the background transition run before taking its transition away
+  clearTimeout(backgroundFadeTimer)
+  if (needsTransition(terminalTheme) && !prefersReducedMotion()) {
+    backgroundFadeTimer = setTimeout(() => body().classList.remove('theme-transition'), BACKGROUND_FADE_MS)
+  } else {
+    body().classList.remove('theme-transition')
+  }
 
-  return new Promise((resolve) => {
-    // Check if we're navigating to another page with the same terminal theme
-    const stayingSameTheme = nextPath && (
-      nextPath.includes('/platform-tools/terminal')
-      || nextPath.includes('/logs')
-    )
-
-    // Add fade-out class to terminal
-    terminal?.classList.add('fade-out')
-
-    if (stayingSameTheme) {
-      // Just fade out the terminal, keep background the same
-      setTimeout(() => {
-        resolve(true)
-      }, 250)
-    } else {
-      // Wait for fade-out animation (250ms) and body background transition (250ms)
-      setTimeout(() => {
-        // Remove body bg color to trigger background transition
-        body().classList.remove('bg-black')
-        body().classList.remove('bg-white')
-      }, 250)
-
-      // Wait for both animations to complete before allowing navigation
-      setTimeout(() => {
-        resolve(true)
-      }, 500)
-    }
-  })
+  return Promise.resolve(true)
 }
 
 export interface ResizeEmitter extends ResizeSource {

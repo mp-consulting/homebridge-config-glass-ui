@@ -6,6 +6,52 @@ html,
 body {
   height: 100%;
   -webkit-font-smoothing: subpixel-antialiased;
+  // No rubber-band or pull-to-refresh on the app shell: it is an app, not a
+  // document, and a reload mid-edit loses work
+  overscroll-behavior: none;
+}
+
+html {
+  // No grey flash over whatever is tapped; pressed states show the press
+  -webkit-tap-highlight-color: transparent;
+  // Keep text at its set size when an iPhone turns to landscape
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+// Controls answer a tap at once (no wait for a double-tap zoom), and a long
+// press does not select their label. Plain links stay selectable: their text
+// is often content (a url, a plugin name) worth copying.
+button,
+a,
+[role='button'],
+.btn,
+.link-row,
+.accessory-box,
+.dropdown-item,
+.nav-link {
+  touch-action: manipulation;
+}
+
+button,
+[role='button'],
+.btn,
+.link-row,
+.accessory-box,
+.dropdown-item,
+.nav-link {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+// A scroll that reaches the end of these stops there instead of moving the
+// page behind them
+.modal,
+.dropdown-menu,
+.monaco-editor,
+.hb-plain-text-editor,
+#log-output {
+  overscroll-behavior: contain;
 }
 
 body {

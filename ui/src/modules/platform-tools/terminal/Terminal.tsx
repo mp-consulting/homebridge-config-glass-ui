@@ -67,9 +67,9 @@ export function Terminal() {
     }
   }, [terminal, resizeEvent])
 
-  // The guard (unsaved session warning, beforeunload) decides first; then the fade
+  // The guard (unsaved session warning, beforeunload) decides first; then the theme handling
   useTerminalNavigationGuard({
-    onLeave: nextPath => leaveTerminalPage(termTargetRef.current, nextPath),
+    onLeave: nextPath => leaveTerminalPage(nextPath),
   })
 
   return (
