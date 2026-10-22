@@ -145,6 +145,9 @@
     "osx-temperature-sensor": true
   },
   "overrides": {
+    "@nestjs/platform-fastify": {
+      "fastify": "$fastify"
+    },
     "katex": "^0.18.2",
     "tinypool": "^2.2.0"
   }
