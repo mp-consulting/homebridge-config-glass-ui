@@ -113,7 +113,7 @@ function useTitleId(ref: { current: HTMLElement | null }, fallbackId: string, ex
       if (title && !title.id) {
         title.id = fallbackId
       }
-      // eslint-disable-next-line react/set-state-in-effect -- the title is only in the DOM once the modal content has rendered
+      // The title is only in the DOM once the modal content has rendered
       setTitleId(title?.id || undefined)
     }
 
