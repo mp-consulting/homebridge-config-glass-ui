@@ -163,7 +163,7 @@ jobs:
     # inside it. Keep the tag in step with @playwright/test in package.json (and the command in
     # the header of e2e/specs/visual.spec.ts); a bump means re-recording the baselines.
     container:
-      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --ipc=host
 
     steps:

@@ -49,7 +49,7 @@ E2E_OTP_USER=1 npx playwright test -c e2e --grep-invert visual   # everything bu
 ```sh
 docker run --rm --platform linux/amd64 --ipc=host \
   -v "$PWD":/work -v /work/node_modules -v /work/ui/node_modules -v /work/e2e/.run \
-  -w /work mcr.microsoft.com/playwright:v1.63.0-noble bash -c \
+  -w /work mcr.microsoft.com/playwright:v1.64.1-noble bash -c \
   'npm ci && npm ci --prefix ui && node e2e/build.mjs && node e2e/install-plugins.mjs \
    && npx playwright test -c e2e visual.spec --update-snapshots'
 ```
