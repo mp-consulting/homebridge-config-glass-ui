@@ -18,10 +18,10 @@ jobs:
         node-version: [22.x, 24.x, 26.x]
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -60,7 +60,7 @@ jobs:
       # pinned by manifest.json. On CI the suite fails (rather than skips) when they are missing.
       - name: Cache schema corpus
         id: schema-corpus
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ui/src/schema-form/__corpus__/schemas
           key: schema-corpus-${{ hashFiles('ui/src/schema-form/__corpus__/manifest.json') }}
@@ -96,10 +96,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: 24.x
           cache: npm
@@ -114,7 +114,7 @@ jobs:
         run: node e2e/build.mjs
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -127,7 +127,7 @@ jobs:
       # mock plugins in too, so they are part of the key.
       - name: Cache e2e plugins
         id: e2e-plugins
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: e2e/.run/plugins
           key: e2e-plugins-${{ hashFiles('e2e/install-plugins.mjs', 'test/mocks/plugins/**') }}
@@ -145,7 +145,7 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: playwright-report
           path: |
@@ -167,10 +167,10 @@ jobs:
       options: --ipc=host
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Cache npm downloads
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ~/.npm
           key: npm-playwright-image-${{ hashFiles('package-lock.json', 'ui/package-lock.json') }}
@@ -184,7 +184,7 @@ jobs:
       # The plugin list the /plugins screenshots show includes these (see the e2e job)
       - name: Cache e2e plugins
         id: e2e-plugins
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: e2e/.run/plugins
           key: e2e-plugins-${{ hashFiles('e2e/install-plugins.mjs', 'test/mocks/plugins/**') }}
@@ -200,7 +200,7 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: playwright-visual-report
           path: |
