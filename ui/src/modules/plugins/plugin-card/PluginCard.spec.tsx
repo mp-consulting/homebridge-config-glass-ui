@@ -663,7 +663,7 @@ describe('pluginCard', () => {
     it('opens the plugin information panel', () => {
       render({ name: 'homebridge-example' })
 
-      fireEvent.click(screen.getByLabelText('plugins.button_info'))
+      fireEvent.click(screen.getByLabelText('homebridge-example, plugins.button_info'))
 
       expect(modal.lastOpened()!.component).toBe(PluginInfo)
       expect(modal.lastOpened()!.props?.plugin.name).toBe('homebridge-example')
