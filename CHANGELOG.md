@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-beta.11] - 2026-10-22
+
+### Changed
+
+- **Server dependencies**: fastify 5.12.7, and `@nestjs/websockets` and `@nestjs/platform-socket.io` 12.2.0, which run all of the UI's live sockets (logs, terminal, accessories, backups, child bridges, the Assistant and plugin settings pages). `@nestjs/platform-fastify` 12.1.2 pins fastify 5.12.5, so an npm override keeps it on the server's fastify instead of loading a second copy.
+
+### Notes
+
+- Development dependencies: Playwright 1.64.1 (the visual tests now run in the `mcr.microsoft.com/playwright:v1.64.1-noble` image; the baselines did not change), vitest 5.0.4, vite 8.3.5, `@eslint-react/eslint-plugin` 5.27.1, `@nestjs/testing` 12.1.3 and `@types/node` 26.6.5.
+
 ## [2.0.0-beta.10] - 2026-10-21
 
 ### Changed
