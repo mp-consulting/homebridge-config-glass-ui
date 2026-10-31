@@ -13,6 +13,8 @@ export default antfu(
     },
     rules: {
       'markdown/require-alt-text': 'off',
+      // New in @antfu/eslint-config 10; adopting it reformats ~8k lines, so it is its own change
+      'antfu/reasonable-newline': 'off',
     },
   },
   {

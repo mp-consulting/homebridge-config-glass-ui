@@ -67,7 +67,7 @@ export function JsonSchemaForm(props: JsonSchemaFormProps) {
       refreshQueuedRef.current = false
       if (!unmountedRef.current) {
         // Runs in a microtask, not during the effect that may have queued it
-        // eslint-disable-next-line react/set-state-in-effect
+
         startTransition(() => setTick(t => t + 1))
       }
     })
