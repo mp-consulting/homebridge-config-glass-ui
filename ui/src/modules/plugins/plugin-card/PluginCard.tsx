@@ -432,7 +432,7 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
                   <button
                     type="button"
                     className="card-link btn btn-link p-0 text-decoration-none"
-                    aria-label={t('plugins.button_info')}
+                    aria-label={`${plugin.name}, ${t('plugins.button_info')}`}
                     title={plugin.name}
                     onClick={() => pluginInfoModal(plugin)}
                   >
@@ -448,7 +448,7 @@ function PluginCardComponent({ plugin, childBridges, isSearchResult = false }: P
                           <button
                             type="button"
                             className="card-link btn btn-link p-0 text-decoration-none"
-                            aria-label={t('plugins.donate.tile_donate_to', { author: plugin.author })}
+                            aria-label={t('plugins.donate.tile_donate_to', { author: `@${plugin.author}` })}
                             onClick={() => openFundingModal(plugin)}
                           >
                             <i className="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
