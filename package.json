@@ -88,7 +88,7 @@
     "fastify": "5.12.7",
     "fs-extra": "11.4.1",
     "node-cache": "5.1.2",
-    "node-schedule": "2.1.1",
+    "node-schedule": "2.1.2",
     "ora": "9.4.1",
     "otplib": "13.5.0",
     "p-limit": "7.3.3",
