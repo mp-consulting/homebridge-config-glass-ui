@@ -153,6 +153,7 @@ function useToastController(pkg: ToastPackage, service: ToastService): ToastCont
       activate: activateToast,
     })
     if (toastRef.activated) {
+      // eslint-disable-next-line react/set-state-in-effect -- a toast the service already activated must show as active on mount
       activateToast()
     }
     return () => {
